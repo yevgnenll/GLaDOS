@@ -1,0 +1,5 @@
+---
+Checks:          '-checks=-*,readability-*'
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+FormatStyle:     none
