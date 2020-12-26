@@ -1,5 +1,4 @@
 #include "Input.h"
-
 #include "Platform.h"
 
 namespace GameEngine {

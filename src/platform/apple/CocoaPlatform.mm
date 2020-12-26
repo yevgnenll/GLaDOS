@@ -157,12 +157,12 @@ namespace GameEngine {
     Platform::instance = this;
     CocoaPlatform::platformInstance = Platform::instance;
     registerKeyMap();
-    CocoaPlatform::cocoaPlatformInstance = new CocoaPlatform();
+    CocoaPlatform::cocoaPlatformInstance = NEW_T(CocoaPlatform);
   }
 
   Platform::~Platform() {
     CocoaPlatform::cocoaPlatformInstance->close();
-    dealloc(CocoaPlatform::cocoaPlatformInstance);
+    DELETE_T(CocoaPlatform::cocoaPlatformInstance, CocoaPlatform);
   }
 
   void Platform::registerKeyMap() {

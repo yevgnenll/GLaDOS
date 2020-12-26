@@ -1,15 +1,17 @@
 #include "platform//Input.h"
 #include "platform/Platform.h"
+#include "memory/Allocation.h"
+
 using namespace GameEngine;
 
-int main() {
+void init() {
   PlatformParams params{1024, 800, "Powered by gameengine"};
   Platform platform;
   Input input;
   bool result = platform.initialize(params);
   if (!result) {
     printf("error");
-    return -1;
+    return;
   }
   while (platform.isRunning()) {
     platform.update();
@@ -18,6 +20,10 @@ int main() {
       platform.quit();
     }
   }
+}
 
+int main() {
+  init();
+  dumpMemory();
   return 0;
 }
