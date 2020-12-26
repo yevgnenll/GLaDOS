@@ -1,14 +1,18 @@
+---
 BasedOnStyle: Google
-Language: Cpp
-BreakBeforeBraces: Attach
-PointerAlignment: Left
+IndentWidth: 2
 TabWidth: 2
-IndentWidth: 4
-AccessModifierOffset: -2
-ColumnLimit: 400
-NamespaceIndentation: All
-AlignTrailingComments: true
-AlignEscapedNewlines: true
-AllowAllParametersOfDeclarationOnNextLine: true
-AlwaysBreakTemplateDeclarations: true
 UseTab: Never
+ColumnLimit: 0
+PointerAlignment: Left
+BreakBeforeBraces: Attach
+NamespaceIndentation: All
+AccessModifierOffset: -2
+---
+Language: Cpp
+AlignTrailingComments: false
+AlignEscapedNewlines: DontAlign
+AllowAllParametersOfDeclarationOnNextLine: true
+AlwaysBreakTemplateDeclarations: Yes
+---
+Language:  ObjC

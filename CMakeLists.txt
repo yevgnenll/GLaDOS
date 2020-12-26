@@ -54,6 +54,7 @@ endif()
 
 add_executable(${PROJECT_NAME})
 file(GLOB_RECURSE SOURCE_FILES
+        "${SOURCE_DIR}/*.h"
         "${SOURCE_DIR}/*.hpp"
         "${SOURCE_DIR}/*.cpp"
         "${SOURCE_DIR}/*.mm")
