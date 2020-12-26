@@ -40,7 +40,7 @@ namespace GameEngine {
   }
 
   void mprint(const char *reason, MemoryHeader* mi) {
-    printf("%s: %s: %s (%4d): %zd bytes at %p\n", reason, mi->file, mi->function, mi->line, mi->size, (void*)(mi+1));
+    printf("%s: %s: %s() (%4d): %zd bytes at %p\n", reason, mi->file, mi->function, mi->line, mi->size, (void*)(mi+1));
   }
 
   void dumpMemory() {
