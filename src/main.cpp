@@ -1,29 +1,26 @@
+#include "memory/Allocation.h"
 #include "platform//Input.h"
 #include "platform/Platform.h"
-#include "memory/Allocation.h"
 
 using namespace GameEngine;
 
-void init() {
+int main() {
   PlatformParams params{1024, 800, "Powered by gameengine"};
-  Platform platform;
+  Platform* platform = NEW_T(Platform);
   Input input;
-  bool result = platform.initialize(params);
+  bool result = platform->initialize(params);
   if (!result) {
     printf("error");
-    return;
+    return -1;
   }
-  while (platform.isRunning()) {
-    platform.update();
+  while (platform->isRunning()) {
+    platform->update();
     input.update();
     if (Input::isKeyDown(KeyCode::KEY_ESCAPE)) {
-      platform.quit();
+      platform->quit();
     }
   }
-}
-
-int main() {
-  init();
+  DELETE_T(platform, Platform);
   dumpMemory();
   return 0;
 }

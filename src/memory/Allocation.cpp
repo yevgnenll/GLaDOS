@@ -1,9 +1,10 @@
 #include "Allocation.h"
+
 #include <cstdio>
 
 namespace GameEngine {
   // TODO: not thread safe
-  void* mmalloc(size_t size, const char *file, int line, const char* function) {
+  void* mmalloc(size_t size, const char* file, int line, const char* function) {
     auto* mi = static_cast<MemoryHeader*>(malloc(size + sizeof(MemoryHeader)));
     if (mi == nullptr) {
       return mi;
@@ -18,10 +19,10 @@ namespace GameEngine {
     mi->prev = nullptr;
     mi->size = size;
     headOfMemory = mi;
-    return mi+1;
+    return mi + 1;
   }
 
-  void mfree(void *ptr) {
+  void mfree(void* ptr) {
     if (ptr != nullptr) {
       MemoryHeader* mi = static_cast<MemoryHeader*>(ptr) - 1;
       mi->size = ~mi->size;
@@ -39,24 +40,24 @@ namespace GameEngine {
     }
   }
 
-  void mprint(const char *reason, MemoryHeader* mi) {
-    printf("%s: %s: %s() (%4d): %zd bytes at %p\n", reason, mi->file, mi->function, mi->line, mi->size, (void*)(mi+1));
+  void mprint(const char* reason, MemoryHeader* mi) {
+    printf("%s: %s: %s() (%4d): %zd bytes at %p\n", reason, mi->file, mi->function, mi->line, mi->size, (void*)(mi + 1));
   }
 
   void dumpMemory() {
     MemoryHeader* mi = headOfMemory;
     while (mi != nullptr) {
-      if ((ptrdiff_t) mi->size >= 0) {
+      if ((ptrdiff_t)mi->size >= 0) {
         mprint("LEAKED", mi);
       }
       mi = mi->next;
     }
     mi = headOfMemory;
     while (mi != nullptr) {
-      if ((ptrdiff_t) mi->size < 0) {
+      if ((ptrdiff_t)mi->size < 0) {
         mprint("FREED ", mi);
       }
       mi = mi->next;
     }
   }
-}
+}  // namespace GameEngine
