@@ -8,6 +8,8 @@ namespace GameEngine {
   public:
     Input();
     ~Input();
+    Input(const Input&) = delete;
+    Input& operator=(const Input&) = delete;
 
     void update();
 

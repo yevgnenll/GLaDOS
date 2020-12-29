@@ -24,6 +24,8 @@ namespace GameEngine {
   public:
     Platform();
     ~Platform();
+    Platform(const Platform&) = delete;
+    Platform& operator=(const Platform&) = delete;
 
     bool initialize(const PlatformParams& params);
     void render();

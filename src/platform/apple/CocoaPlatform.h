@@ -25,6 +25,8 @@ namespace GameEngine {
   public:
     CocoaPlatform();
     ~CocoaPlatform();
+    CocoaPlatform(const CocoaPlatform&) = delete;
+    CocoaPlatform& operator=(const CocoaPlatform&) = delete;
 
     bool initialize(const PlatformParams& params);
     NSWindowStyleMask makeWindowStyle(WindowStyle windowStyle) const;
