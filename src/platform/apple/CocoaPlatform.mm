@@ -349,6 +349,7 @@ namespace GameEngine {
     mHeight = height;
     mLastWidth = mWidth;
     mLastHeight = mHeight;
+    // TODO: resize viewport of metal
   }
 
   void Platform::setTitleName(const std::string& titleName) {
@@ -497,6 +498,10 @@ namespace GameEngine {
 
 - (void)applicationWillResignActive:(NSNotification*)notification {
   GameEngine::CocoaPlatform::getPlatformInstance()->setIsFocused(false);
+}
+
+- (BOOL)windowShouldClose:(id)sender {
+  GameEngine::CocoaPlatform::getPlatformInstance()->quit();
 }
 @end
 
