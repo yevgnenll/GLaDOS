@@ -1,6 +1,7 @@
 #include "CocoaPlatform.h"
-#include <iostream>
 #include "utils/Utility.h"
+#include "math/Math.h"
+#include <iostream>
 
 #ifdef PLATFORM_MACOS
 
@@ -319,7 +320,7 @@ namespace GameEngine {
     passDescriptor.colorAttachments[0].texture = texture;
     passDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
     passDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
-    passDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(1.f, 0.3f, 0.3f, 1.0f);
+    passDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(1.f, 1.0f, 0.3f, 1.0f);
 
     id<MTLCommandBuffer> commandBuffer = [CocoaPlatform::cocoaPlatformInstance->mMetalCommandQueue commandBuffer];
 
