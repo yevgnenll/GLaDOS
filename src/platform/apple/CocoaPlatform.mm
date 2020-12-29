@@ -10,8 +10,19 @@ namespace GameEngine {
   Platform* CocoaPlatform::platformInstance = nullptr;
   Platform* Platform::instance = nullptr;
 
+  CocoaPlatform::CocoaPlatform() {
+    mAutoReleasePool = [[NSAutoreleasePool alloc] init];
+  }
+
+  CocoaPlatform::~CocoaPlatform() {
+    CVDisplayLinkStop(mDisplayLink);
+    CVDisplayLinkRelease(mDisplayLink);
+    [mMetalCommandQueue release];
+    [mMetalDevice release];
+    [mAutoReleasePool drain];
+  }
+
   bool CocoaPlatform::initialize(const PlatformParams& params) {
-    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
     mMetalDevice = MTLCreateSystemDefaultDevice();
     if (mMetalDevice == nullptr) {
       std::cout << "System does not support metal.\n";
@@ -88,17 +99,7 @@ namespace GameEngine {
     CVDisplayLinkSetCurrentCGDisplay(mDisplayLink, 0);
     CVDisplayLinkStart(mDisplayLink);
 
-    [pool drain];
-
     return true;
-  }
-
-  void CocoaPlatform::close() {
-    CVDisplayLinkStop(mDisplayLink);
-    CVDisplayLinkRelease(mDisplayLink);
-    [mMetalCommandQueue release];
-    [mMetalDevice release];
-    [applicationInstance terminate:mWindow];
   }
 
   NSWindowStyleMask CocoaPlatform::makeWindowStyle(WindowStyle windowStyle) const {
@@ -161,7 +162,6 @@ namespace GameEngine {
   }
 
   Platform::~Platform() {
-    CocoaPlatform::cocoaPlatformInstance->close();
     DELETE_T(CocoaPlatform::cocoaPlatformInstance, CocoaPlatform);
   }
 
@@ -461,11 +461,6 @@ namespace GameEngine {
 
 - (void)otherMouseUp:(NSEvent*)event {
   GameEngine::CocoaPlatform::getPlatformInstance()->middleMouseDown(false);
-}
-
-- (void)windowWillClose:(NSNotification*)notification {
-  GameEngine::CocoaPlatform::getPlatformInstance()->quit();
-  [GameEngine::CocoaPlatform::getAppInstance() terminate:self];
 }
 
 - (void)windowDidResize:(NSNotification*)notification {

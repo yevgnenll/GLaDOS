@@ -46,12 +46,22 @@ namespace GameEngine {
 
   void dumpMemory() {
     MemoryHeader* mi = headOfMemory;
+    bool leak = false;
     while (mi != nullptr) {
       if ((ptrdiff_t)mi->size >= 0) {
+        if (!leak) {
+          printf("Memory Debug: Detected memory leaks!\n");
+          leak = true;
+        }
         mprint("LEAKED", mi);
       }
       mi = mi->next;
     }
+
+    if (!leak) {
+      printf("Memory Debug: No memory leaks.\n");
+    }
+
     mi = headOfMemory;
     while (mi != nullptr) {
       if ((ptrdiff_t)mi->size < 0) {

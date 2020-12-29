@@ -23,11 +23,10 @@ namespace GameEngine {
     friend class Platform;
 
   public:
-    CocoaPlatform() = default;
-    ~CocoaPlatform() = default;
+    CocoaPlatform();
+    ~CocoaPlatform();
 
     bool initialize(const PlatformParams& params);
-    void close();
     NSWindowStyleMask makeWindowStyle(WindowStyle windowStyle) const;
     std::pair<int, int> centerOfScreen() const;
     std::pair<int, int> getScreenSize() const;
@@ -47,6 +46,7 @@ namespace GameEngine {
     CVDisplayLinkRef mDisplayLink;
     id<MTLDevice> mMetalDevice;
     id<MTLCommandQueue> mMetalCommandQueue;
+    NSAutoreleasePool* mAutoReleasePool{nullptr};
   };
 }
 
