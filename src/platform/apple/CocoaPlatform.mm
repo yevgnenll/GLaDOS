@@ -1,7 +1,7 @@
 #include "CocoaPlatform.h"
-#include <iostream>
 #include "math/Math.h"
 #include "utils/Utility.h"
+#include <iostream>
 
 #ifdef PLATFORM_MACOS
 

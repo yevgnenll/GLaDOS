@@ -5,11 +5,11 @@
 
 #ifdef PLATFORM_MACOS
 
+#include "platform/Platform.h"
 #import <Cocoa/Cocoa.h>
 #import <Metal/Metal.h>
 #import <QuartzCore/CAMetalLayer.h>
 #include <string>
-#import "platform/Platform.h"
 
 @interface CocoaWindow : NSWindow
 @end

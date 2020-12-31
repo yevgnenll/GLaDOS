@@ -10,6 +10,9 @@ namespace GameEngine {
     Renderer();
     virtual ~Renderer();
 
+    virtual bool initialize() = 0;
+    virtual void render(Renderable* renderable) const = 0;
+
   private:
     std::vector<Renderable*> mRenderable;
   };
