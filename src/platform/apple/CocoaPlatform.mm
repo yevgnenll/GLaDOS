@@ -25,13 +25,13 @@ namespace GameEngine {
   bool CocoaPlatform::initialize(const PlatformParams& params) {
     mMetalDevice = MTLCreateSystemDefaultDevice();
     if (mMetalDevice == nullptr) {
-      std::cout << "System does not support metal.\n";
+      LOG_ERROR("System does not support metal.");
       return false;
     }
 
     mMetalCommandQueue = [mMetalDevice newCommandQueue];
     if (mMetalCommandQueue == nullptr) {
-      std::cout << "System does not support metal.\n";
+      LOG_ERROR("System does not support metal.");
       return false;
     }
 
@@ -40,7 +40,7 @@ namespace GameEngine {
     [applicationInstance activateIgnoringOtherApps:YES];
 
     if (params.width <= 0 || params.height <= 0) {
-      std::cout << "platform width and height should not be less than 0.\n";
+      LOG_ERROR("Platform width and height should not be less than 0.");
       return false;
     }
 
@@ -66,7 +66,7 @@ namespace GameEngine {
     [mMetalView setWantsLayer:YES];  // you must still call the setWantsLayer: method to let the view know that it should use layers.
     mMetalLayer = [CAMetalLayer layer];
     if (mMetalLayer == nullptr) {
-      std::cout << "System does not support metal.\n";
+      LOG_ERROR("System does not support metal.");
       return false;
     }
     mMetalLayer.device = mMetalDevice;
@@ -166,6 +166,7 @@ namespace GameEngine {
   }
 
   void Platform::registerKeyMap() {
+    LOG_TRACE("Register MacOS key map...");
     for (int i = 0; i < static_cast<int>(KeyCode::KEY_MAX); i++) {
       mKeys[i] = false;
       mLocalKeymap[i] = KeyCode::KEY_UNDEFINED;
@@ -308,6 +309,7 @@ namespace GameEngine {
   }
 
   bool Platform::initialize(const PlatformParams& params) {
+    LOG_TRACE("Initialize Cocoa Platform...");
     return CocoaPlatform::cocoaPlatformInstance->initialize(params);
   }
 

@@ -56,11 +56,11 @@ namespace GameEngine {
         .append(std::to_string(msg.mLocation.mLine))
         .append(") ")
         .append(StringUtils::normalize(msg.mPid))
-        .append(":")
+        .append("-")
         .append(StringUtils::normalize(msg.mThreadId))
-        .append(" --- [")
+        .append(" ")
         .append(StringUtils::padLeft(msg.mLoggerName, 10))
-        .append("] : ")
+        .append(" : ")
         .append(msg.mMessage)
         .append("\n");
     return result;

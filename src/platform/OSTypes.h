@@ -11,6 +11,7 @@
 #define PATH_SEPARATOR "/\\"
 #elif defined(__linux__)
 #define PLATFORM_LINUX
+#define PATH_SEPARATOR "/"
 #elif defined(__APPLE__) || defined(__MACH__)
 #define PLATFORM_MACOS
 #define PATH_SEPARATOR "/"
