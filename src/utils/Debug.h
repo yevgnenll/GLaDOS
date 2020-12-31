@@ -9,9 +9,10 @@
 
 namespace GameEngine {
   struct SourceLocation {
-    SourceLocation() = default;
     SourceLocation(const char* filename, int line, const char* functionName)
         : mFilename{filename}, mLine{line}, mFunctionName{functionName} {}
+
+    std::string getFileName() const;
 
     const char* mFilename{nullptr};
     int mLine{0};

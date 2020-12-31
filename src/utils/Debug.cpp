@@ -1,10 +1,16 @@
 #include "Debug.h"
 #include "StringUtils.h"
+#include "platform/OSTypes.h"
 #include <sstream>
 #include <iomanip>
 #include <ctime>
 
 namespace GameEngine {
+  std::string SourceLocation::getFileName() const {
+    auto path = std::string(mFilename);
+    return path.substr(path.find_last_of(PATH_SEPARATOR) + 1);
+  }
+
   Debug* Debug::instance = nullptr;
 
   Debug::Debug(std::string name)
@@ -44,14 +50,17 @@ namespace GameEngine {
     std::string result;
     result.append(formatStdTime(msg.mTime, msg.mTimeZone))
         .append(StringUtils::padLeft(logLevelName[static_cast<std::size_t>(msg.mLevel)], 7))
-        .append(" ")
+        .append(" (")
+        .append(msg.mLocation.getFileName())
+        .append(":")
+        .append(std::to_string(msg.mLocation.mLine))
+        .append(") ")
         .append(StringUtils::normalize(msg.mPid))
         .append(":")
         .append(StringUtils::normalize(msg.mThreadId))
         .append(" --- [")
         .append(StringUtils::padLeft(msg.mLoggerName, 10))
-        .append("]")
-        .append(" : ")
+        .append("] : ")
         .append(msg.mMessage)
         .append("\n");
     return result;

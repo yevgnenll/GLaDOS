@@ -1,7 +1,6 @@
 #include "CocoaPlatform.h"
 #include "math/Math.h"
 #include "utils/Utility.h"
-#include "utils/Debug.h"
 
 #ifdef PLATFORM_MACOS
 
@@ -428,17 +427,17 @@ namespace GameEngine {
 @implementation MetalView
 - (void)mouseMoved:(NSEvent*)event {
   NSPoint point = [self convertPoint:[event locationInWindow] fromView:nil];
-  std::cout << "[mouseMoved] Mouse pos: " << point.x << ", " << point.y << '\n';
+  LOG_INFO("mouseMoved, Mouse pos={0},{1}", point.x, point.y);
 }
 
 - (void)mouseDragged:(NSEvent*)event {
   NSPoint point = [self convertPoint:[event locationInWindow] fromView:nil];
-  std::cout << "[mouseDragged] Mouse pos: " << point.x << ", " << point.y << '\n';
+  LOG_INFO("mouseDragged, Mouse pos={0},{1}", point.x, point.y);
 }
 
 - (void)scrollWheel:(NSEvent*)event {
   NSPoint point = [self convertPoint:[event locationInWindow] fromView:nil];
-  std::cout << "[scrollWheel] Mouse wheel at: " << point.x << ", " << point.y << ", Delta: " << [event deltaY] * 10.0 << '\n';
+  LOG_INFO("scrollWheel, Mouse wheel at={0},{1}, Delta={2}", point.x, point.y, [event deltaY] * 10.0);
 }
 
 - (void)mouseDown:(NSEvent*)event {
@@ -466,31 +465,31 @@ namespace GameEngine {
 }
 
 - (void)windowDidResize:(NSNotification*)notification {
-  std::cout << "[windowDidResize]" << '\n';
+  LOG_INFO("windowDidResize");
 }
 
 - (void)windowWillMiniaturize:(NSNotification*)notification {
-  std::cout << "[windowWillMiniaturize]" << '\n';
+  LOG_INFO("windowWillMiniaturize");
 }
 
 - (void)windowDidMiniaturize:(NSNotification*)notification {
-  std::cout << "[windowDidMiniaturize]" << '\n';
+  LOG_INFO("windowDidMiniaturize");
 }
 
 - (void)windowDidDeminiaturize:(NSNotification*)notification {
-  std::cout << "[windowDidDeminiaturize]" << '\n';
+  LOG_INFO("windowDidDeminiaturize");
 }
 
 - (void)windowWillMove:(NSNotification*)notification {
-  GameEngine::Debug::getInstance()->info({}, "[windowWillMove]");
+  LOG_INFO("windowWillMove");
 }
 
 - (void)windowDidMove:(NSNotification*)notification {
-  GameEngine::Debug::getInstance()->debug({}, "[windowDidMove]");
+  LOG_INFO("windowDidMove");
 }
 
 - (void)windowDidChangeScreen:(NSNotification*)notification {
-  std::cout << "[windowDidChangeScreen]" << '\n';
+  LOG_INFO("windowDidChangeScreen");
 }
 
 - (void)applicationWillBecomeActive:(NSNotification*)notification {

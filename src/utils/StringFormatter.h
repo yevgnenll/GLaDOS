@@ -15,8 +15,10 @@ namespace GameEngine {
   template <typename T>
   class ArgumentType : public Argument {
   public:
-    explicit ArgumentType(T const& t);
-    void append(std::string& dest) const override;
+    explicit ArgumentType(T const& t): mData(t) {};
+    void append(std::string& dest) const override {
+      dest.append(StringUtils::normalize(mData));
+    }
 
   private:
     T const& mData;
