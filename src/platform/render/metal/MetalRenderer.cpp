@@ -2,10 +2,8 @@
 
 namespace GameEngine {
   MetalRenderer::MetalRenderer() {
-
   }
 
   MetalRenderer::~MetalRenderer() {
-
   }
-}
+}  // namespace GameEngine

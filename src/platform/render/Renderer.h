@@ -13,6 +13,6 @@ namespace GameEngine {
   private:
     std::vector<Renderable*> mRenderable;
   };
-}
+}  // namespace GameEngine
 
 #endif

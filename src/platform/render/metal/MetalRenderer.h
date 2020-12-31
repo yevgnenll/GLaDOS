@@ -11,6 +11,6 @@ namespace GameEngine {
 
   private:
   };
-}
+}  // namespace GameEngine
 
 #endif

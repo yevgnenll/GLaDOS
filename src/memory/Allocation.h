@@ -34,14 +34,28 @@ namespace GameEngine {
     FREE(ptr); \
     ptr = nullptr; \
   }
+#define NEW_ARRAY_T(T, count) new (GameEngine::mmalloc(sizeof(T) * (count), __FILE__, __LINE__, __FUNCTION__)) T
+#define DELETE_ARRAY_T(ptr, T, count) \
+  if (ptr) { \
+    for (size_t i = 0; i < count; i++) { \
+      (ptr)[i]->~T(); \
+    } \
+    GameEngine::mfree(static_cast<void*>(ptr)); \
+  }
 #else
 #define MALLOC(bytes) std::malloc(bytes)
 #define FREE(ptr) std::free(ptr)
 #define NEW_T(T) new T
 #define DELETE_T(ptr, T) \
   if (ptr) { \
-    delete ptr; \
-    ptr = nullptr; \
+    delete (ptr); \
+    (ptr) = nullptr; \
+  }
+#define NEW_ARRAY_T(T, count) new T[count]
+#define DELETE_ARRAY_T(ptr, T, count) \
+  if (ptr) { \
+    delete[](ptr); \
+    (ptr) = nullptr; \
   }
 #endif
 

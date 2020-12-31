@@ -8,8 +8,7 @@ namespace GameEngine {
     virtual ~Renderable();
 
   private:
-
   };
-}
+}  // namespace GameEngine
 
 #endif

@@ -1,4 +1,5 @@
 #include "Math.h"
+
 #include <cmath>
 
 namespace GameEngine {
@@ -12,4 +13,4 @@ namespace GameEngine {
 
     return (L - T);
   }
-}
+}  // namespace GameEngine

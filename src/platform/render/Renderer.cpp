@@ -2,10 +2,8 @@
 
 namespace GameEngine {
   Renderer::Renderer() {
-
   }
 
   Renderer::~Renderer() {
-
   }
-}
+}  // namespace GameEngine

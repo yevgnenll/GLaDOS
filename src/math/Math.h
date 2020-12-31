@@ -9,6 +9,6 @@ namespace GameEngine {
 
     static float PingPong(float t, float len);
   };
-}
+}  // namespace GameEngine
 
 #endif
