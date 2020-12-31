@@ -1,4 +1,11 @@
 #include "Platform.h"
+#include "OSTypes.h"
+#include <thread>
+#ifdef PLATFORM_WINDOW
+#include <process.h>
+#else
+#include <unistd.h>
+#endif
 
 namespace GameEngine {
   void Platform::quit() { mIsRunning = false; }
@@ -59,4 +66,26 @@ namespace GameEngine {
   }
 
   Platform* Platform::getInstance() { return instance; }
+
+  std::size_t Platform::getThreadId() noexcept {
+#ifdef PLATFORM_MACOS
+    uint64_t tid;
+    pthread_threadid_np(nullptr, &tid);
+    return static_cast<std::size_t>(tid);
+#elif PLATFORM_LINUX
+    return static_cast<std::size_t>(::syscall(SYS_gettid));
+#elif PLATFORM_WINDOW
+    return static_cast<std::size_t>(::GetCurrentThreadId());
+#else // Default to standard C++11 (other Unix)
+    return static_cast<std::size_t>(std::hash<std::thread::id>()(std::this_thread::get_id()));
+#endif
+  }
+
+  int Platform::getPid() noexcept {
+#ifdef PLATFORM_WINDOW
+    return static_cast<int>(GetCurrentProcessId());
+#else
+    return static_cast<int>(getpid());
+#endif
+  }
 }  // namespace GameEngine

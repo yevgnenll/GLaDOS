@@ -1,11 +1,13 @@
 #include "memory/Allocation.h"
 #include "platform/Input.h"
 #include "platform/Platform.h"
+#include "utils/Debug.h"
 
 using namespace GameEngine;
 
 int main() {
   {
+    Debug debug{"GameEngine"};
     PlatformParams params{1024, 800, "Powered by gameengine"};
     Platform platform;
     Input input;

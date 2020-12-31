@@ -55,6 +55,8 @@ namespace GameEngine {
     void setKeyUp(KeyCode keycode);
 
     static Platform* getInstance();
+    static std::size_t getThreadId() noexcept;
+    static int getPid() noexcept;
 
   private:
     void registerKeyMap();
@@ -77,4 +79,4 @@ namespace GameEngine {
   };
 }  // namespace GameEngine
 
-#endif  // GAMEENGINE_PLATFORM_H
+#endif

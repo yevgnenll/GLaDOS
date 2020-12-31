@@ -1,7 +1,7 @@
 #include "CocoaPlatform.h"
 #include "math/Math.h"
 #include "utils/Utility.h"
-#include <iostream>
+#include "utils/Debug.h"
 
 #ifdef PLATFORM_MACOS
 
@@ -482,11 +482,11 @@ namespace GameEngine {
 }
 
 - (void)windowWillMove:(NSNotification*)notification {
-  std::cout << "[windowWillMove]" << '\n';
+  GameEngine::Debug::getInstance()->info({}, "[windowWillMove]");
 }
 
 - (void)windowDidMove:(NSNotification*)notification {
-  std::cout << "[windowDidMove]" << '\n';
+  GameEngine::Debug::getInstance()->debug({}, "[windowDidMove]");
 }
 
 - (void)windowDidChangeScreen:(NSNotification*)notification {

@@ -2128,19 +2128,19 @@ struct ratio_string<std::milli> {
     };
 
     ////////////
-    // std::chrono::time_point specialization
-    // Generic time_point cannot be specialized, only std::chrono::time_point<system_clock>
+    // std::chrono::TimePoint specialization
+    // Generic TimePoint cannot be specialized, only std::chrono::TimePoint<SystemClock>
     template<typename Clock, typename Duration>
-    struct StringMaker<std::chrono::time_point<Clock, Duration>> {
-        static std::string convert(std::chrono::time_point<Clock, Duration> const& time_point) {
-            return ::Catch::Detail::stringify(time_point.time_since_epoch()) + " since epoch";
+    struct StringMaker<std::chrono::TimePoint<Clock, Duration>> {
+        static std::string convert(std::chrono::TimePoint<Clock, Duration> const& TimePoint) {
+            return ::Catch::Detail::stringify(TimePoint.time_since_epoch()) + " since epoch";
         }
     };
-    // std::chrono::time_point<system_clock> specialization
+    // std::chrono::TimePoint<SystemClock> specialization
     template<typename Duration>
-    struct StringMaker<std::chrono::time_point<std::chrono::system_clock, Duration>> {
-        static std::string convert(std::chrono::time_point<std::chrono::system_clock, Duration> const& time_point) {
-            auto converted = std::chrono::system_clock::to_time_t(time_point);
+    struct StringMaker<std::chrono::TimePoint<std::chrono::SystemClock, Duration>> {
+        static std::string convert(std::chrono::TimePoint<std::chrono::SystemClock, Duration> const& TimePoint) {
+            auto converted = std::chrono::SystemClock::to_time_t(TimePoint);
 
 #ifdef _MSC_VER
             std::tm timeInfo = {};
@@ -5106,7 +5106,7 @@ namespace Catch {
             virtual bool matches( TestCaseInfo const& testCase ) const = 0;
             std::string const& name() const;
         private:
-            std::string const m_name;
+            std::string const mName;
         };
         using PatternPtr = std::shared_ptr<Pattern>;
 
@@ -5354,7 +5354,7 @@ namespace Catch {
     private:
 
         IStream const* openStream();
-        ConfigData m_data;
+        ConfigData mData;
 
         std::unique_ptr<IStream const> m_stream;
         TestSpec m_testSpec;
@@ -6448,7 +6448,7 @@ namespace Catch {
         using FloatDuration = std::chrono::duration<double, typename Clock::period>;
 
         template <typename Clock>
-        using TimePoint = typename Clock::time_point;
+        using TimePoint = typename Clock::TimePoint;
 
         using default_clock = std::chrono::steady_clock;
 
@@ -8815,7 +8815,7 @@ inline auto Column::operator + (Column const& other) -> Columns {
 namespace Catch { namespace clara {
 namespace detail {
 
-    // Traits for extracting arg and return type of lambdas (for single argument lambdas)
+    // Traits for extracting arg and return type of lambdas (for single Argument lambdas)
     template<typename L>
     struct UnaryLambdaTraits : UnaryLambdaTraits<decltype( &L::operator() )> {};
 
@@ -8855,7 +8855,7 @@ namespace detail {
     };
 
     // Wraps a token coming from a token stream. These may not directly correspond to strings as a single string
-    // may encode an option + its argument if the : or = form is used
+    // may encode an option + its Argument if the : or = form is used
     enum class TokenType {
         Option, Argument
     };
@@ -9207,7 +9207,7 @@ namespace detail {
     struct BoundLambda : BoundValueRefBase {
         L m_lambda;
 
-        static_assert( UnaryLambdaTraits<L>::isValid, "Supplied lambda must take exactly one argument" );
+        static_assert( UnaryLambdaTraits<L>::isValid, "Supplied lambda must take exactly one Argument" );
         explicit BoundLambda( L const &lambda ) : m_lambda( lambda ) {}
 
         auto setValue( std::string const &arg ) -> ParserResult override {
@@ -9219,7 +9219,7 @@ namespace detail {
     struct BoundFlagLambda : BoundFlagRefBase {
         L m_lambda;
 
-        static_assert( UnaryLambdaTraits<L>::isValid, "Supplied lambda must take exactly one argument" );
+        static_assert( UnaryLambdaTraits<L>::isValid, "Supplied lambda must take exactly one Argument" );
         static_assert( std::is_same<typename UnaryLambdaTraits<L>::ArgType, bool>::value, "flags must be boolean" );
 
         explicit BoundFlagLambda( L const &lambda ) : m_lambda( lambda ) {}
@@ -9309,7 +9309,7 @@ namespace detail {
     };
 
     class ExeName : public ComposableParserImpl<ExeName> {
-        std::shared_ptr<std::string> m_name;
+        std::shared_ptr<std::string> mName;
         std::shared_ptr<BoundValueRefBase> m_ref;
 
         template<typename LambdaT>
@@ -9318,7 +9318,7 @@ namespace detail {
         }
 
     public:
-        ExeName() : m_name( std::make_shared<std::string>( "<executable>" ) ) {}
+        ExeName() : mName( std::make_shared<std::string>( "<executable>" ) ) {}
 
         explicit ExeName( std::string &ref ) : ExeName() {
             m_ref = std::make_shared<BoundValueRef<std::string>>( ref );
@@ -9334,7 +9334,7 @@ namespace detail {
             return InternalParseResult::ok( ParseState( ParseResultType::NoMatch, tokens ) );
         }
 
-        auto name() const -> std::string { return *m_name; }
+        auto name() const -> std::string { return *mName; }
         auto set( std::string const& newName ) -> ParserResult {
 
             auto lastSlash = newName.find_last_of( "\\/" );
@@ -9342,7 +9342,7 @@ namespace detail {
                     ? newName
                     : newName.substr( lastSlash+1 );
 
-            *m_name = filename;
+            *mName = filename;
             if( m_ref )
                 return m_ref->setValue( filename );
             else
@@ -9451,10 +9451,10 @@ namespace detail {
                         auto valueRef = static_cast<detail::BoundValueRefBase*>( m_ref.get() );
                         ++remainingTokens;
                         if( !remainingTokens )
-                            return InternalParseResult::runtimeError( "Expected argument following " + token.token );
+                            return InternalParseResult::runtimeError( "Expected Argument following " + token.token );
                         auto const &argToken = *remainingTokens;
                         if( argToken.type != TokenType::Argument )
-                            return InternalParseResult::runtimeError( "Expected argument following " + token.token );
+                            return InternalParseResult::runtimeError( "Expected Argument following " + token.token );
                         auto result = valueRef->setValue( argToken.token );
                         if( !result )
                             return InternalParseResult( result );
@@ -9794,7 +9794,7 @@ namespace Catch {
                 else if( keypressLc == "both" )
                     config.waitForKeypress = WaitForKeypress::BeforeStartAndExit;
                 else
-                    return ParserResult::runtimeError( "keypress argument must be one of: never, start, exit or both. '" + keypress + "' not recognised" );
+                    return ParserResult::runtimeError( "keypress Argument must be one of: never, start, exit or both. '" + keypress + "' not recognised" );
             return ParserResult::ok( ParseResultType::Matched );
             };
         auto const setVerbosity = [&]( std::string const& verbosity ) {
@@ -9962,24 +9962,24 @@ namespace Catch {
 namespace Catch {
 
     Config::Config( ConfigData const& data )
-    :   m_data( data ),
+    :   mData( data ),
         m_stream( openStream() )
     {
         // We need to trim filter specs to avoid trouble with superfluous
         // whitespace (esp. important for bdd macros, as those are manually
         // aligned with whitespace).
 
-        for (auto& elem : m_data.testsOrTags) {
+        for (auto& elem : mData.testsOrTags) {
             elem = trim(elem);
         }
-        for (auto& elem : m_data.sectionsToRun) {
+        for (auto& elem : mData.sectionsToRun) {
             elem = trim(elem);
         }
 
         TestSpecParser parser(ITagAliasRegistry::get());
-        if (!m_data.testsOrTags.empty()) {
+        if (!mData.testsOrTags.empty()) {
             m_hasTestFilters = true;
-            for (auto const& testOrTags : m_data.testsOrTags) {
+            for (auto const& testOrTags : mData.testsOrTags) {
                 parser.parse(testOrTags);
             }
         }
@@ -9987,50 +9987,50 @@ namespace Catch {
     }
 
     std::string const& Config::getFilename() const {
-        return m_data.outputFilename ;
+        return mData.outputFilename ;
     }
 
-    bool Config::listTests() const          { return m_data.listTests; }
-    bool Config::listTestNamesOnly() const  { return m_data.listTestNamesOnly; }
-    bool Config::listTags() const           { return m_data.listTags; }
-    bool Config::listReporters() const      { return m_data.listReporters; }
+    bool Config::listTests() const          { return mData.listTests; }
+    bool Config::listTestNamesOnly() const  { return mData.listTestNamesOnly; }
+    bool Config::listTags() const           { return mData.listTags; }
+    bool Config::listReporters() const      { return mData.listReporters; }
 
-    std::string Config::getProcessName() const { return m_data.processName; }
-    std::string const& Config::getReporterName() const { return m_data.reporterName; }
+    std::string Config::getProcessName() const { return mData.processName; }
+    std::string const& Config::getReporterName() const { return mData.reporterName; }
 
-    std::vector<std::string> const& Config::getTestsOrTags() const { return m_data.testsOrTags; }
-    std::vector<std::string> const& Config::getSectionsToRun() const { return m_data.sectionsToRun; }
+    std::vector<std::string> const& Config::getTestsOrTags() const { return mData.testsOrTags; }
+    std::vector<std::string> const& Config::getSectionsToRun() const { return mData.sectionsToRun; }
 
     TestSpec const& Config::testSpec() const { return m_testSpec; }
     bool Config::hasTestFilters() const { return m_hasTestFilters; }
 
-    bool Config::showHelp() const { return m_data.showHelp; }
+    bool Config::showHelp() const { return mData.showHelp; }
 
     // IConfig interface
-    bool Config::allowThrows() const                   { return !m_data.noThrow; }
+    bool Config::allowThrows() const                   { return !mData.noThrow; }
     std::ostream& Config::stream() const               { return m_stream->stream(); }
-    std::string Config::name() const                   { return m_data.name.empty() ? m_data.processName : m_data.name; }
-    bool Config::includeSuccessfulResults() const      { return m_data.showSuccessfulTests; }
-    bool Config::warnAboutMissingAssertions() const    { return !!(m_data.warnings & WarnAbout::NoAssertions); }
-    bool Config::warnAboutNoTests() const              { return !!(m_data.warnings & WarnAbout::NoTests); }
-    ShowDurations::OrNot Config::showDurations() const { return m_data.showDurations; }
-    double Config::minDuration() const                 { return m_data.minDuration; }
-    RunTests::InWhatOrder Config::runOrder() const     { return m_data.runOrder; }
-    unsigned int Config::rngSeed() const               { return m_data.rngSeed; }
-    UseColour::YesOrNo Config::useColour() const       { return m_data.useColour; }
-    bool Config::shouldDebugBreak() const              { return m_data.shouldDebugBreak; }
-    int Config::abortAfter() const                     { return m_data.abortAfter; }
-    bool Config::showInvisibles() const                { return m_data.showInvisibles; }
-    Verbosity Config::verbosity() const                { return m_data.verbosity; }
+    std::string Config::name() const                   { return mData.name.empty() ? mData.processName : mData.name; }
+    bool Config::includeSuccessfulResults() const      { return mData.showSuccessfulTests; }
+    bool Config::warnAboutMissingAssertions() const    { return !!(mData.warnings & WarnAbout::NoAssertions); }
+    bool Config::warnAboutNoTests() const              { return !!(mData.warnings & WarnAbout::NoTests); }
+    ShowDurations::OrNot Config::showDurations() const { return mData.showDurations; }
+    double Config::minDuration() const                 { return mData.minDuration; }
+    RunTests::InWhatOrder Config::runOrder() const     { return mData.runOrder; }
+    unsigned int Config::rngSeed() const               { return mData.rngSeed; }
+    UseColour::YesOrNo Config::useColour() const       { return mData.useColour; }
+    bool Config::shouldDebugBreak() const              { return mData.shouldDebugBreak; }
+    int Config::abortAfter() const                     { return mData.abortAfter; }
+    bool Config::showInvisibles() const                { return mData.showInvisibles; }
+    Verbosity Config::verbosity() const                { return mData.verbosity; }
 
-    bool Config::benchmarkNoAnalysis() const                      { return m_data.benchmarkNoAnalysis; }
-    int Config::benchmarkSamples() const                          { return m_data.benchmarkSamples; }
-    double Config::benchmarkConfidenceInterval() const            { return m_data.benchmarkConfidenceInterval; }
-    unsigned int Config::benchmarkResamples() const               { return m_data.benchmarkResamples; }
-    std::chrono::milliseconds Config::benchmarkWarmupTime() const { return std::chrono::milliseconds(m_data.benchmarkWarmupTime); }
+    bool Config::benchmarkNoAnalysis() const                      { return mData.benchmarkNoAnalysis; }
+    int Config::benchmarkSamples() const                          { return mData.benchmarkSamples; }
+    double Config::benchmarkConfidenceInterval() const            { return mData.benchmarkConfidenceInterval; }
+    unsigned int Config::benchmarkResamples() const               { return mData.benchmarkResamples; }
+    std::chrono::milliseconds Config::benchmarkWarmupTime() const { return std::chrono::milliseconds(mData.benchmarkWarmupTime); }
 
     IStream const* Config::openStream() {
-        return Catch::makeStream(m_data.outputFilename);
+        return Catch::makeStream(mData.outputFilename);
     }
 
 } // end namespace Catch
@@ -10604,7 +10604,7 @@ namespace Catch {
 
         std::unique_ptr<EnumInfo> makeEnumInfo( StringRef enumName, StringRef allValueNames, std::vector<int> const& values ) {
             std::unique_ptr<EnumInfo> enumInfo( new EnumInfo );
-            enumInfo->m_name = enumName;
+            enumInfo->mName = enumName;
             enumInfo->m_values.reserve( values.size() );
 
             const auto valueNames = Catch::Detail::parseEnums( allValueNames );
@@ -14551,13 +14551,13 @@ namespace Catch {
 namespace Catch {
 
     TestSpec::Pattern::Pattern( std::string const& name )
-    : m_name( name )
+    : mName( name )
     {}
 
     TestSpec::Pattern::~Pattern() = default;
 
     std::string const& TestSpec::Pattern::name() const {
-        return m_name;
+        return mName;
     }
 
     TestSpec::NamePattern::NamePattern( std::string const& name, std::string const& filterString )
@@ -14784,7 +14784,7 @@ namespace Catch {
 
     bool TestSpecParser::separate() {
       if( (m_mode==QuotedName) || (m_mode==Tag) ){
-         //invalid argument, signal failure to previous scope.
+         //invalid Argument, signal failure to previous scope.
          m_mode = None;
          m_pos = m_arg.size();
          m_substring.clear();
