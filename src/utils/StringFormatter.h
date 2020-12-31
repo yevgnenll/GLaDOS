@@ -24,16 +24,17 @@ namespace GameEngine {
 
   class StringFormatter {
   public:
+    StringFormatter() = delete;
     template <typename... Args>
-    std::string formatTo(const std::string& fmt, Args&&... args);
+    static std::string formatTo(const std::string& fmt, Args&&... args);
 
   private:
     template <typename T>
-    ArgumentType<T> makeArgument(T const& t);
+    static ArgumentType<T> makeArgument(T const& t);
     template <typename Args = Argument, std::size_t Len>
-    std::string formatToImplInner(const std::string& fmt, Args const* (&arguments)[Len]);
+    static std::string formatToImplInner(const std::string& fmt, Args const* (&arguments)[Len]);
     template <typename... Args>
-    std::string formatToImplOuter(const std::string& fmt, Args const&... args);
+    static std::string formatToImplOuter(const std::string& fmt, Args const&... args);
   };
 
   template <typename... Args>

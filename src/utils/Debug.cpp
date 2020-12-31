@@ -24,6 +24,14 @@ namespace GameEngine {
     mLevel = level;
   }
 
+  TimeZone Debug::getTimeZone() const {
+    return mTimeZone;
+  }
+
+  void Debug::setTimeZone(TimeZone timeZone) {
+    mTimeZone = timeZone;
+  }
+
   Debug* Debug::getInstance() {
     return instance;
   }

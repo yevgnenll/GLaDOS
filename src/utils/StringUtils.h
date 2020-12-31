@@ -6,6 +6,7 @@
 namespace GameEngine {
   class StringUtils {
   public:
+    StringUtils() = delete;
     template<typename T>
     static std::string normalize(const T& t);
     static std::string normalize(const std::string& t);

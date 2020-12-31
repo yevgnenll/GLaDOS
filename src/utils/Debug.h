@@ -19,15 +19,15 @@ namespace GameEngine {
   };
 
   struct LogMessage {
-    LogMessage(SourceLocation loc, std::string loggerName, LogLevel level, std::string message)
-        : mLocation{loc}, mTime{SystemClock::now()}, mLoggerName{std::move(loggerName)}, mLevel{level},
+    LogMessage(SourceLocation loc, std::string loggerName, LogLevel level, TimeZone timeZone, std::string message)
+        : mLocation{loc}, mTime{SystemClock::now()}, mLoggerName{std::move(loggerName)}, mLevel{level}, mTimeZone{timeZone},
           mThreadId{Platform::getThreadId()}, mPid{Platform::getPid()}, mMessage{std::move(message)} {}
 
     SourceLocation mLocation;
     TimePoint mTime;
     std::string mLoggerName;
-    LogLevel mLevel{LogLevel::Off};
-    TimeZone mTimeZone{TimeZone::UTC};
+    LogLevel mLevel;
+    TimeZone mTimeZone;
     std::size_t mThreadId{0};
     int mPid{0};
     std::string mMessage;
@@ -41,6 +41,8 @@ namespace GameEngine {
     std::string getName() const;
     LogLevel getLevel() const;
     void setLevel(LogLevel level);
+    TimeZone getTimeZone() const;
+    void setTimeZone(TimeZone timeZone);
 
     template<typename T, typename... Ts>
     void trace(SourceLocation loc, const T& fmt, const Ts&... args);
@@ -78,7 +80,7 @@ namespace GameEngine {
 
     std::string mName;
     LogLevel mLevel{LogLevel::Info};
-    StringFormatter mFormatter;
+    TimeZone mTimeZone{TimeZone::UTC};
 
     static Debug* instance;
   };
@@ -89,9 +91,7 @@ namespace GameEngine {
       return;
     }
 
-    std::string formatted = mFormatter.formatTo(fmt, args...);
-    LogMessage logMsg{loc, mName, level, formatted};
-    std::string log = formatLogMessage(logMsg);
+    std::string log = formatLogMessage({loc, mName, level, mTimeZone, StringFormatter::formatTo(fmt, args...)});
     std::cout.write(log.c_str(), static_cast<long>(log.size()));
   }
 
@@ -101,8 +101,7 @@ namespace GameEngine {
       return;
     }
 
-    LogMessage logMsg{loc, mName, level, fmt};
-    std::string log = formatLogMessage(logMsg);
+    std::string log = formatLogMessage({loc, mName, level, mTimeZone, fmt});
     std::cout.write(log.c_str(), static_cast<long>(log.size()));
   }
 
