@@ -15,7 +15,7 @@ namespace GameEngine {
     virtual ~MetalRenderer();
 
     bool initialize() override;
-    void render(Renderable* renderable) const override;
+    void render() const override;
 
   private:
     id<MTLDevice> mMetalDevice;

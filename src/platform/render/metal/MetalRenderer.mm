@@ -13,7 +13,7 @@ namespace GameEngine {
     return false;
   }
 
-  void MetalRenderer::render(Renderable *renderable) const {
+  void MetalRenderer::render() const {
 
   }
 }  // namespace GameEngine

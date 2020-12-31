@@ -12,6 +12,15 @@ namespace GameEngine {
     Borderless = 1 << 5
   };
 
+  enum class ShaderType {
+    VertexShader,
+    FragmentShader,
+    GeometryShader,
+    TessControlShader,
+    TessEvalShader,
+    ComputeShader,
+  };
+
   inline WindowStyle operator|(const WindowStyle a, const WindowStyle b) { return static_cast<WindowStyle>(static_cast<int>(a) | static_cast<int>(b)); }
 
   inline bool operator&(const WindowStyle a, const WindowStyle b) { return static_cast<WindowStyle>(static_cast<int>(a) & static_cast<int>(b)) == b; }
