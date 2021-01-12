@@ -5,8 +5,10 @@
 
 #ifdef PLATFORM_MACOS
 
-#include "platform/render/Renderer.h"
 #import <Metal/Metal.h>
+#import <QuartzCore/CAMetalLayer.h>
+
+#include "platform/render/Renderer.h"
 
 namespace GameEngine {
   class MetalRenderer : public Renderer {
@@ -17,9 +19,18 @@ namespace GameEngine {
     bool initialize() override;
     void render() const override;
 
+    id<MTLDevice> getMetalDevice() const;
+    id<MTLCommandQueue> getMetalCommandQueue() const;
+    CAMetalLayer* getMetalLayer() const;
+    static MetalRenderer* getInstance();
+
   private:
+    static MetalRenderer* instance;
+
     id<MTLDevice> mMetalDevice;
     id<MTLCommandQueue> mMetalCommandQueue;
+    id<MTLRenderCommandEncoder> mMetalRenderCommandEncoder;
+    CAMetalLayer* mMetalLayer{nullptr};
   };
 }  // namespace GameEngine
 

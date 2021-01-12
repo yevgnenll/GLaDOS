@@ -7,7 +7,7 @@ namespace GameEngine {
   class StringUtils {
   public:
     StringUtils() = delete;
-    template<typename T>
+    template <typename T>
     static std::string normalize(const T& t);
     static std::string normalize(const std::string& t);
     static std::string normalize(const char* t);
@@ -20,10 +20,10 @@ namespace GameEngine {
     static long toLong(const std::string& str);
   };
 
-  template<typename T>
+  template <typename T>
   std::string StringUtils::normalize(const T& t) {
     return std::to_string(t);
   }
-}
+}  // namespace GameEngine
 
 #endif

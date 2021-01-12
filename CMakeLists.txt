@@ -5,9 +5,10 @@ message(STATUS "Build ${PROJECT_NAME} Version ${CMAKE_PROJECT_VERSION}")
 
 set(CMAKE_CXX_STANDARD 17)
 set(SOURCE_DIR "${CMAKE_SOURCE_DIR}/src")
-set(RESOURCE_DIR "resource")
-set(SHADER_DIR "shader")
-set(SCRIPT_DIR "script")
+set(RESOURCE_DIR "${CMAKE_SOURCE_DIR}/resource")
+set(SHADER_DIR "${CMAKE_SOURCE_DIR}/shader")
+set(SCRIPT_DIR "${CMAKE_SOURCE_DIR}/script")
+set(SAMPLE_DIR "${CMAKE_SOURCE_DIR}/sample")
 set(VENDOR_DIR "${CMAKE_SOURCE_DIR}/vendor")
 
 # Link this 'library' to set the c++ standard / compile-time options requested
@@ -52,13 +53,11 @@ else()
   message(SEND_ERROR "Failed to detect platform")
 endif()
 
-add_executable(${PROJECT_NAME})
 file(GLOB_RECURSE SOURCE_FILES
-        "${SOURCE_DIR}/*.h"
         "${SOURCE_DIR}/*.hpp"
         "${SOURCE_DIR}/*.cpp"
         "${SOURCE_DIR}/*.mm")
-target_sources(${PROJECT_NAME} PRIVATE ${SOURCE_FILES})
+add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME}
         PRIVATE
         ${LINK_LIBRARIES}
@@ -86,3 +85,12 @@ if(MSVC_IDE)
   # Run macro
   GroupSources(src)
 endif()
+
+function(make_sample TARGET ENTRYPOINT)
+  source_group("" FILES "${SAMPLE_DIR}/${ENTRYPOINT}")
+  add_executable(${TARGET} "${SAMPLE_DIR}/${ENTRYPOINT}")
+  target_link_libraries(${TARGET} PRIVATE ${PROJECT_NAME})
+  target_include_directories(${TARGET} PRIVATE ${SOURCE_DIR})
+endfunction()
+
+make_sample(01-setup "01-setup/main.cpp")

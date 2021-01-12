@@ -41,4 +41,4 @@ namespace GameEngine {
   long StringUtils::toLong(const std::string& str) {
     return std::stol(str);
   }
-}
+}  // namespace GameEngine

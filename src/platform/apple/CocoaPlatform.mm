@@ -23,6 +23,7 @@ namespace GameEngine {
   }
 
   bool CocoaPlatform::initialize(const PlatformParams& params) {
+    LOG_TRACE("Initialize Cocoa Platform...");
     mMetalDevice = MTLCreateSystemDefaultDevice();
     if (mMetalDevice == nullptr) {
       LOG_ERROR("System does not support metal.");
@@ -62,8 +63,9 @@ namespace GameEngine {
     }
     platformInstance->mLastWidth = platformInstance->mWidth;
     platformInstance->mLastHeight = platformInstance->mHeight;
-    mMetalView = [[MetalView alloc] initWithFrame:contentSize];
-    [mMetalView setWantsLayer:YES];  // you must still call the setWantsLayer: method to let the view know that it should use layers.
+    mContentView = [[ContentView alloc] initWithFrame:contentSize];
+    [mContentView setWantsLayer:YES];  // you must still call the setWantsLayer: method to let the view know that it should use layers.
+
     mMetalLayer = [CAMetalLayer layer];
     if (mMetalLayer == nullptr) {
       LOG_ERROR("System does not support metal.");
@@ -71,16 +73,16 @@ namespace GameEngine {
     }
     mMetalLayer.device = mMetalDevice;
     mMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
-    [mMetalView setLayer:mMetalLayer];
-    [applicationInstance setDelegate:mMetalView];
+    [mContentView setLayer:mMetalLayer];
+    [applicationInstance setDelegate:mContentView];
 
     // make platform
     NSWindowStyleMask windowStyle = platformInstance->mIsFullScreen ? NSWindowStyleMaskBorderless : makeWindowStyle(params.windowStyle);
     mWindow = [[CocoaWindow alloc] initWithContentRect:contentSize styleMask:windowStyle backing:NSBackingStoreBuffered defer:YES];
     CocoaPlatform::platformInstance->setTitleName(params.titleName);
     [mWindow setOpaque:YES];
-    [mWindow setContentView:mMetalView];
-    [mWindow setDelegate:mMetalView];
+    [mWindow setContentView:mContentView];
+    [mWindow setDelegate:mContentView];
     [mWindow makeMainWindow];
     [mWindow makeFirstResponder:nil];
     if (platformInstance->mIsFullScreen) {
@@ -309,7 +311,6 @@ namespace GameEngine {
   }
 
   bool Platform::initialize(const PlatformParams& params) {
-    LOG_TRACE("Initialize Cocoa Platform...");
     return CocoaPlatform::cocoaPlatformInstance->initialize(params);
   }
 
@@ -426,7 +427,7 @@ namespace GameEngine {
 }
 @end
 
-@implementation MetalView
+@implementation ContentView
 - (void)mouseMoved:(NSEvent*)event {
   NSPoint point = [self convertPoint:[event locationInWindow] fromView:nil];
   LOG_INFO("mouseMoved, Mouse pos={0},{1}", point.x, point.y);
@@ -468,30 +469,27 @@ namespace GameEngine {
 
 - (void)windowDidResize:(NSNotification*)notification {
   LOG_INFO("windowDidResize");
-}
-
-- (void)windowWillMiniaturize:(NSNotification*)notification {
-  LOG_INFO("windowWillMiniaturize");
+  //  [super windowDidResize:notification];
 }
 
 - (void)windowDidMiniaturize:(NSNotification*)notification {
   LOG_INFO("windowDidMiniaturize");
+  //  [super windowDidMiniaturize:notification];
 }
 
 - (void)windowDidDeminiaturize:(NSNotification*)notification {
   LOG_INFO("windowDidDeminiaturize");
-}
-
-- (void)windowWillMove:(NSNotification*)notification {
-  LOG_INFO("windowWillMove");
+  //  [super windowDidDeminiaturize:notification];
 }
 
 - (void)windowDidMove:(NSNotification*)notification {
   LOG_INFO("windowDidMove");
+  //  [super windowDidMove:notification];
 }
 
 - (void)windowDidChangeScreen:(NSNotification*)notification {
   LOG_INFO("windowDidChangeScreen");
+  //  [super windowDidChangeScreen:notification];
 }
 
 - (void)applicationWillBecomeActive:(NSNotification*)notification {

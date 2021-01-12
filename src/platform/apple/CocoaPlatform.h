@@ -5,16 +5,16 @@
 
 #ifdef PLATFORM_MACOS
 
-#include "platform/Platform.h"
 #import <Cocoa/Cocoa.h>
 #import <Metal/Metal.h>
 #import <QuartzCore/CAMetalLayer.h>
 #include <string>
+#include "platform/Platform.h"
 
 @interface CocoaWindow : NSWindow
 @end
 
-@interface MetalView : NSView <NSWindowDelegate, NSApplicationDelegate>
+@interface ContentView : NSView <NSWindowDelegate, NSApplicationDelegate>
 @end
 
 namespace GameEngine {
@@ -44,7 +44,7 @@ namespace GameEngine {
 
     NSWindow* mWindow{nullptr};
     CAMetalLayer* mMetalLayer{nullptr};
-    MetalView* mMetalView{nullptr};
+    ContentView* mContentView{nullptr};
     CVDisplayLinkRef mDisplayLink;
     id<MTLDevice> mMetalDevice;
     id<MTLCommandQueue> mMetalCommandQueue;

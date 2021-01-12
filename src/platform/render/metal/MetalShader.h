@@ -5,13 +5,13 @@
 
 #ifdef PLATFORM_MACOS
 
-#include "platform/render/Shader.h"
 #import <Metal/Metal.h>
+
+#include "platform/render/Shader.h"
 
 namespace GameEngine {
   class MetalShader : public Shader {
   public:
-
   private:
     id<MTLLibrary> mMetalVertexLibrary;
     id<MTLLibrary> mMetalFragmentLibrary;
@@ -20,7 +20,7 @@ namespace GameEngine {
     MTLRenderPipelineDescriptor* mRenderPipelineDescriptor;
     MTLCompileOptions* compileOpts;
   };
-}
+}  // namespace GameEngine
 
 #endif
 

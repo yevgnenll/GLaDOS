@@ -1,6 +1,8 @@
 #include "Platform.h"
-#include "OSTypes.h"
+
 #include <thread>
+
+#include "OSTypes.h"
 #ifdef PLATFORM_WINDOW
 #include <process.h>
 #else
@@ -76,7 +78,7 @@ namespace GameEngine {
     return static_cast<std::size_t>(::syscall(SYS_gettid));
 #elif PLATFORM_WINDOW
     return static_cast<std::size_t>(::GetCurrentThreadId());
-#else // Default to standard C++11 (other Unix)
+#else  // Default to standard C++11 (other Unix)
     return static_cast<std::size_t>(std::hash<std::thread::id>()(std::this_thread::get_id()));
 #endif
   }

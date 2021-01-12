@@ -2,6 +2,7 @@
 #define GAMEENGINE_STRINGFORMATTER_H
 
 #include <string>
+
 #include "StringUtils.h"
 
 namespace GameEngine {
@@ -15,7 +16,7 @@ namespace GameEngine {
   template <typename T>
   class ArgumentType : public Argument {
   public:
-    explicit ArgumentType(T const& t): mData(t) {};
+    explicit ArgumentType(T const& t) : mData(t){};
     void append(std::string& dest) const override {
       dest.append(StringUtils::normalize(mData));
     }
@@ -79,9 +80,9 @@ namespace GameEngine {
 
   template <typename... Args>
   std::string StringFormatter::formatToImplOuter(const std::string& fmt, Args const&... args) {
-    Argument const* array[sizeof...(args)] = { static_cast<Argument const*>(&args)... };
+    Argument const* array[sizeof...(args)] = {static_cast<Argument const*>(&args)...};
     return formatToImplInner(fmt, array);
   }
-}
+}  // namespace GameEngine
 
 #endif

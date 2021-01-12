@@ -12,11 +12,11 @@ add_executable(UnitTest)
 file(GLOB_RECURSE TEST_SOURCE_FILES "${TEST_SOURCE_DIR}/*.cpp")
 target_sources(UnitTest
         PRIVATE
-        ${TEST_SOURCE_FILES}
-        ${SOURCE_FILES})
+        ${TEST_SOURCE_FILES})
 target_link_libraries(UnitTest
         PRIVATE
         CatchMain
+        ${PROJECT_NAME}
         project_warnings
         project_options)
 target_include_directories(UnitTest PRIVATE ${SOURCE_DIR})

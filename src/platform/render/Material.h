@@ -4,6 +4,6 @@
 namespace GameEngine {
   class Material {
   };
-}
+}  // namespace GameEngine
 
 #endif

@@ -1,5 +1,5 @@
 #include "Allocation.h"
-#include "utils/Utility.h"
+
 #include <cstdio>
 
 namespace GameEngine {
@@ -50,7 +50,7 @@ namespace GameEngine {
     while (mi != nullptr) {
       if ((ptrdiff_t)mi->size >= 0) {
         if (!leak) {
-          LOG_DEBUG("[Memory Debug] Detected memory leaks!");
+          printf("[Memory Debug] Detected memory leaks!\n");
           leak = true;
         }
         mprint("Leaked", mi);
@@ -59,7 +59,7 @@ namespace GameEngine {
     }
 
     if (!leak) {
-      LOG_DEBUG("[Memory Debug] No memory leaks.");
+      printf("[Memory Debug] No memory leaks.\n");
     }
 
     mi = headOfMemory;

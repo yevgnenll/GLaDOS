@@ -67,15 +67,13 @@ namespace GameEngine {
     int mLastWidth, mLastHeight;
     std::string mTitleName;
     bool mIsShowCursor, mIsFullScreen, mIsRunning{true};
-    int mMultisample;
+    int mMultisample;  // TODO
     WindowStyle mWindowStyle;
     bool mIsFocused;
     bool mKeys[static_cast<int>(KeyCode::KEY_MAX)];
     KeyCode mLocalKeymap[static_cast<int>(KeyCode::KEY_MAX)];
     bool mMouseButtons[static_cast<int>(MouseButton::MOUSE_BUTTON_MAX)];
-
     //    Vector3d mMousePosition;
-    //    bool mIsMultisampleSupported;
   };
 }  // namespace GameEngine
 

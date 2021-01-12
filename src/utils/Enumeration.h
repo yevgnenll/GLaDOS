@@ -6,6 +6,9 @@
 namespace GameEngine {
   using SystemClock = std::chrono::system_clock;
   using TimePoint = SystemClock::time_point;
+  using HighResolutionClock = std::chrono::high_resolution_clock;
+  using HighResolutionTimePoint = std::chrono::time_point<HighResolutionClock>;
+  using millisecond = std::chrono::duration<float, std::milli>;
 
   enum class WindowStyle {
     None = 0,
@@ -23,7 +26,25 @@ namespace GameEngine {
     GeometryShader,
     TessControlShader,
     TessEvalShader,
-    ComputeShader,
+    ComputeShader
+  };
+
+  enum class BufferType {
+    VertexBuffer,
+    IndexBuffer,
+    UniformBuffer
+  };
+
+  enum class BufferUsage {
+    StreamDraw,
+    StreamRead,
+    StreamCopy,
+    StaticDraw,
+    StaticRead,
+    StaticCopy,
+    DynamicDraw,
+    DynamicRead,
+    DynamicCopy
   };
 
   enum class TimeZone {
@@ -41,13 +62,8 @@ namespace GameEngine {
     NumberOfLevel
   };
 
-  static const std::string logLevelName[static_cast<int>(LogLevel::NumberOfLevel)] = {
-      "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"
-  };
-
-  static const std::string monthTable[] = {
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-  };
+  static const char* logLevelName[static_cast<int>(LogLevel::NumberOfLevel)] = {
+      "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"};
 
   inline WindowStyle operator|(const WindowStyle a, const WindowStyle b) { return static_cast<WindowStyle>(static_cast<int>(a) | static_cast<int>(b)); }
 
@@ -55,10 +71,10 @@ namespace GameEngine {
 
   namespace EnumConstant {
     static const WindowStyle defaultWindowStyle = WindowStyle::Resizable |
-                                           WindowStyle::TitleBar |
-                                           WindowStyle::Closable |
-                                           WindowStyle::Maximizable |
-                                           WindowStyle::Minimizable;
+                                                  WindowStyle::TitleBar |
+                                                  WindowStyle::Closable |
+                                                  WindowStyle::Maximizable |
+                                                  WindowStyle::Minimizable;
   }
 }  // namespace GameEngine
 

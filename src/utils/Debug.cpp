@@ -1,9 +1,11 @@
 #include "Debug.h"
+
+#include <ctime>
+#include <iomanip>
+#include <sstream>
+
 #include "StringUtils.h"
 #include "platform/OSTypes.h"
-#include <sstream>
-#include <iomanip>
-#include <ctime>
 
 namespace GameEngine {
   std::string SourceLocation::getFileName() const {
@@ -19,7 +21,7 @@ namespace GameEngine {
   }
 
   std::string Debug::getName() const {
-      return mName;
+    return mName;
   }
 
   LogLevel Debug::getLevel() const {
@@ -30,14 +32,6 @@ namespace GameEngine {
     mLevel = level;
   }
 
-  TimeZone Debug::getTimeZone() const {
-    return mTimeZone;
-  }
-
-  void Debug::setTimeZone(TimeZone timeZone) {
-    mTimeZone = timeZone;
-  }
-
   Debug* Debug::getInstance() {
     return instance;
   }
@@ -46,7 +40,7 @@ namespace GameEngine {
     return mLevel >= level;
   }
 
-  std::string Debug::formatLogMessage(const LogMessage &msg) {
+  std::string Debug::formatLogMessage(const LogMessage& msg) {
     std::string result;
     result.append(formatStdTime(msg.mTime, msg.mTimeZone))
         .append(StringUtils::padLeft(logLevelName[static_cast<std::size_t>(msg.mLevel)], 7))
@@ -85,11 +79,11 @@ namespace GameEngine {
     return ss.str();
   }
 
-  std::string Debug::formatStdTime(const TimePoint & tp, TimeZone tt) {
-    return formatTime("%Y-%m-%d %X", tp, tt);
+  std::string Debug::formatStdTime(const TimePoint& tp, TimeZone timeZone) {
+    return formatTime("%Y-%m-%d %X", tp, timeZone);
   }
 
   std::chrono::milliseconds Debug::ms(TimePoint tp) {
     return std::chrono::duration_cast<std::chrono::milliseconds>(tp.time_since_epoch()) % 1000;
   }
-}
+}  // namespace GameEngine

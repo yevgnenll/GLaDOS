@@ -4,6 +4,6 @@
 namespace GameEngine {
   class Shader {
   };
-}
+}  // namespace GameEngine
 
 #endif
