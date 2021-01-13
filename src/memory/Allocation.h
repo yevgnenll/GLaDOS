@@ -27,7 +27,6 @@ namespace GameEngine {
 #ifdef MEMORY_DEBUG
 #define MALLOC(bytes) GameEngine::mmalloc(bytes, __FILE__, __LINE__, __FUNCTION__)
 #define FREE(ptr) GameEngine::mfree(static_cast<void*>(ptr))
-#define NEW_T_P(T, ...) new (GameEngine::mmalloc(sizeof(T), __FILE__, __LINE__, __FUNCTION__)) T(__VA_ARGS__)
 #define NEW_T(T) new (GameEngine::mmalloc(sizeof(T), __FILE__, __LINE__, __FUNCTION__)) T
 #define DELETE_T(ptr, T) \
   if (ptr) { \
@@ -46,7 +45,6 @@ namespace GameEngine {
 #else
 #define MALLOC(bytes) std::malloc(bytes)
 #define FREE(ptr) std::free(ptr)
-#define NEW_T_P(T, ...) new T(__VA_ARGS__)
 #define NEW_T(T) new T
 #define DELETE_T(ptr, T) \
   if (ptr) { \

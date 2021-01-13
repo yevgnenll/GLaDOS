@@ -8,9 +8,11 @@
 #import <Metal/Metal.h>
 #import <QuartzCore/CAMetalLayer.h>
 
+#include "memory/StreamBuffer.h"
 #include "platform/render/Renderer.h"
 
 namespace GameEngine {
+  class Buffer;
   class MetalRenderer : public Renderer {
   public:
     MetalRenderer();
@@ -18,6 +20,9 @@ namespace GameEngine {
 
     bool initialize() override;
     void render() const override;
+
+    Buffer* createVertexBuffer(BufferUsage usage, StreamBuffer& buffer);
+    Buffer* createIndexBuffer(BufferUsage usage, StreamBuffer& buffer);
 
     id<MTLDevice> getMetalDevice() const;
     id<MTLCommandQueue> getMetalCommandQueue() const;

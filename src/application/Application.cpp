@@ -23,7 +23,7 @@ namespace GameEngine {
   }
 
   bool Application::initialize(const PlatformParams& params) {
-    mDebug = NEW_T_P(Debug, "GameEngine");
+    mDebug = NEW_T(Debug("GameEngine"));
     mPlatform = NEW_T(Platform);
     if (!mPlatform->initialize(params)) {
       LOG_ERROR("Platform initialize failed!");

@@ -20,12 +20,6 @@ namespace GameEngine {
     StreamBuffer& operator<<(uint64_t i);
     StreamBuffer& operator<<(float i);
     StreamBuffer& operator<<(double i);
-    //    StreamBuffer& operator<<(Vec4& vec4);
-    //    StreamBuffer& operator<<(Vec3& vec3);
-    //    StreamBuffer& operator<<(Vec2& vec2);
-    //    StreamBuffer& operator<<(Mat4& mat4);
-    //    StreamBuffer& operator<<(Mat3& mat3);
-    //    StreamBuffer& operator<<(Color& color);
 
     void* pointer();
     std::size_t size() const;

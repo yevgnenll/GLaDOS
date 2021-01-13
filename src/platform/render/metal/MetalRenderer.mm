@@ -2,6 +2,7 @@
 
 #ifdef PLATFORM_MACOS
 
+#include "MetalBuffer.h"
 #include "utils/Utility.h"
 
 namespace GameEngine {
@@ -41,6 +42,14 @@ namespace GameEngine {
   }
 
   void MetalRenderer::render() const {
+  }
+
+  Buffer* MetalRenderer::createVertexBuffer(BufferUsage usage, StreamBuffer& buffer) {
+    return NEW_T(MetalBuffer(BufferType::VertexBuffer, usage, buffer));
+  }
+
+  Buffer* MetalRenderer::createIndexBuffer(BufferUsage usage, StreamBuffer& buffer) {
+    return NEW_T(MetalBuffer(BufferType::IndexBuffer, usage, buffer));
   }
 
   id<MTLDevice> MetalRenderer::getMetalDevice() const {
