@@ -334,11 +334,22 @@ namespace GameEngine {
   }
 
   void Platform::update() {
-    NSEvent* event;
-    do {
-      event = [CocoaPlatform::getAppInstance() nextEventMatchingMask:NSEventMaskAny untilDate:[NSDate distantPast] inMode:NSDefaultRunLoopMode dequeue:YES];
-      [CocoaPlatform::getAppInstance() sendEvent:event];
-    } while (event != nil);
+    // wait event
+    NSEvent* eventFuture = [CocoaPlatform::getAppInstance() nextEventMatchingMask:NSEventMaskAny
+                                                                        untilDate:[NSDate distantFuture]
+                                                                           inMode:NSDefaultRunLoopMode
+                                                                          dequeue:YES];
+    [CocoaPlatform::getAppInstance() sendEvent:eventFuture];
+
+    // polling event
+    for (;;) {
+      NSEvent* eventPast = [CocoaPlatform::getAppInstance() nextEventMatchingMask:NSEventMaskAny
+                                                                        untilDate:[NSDate distantPast]
+                                                                           inMode:NSDefaultRunLoopMode
+                                                                          dequeue:YES];
+      if (eventPast == nil) break;
+      [CocoaPlatform::getAppInstance() sendEvent:eventPast];
+    }
   }
 
   void Platform::setWidthHeight(int width, int height) {
@@ -502,6 +513,14 @@ namespace GameEngine {
 
 - (BOOL)windowShouldClose:(id)sender {
   GameEngine::CocoaPlatform::getPlatformInstance()->quit();
+}
+
+- (void)windowDidChangeOcclusionState:(NSNotification*)notification {
+  if ([GameEngine::CocoaPlatform::getAppInstance().mainWindow occlusionState] & NSWindowOcclusionStateVisible) {
+    GameEngine::CocoaPlatform::getPlatformInstance()->setIsOccluded(false);
+  } else {
+    GameEngine::CocoaPlatform::getPlatformInstance()->setIsOccluded(true);
+  }
 }
 @end
 

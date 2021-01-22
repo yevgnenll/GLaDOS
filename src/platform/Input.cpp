@@ -31,8 +31,6 @@ namespace GameEngine {
         mPreviousMouseButtons[i] = mCurrentMouseButtons[i];
         mCurrentMouseButtons[i] = Platform::getInstance()->mMouseButtons[i];
       }
-
-      return;
     }
   }
 

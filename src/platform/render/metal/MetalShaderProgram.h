@@ -1,5 +1,5 @@
-#ifndef GAMEENGINE_METALSHADER_H
-#define GAMEENGINE_METALSHADER_H
+#ifndef GAMEENGINE_METALSHADERPROGRAM_H
+#define GAMEENGINE_METALSHADERPROGRAM_H
 
 #include "platform/OSTypes.h"
 
@@ -7,11 +7,16 @@
 
 #import <Metal/Metal.h>
 
-#include "platform/render/Shader.h"
+#include "platform/render/ShaderProgram.h"
 
 namespace GameEngine {
-  class MetalShader : public Shader {
+  class MetalShaderProgram : public ShaderProgram {
   public:
+    MetalShaderProgram() = default;
+    ~MetalShaderProgram() override = default;
+
+    bool createShaderProgram() override;
+
   private:
     id<MTLLibrary> mMetalVertexLibrary;
     id<MTLLibrary> mMetalFragmentLibrary;

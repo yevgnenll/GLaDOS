@@ -4,11 +4,12 @@
 #include <chrono>
 
 namespace GameEngine {
+  using real = float;
   using SystemClock = std::chrono::system_clock;
   using TimePoint = SystemClock::time_point;
   using HighResolutionClock = std::chrono::high_resolution_clock;
   using HighResolutionTimePoint = std::chrono::time_point<HighResolutionClock>;
-  using millisecond = std::chrono::duration<float, std::milli>;
+  using millisecond = std::chrono::duration<real, std::milli>;
 
   enum class WindowStyle {
     None = 0,
@@ -18,6 +19,13 @@ namespace GameEngine {
     Maximizable = 1 << 3,
     Minimizable = 1 << 4,
     Borderless = 1 << 5
+  };
+
+  enum class ResourceType {
+    ShaderProgram = 0,
+    Sound = 1,
+    Texture2D = 2,
+    Undefined = -1
   };
 
   enum class ShaderType {

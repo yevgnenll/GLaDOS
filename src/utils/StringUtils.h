@@ -18,6 +18,7 @@ namespace GameEngine {
     static double toDouble(const std::string& str);
     static int toInt(const std::string& str);
     static long toLong(const std::string& str);
+    static std::pair<std::string, std::string> extractBaseFileNamePair(const std::string& fullPath);
   };
 
   template <typename T>

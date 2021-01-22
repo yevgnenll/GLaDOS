@@ -32,7 +32,7 @@ namespace GameEngine {
     mInput = NEW_T(Input);
     mTimer = NEW_T(Timer);
     LOG_TRACE("Resource path: {0}", getResourcePath());
-    LOG_TRACE("Shader path: {0}", getShaderPath());
+    LOG_TRACE("ShaderProgram path: {0}", getShaderPath());
 
     return true;
   }

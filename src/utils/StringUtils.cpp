@@ -1,5 +1,7 @@
 #include "StringUtils.h"
 
+#include "platform/OSTypes.h"
+
 namespace GameEngine {
   std::string StringUtils::normalize(const std::string& t) {
     return t;
@@ -40,5 +42,14 @@ namespace GameEngine {
 
   long StringUtils::toLong(const std::string& str) {
     return std::stol(str);
+  }
+
+  std::pair<std::string, std::string> StringUtils::extractBaseFileNamePair(const std::string& fullPath) {
+    const std::size_t lastPathSeparatorIndex = fullPath.find_last_of(PATH_SEPARATOR);
+    if (std::string::npos != lastPathSeparatorIndex) {
+      return std::make_pair(fullPath.substr(0, lastPathSeparatorIndex + 1), fullPath.substr(lastPathSeparatorIndex + 1));
+    }
+
+    return std::make_pair("", "");
   }
 }  // namespace GameEngine

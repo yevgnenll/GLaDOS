@@ -3,6 +3,7 @@
 #ifdef PLATFORM_MACOS
 
 #include "MetalBuffer.h"
+#include "MetalShaderProgram.h"
 #include "utils/Utility.h"
 
 namespace GameEngine {
@@ -50,6 +51,10 @@ namespace GameEngine {
 
   Buffer* MetalRenderer::createIndexBuffer(BufferUsage usage, StreamBuffer& buffer) {
     return NEW_T(MetalBuffer(BufferType::IndexBuffer, usage, buffer));
+  }
+
+  ShaderProgram* MetalRenderer::createShaderProgram() {
+    return NEW_T(MetalShaderProgram);
   }
 
   id<MTLDevice> MetalRenderer::getMetalDevice() const {

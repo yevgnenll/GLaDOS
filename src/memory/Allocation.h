@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <cstdlib>
 
-#define MEMORY_DEBUG
+#include "Config.h"
 
 namespace GameEngine {
   struct MemoryHeader {
@@ -24,7 +24,7 @@ namespace GameEngine {
   extern void dumpMemory();
 }  // namespace GameEngine
 
-#ifdef MEMORY_DEBUG
+#if MEMORY_DEBUG == 1
 #define MALLOC(bytes) GameEngine::mmalloc(bytes, __FILE__, __LINE__, __FUNCTION__)
 #define FREE(ptr) GameEngine::mfree(static_cast<void*>(ptr))
 #define NEW_T(T) new (GameEngine::mmalloc(sizeof(T), __FILE__, __LINE__, __FUNCTION__)) T

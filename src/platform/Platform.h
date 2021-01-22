@@ -39,6 +39,7 @@ namespace GameEngine {
     bool isRunning() const;
     int getMultisample() const;
     bool isFocused() const;
+    bool isOccluded() const;
 
     void setWidthHeight(int width, int height);
     void setTitleName(const std::string& titleName);
@@ -46,6 +47,7 @@ namespace GameEngine {
     void setIsShowCursor(bool isShowCursor);
     void setIsFullScreen(bool isFullScreen);
     void setIsFocused(bool isFocused);
+    void setIsOccluded(bool isOccluded);
 
     void leftMouseDown(bool isDown);
     void rightMouseDown(bool isDown);
@@ -69,7 +71,7 @@ namespace GameEngine {
     bool mIsShowCursor, mIsFullScreen, mIsRunning{true};
     int mMultisample;  // TODO
     WindowStyle mWindowStyle;
-    bool mIsFocused;
+    bool mIsFocused, mIsOccluded;
     bool mKeys[static_cast<int>(KeyCode::KEY_MAX)];
     KeyCode mLocalKeymap[static_cast<int>(KeyCode::KEY_MAX)];
     bool mMouseButtons[static_cast<int>(MouseButton::MOUSE_BUTTON_MAX)];

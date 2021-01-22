@@ -27,6 +27,7 @@ matrix:
       script:
         - cmake .. -DCMAKE_BUILD_TYPE=Release
         - cmake --build .
+        - ctest
     - os: linux
       addons:
         apt:
@@ -41,3 +42,4 @@ matrix:
       script:
         - cmake .. -DCMAKE_BUILD_TYPE=Release
         - cmake --build .
+        - ctest

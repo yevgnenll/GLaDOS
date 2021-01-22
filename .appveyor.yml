@@ -11,7 +11,7 @@ platform:
 before_build:
   - cmd: mkdir build
   - cmd: cd build
-  - cmd: cmake c:\projects\source -G "Visual Studio 15"
+  - cmd: cmake c:\projects\source -G "Visual Studio 15" -DCMAKE_BUILD_TYPE=Release
 
 build_script:
   - cmd: cmake --build . --config %CONFIGURATION%

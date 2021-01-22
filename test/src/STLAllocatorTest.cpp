@@ -5,7 +5,7 @@
 
 using namespace GameEngine;
 
-TEST_CASE("STLAllocator test") {
+TEST_CASE("STLAllocator unit tests", "[STLAllocator]") {
   struct CustomType {
     int a;
     float b;

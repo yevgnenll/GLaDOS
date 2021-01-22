@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 message(STATUS "Current CMake Version ${CMAKE_VERSION}")
-project(gameengine LANGUAGES CXX VERSION 0.0.1)
-message(STATUS "Build ${PROJECT_NAME} Version ${CMAKE_PROJECT_VERSION}")
+set(PROJECT_VERSION_MAJOR 1)
+set(PROJECT_VERSION_MINOR 0)
+set(PROJECT_VERSION_PATCH 0)
+set(PROJECT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH})
+project(gameengine LANGUAGES CXX VERSION ${PROJECT_VERSION})
+message(STATUS "Build ${PROJECT_NAME} Version ${CMAKE_PROJECT_VERSION} with [${CMAKE_BUILD_TYPE}] build")
 
 set(CMAKE_CXX_STANDARD 17)
 set(SOURCE_DIR "${CMAKE_SOURCE_DIR}/src")
@@ -10,6 +14,12 @@ set(SHADER_DIR "${CMAKE_SOURCE_DIR}/shader")
 set(SCRIPT_DIR "${CMAKE_SOURCE_DIR}/script")
 set(SAMPLE_DIR "${CMAKE_SOURCE_DIR}/sample")
 set(VENDOR_DIR "${CMAKE_SOURCE_DIR}/vendor")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(MEMORY_DEBUG 1)
+else()
+  set(MEMORY_DEBUG 0)
+endif()
 
 # Link this 'library' to set the c++ standard / compile-time options requested
 add_library(project_options INTERFACE)
@@ -19,11 +29,11 @@ target_compile_features(project_options INTERFACE cxx_std_17)
 add_library(project_warnings INTERFACE)
 
 # standard compiler warnings
-include(cmake/CompilerWarnings.cmake)
+include(CompilerWarnings)
 set_project_warnings(project_warnings)
 
 # Static Analyzer settings (cppcheck, clang-tidy, iwyu)
-include(cmake/StaticAnalyzers.cmake)
+include(StaticAnalyzers)
 
 find_program(CCACHE ccache)
 if(CCACHE)
@@ -38,19 +48,22 @@ enable_testing()
 add_subdirectory(test)
 
 if(APPLE)
-  find_library(QUARTZCORE_LIBRARY QuartzCore REQUIRED)
   find_library(COCOA_LIBRARY Cocoa REQUIRED)
+  find_library(QUARTZCORE_LIBRARY QuartzCore REQUIRED)
   find_library(METAL_LIBRARY Metal REQUIRED)
   find_package(Threads)
-  set(LINK_LIBRARIES ${COCOA_LIBRARY} ${QUARTZCORE_LIBRARY} ${METAL_LIBRARY} ${CONAN_LIBS})
+  set(LINK_LIBRARIES ${COCOA_LIBRARY} ${QUARTZCORE_LIBRARY} ${METAL_LIBRARY})
 elseif(UNIX AND NOT APPLE) # LINUX
-#  message(SEND_ERROR "TODO: not yet supported")
-  set(LINK_LIBRARIES)
+  find_library(X11_LIBRARY X11 REQUIRED)
+  find_library(OPENGL_LIBRARY GL REQUIRED)
+  find_package(Threads)
+  set(LINK_LIBRARIES ${X11_LIBRARY} ${OPENGL_LIBRARY})
 elseif(WIN32)
-#  message(SEND_ERROR "TODO: not yet supported")
-  set(LINK_LIBRARIES)
+  find_package(OpenGL REQUIRED)
+  find_package(WindowsSDK REQUIRED)
+  set(LINK_LIBRARIES opengl32)
 else()
-  message(SEND_ERROR "Failed to detect platform")
+  message(SEND_ERROR "Not supported platform!")
 endif()
 
 file(GLOB_RECURSE SOURCE_FILES
@@ -65,6 +78,7 @@ target_link_libraries(${PROJECT_NAME}
         project_warnings)
 target_include_directories(${PROJECT_NAME} PRIVATE ${SOURCE_DIR})
 configure_file("${CMAKE_SOURCE_DIR}/cmake/RootDir.h.in" "${SOURCE_DIR}/RootDir.h")
+configure_file("${CMAKE_SOURCE_DIR}/cmake/Config.h.in" "${SOURCE_DIR}/Config.h")
 
 # Macro to preserve source files hierarchy in the IDE
 if(MSVC_IDE)

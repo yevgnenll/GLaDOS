@@ -4,7 +4,7 @@
 
 using namespace GameEngine;
 
-TEST_CASE("StreamBuffer test") {
+TEST_CASE("StreamBuffer unit tests", "[StreamBuffer]") {
   StreamBuffer sb;
 
   SECTION("write unsigned 32bits int") {

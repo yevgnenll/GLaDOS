@@ -28,12 +28,20 @@ namespace GameEngine {
     mIsFocused = isFocused;
   }
 
+  void Platform::setIsOccluded(bool isOccluded) {
+    mIsOccluded = isOccluded;
+  }
+
   int Platform::getMultisample() const {
     return mMultisample;
   }
 
   bool Platform::isFocused() const {
     return mIsFocused;
+  }
+
+  bool Platform::isOccluded() const {
+    return mIsOccluded;
   }
 
   void Platform::leftMouseDown(bool isDown) {

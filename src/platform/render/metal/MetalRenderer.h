@@ -21,8 +21,9 @@ namespace GameEngine {
     bool initialize() override;
     void render() const override;
 
-    Buffer* createVertexBuffer(BufferUsage usage, StreamBuffer& buffer);
-    Buffer* createIndexBuffer(BufferUsage usage, StreamBuffer& buffer);
+    Buffer* createVertexBuffer(BufferUsage usage, StreamBuffer& buffer) override;
+    Buffer* createIndexBuffer(BufferUsage usage, StreamBuffer& buffer) override;
+    ShaderProgram* createShaderProgram() override;
 
     id<MTLDevice> getMetalDevice() const;
     id<MTLCommandQueue> getMetalCommandQueue() const;
