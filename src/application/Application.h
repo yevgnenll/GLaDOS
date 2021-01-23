@@ -1,16 +1,14 @@
 #ifndef GAMEENGINE_APPLICATION_H
 #define GAMEENGINE_APPLICATION_H
 
+#include "utils/Singleton.hpp"
 #include "platform/Platform.h"
 
 namespace GameEngine {
-  class Input;
-  class Timer;
-  class Debug;
-  class Application {
+  class Application : public Singleton<Application> {
   public:
-    Application();
-    ~Application();
+    Application() = default;
+    ~Application() override = default;
 
     bool initialize(const PlatformParams& params);
     void run();
@@ -18,15 +16,9 @@ namespace GameEngine {
     static std::string getShaderPath();
 
   private:
-    static Application* instance;
-
     void render();
     void update(float deltaTime);
 
-    Platform* mPlatform;
-    Input* mInput;
-    Timer* mTimer;
-    Debug* mDebug;
     static std::string resourcePath;
     static std::string shaderPath;
   };

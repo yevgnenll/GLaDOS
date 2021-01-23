@@ -1,11 +1,12 @@
 #ifndef GAMEENGINE_VEC4_H
 #define GAMEENGINE_VEC4_H
 
+#include "Angle.hpp"
+#include "Vec2.h"
+#include "Vec3.h"
 #include "utils/Enumeration.h"
 
 namespace GameEngine {
-  class Vec2;
-  class Vec3;
   class UVec4;
   class Vec4 {
   public:

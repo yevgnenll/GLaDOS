@@ -5,44 +5,43 @@
 #include <ctime>
 #include <string>
 
+#include "utils/Singleton.hpp"
 #include "utils/Enumeration.h"
 
 namespace GameEngine {
-  class Timer {
+  class Timer : public Singleton<Timer> {
   public:
-    Timer();
+    Timer() = default;
 
-    static void reset();
+    void reset();
     void update();
 
-    static float deltaTime();
-    static float deltaTimeUnscaled();
-    static float elapsedTime();
-    static float elapsedTimeUnscaled();
-    static float fixedDeltaTime();
-    static float fixedDeltaTimeUnscaled();
+    real deltaTime() const;
+    real deltaTimeUnscaled() const;
+    real elapsedTime() const;
+    real elapsedTimeUnscaled() const;
+    real fixedDeltaTime() const;
+    real fixedDeltaTimeUnscaled() const;
 
-    static int fps();
-    static void setTimeScale(float value);
+    int fps() const;
+    void setTimeScale(real value);
     static HighResolutionTimePoint now();
-    static float getInterval(HighResolutionTimePoint start, HighResolutionTimePoint end);
+    static real getInterval(HighResolutionTimePoint start, HighResolutionTimePoint end);
 
   private:
-    static Timer* instance;
-
     HighResolutionTimePoint mStart;
     HighResolutionTimePoint mCurrentTime;
-    float mAccumulator{0.f};  // for internal use
+    real mAccumulator{0.f};  // for internal use
     int mFrameCounter{0};  // for internal use
     int mFrameRate{0};
-    float mTimeScale{1.f};
+    real mTimeScale{1.f};
 
-    float mDeltaTime{0.f};
-    float mUnscaledDeltaTime{0.f};
-    float mTime{0.f};
-    float mUnscaledTime{0.f};
-    float mFixedDeltaTime{0.f};
-    float mUnscaledFixedDeltaTime{0.02f};
+    real mDeltaTime{0.f};
+    real mUnscaledDeltaTime{0.f};
+    real mTime{0.f};
+    real mUnscaledTime{0.f};
+    real mFixedDeltaTime{0.f};
+    real mUnscaledFixedDeltaTime{0.02f};
   };
 }  // namespace GameEngine
 

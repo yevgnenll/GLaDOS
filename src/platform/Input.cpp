@@ -3,11 +3,7 @@
 #include "Platform.h"
 
 namespace GameEngine {
-  Input* Input::instance = nullptr;
-
   Input::Input() {
-    instance = this;
-
     for (int i = 0; i < static_cast<int>(KeyCode::KEY_MAX); i++) {
       mPreviousKeys[i] = mCurrentKeys[i] = false;
     }
@@ -15,9 +11,6 @@ namespace GameEngine {
     for (int i = 0; i < static_cast<int>(MouseButton::MOUSE_BUTTON_MAX); i++) {
       mPreviousMouseButtons[i] = mCurrentMouseButtons[i] = false;
     }
-  }
-
-  Input::~Input() {
   }
 
   void Input::update() {
@@ -35,27 +28,27 @@ namespace GameEngine {
   }
 
   bool Input::isKeyDown(KeyCode keyCode) {
-    return Input::instance->mCurrentKeys[static_cast<int>(keyCode)] && !Input::instance->mPreviousKeys[static_cast<int>(keyCode)];
+    return Input::getInstance()->mCurrentKeys[static_cast<int>(keyCode)] && !Input::getInstance()->mPreviousKeys[static_cast<int>(keyCode)];
   }
 
   bool Input::isKeyUp(KeyCode keyCode) {
-    return !Input::instance->mCurrentKeys[static_cast<int>(keyCode)] && Input::instance->mPreviousKeys[static_cast<int>(keyCode)];
+    return !Input::getInstance()->mCurrentKeys[static_cast<int>(keyCode)] && Input::getInstance()->mPreviousKeys[static_cast<int>(keyCode)];
   }
 
   bool Input::isKeyPress(KeyCode keyCode) {
-    return Input::instance->mCurrentKeys[static_cast<int>(keyCode)];
+    return Input::getInstance()->mCurrentKeys[static_cast<int>(keyCode)];
   }
 
   bool Input::isMouseDown(MouseButton button) {
-    return Input::instance->mCurrentMouseButtons[static_cast<int>(button)] && !Input::instance->mPreviousMouseButtons[static_cast<int>(button)];
+    return Input::getInstance()->mCurrentMouseButtons[static_cast<int>(button)] && !Input::getInstance()->mPreviousMouseButtons[static_cast<int>(button)];
   }
 
   bool Input::isMouseUp(MouseButton button) {
-    return !Input::instance->mCurrentMouseButtons[static_cast<int>(button)] && Input::instance->mPreviousMouseButtons[static_cast<int>(button)];
+    return !Input::getInstance()->mCurrentMouseButtons[static_cast<int>(button)] && Input::getInstance()->mPreviousMouseButtons[static_cast<int>(button)];
   }
 
   bool Input::isMousePress(MouseButton button) {
-    return Input::instance->mCurrentMouseButtons[static_cast<int>(button)];
+    return Input::getInstance()->mCurrentMouseButtons[static_cast<int>(button)];
   }
 
   bool Input::isAnyKeyDown() {

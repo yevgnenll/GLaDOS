@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "utils/Singleton.hpp"
 #include "KeyCode.h"
 #include "utils/Enumeration.h"
 
@@ -15,7 +16,7 @@ namespace GameEngine {
     WindowStyle windowStyle{EnumConstant::defaultWindowStyle};
   };
 
-  class Platform {
+  class Platform : public Singleton<Platform> {
     friend class Input;
     friend class WindowsPlatform;
     friend class CocoaPlatform;
@@ -23,7 +24,7 @@ namespace GameEngine {
 
   public:
     Platform();
-    ~Platform();
+    ~Platform() override;
     Platform(const Platform&) = delete;
     Platform& operator=(const Platform&) = delete;
 
@@ -56,14 +57,11 @@ namespace GameEngine {
     void setKeyDown(KeyCode keycode);
     void setKeyUp(KeyCode keycode);
 
-    static Platform* getInstance();
     static std::size_t getThreadId() noexcept;
     static int getPid() noexcept;
 
   private:
     void registerKeyMap();
-
-    static Platform* instance;
 
     int mWidth, mHeight;
     int mLastWidth, mLastHeight;

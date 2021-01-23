@@ -75,8 +75,6 @@ namespace GameEngine {
     }
   }
 
-  Platform* Platform::getInstance() { return instance; }
-
   std::size_t Platform::getThreadId() noexcept {
 #ifdef PLATFORM_MACOS
     uint64_t tid;

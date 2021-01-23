@@ -13,13 +13,6 @@ namespace GameEngine {
     return path.substr(path.find_last_of(PATH_SEPARATOR) + 1);
   }
 
-  Debug* Debug::instance = nullptr;
-
-  Debug::Debug(std::string name)
-      : mName{std::move(name)} {
-    Debug::instance = this;
-  }
-
   std::string Debug::getName() const {
     return mName;
   }
@@ -30,10 +23,6 @@ namespace GameEngine {
 
   void Debug::setLevel(LogLevel level) {
     mLevel = level;
-  }
-
-  Debug* Debug::getInstance() {
-    return instance;
   }
 
   bool Debug::shouldLog(LogLevel level) const {

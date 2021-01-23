@@ -8,7 +8,6 @@ namespace GameEngine {
   NSApplication* CocoaPlatform::applicationInstance = nullptr;
   CocoaPlatform* CocoaPlatform::cocoaPlatformInstance = nullptr;
   Platform* CocoaPlatform::platformInstance = nullptr;
-  Platform* Platform::instance = nullptr;
 
   CocoaPlatform::CocoaPlatform() {
     mAutoReleasePool = [[NSAutoreleasePool alloc] init];
@@ -157,10 +156,8 @@ namespace GameEngine {
   }
 
   Platform::Platform() {
-    Platform::instance = this;
-    CocoaPlatform::platformInstance = Platform::instance;
-    registerKeyMap();
     CocoaPlatform::cocoaPlatformInstance = NEW_T(CocoaPlatform);
+    registerKeyMap();
   }
 
   Platform::~Platform() {
@@ -311,6 +308,7 @@ namespace GameEngine {
   }
 
   bool Platform::initialize(const PlatformParams& params) {
+    CocoaPlatform::platformInstance = Platform::getInstance();
     return CocoaPlatform::cocoaPlatformInstance->initialize(params);
   }
 

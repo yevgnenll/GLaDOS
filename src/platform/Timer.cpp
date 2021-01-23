@@ -1,15 +1,9 @@
 #include "Timer.h"
 
 namespace GameEngine {
-  Timer* Timer::instance = nullptr;
-
-  Timer::Timer() {
-    instance = this;
-  }
-
   void Timer::reset() {
-    instance->mStart = now();
-    instance->mTimeScale = 1.f;
+    mStart = now();
+    mTimeScale = 1.f;
   }
 
   void Timer::update() {
@@ -33,25 +27,25 @@ namespace GameEngine {
     }
   }
 
-  float Timer::deltaTime() { return instance->mDeltaTime; }
+  real Timer::deltaTime() const { return mDeltaTime; }
 
-  float Timer::deltaTimeUnscaled() { return instance->mUnscaledDeltaTime; }
+  real Timer::deltaTimeUnscaled() const { return mUnscaledDeltaTime; }
 
-  float Timer::elapsedTime() { return instance->mTime; }
+  real Timer::elapsedTime() const { return mTime; }
 
-  float Timer::elapsedTimeUnscaled() { return instance->mUnscaledTime; }
+  real Timer::elapsedTimeUnscaled() const { return mUnscaledTime; }
 
-  float Timer::fixedDeltaTime() { return instance->mFixedDeltaTime; }
+  real Timer::fixedDeltaTime() const { return mFixedDeltaTime; }
 
-  float Timer::fixedDeltaTimeUnscaled() { return instance->mUnscaledFixedDeltaTime; }
+  real Timer::fixedDeltaTimeUnscaled() const { return mUnscaledFixedDeltaTime; }
 
-  int Timer::fps() { return instance->mFrameRate; }
+  int Timer::fps() const { return mFrameRate; }
 
-  void Timer::setTimeScale(float value) { instance->mTimeScale = value; }
+  void Timer::setTimeScale(real value) { mTimeScale = value; }
 
   HighResolutionTimePoint Timer::now() { return HighResolutionClock::now(); }
 
-  float Timer::getInterval(HighResolutionTimePoint start, HighResolutionTimePoint end) {
+  real Timer::getInterval(HighResolutionTimePoint start, HighResolutionTimePoint end) {
     return std::chrono::duration_cast<millisecond>(end - start).count();
   }
 }  // namespace GameEngine

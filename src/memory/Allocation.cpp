@@ -2,6 +2,8 @@
 
 #include <cstdio>
 
+#include "utils/Utility.h"
+
 namespace GameEngine {
   // TODO: not thread safe
   void* mmalloc(size_t size, const char* file, int line, const char* function) {
@@ -50,7 +52,7 @@ namespace GameEngine {
     while (mi != nullptr) {
       if ((ptrdiff_t)mi->size >= 0) {
         if (!leak) {
-          printf("[Memory Debug] Detected memory leaks!\n");
+          LOG_TRACE("[Memory Debug] Detected memory leaks!\n");
           leak = true;
         }
         mprint("Leaked", mi);
@@ -59,7 +61,7 @@ namespace GameEngine {
     }
 
     if (!leak) {
-      printf("[Memory Debug] No memory leaks.\n");
+      LOG_TRACE("[Memory Debug] No memory leaks.\n");
     }
 
     mi = headOfMemory;

@@ -2,12 +2,13 @@
 #define GAMEENGINE_INPUT_H
 
 #include "KeyCode.h"
+#include "utils/Singleton.hpp"
 
 namespace GameEngine {
-  class Input {
+  class Input : public Singleton<Input> {
   public:
     Input();
-    ~Input();
+    ~Input() override = default;
     Input(const Input&) = delete;
     Input& operator=(const Input&) = delete;
 
@@ -26,8 +27,6 @@ namespace GameEngine {
     static bool isAnyKeyPress();
 
   private:
-    static Input* instance;
-
     bool mPreviousKeys[static_cast<int>(KeyCode::KEY_MAX)];
     bool mCurrentKeys[static_cast<int>(KeyCode::KEY_MAX)];
 

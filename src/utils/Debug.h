@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 
+#include "utils/Singleton.hpp"
 #include "platform/Platform.h"
 #include "utils/Enumeration.h"
 #include "utils/StringFormatter.h"
@@ -34,10 +35,10 @@ namespace GameEngine {
     std::string mMessage;
   };
 
-  class Debug {
+  class Debug : public Singleton<Debug> {
   public:
-    Debug(std::string name);
-    ~Debug() = default;
+    Debug() = default;
+    ~Debug() override = default;
 
     std::string getName() const;
     LogLevel getLevel() const;
@@ -64,8 +65,6 @@ namespace GameEngine {
     template <typename T>
     void error(SourceLocation loc, const T& fmt);
 
-    static Debug* getInstance();
-
   private:
     template <typename T, typename... Ts>
     void log(SourceLocation loc, LogLevel level, const T& fmt, const Ts&... args);
@@ -77,10 +76,8 @@ namespace GameEngine {
     static std::string formatStdTime(const TimePoint& tp, TimeZone timeZone);
     static std::chrono::milliseconds ms(TimePoint tp);
 
-    std::string mName;
+    std::string mName{"GameEngine"};
     LogLevel mLevel{LogLevel::Info};
-
-    static Debug* instance;
   };
 
   template <typename T, typename... Ts>

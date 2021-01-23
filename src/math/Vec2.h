@@ -1,6 +1,7 @@
 #ifndef GAMEENGINE_VEC2_H
 #define GAMEENGINE_VEC2_H
 
+#include "Angle.hpp"
 #include "utils/Enumeration.h"
 
 namespace GameEngine {
