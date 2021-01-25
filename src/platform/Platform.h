@@ -3,16 +3,15 @@
 
 #include <string>
 
-#include "utils/Singleton.hpp"
 #include "KeyCode.h"
 #include "utils/Enumeration.h"
+#include "utils/Singleton.hpp"
 
 namespace GameEngine {
   struct PlatformParams {
     int width, height;
     std::string titleName;
     bool isFullscreen{false}, isShowCursor{true};
-    int multisample{1};
     WindowStyle windowStyle{EnumConstant::defaultWindowStyle};
   };
 
@@ -38,7 +37,6 @@ namespace GameEngine {
     std::string getTitleName() const;
     bool isFullScreen() const;
     bool isRunning() const;
-    int getMultisample() const;
     bool isFocused() const;
     bool isOccluded() const;
 
@@ -67,7 +65,6 @@ namespace GameEngine {
     int mLastWidth, mLastHeight;
     std::string mTitleName;
     bool mIsShowCursor, mIsFullScreen, mIsRunning{true};
-    int mMultisample;  // TODO
     WindowStyle mWindowStyle;
     bool mIsFocused, mIsOccluded;
     bool mKeys[static_cast<int>(KeyCode::KEY_MAX)];

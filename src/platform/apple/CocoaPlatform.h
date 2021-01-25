@@ -31,7 +31,8 @@ namespace GameEngine {
     bool initialize(const PlatformParams& params);
     NSWindowStyleMask makeWindowStyle(WindowStyle windowStyle) const;
     std::pair<int, int> centerOfScreen() const;
-    std::pair<int, int> getScreenSize() const;
+    static std::pair<int, int> getScreenSize();
+    static void createMenuBar();
     static NSString* toString(const std::string& str);
     static CVReturn displayLinkCb(CVDisplayLinkRef displayLink, const CVTimeStamp* now, const CVTimeStamp* outputTime, CVOptionFlags flagsIn, CVOptionFlags* flagsOut, void* displayLinkContext);
     static NSApplication* getAppInstance();

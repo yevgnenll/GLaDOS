@@ -117,9 +117,9 @@ namespace GameEngine {
 
   bool Vec2::operator!=(const Vec2& other) const { return !(*this == other); }
 
-  Vec2 Vec2::operator-() const { return Vec2(-x, -y); }
+  Vec2 Vec2::operator-() const { return Vec2{-x, -y}; }
 
-  Vec2 Vec2::operator+() const { return Vec2(x < 0 ? -x : x, y < 0 ? -y : y); }
+  Vec2 Vec2::operator+() const { return Vec2{x < 0 ? -x : x, y < 0 ? -y : y}; }
 
   Vec2& Vec2::makeNegate() {
     x = -x;
@@ -127,20 +127,17 @@ namespace GameEngine {
     return *this;
   }
 
-  Vec2 Vec2::perpendicular() const { return Vec2(-y, x); }
+  Vec2 Vec2::perpendicular() const { return Vec2{-y, x}; }
 
-  Vec2& Vec2::makeNormalize() {
-    real len = Math::sqrt(x * x + y * y);
+  UVec2 Vec2::makeNormalize() {
+    real len = length();
     if (Math::zero(len) || Math::equal(len, static_cast<real>(1.0))) {
-      return *this;
+      return UVec2{*this};
     }
 
     real inv = 1 / len;
-
-    x = x * inv;
-    y = y * inv;
-
-    return *this;
+    *this *= inv;
+    return UVec2{*this};
   }
 
   real Vec2::length() const { return Math::sqrt(squaredLength()); }
@@ -160,46 +157,41 @@ namespace GameEngine {
 
   real Vec2::dot(const Vec2& a, const Vec2& b) { return a.x * b.x + a.y * b.y; }
 
-  Vec2 Vec2::inverse(const Vec2& other) {
-    return Vec2(static_cast<real>(1.0 / other.x), static_cast<real>(1.0 / other.y));
-  }
+  Vec2 Vec2::inverse(const Vec2& v) { return Vec2{real(1.0) / v.x, real(1.0) / v.y}; }
 
-  Vec3 Vec2::toVec3(const Vec2& other) { return Vec3(other); }
+  Vec3 Vec2::toVec3(const Vec2& v) { return Vec3{v}; }
 
-  Vec4 Vec2::toVec4(const Vec2& other) { return Vec4(other); }
+  Vec4 Vec2::toVec4(const Vec2& v) { return Vec4{v}; }
 
-  Vec2 Vec2::abs(const Vec2& other) { return Vec2(Math::abs(other.x), Math::abs(other.y)); }
+  Vec2 Vec2::abs(const Vec2& v) { return Vec2{Math::abs(v.x), Math::abs(v.y)}; }
 
-  Vec2 Vec2::lerp(const Vec2& a, const Vec2& b, real t) { return (a + (b - a) * t); }
+  Vec2 Vec2::lerp(const Vec2& a, const Vec2& b, real t) { return Vec2{a + (b - a) * t}; }
 
   Vec2 Vec2::slerp(const Vec2& a, const Vec2& b, real t) {
     // Dot product - the cosine of the angle between 2 vectors.
     real dot = Vec2::dot(a, b);
-    // Math::clamp(dot, -1.0f, 1.0f);
+    dot = Math::clamp(dot, static_cast<real>(-1.0), static_cast<real>(1.0));
 
-    // Acos(dot) returns the angle between start and end,
+    // acos(dot) returns the angle between start and end,
     // And multiplying that by t returns the angle between
     // start and the final result.
     real theta = Math::acos(dot) * t;
     Vec2 rv = b - a * dot;
     rv.makeNormalize();
 
-    return ((a * Math::cos(theta)) + (rv * Math::sin(theta)));
+    return Vec2{(a * Math::cos(theta)) + (rv * Math::sin(theta))};
   }
 
-  Vec2 Vec2::nlerp(const Vec2& a, const Vec2& b, real t) {
-    Vec2 lerp = Vec2::lerp(a, b, t);
-    return lerp.makeNormalize();
-  }
+  UVec2 Vec2::nlerp(const Vec2& a, const Vec2& b, real t) { return Vec2::normalize(Vec2::lerp(a, b, t)); }
 
-  Vec2 Vec2::normalize(const Vec2& vector) {
-    real len = vector.length();
+  UVec2 Vec2::normalize(const Vec2& v) {
+    real len = v.length();
     if (Math::zero(len) || Math::equal(len, static_cast<real>(1.0))) {
-      return vector;
+      return UVec2{v};
     }
 
     real inv = 1 / len;
-    return Vec2{vector * inv};
+    return UVec2{v * inv};
   }
 
   Deg Vec2::angle(const UVec2& from, const UVec2& to) {

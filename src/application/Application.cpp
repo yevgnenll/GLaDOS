@@ -46,6 +46,6 @@ namespace GameEngine {
   void Application::render() {
   }
 
-  void Application::update(float deltaTime) {
+  void Application::update(real deltaTime) {
   }
 }  // namespace GameEngine

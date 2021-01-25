@@ -15,6 +15,6 @@ namespace GameEngine {
   private:
     std::atomic_bool mAtomicLock{false};
   };
-}
+}  // namespace GameEngine
 
 #endif  //GAMEENGINE_SPINLOCK_H

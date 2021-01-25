@@ -140,11 +140,11 @@ namespace GameEngine {
     [[nodiscard]] Vec3 www() const { return Vec3(w, w, w); }
 
     static real dot(const Vec4& a, const Vec4& b);
-    static Vec4 inverse(const Vec4& other);
-    static Vec2 toVec2(const Vec4& other);
-    static Vec3 toVec3(const Vec4& other);
-    static Vec4 abs(const Vec4& other);
-    static UVec4 normalize(const Vec4& vector);
+    static Vec4 inverse(const Vec4& v);
+    static Vec2 toVec2(const Vec4& v);
+    static Vec3 toVec3(const Vec4& v);
+    static Vec4 abs(const Vec4& v);
+    static UVec4 normalize(const Vec4& v);
     static Deg angle(const UVec4& from, const UVec4& to);
 
     real x{0.0}, y{0.0}, z{0.0}, w{1.0};

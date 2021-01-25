@@ -1,6 +1,8 @@
 #ifndef GAMEENGINE_MAT4_HPP
 #define GAMEENGINE_MAT4_HPP
 
+#include <stdexcept>
+
 #include "Angle.hpp"
 #include "Math.h"
 #include "UVec3.h"
@@ -54,18 +56,6 @@ namespace GameEngine {
     real at(int index) const;
     real at(int row, int col) const;
 
-    union {
-      struct {
-        T _11, _12, _13, _14;
-        T _21, _22, _23, _24;
-        T _31, _32, _33, _34;
-        T _41, _42, _43, _44;
-      };
-
-      T _m44[4][4];
-      T _m16[16];
-    };
-
     static constexpr Mat4<T> identity();
     static Mat4<T> inverse(const Mat4<T>& other);
     static Mat4<T> toMat3(const Mat4<T>& other);
@@ -82,6 +72,17 @@ namespace GameEngine {
     static Vec3 decomposeScale(const Mat4<real>& matrix);
     static Mat4<real> buildTRS(const Vec3& p, const Vec3& q, const Vec3& s);
 
+    union {
+      struct {
+        T _11, _12, _13, _14;
+        T _21, _22, _23, _24;
+        T _31, _32, _33, _34;
+        T _41, _42, _43, _44;
+      };
+
+      T _m44[4][4];
+      T _m16[16];
+    };
     static const Mat4<T> one;
     static const Mat4<T> zero;
 

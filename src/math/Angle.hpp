@@ -13,13 +13,26 @@ namespace GameEngine {
         static_cast<real>(Ratio::num) / static_cast<real>(Ratio::den);
 
     constexpr Angle() noexcept = default;
-    explicit constexpr Angle(float r) noexcept : val{r} {}
+    explicit constexpr Angle(real r) noexcept : val{r} {}
 
     template <typename S>
     constexpr explicit Angle(const Angle<S>& r) noexcept : val{r.get() / r.ratio * ratio} {}
 
     [[nodiscard]] constexpr float get() const noexcept { return val; }
     explicit constexpr operator real() const noexcept { return val; }
+
+    Angle operator+(const real& value) const {
+      return Angle<Ratio>{val + value};
+    }
+    Angle operator-(const real& value) const {
+      return Angle<Ratio>{val - value};
+    }
+    Angle operator*(const real& value) const {
+      return Angle<Ratio>{val * value};
+    }
+    Angle operator/(const real& value) const {
+      return Angle<Ratio>{val / value};
+    }
 
   private:
     real val = 0;

@@ -54,7 +54,7 @@ namespace GameEngine {
     Vec2& makeNegate();
 
     Vec2 perpendicular() const;
-    Vec2& makeNormalize();
+    UVec2 makeNormalize();
     real length() const;
     real squaredLength() const;
     real distance(const Vec2& other) const;
@@ -67,14 +67,14 @@ namespace GameEngine {
 
     static real cross(const Vec2& a, const Vec2& b);
     static real dot(const Vec2& a, const Vec2& b);
-    static Vec2 inverse(const Vec2& other);
-    static Vec3 toVec3(const Vec2& other);
-    static Vec4 toVec4(const Vec2& other);
-    static Vec2 abs(const Vec2& other);
+    static Vec2 inverse(const Vec2& v);
+    static Vec3 toVec3(const Vec2& v);
+    static Vec4 toVec4(const Vec2& v);
+    static Vec2 abs(const Vec2& v);
     static Vec2 lerp(const Vec2& a, const Vec2& b, real t);
     static Vec2 slerp(const Vec2& a, const Vec2& b, real t);
-    static Vec2 nlerp(const Vec2& a, const Vec2& b, real t);
-    static Vec2 normalize(const Vec2& vector);
+    static UVec2 nlerp(const Vec2& a, const Vec2& b, real t);
+    static UVec2 normalize(const Vec2& v);
     static Deg angle(const UVec2& from, const UVec2& to);
 
     real x{0.0}, y{0.0};

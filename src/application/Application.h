@@ -1,8 +1,8 @@
 #ifndef GAMEENGINE_APPLICATION_H
 #define GAMEENGINE_APPLICATION_H
 
-#include "utils/Singleton.hpp"
 #include "platform/Platform.h"
+#include "utils/Singleton.hpp"
 
 namespace GameEngine {
   class Application : public Singleton<Application> {
@@ -17,7 +17,7 @@ namespace GameEngine {
 
   private:
     void render();
-    void update(float deltaTime);
+    void update(real deltaTime);
 
     static std::string resourcePath;
     static std::string shaderPath;

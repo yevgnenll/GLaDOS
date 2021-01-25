@@ -4,9 +4,9 @@
 #include <iostream>
 #include <string>
 
-#include "utils/Singleton.hpp"
 #include "platform/Platform.h"
 #include "utils/Enumeration.h"
+#include "utils/Singleton.hpp"
 #include "utils/StringFormatter.h"
 
 namespace GameEngine {

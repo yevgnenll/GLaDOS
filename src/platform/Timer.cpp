@@ -3,13 +3,13 @@
 namespace GameEngine {
   void Timer::reset() {
     mStart = now();
-    mTimeScale = 1.f;
+    mTimeScale = 1.0;
   }
 
   void Timer::update() {
     mCurrentTime = now();
 
-    mUnscaledDeltaTime = std::chrono::duration_cast<millisecond>(mCurrentTime - mStart).count() * 0.001f;
+    mUnscaledDeltaTime = std::chrono::duration_cast<millisecond>(mCurrentTime - mStart).count() * 0.001;
     mDeltaTime = mUnscaledDeltaTime * mTimeScale;
 
     mUnscaledTime += mUnscaledDeltaTime;
@@ -20,10 +20,10 @@ namespace GameEngine {
     mStart = mCurrentTime;
     mFrameCounter++;
     mAccumulator += mUnscaledDeltaTime;  // accumulate
-    if (mAccumulator > 1.0f) {  // elapsed after 1 sec
+    if (mAccumulator > real(1.0)) {  // elapsed after 1 sec
       mFrameRate = mFrameCounter;
       mFrameCounter = 0;
-      mAccumulator = 0.0f;
+      mAccumulator = 0.0;
     }
   }
 

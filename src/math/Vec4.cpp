@@ -65,7 +65,6 @@ namespace GameEngine {
     y += other.y;
     z += other.z;
     w += other.w;
-
     return *this;
   }
 
@@ -79,7 +78,6 @@ namespace GameEngine {
     y -= other.y;
     z -= other.z;
     w -= other.w;
-
     return *this;
   }
 
@@ -93,7 +91,6 @@ namespace GameEngine {
     y *= other.y;
     z *= other.z;
     w *= other.w;
-
     return *this;
   }
 
@@ -107,7 +104,6 @@ namespace GameEngine {
     y /= other.y;
     z /= other.z;
     w /= other.w;
-
     return *this;
   }
 
@@ -118,7 +114,6 @@ namespace GameEngine {
     y += scalar;
     z += scalar;
     w += scalar;
-
     return *this;
   }
 
@@ -129,7 +124,6 @@ namespace GameEngine {
     y -= scalar;
     z -= scalar;
     w -= scalar;
-
     return *this;
   }
 
@@ -140,7 +134,6 @@ namespace GameEngine {
     y *= scalar;
     z *= scalar;
     w *= scalar;
-
     return *this;
   }
 
@@ -151,7 +144,6 @@ namespace GameEngine {
     y /= scalar;
     z /= scalar;
     w /= scalar;
-
     return *this;
   }
 
@@ -160,7 +152,7 @@ namespace GameEngine {
   bool Vec4::operator!=(const Vec4& other) const { return !(*this == other); }
 
   Vec4 Vec4::operator-() const {
-    return Vec4(-x, -y, -z, -w);
+    return Vec4{-x, -y, -z, -w};
   }
 
   Vec4 Vec4::operator+() const {
@@ -192,22 +184,22 @@ namespace GameEngine {
 
   real Vec4::dot(const Vec4& a, const Vec4& b) { return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w; }
 
-  Vec4 Vec4::inverse(const Vec4& other) { return Vec4(static_cast<real>(1.0 / other.x), static_cast<real>(1.0 / other.y), static_cast<real>(1.0 / other.z), static_cast<real>(1.0 / other.w)); }
+  Vec4 Vec4::inverse(const Vec4& v) { return Vec4{real(1.0) / v.x, real(1.0) / v.y, real(1.0) / v.z, real(1.0) / v.w}; }
 
-  Vec2 Vec4::toVec2(const Vec4& other) { return Vec2(other); }
+  Vec2 Vec4::toVec2(const Vec4& v) { return Vec2{v}; }
 
-  Vec3 Vec4::toVec3(const Vec4& other) { return Vec3(other); }
+  Vec3 Vec4::toVec3(const Vec4& v) { return Vec3{v}; }
 
-  Vec4 Vec4::abs(const Vec4& other) { return Vec4(Math::abs(other.x), Math::abs(other.y), Math::abs(other.z), Math::abs(other.w)); }
+  Vec4 Vec4::abs(const Vec4& v) { return Vec4{Math::abs(v.x), Math::abs(v.y), Math::abs(v.z), Math::abs(v.w)}; }
 
-  UVec4 Vec4::normalize(const Vec4& vector) {
-    real len = vector.length();
+  UVec4 Vec4::normalize(const Vec4& v) {
+    real len = v.length();
     if (Math::zero(len) || Math::equal(len, static_cast<real>(1.0))) {
-      return UVec4{vector};
+      return UVec4{v};
     }
 
     real inv = 1 / len;
-    return UVec4{vector * inv};
+    return UVec4{v * inv};
   }
 
   Deg Vec4::angle(const UVec4& from, const UVec4& to) {

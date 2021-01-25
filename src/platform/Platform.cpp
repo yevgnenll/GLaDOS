@@ -32,10 +32,6 @@ namespace GameEngine {
     mIsOccluded = isOccluded;
   }
 
-  int Platform::getMultisample() const {
-    return mMultisample;
-  }
-
   bool Platform::isFocused() const {
     return mIsFocused;
   }

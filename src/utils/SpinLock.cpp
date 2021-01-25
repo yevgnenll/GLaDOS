@@ -8,7 +8,8 @@ namespace GameEngine {
         return;
       }
       // Wait for lock to be released without generating cache misses
-      while (mAtomicLock.load(std::memory_order_relaxed)) {}
+      while (mAtomicLock.load(std::memory_order_relaxed)) {
+      }
     }
   }
 
@@ -21,4 +22,4 @@ namespace GameEngine {
   void SpinLock::unlock() noexcept {
     mAtomicLock.store(false, std::memory_order_release);
   }
-}
+}  // namespace GameEngine

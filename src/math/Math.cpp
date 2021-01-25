@@ -1,7 +1,9 @@
 #include "Math.h"
 
+#include "Quat.h"
+
 namespace GameEngine {
-  real Math::clamp01(real value) { return value < 0.F ? 0.F : (value > 1.F ? 1.F : value); }
+  real Math::clamp01(real value) { return value < real(0.0) ? real(0.0) : (value > real(1.0) ? real(1.0) : value); }
 
   real Math::lerp(real a, real b, real t) {
     return a + (b - a) * Math::clamp01(t);
@@ -12,7 +14,7 @@ namespace GameEngine {
   }
 
   real Math::lerpAngle(real a, real b, real t) {
-    real num = Math::deltaAngle(b - a, 360.F);
+    real num = Math::deltaAngle(b - a, static_cast<real>(degrees));
     return a + num * Math::clamp01(t);
   }
 
@@ -28,7 +30,7 @@ namespace GameEngine {
   Deg Math::toDegrees(real rad) { return Deg{rad * rad2Deg}; }
 
   real Math::sign(real f) {
-    return f >= 0.F ? 1.F : -1.F;
+    return f >= real(0.0) ? real(1.0) : real(-1.0);
   }
 
   real Math::repeat(real t, real length) {
@@ -42,9 +44,10 @@ namespace GameEngine {
   }
 
   real Math::deltaAngle(real current, real target) {
-    float num = Math::repeat(target - current, 360.F);
-    if (num > 180.F) {
-      num -= 360.F;
+    real deg = static_cast<real>(degrees);
+    real num = Math::repeat(target - current, deg);
+    if (num > (deg * real(0.5))) {
+      num -= deg;
     }
     return num;
   }
@@ -76,8 +79,8 @@ namespace GameEngine {
   }
 
   real Math::smoothStep(real min, real max, real value) {
-    float x = Math::max(0.F, Math::min(1.F, (value - min) / (max - min)));
-    return x * x * (3 - 2 * x);
+    real x = Math::max(static_cast<real>(0.0), Math::min(static_cast<real>(1.0), (value - min) / (max - min)));
+    return x * x * (real(3.0) - real(2.0) * x);
   }
 
   real Math::moveTowards(real current, real target, real maxDelta) {
@@ -115,7 +118,7 @@ namespace GameEngine {
 
   real Math::floor(real a) { return std::floor(a); }
 
-  real Math::round(real a) { return a < 0.F ? std::ceil(a - 0.5F) : std::floor(a + 0.5F); }
+  real Math::round(real a) { return a < real(0.0) ? std::ceil(a - real(0.5)) : std::floor(a + real(0.5)); }
 
   real Math::abs(real a) { return std::abs(a); }
 
@@ -131,27 +134,39 @@ namespace GameEngine {
     return std::pow(a, exp);
   }
 
-  float Math::dot(const Vec3& v1, const Vec3& v2) {
+  real Math::dot(const Vec3& v1, const Vec3& v2) {
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
   }
 
-  float Math::absDot(const Vec3& v1, const Vec3& v2) {
+  real Math::absDot(const Vec3& v1, const Vec3& v2) {
     return Math::abs(v1.x * v2.x) + Math::abs(v1.y * v2.y) + Math::abs(v1.z * v2.z);
   }
 
-  Vec3 Math::pow(const Vec3& a, float exp) {
+  Vec3 Math::pow(const Vec3& a, real exp) {
     return Vec3{Math::pow(a.x, exp), Math::pow(a.x, exp), Math::pow(a.x, exp)};
   }
 
-  float Math::dot(const Vec2& v1, const Vec2& v2) {
+  real Math::dot(const Vec2& v1, const Vec2& v2) {
     return v1.x * v2.x + v1.y * v2.y;
   }
 
-  float Math::absDot(const Vec2& v1, const Vec2& v2) {
+  real Math::absDot(const Vec2& v1, const Vec2& v2) {
     return Math::abs(v1.x * v2.x) + Math::abs(v1.y * v2.y);
   }
 
-  Vec2 Math::pow(const Vec2& a, float exp) {
+  Vec2 Math::pow(const Vec2& a, real exp) {
     return Vec2{Math::pow(a.x, exp), Math::pow(a.x, exp)};
+  }
+
+  Deg Math::pitch(const Quat& q) {
+    return toDegrees(Math::atan2(real(2.0) * (q.y * q.z + q.w * q.x), q.w * q.w - q.x * q.x - q.y * q.y + q.z * q.z));
+  }
+
+  Deg Math::yaw(const Quat& q) {
+    return toDegrees(Math::asin(real(-2.0) * (q.x * q.z - q.w * q.y)));
+  }
+
+  Deg Math::roll(const Quat& q) {
+    return toDegrees(Math::atan2(real(2.0) * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.y * q.y - q.z * q.z));
   }
 }  // namespace GameEngine

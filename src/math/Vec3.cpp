@@ -132,9 +132,9 @@ namespace GameEngine {
 
   bool Vec3::operator!=(const Vec3& other) const { return !(*this == other); }
 
-  Vec3 Vec3::operator-() const { return Vec3(-x, -y, -z); }
+  Vec3 Vec3::operator-() const { return Vec3{-x, -y, -z}; }
 
-  Vec3 Vec3::operator+() const { return Vec3(x < 0 ? -x : x, y < 0 ? -y : y, z < 0 ? -z : z); }
+  Vec3 Vec3::operator+() const { return Vec3{x < 0 ? -x : x, y < 0 ? -y : y, z < 0 ? -z : z}; }
 
   Vec3& Vec3::makeNegate() {
     x = -x;
@@ -143,7 +143,7 @@ namespace GameEngine {
     return *this;
   }
 
-  Vec3 Vec3::perpendicular() const { return Vec3(-y, x, z); }
+  Vec3 Vec3::perpendicular() const { return Vec3{-y, x, z}; }
 
   UVec3 Vec3::makeNormalize() {
     real len = length();
@@ -171,51 +171,51 @@ namespace GameEngine {
 
   real Vec3::dot(const Vec3& a, const Vec3& b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
 
-  Vec3 Vec3::inverse(const Vec3& other) { return Vec3(static_cast<real>(1.0 / other.x), static_cast<real>(1.0 / other.y), static_cast<real>(1.0 / other.z)); }
+  Vec3 Vec3::inverse(const Vec3& v) { return Vec3{real(1.0) / v.x, real(1.0) / v.y, real(1.0) / v.z}; }
 
-  Vec2 Vec3::toVec2(const Vec3& other) { return Vec2(other); }
+  Vec2 Vec3::toVec2(const Vec3& v) { return Vec2{v}; }
 
-  Vec4 Vec3::toVec4(const Vec3& other) { return Vec4(other); }
+  Vec4 Vec3::toVec4(const Vec3& v) { return Vec4{v}; }
 
-  Vec3 Vec3::abs(const Vec3& other) { return Vec3(Math::abs(other.x), Math::abs(other.y), Math::abs(other.z)); }
+  Vec3 Vec3::abs(const Vec3& v) { return Vec3{Math::abs(v.x), Math::abs(v.y), Math::abs(v.z)}; }
 
-  Vec3 Vec3::lerp(const Vec3& a, const Vec3& b, real t) { return (a + (b - a) * t); }
+  Vec3 Vec3::lerp(const Vec3& a, const Vec3& b, real t) { return Vec3{a + (b - a) * t}; }
 
   Vec3 Vec3::slerp(const Vec3& a, const Vec3& b, real t) {
     // Dot product - the cosine of the angle between 2 vectors.
     real dot = Vec3::dot(a, b);
-    Math::clamp(dot, static_cast<real>(-1.0), static_cast<real>(1.0));
+    dot = Math::clamp(dot, static_cast<real>(-1.0), static_cast<real>(1.0));
 
-    // Acos(dot) returns the angle between start and end,
+    // acos(dot) returns the angle between start and end,
     // And multiplying that by t returns the angle between
     // start and the final result.
     real theta = Math::acos(dot) * t;
     Vec3 rv = b - a * dot;
     rv.makeNormalize();
 
-    return ((a * Math::cos(theta)) + (rv * Math::sin(theta)));
+    return Vec3{(a * Math::cos(theta)) + (rv * Math::sin(theta))};
   }
 
-  UVec3 Vec3::nlerp(const Vec3& a, const Vec3& b, real t) { return normalize(lerp(a, b, t)); }
+  UVec3 Vec3::nlerp(const Vec3& a, const Vec3& b, real t) { return Vec3::normalize(lerp(a, b, t)); }
 
-  Vec3 Vec3::project(const Vec3& vector, const UVec3& onNormal) {
+  Vec3 Vec3::project(const Vec3& v, const UVec3& onNormal) {
     real num = Vec3::dot(onNormal, onNormal);
     if (num < Math::realEpsilon) {
       return Vec3::zero;
     }
-    return static_cast<Vec3>(onNormal) * Vec3::dot(vector, onNormal) / num;
+    return static_cast<Vec3>(onNormal) * Vec3::dot(v, onNormal) / num;
   }
 
-  Vec3 Vec3::projectOnPlane(const Vec3& vector, const UVec3& planeNormal) { return vector - Vec3::project(vector, planeNormal); }
+  Vec3 Vec3::projectOnPlane(const Vec3& v, const UVec3& planeNormal) { return v - Vec3::project(v, planeNormal); }
 
-  UVec3 Vec3::normalize(const Vec3& vector) {
-    real len = vector.length();
+  UVec3 Vec3::normalize(const Vec3& v) {
+    real len = v.length();
     if (Math::zero(len) || Math::equal(len, static_cast<real>(1.0))) {
-      return UVec3{vector};
+      return UVec3{v};
     }
 
     real inv = 1 / len;
-    return UVec3{vector * inv};
+    return UVec3{v * inv};
   }
 
   Deg Vec3::angle(const UVec3& from, const UVec3& to) {

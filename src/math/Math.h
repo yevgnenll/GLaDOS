@@ -11,6 +11,7 @@
 #include "utils/Enumeration.h"
 
 namespace GameEngine {
+  class Quat;
   class Math {
   public:
     Math() = delete;
@@ -22,7 +23,7 @@ namespace GameEngine {
     template <typename T>
     static bool zero(const T& a);
     template <typename T>
-    static real clamp(const T& x, const T& min, const T& max);
+    static T clamp(const T& x, const T& min, const T& max);
     static real clamp01(real value);
     static real lerp(real a, real b, real t);
     static real lerpUnclamped(real a, real b, real t);
@@ -60,13 +61,13 @@ namespace GameEngine {
     static real sqrt(real a);
     static real pow(real a, real exp);
 
-    static float dot(const Vec3& v1, const Vec3& v2);
-    static float absDot(const Vec3& v1, const Vec3& v2);
-    static Vec3 pow(const Vec3& a, float exp);
+    static real dot(const Vec3& v1, const Vec3& v2);
+    static real absDot(const Vec3& v1, const Vec3& v2);
+    static Vec3 pow(const Vec3& a, real exp);
 
-    static float dot(const Vec2& v1, const Vec2& v2);
-    static float absDot(const Vec2& v1, const Vec2& v2);
-    static Vec2 pow(const Vec2& a, float exp);
+    static real dot(const Vec2& v1, const Vec2& v2);
+    static real absDot(const Vec2& v1, const Vec2& v2);
+    static Vec2 pow(const Vec2& a, real exp);
 
     template <typename T>
     static constexpr auto max(const T& a, const T& b);
@@ -77,10 +78,14 @@ namespace GameEngine {
     template <typename T, typename... Ts>
     static constexpr auto max(const T& a, const T& b, const Ts&... ts);
 
-    static constexpr real pi = 3.14159265358979F;  // std::atan(1) * 4
+    static Deg pitch(const Quat& q);
+    static Deg yaw(const Quat& q);
+    static Deg roll(const Quat& q);
+
+    static constexpr real pi = real(3.14159265358979);  // std::atan(1) * 4
     static constexpr int degrees = 360;
-    static constexpr real deg2Rad = Math::pi / 180.F;
-    static constexpr real rad2Deg = 180.F / Math::pi;
+    static constexpr real deg2Rad = Math::pi / real(180);
+    static constexpr real rad2Deg = real(180) / Math::pi;
     static constexpr real realEpsilon = std::numeric_limits<real>::epsilon();
     static constexpr real realInfinity = std::numeric_limits<real>::infinity();
   };
@@ -95,11 +100,11 @@ namespace GameEngine {
     //Threshold denominator so we don't divide by zero
     static constexpr auto tolerance = std::numeric_limits<T>::epsilon();
     static constexpr auto threshold = std::numeric_limits<T>::min();  //A very small nonzero number!
-    auto min = Math::min(std::abs(a), std::abs(b));
-    if (std::abs(min) == 0.0) {
-      return std::abs(a - b) < tolerance;
+    auto min = Math::min(Math::abs(a), Math::abs(b));
+    if (Math::abs(min) == real(0.0)) {
+      return Math::abs(a - b) < tolerance;
     }
-    return (std::abs(a - b) / Math::max(threshold, min)) < tolerance;
+    return (Math::abs(a - b) / Math::max(threshold, min)) < tolerance;
   }
 
   template <typename T>
@@ -108,7 +113,7 @@ namespace GameEngine {
   }
 
   template <typename T>
-  float Math::clamp(const T& x, const T& min, const T& max) {
+  T Math::clamp(const T& x, const T& min, const T& max) {
     return x < min ? min : (x > max ? max : x);
   }
 

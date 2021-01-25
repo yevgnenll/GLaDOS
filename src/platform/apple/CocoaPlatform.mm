@@ -35,16 +35,11 @@ namespace GameEngine {
       return false;
     }
 
-    applicationInstance = [NSApplication sharedApplication];
-    [applicationInstance setActivationPolicy:NSApplicationActivationPolicyRegular];
-    [applicationInstance activateIgnoringOtherApps:YES];
-
     if (params.width <= 0 || params.height <= 0) {
       LOG_ERROR("Platform width and height should not be less than 0.");
       return false;
     }
 
-    platformInstance->mMultisample = params.multisample;
     platformInstance->mWindowStyle = params.windowStyle;
     platformInstance->mIsFullScreen = params.isFullscreen;
     CocoaPlatform::platformInstance->setIsShowCursor(params.isShowCursor);
@@ -73,7 +68,10 @@ namespace GameEngine {
     mMetalLayer.device = mMetalDevice;
     mMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
     [mContentView setLayer:mMetalLayer];
+    applicationInstance = [NSApplication sharedApplication];
     [applicationInstance setDelegate:mContentView];
+    // 해당 코드가 없을시 windowDelegate 의 windowWillClose, windowDidDeminiaturize 콜백 함수가 호출되지 않음
+    [applicationInstance finishLaunching];
 
     // make platform
     NSWindowStyleMask windowStyle = platformInstance->mIsFullScreen ? NSWindowStyleMaskBorderless : makeWindowStyle(params.windowStyle);
@@ -128,14 +126,42 @@ namespace GameEngine {
   }
 
   std::pair<int, int> CocoaPlatform::centerOfScreen() const {
-    const auto [w, h] = getScreenSize();
+    const auto [w, h] = CocoaPlatform::getScreenSize();
     return std::make_pair((w - platformInstance->mWidth) / 2, (h - platformInstance->mHeight) / 2);
   }
 
-  std::pair<int, int> CocoaPlatform::getScreenSize() const {
+  std::pair<int, int> CocoaPlatform::getScreenSize() {
     int width = static_cast<int>([[NSScreen mainScreen] frame].size.width);
     int height = static_cast<int>([[NSScreen mainScreen] frame].size.height);
     return std::make_pair(width, height);
+  }
+
+  void CocoaPlatform::createMenuBar() {
+    NSString* appName = CocoaPlatform::toString(platformInstance->getTitleName());
+    NSMenu* menuBar = [[NSMenu alloc] init];
+    NSMenuItem* appMenuItem = [menuBar addItemWithTitle:@"" action:NULL keyEquivalent:@""];
+    [applicationInstance setMainMenu:menuBar];
+    [menuBar release];
+
+    NSMenu* appMenu = [[NSMenu alloc] init];
+    [appMenuItem setSubmenu:appMenu];
+
+    // About menu item
+    [appMenu addItemWithTitle:[NSString stringWithFormat:@"About %@", appName] action:@selector(orderFrontStandardAboutPanel:) keyEquivalent:@""];
+    // Hide menu item
+    [appMenu addItemWithTitle:[NSString stringWithFormat:@"Hide %@", appName] action:@selector(hide:) keyEquivalent:@"h"];
+    // Hide Others menu item
+    [[appMenu addItemWithTitle:@"Hide Others" action:@selector(hideOtherApplications:) keyEquivalent:@"h"]
+        setKeyEquivalentModifierMask:(NSEventModifierFlagOption | NSEventModifierFlagCommand)];
+    // show all menu item
+    [appMenu addItemWithTitle:@"Show All" action:@selector(unhideAllApplications:) keyEquivalent:@""];
+    // quit menu item
+    [appMenu addItem:[NSMenuItem separatorItem]];
+    [appMenu addItemWithTitle:[NSString stringWithFormat:@"Quit %@", appName] action:@selector(terminate:) keyEquivalent:@"q"];
+
+    SEL setAppleMenuSelector = NSSelectorFromString(@"setAppleMenu:");
+    [applicationInstance performSelector:setAppleMenuSelector withObject:appMenu];
+    [appMenu release];
   }
 
   NSString* CocoaPlatform::toString(const std::string& str) {
@@ -320,7 +346,7 @@ namespace GameEngine {
     passDescriptor.colorAttachments[0].texture = texture;
     passDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
     passDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
-    passDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(1.f, 1.0f, 0.3f, 1.0f);
+    passDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.f, 0.0f, 0.0f, 1.0f);
 
     id<MTLCommandBuffer> commandBuffer = [CocoaPlatform::cocoaPlatformInstance->mMetalCommandQueue commandBuffer];
 
@@ -478,27 +504,24 @@ namespace GameEngine {
 
 - (void)windowDidResize:(NSNotification*)notification {
   LOG_INFO("windowDidResize");
-  //  [super windowDidResize:notification];
 }
 
 - (void)windowDidMiniaturize:(NSNotification*)notification {
+  // 윈도우를 최소화 할 때 호출 되는 콜백
   LOG_INFO("windowDidMiniaturize");
-  //  [super windowDidMiniaturize:notification];
 }
 
 - (void)windowDidDeminiaturize:(NSNotification*)notification {
+  // 윈도우를 최소화를 되돌릴 때 호출 되는 콜백
   LOG_INFO("windowDidDeminiaturize");
-  //  [super windowDidDeminiaturize:notification];
 }
 
 - (void)windowDidMove:(NSNotification*)notification {
   LOG_INFO("windowDidMove");
-  //  [super windowDidMove:notification];
 }
 
 - (void)windowDidChangeScreen:(NSNotification*)notification {
   LOG_INFO("windowDidChangeScreen");
-  //  [super windowDidChangeScreen:notification];
 }
 
 - (void)applicationWillBecomeActive:(NSNotification*)notification {
@@ -509,8 +532,26 @@ namespace GameEngine {
   GameEngine::CocoaPlatform::getPlatformInstance()->setIsFocused(false);
 }
 
+- (void)applicationWillFinishLaunching:(NSNotification*)notification {
+  [GameEngine::CocoaPlatform::getAppInstance() setActivationPolicy:NSApplicationActivationPolicyRegular];
+  [GameEngine::CocoaPlatform::getAppInstance() setPresentationOptions:NSApplicationPresentationDefault];
+  GameEngine::CocoaPlatform::createMenuBar();
+}
+
+- (void)applicationDidFinishLaunching:(NSNotification*)notification {
+  [GameEngine::CocoaPlatform::getAppInstance() activateIgnoringOtherApps:YES];
+}
+
 - (BOOL)windowShouldClose:(id)sender {
+  // 윈도우의 빨간색 x 버튼을 클릭시 호출되는 콜백
   GameEngine::CocoaPlatform::getPlatformInstance()->quit();
+}
+
+- (void)windowWillClose:(NSNotification*)notification {
+  // 윈도우를 강제종료 할 때 호출 됨
+  if (GameEngine::CocoaPlatform::getPlatformInstance()->isRunning()) {
+    GameEngine::CocoaPlatform::getPlatformInstance()->quit();
+  }
 }
 
 - (void)windowDidChangeOcclusionState:(NSNotification*)notification {

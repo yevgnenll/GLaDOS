@@ -5,8 +5,8 @@
 #include <ctime>
 #include <string>
 
-#include "utils/Singleton.hpp"
 #include "utils/Enumeration.h"
+#include "utils/Singleton.hpp"
 
 namespace GameEngine {
   class Timer : public Singleton<Timer> {
@@ -31,17 +31,17 @@ namespace GameEngine {
   private:
     HighResolutionTimePoint mStart;
     HighResolutionTimePoint mCurrentTime;
-    real mAccumulator{0.f};  // for internal use
+    real mAccumulator{0.0};  // for internal use
     int mFrameCounter{0};  // for internal use
     int mFrameRate{0};
-    real mTimeScale{1.f};
+    real mTimeScale{1.0};
 
-    real mDeltaTime{0.f};
-    real mUnscaledDeltaTime{0.f};
-    real mTime{0.f};
-    real mUnscaledTime{0.f};
-    real mFixedDeltaTime{0.f};
-    real mUnscaledFixedDeltaTime{0.02f};
+    real mDeltaTime{0.0};
+    real mUnscaledDeltaTime{0.0};
+    real mTime{0.0};
+    real mUnscaledTime{0.0};
+    real mFixedDeltaTime{0.0};
+    real mUnscaledFixedDeltaTime{0.02};
   };
 }  // namespace GameEngine
 

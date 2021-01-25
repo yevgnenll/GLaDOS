@@ -104,16 +104,16 @@ namespace GameEngine {
 
     static Vec3 cross(const Vec3& a, const Vec3& b);
     static real dot(const Vec3& a, const Vec3& b);
-    static Vec3 inverse(const Vec3& other);
-    static Vec2 toVec2(const Vec3& other);
-    static Vec4 toVec4(const Vec3& other);
-    static Vec3 abs(const Vec3& other);
+    static Vec3 inverse(const Vec3& v);
+    static Vec2 toVec2(const Vec3& v);
+    static Vec4 toVec4(const Vec3& v);
+    static Vec3 abs(const Vec3& v);
     static Vec3 lerp(const Vec3& a, const Vec3& b, real t);
     static Vec3 slerp(const Vec3& a, const Vec3& b, real t);
     static UVec3 nlerp(const Vec3& a, const Vec3& b, real t);
-    static Vec3 project(const Vec3& vector, const UVec3& onNormal);
-    static Vec3 projectOnPlane(const Vec3& vector, const UVec3& planeNormal);
-    static UVec3 normalize(const Vec3& vector);
+    static Vec3 project(const Vec3& v, const UVec3& onNormal);
+    static Vec3 projectOnPlane(const Vec3& v, const UVec3& planeNormal);
+    static UVec3 normalize(const Vec3& v);
     static Deg angle(const UVec3& from, const UVec3& to);
 
     real x{0.0}, y{0.0}, z{0.0};
