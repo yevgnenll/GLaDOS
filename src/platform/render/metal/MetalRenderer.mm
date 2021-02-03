@@ -3,16 +3,10 @@
 #ifdef PLATFORM_MACOS
 
 #include "MetalBuffer.h"
+#include "MetalRenderable.h"
 #include "MetalShaderProgram.h"
-#include "utils/Utility.h"
 
-namespace GameEngine {
-  MetalRenderer* MetalRenderer::instance = nullptr;
-
-  MetalRenderer::MetalRenderer() {
-    MetalRenderer::instance = this;
-  }
-
+namespace GLaDOS {
   MetalRenderer::~MetalRenderer() {
     [mMetalCommandQueue release];
     [mMetalDevice release];
@@ -42,36 +36,63 @@ namespace GameEngine {
     return true;
   }
 
-  void MetalRenderer::render() const {
+  void MetalRenderer::render(Renderable* renderable) {
+    id<CAMetalDrawable> drawable = [mMetalLayer nextDrawable];
+    id<MTLTexture> texture = drawable.texture;
+
+    MTLRenderPassDescriptor* passDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
+    passDescriptor.colorAttachments[0].texture = texture;
+    passDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+    passDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
+    passDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.f, 0.0f, 0.0f, 1.0f);
+
+    id<MTLCommandBuffer> commandBuffer = [mMetalCommandQueue commandBuffer];
+
+    mMetalRenderCommandEncoder = [commandBuffer renderCommandEncoderWithDescriptor:passDescriptor];
+    [mMetalRenderCommandEncoder endEncoding];
+
+    [commandBuffer presentDrawable:drawable];
+    [commandBuffer commit];
   }
 
   Buffer* MetalRenderer::createVertexBuffer(BufferUsage usage, StreamBuffer& buffer) {
-    return NEW_T(MetalBuffer(BufferType::VertexBuffer, usage, buffer));
+    Buffer* vertexBuffer = NEW_T(MetalBuffer(BufferType::VertexBuffer, usage));
+    vertexBuffer->uploadData(buffer);
+    return vertexBuffer;
   }
 
   Buffer* MetalRenderer::createIndexBuffer(BufferUsage usage, StreamBuffer& buffer) {
-    return NEW_T(MetalBuffer(BufferType::IndexBuffer, usage, buffer));
+    Buffer* indexBuffer = NEW_T(MetalBuffer(BufferType::IndexBuffer, usage));
+    indexBuffer->uploadData(buffer);
+    return indexBuffer;
   }
 
   ShaderProgram* MetalRenderer::createShaderProgram() {
     return NEW_T(MetalShaderProgram);
   }
 
-  id<MTLDevice> MetalRenderer::getMetalDevice() const {
+  Renderable* MetalRenderer::createRenderable() {
+    static std::atomic<RenderableId> id = 0;
+    Renderable* renderable = NEW_T(MetalRenderable(id++));
+    mRenderable.try_emplace(id.load(), renderable);
+    return renderable;
+  }
+
+  id<MTLDevice> MetalRenderer::getDevice() const {
     return mMetalDevice;
   }
 
-  id<MTLCommandQueue> MetalRenderer::getMetalCommandQueue() const {
+  id<MTLCommandQueue> MetalRenderer::getCommandQueue() const {
     return mMetalCommandQueue;
+  }
+
+  id<MTLRenderCommandEncoder> MetalRenderer::getCommandEncoder() const {
+    return mMetalRenderCommandEncoder;
   }
 
   CAMetalLayer* MetalRenderer::getMetalLayer() const {
     return mMetalLayer;
   }
-
-  MetalRenderer* MetalRenderer::getInstance() {
-    return instance;
-  }
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #endif

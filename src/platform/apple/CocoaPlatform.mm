@@ -1,42 +1,39 @@
+
+#include <platform/Platform.h>
+
 #include "CocoaPlatform.h"
 #include "math/Math.h"
+#include "platform/render/metal/MetalRenderer.h"
 #include "utils/Utility.h"
 
 #ifdef PLATFORM_MACOS
 
-namespace GameEngine {
+namespace GLaDOS {
   NSApplication* CocoaPlatform::applicationInstance = nullptr;
   CocoaPlatform* CocoaPlatform::cocoaPlatformInstance = nullptr;
   Platform* CocoaPlatform::platformInstance = nullptr;
 
   CocoaPlatform::CocoaPlatform() {
     mAutoReleasePool = [[NSAutoreleasePool alloc] init];
+    mMetalRenderer = NEW_T(MetalRenderer);
   }
 
   CocoaPlatform::~CocoaPlatform() {
     CVDisplayLinkStop(mDisplayLink);
     CVDisplayLinkRelease(mDisplayLink);
-    [mMetalCommandQueue release];
-    [mMetalDevice release];
+    DELETE_T(mMetalRenderer, MetalRenderer);
     [mAutoReleasePool drain];
   }
 
   bool CocoaPlatform::initialize(const PlatformParams& params) {
     LOG_TRACE("Initialize Cocoa Platform...");
-    mMetalDevice = MTLCreateSystemDefaultDevice();
-    if (mMetalDevice == nullptr) {
-      LOG_ERROR("System does not support metal.");
-      return false;
-    }
-
-    mMetalCommandQueue = [mMetalDevice newCommandQueue];
-    if (mMetalCommandQueue == nullptr) {
-      LOG_ERROR("System does not support metal.");
-      return false;
-    }
 
     if (params.width <= 0 || params.height <= 0) {
       LOG_ERROR("Platform width and height should not be less than 0.");
+      return false;
+    }
+
+    if (!mMetalRenderer->initialize()) {
       return false;
     }
 
@@ -57,23 +54,28 @@ namespace GameEngine {
     }
     platformInstance->mLastWidth = platformInstance->mWidth;
     platformInstance->mLastHeight = platformInstance->mHeight;
+
+    // create contentView
     mContentView = [[ContentView alloc] initWithFrame:contentSize];
     [mContentView setWantsLayer:YES];  // you must still call the setWantsLayer: method to let the view know that it should use layers.
+    [mContentView setLayer:mMetalRenderer->getMetalLayer()];
+    NSTrackingAreaOptions options = (NSTrackingActiveAlways | NSTrackingInVisibleRect |
+                                     NSTrackingMouseEnteredAndExited | NSTrackingMouseMoved);
 
-    mMetalLayer = [CAMetalLayer layer];
-    if (mMetalLayer == nullptr) {
-      LOG_ERROR("System does not support metal.");
-      return false;
-    }
-    mMetalLayer.device = mMetalDevice;
-    mMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
-    [mContentView setLayer:mMetalLayer];
+    NSTrackingArea* area = [[NSTrackingArea alloc] initWithRect:[mContentView bounds]
+                                                        options:options
+                                                          owner:mContentView
+                                                       userInfo:nil];
+    [mContentView addTrackingArea:area];
+    [area release];
+
+    // create cocoa application
     applicationInstance = [NSApplication sharedApplication];
     [applicationInstance setDelegate:mContentView];
     // 해당 코드가 없을시 windowDelegate 의 windowWillClose, windowDidDeminiaturize 콜백 함수가 호출되지 않음
     [applicationInstance finishLaunching];
 
-    // make platform
+    // create window
     NSWindowStyleMask windowStyle = platformInstance->mIsFullScreen ? NSWindowStyleMaskBorderless : makeWindowStyle(params.windowStyle);
     mWindow = [[CocoaWindow alloc] initWithContentRect:contentSize styleMask:windowStyle backing:NSBackingStoreBuffered defer:YES];
     CocoaPlatform::platformInstance->setTitleName(params.titleName);
@@ -339,22 +341,7 @@ namespace GameEngine {
   }
 
   void Platform::render() {
-    id<CAMetalDrawable> drawable = [CocoaPlatform::cocoaPlatformInstance->mMetalLayer nextDrawable];
-    id<MTLTexture> texture = drawable.texture;
-
-    MTLRenderPassDescriptor* passDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
-    passDescriptor.colorAttachments[0].texture = texture;
-    passDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
-    passDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
-    passDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.f, 0.0f, 0.0f, 1.0f);
-
-    id<MTLCommandBuffer> commandBuffer = [CocoaPlatform::cocoaPlatformInstance->mMetalCommandQueue commandBuffer];
-
-    id<MTLRenderCommandEncoder> commandEncoder = [commandBuffer renderCommandEncoderWithDescriptor:passDescriptor];
-    [commandEncoder endEncoding];
-
-    [commandBuffer presentDrawable:drawable];
-    [commandBuffer commit];
+    CocoaPlatform::cocoaPlatformInstance->mMetalRenderer->render(nullptr);
   }
 
   void Platform::update() {
@@ -436,6 +423,10 @@ namespace GameEngine {
     // TODO: destroy and reinitialize metalView
     mIsFullScreen = isFullScreen;
   }
+
+  Renderer* Platform::getRenderer() {
+    return CocoaPlatform::cocoaPlatformInstance->mMetalRenderer;
+  }
 }
 
 @implementation CocoaWindow
@@ -451,21 +442,21 @@ namespace GameEngine {
 
 - (void)keyDown:(NSEvent*)event {
   unsigned short keyCode = [event keyCode];
-  GameEngine::KeyCode localKey = GameEngine::CocoaPlatform::getPlatformInstance()->getKeyCode(keyCode);
-  GameEngine::CocoaPlatform::getPlatformInstance()->setKeyDown(localKey);
+  GLaDOS::KeyCode localKey = GLaDOS::CocoaPlatform::getPlatformInstance()->getKeyCode(keyCode);
+  GLaDOS::CocoaPlatform::getPlatformInstance()->setKeyDown(localKey);
 }
 
 - (void)keyUp:(NSEvent*)event {
   unsigned short keyCode = [event keyCode];
-  GameEngine::KeyCode localKey = GameEngine::CocoaPlatform::getPlatformInstance()->getKeyCode(keyCode);
-  GameEngine::CocoaPlatform::getPlatformInstance()->setKeyUp(localKey);
+  GLaDOS::KeyCode localKey = GLaDOS::CocoaPlatform::getPlatformInstance()->getKeyCode(keyCode);
+  GLaDOS::CocoaPlatform::getPlatformInstance()->setKeyUp(localKey);
 }
 @end
 
 @implementation ContentView
 - (void)mouseMoved:(NSEvent*)event {
   NSPoint point = [self convertPoint:[event locationInWindow] fromView:nil];
-  LOG_INFO("mouseMoved, Mouse pos={0},{1}", point.x, point.y);
+  GLaDOS::CocoaPlatform::getPlatformInstance()->setMousePosition(point.x, point.y);
 }
 
 - (void)mouseDragged:(NSEvent*)event {
@@ -474,32 +465,33 @@ namespace GameEngine {
 }
 
 - (void)scrollWheel:(NSEvent*)event {
+  // TODO
   NSPoint point = [self convertPoint:[event locationInWindow] fromView:nil];
   LOG_INFO("scrollWheel, Mouse wheel at={0},{1}, Delta={2}", point.x, point.y, [event deltaY] * 10.0);
 }
 
 - (void)mouseDown:(NSEvent*)event {
-  GameEngine::CocoaPlatform::getPlatformInstance()->leftMouseDown(true);
+  GLaDOS::CocoaPlatform::getPlatformInstance()->leftMouseDown(true);
 }
 
 - (void)mouseUp:(NSEvent*)event {
-  GameEngine::CocoaPlatform::getPlatformInstance()->leftMouseDown(false);
+  GLaDOS::CocoaPlatform::getPlatformInstance()->leftMouseDown(false);
 }
 
 - (void)rightMouseDown:(NSEvent*)event {
-  GameEngine::CocoaPlatform::getPlatformInstance()->rightMouseDown(true);
+  GLaDOS::CocoaPlatform::getPlatformInstance()->rightMouseDown(true);
 }
 
 - (void)rightMouseUp:(NSEvent*)event {
-  GameEngine::CocoaPlatform::getPlatformInstance()->rightMouseDown(false);
+  GLaDOS::CocoaPlatform::getPlatformInstance()->rightMouseDown(false);
 }
 
 - (void)otherMouseDown:(NSEvent*)event {
-  GameEngine::CocoaPlatform::getPlatformInstance()->middleMouseDown(true);
+  GLaDOS::CocoaPlatform::getPlatformInstance()->middleMouseDown(true);
 }
 
 - (void)otherMouseUp:(NSEvent*)event {
-  GameEngine::CocoaPlatform::getPlatformInstance()->middleMouseDown(false);
+  GLaDOS::CocoaPlatform::getPlatformInstance()->middleMouseDown(false);
 }
 
 - (void)windowDidResize:(NSNotification*)notification {
@@ -525,40 +517,40 @@ namespace GameEngine {
 }
 
 - (void)applicationWillBecomeActive:(NSNotification*)notification {
-  GameEngine::CocoaPlatform::getPlatformInstance()->setIsFocused(true);
+  GLaDOS::CocoaPlatform::getPlatformInstance()->setIsFocused(true);
 }
 
 - (void)applicationWillResignActive:(NSNotification*)notification {
-  GameEngine::CocoaPlatform::getPlatformInstance()->setIsFocused(false);
+  GLaDOS::CocoaPlatform::getPlatformInstance()->setIsFocused(false);
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification*)notification {
-  [GameEngine::CocoaPlatform::getAppInstance() setActivationPolicy:NSApplicationActivationPolicyRegular];
-  [GameEngine::CocoaPlatform::getAppInstance() setPresentationOptions:NSApplicationPresentationDefault];
-  GameEngine::CocoaPlatform::createMenuBar();
+  [GLaDOS::CocoaPlatform::getAppInstance() setActivationPolicy:NSApplicationActivationPolicyRegular];
+  [GLaDOS::CocoaPlatform::getAppInstance() setPresentationOptions:NSApplicationPresentationDefault];
+  GLaDOS::CocoaPlatform::createMenuBar();
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification*)notification {
-  [GameEngine::CocoaPlatform::getAppInstance() activateIgnoringOtherApps:YES];
+  [GLaDOS::CocoaPlatform::getAppInstance() activateIgnoringOtherApps:YES];
 }
 
 - (BOOL)windowShouldClose:(id)sender {
   // 윈도우의 빨간색 x 버튼을 클릭시 호출되는 콜백
-  GameEngine::CocoaPlatform::getPlatformInstance()->quit();
+  GLaDOS::CocoaPlatform::getPlatformInstance()->quit();
 }
 
 - (void)windowWillClose:(NSNotification*)notification {
   // 윈도우를 강제종료 할 때 호출 됨
-  if (GameEngine::CocoaPlatform::getPlatformInstance()->isRunning()) {
-    GameEngine::CocoaPlatform::getPlatformInstance()->quit();
+  if (GLaDOS::CocoaPlatform::getPlatformInstance()->isRunning()) {
+    GLaDOS::CocoaPlatform::getPlatformInstance()->quit();
   }
 }
 
 - (void)windowDidChangeOcclusionState:(NSNotification*)notification {
-  if ([GameEngine::CocoaPlatform::getAppInstance().mainWindow occlusionState] & NSWindowOcclusionStateVisible) {
-    GameEngine::CocoaPlatform::getPlatformInstance()->setIsOccluded(false);
+  if ([GLaDOS::CocoaPlatform::getAppInstance().mainWindow occlusionState] & NSWindowOcclusionStateVisible) {
+    GLaDOS::CocoaPlatform::getPlatformInstance()->setIsOccluded(false);
   } else {
-    GameEngine::CocoaPlatform::getPlatformInstance()->setIsOccluded(true);
+    GLaDOS::CocoaPlatform::getPlatformInstance()->setIsOccluded(true);
   }
 }
 @end

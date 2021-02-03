@@ -1,14 +1,14 @@
-#ifndef GAMEENGINE_XWINDOWPLATFORM_H
-#define GAMEENGINE_XWINDOWPLATFORM_H
+#ifndef GLADOS_XWINDOWPLATFORM_H
+#define GLADOS_XWINDOWPLATFORM_H
 
 #include "platform/OSTypes.h"
 
 #ifdef PLATFORM_LINUX
 
-namespace GameEngine {
+namespace GLaDOS {
   class XWindowPlatform {
   };
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #endif
 

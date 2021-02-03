@@ -1,14 +1,15 @@
-#ifndef GAMEENGINE_QUAT_H
-#define GAMEENGINE_QUAT_H
+#ifndef GLADOS_QUAT_H
+#define GLADOS_QUAT_H
 
 #include "Angle.hpp"
-#include "Mat4.hpp"
 #include "utils/Enumeration.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   class Vec3;
   class UVec3;
   class Vec4;
+  template <typename T>
+  class Mat4;
   class Quat {
   public:
     Quat() = default;
@@ -70,6 +71,6 @@ namespace GameEngine {
   private:
     static void swap(Quat& first, Quat& second);
   };
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
-#endif  //GAMEENGINE_QUAT_H
+#endif  //GLADOS_QUAT_H

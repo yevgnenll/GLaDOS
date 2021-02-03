@@ -1,5 +1,5 @@
-#ifndef GAMEENGINE_RESOURCE_H
-#define GAMEENGINE_RESOURCE_H
+#ifndef GLADOS_RESOURCE_H
+#define GLADOS_RESOURCE_H
 
 #include <atomic>
 #include <string>
@@ -7,7 +7,7 @@
 
 #include "utils/Enumeration.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   class Resource {
   public:
     Resource() = default;
@@ -28,6 +28,6 @@ namespace GameEngine {
     std::string mFileName{};
     ResourceType mResourceType{ResourceType::Undefined};
   };
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #endif

@@ -1,6 +1,6 @@
 #include "UVec4.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   UVec4::UVec4(const Vec4& vec) : mVec{vec} {
   }
 
@@ -15,4 +15,4 @@ namespace GameEngine {
   const Vec4& UVec4::operator*() const {
     return mVec;
   }
-}  // namespace GameEngine
+}  // namespace GLaDOS

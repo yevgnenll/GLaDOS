@@ -1,5 +1,5 @@
-#ifndef GAMEENGINE_CONFIG_H
-#define GAMEENGINE_CONFIG_H
+#ifndef GLADOS_CONFIG_H
+#define GLADOS_CONFIG_H
 
 // clang-format off
 #define PROJECT_VERSION_MAJOR @PROJECT_VERSION_MAJOR@
@@ -9,4 +9,4 @@
 #define MEMORY_DEBUG @MEMORY_DEBUG@
 // clang-format on
 
-#endif  // GAMEENGINE_CONFIG_H
+#endif  // GLADOS_CONFIG_H

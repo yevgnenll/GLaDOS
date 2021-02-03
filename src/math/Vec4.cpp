@@ -9,7 +9,7 @@
 #include "Vec2.h"
 #include "Vec3.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   Vec4::Vec4(real _x, real _y, real _z, real _w) : x{_x}, y{_y}, z{_z}, w{_w} {}
 
   Vec4::Vec4(const Vec2& other) : x{other.x}, y{other.y}, z{0.0}, w{1.0} {}
@@ -223,4 +223,4 @@ namespace GameEngine {
   const UVec4 Vec4::backward = UVec4{Vec4(0.0, 0.0, 1.0, 1.0)};
   const UVec4 Vec4::one = UVec4{Vec4(1.0, 1.0, 1.0, 1.0)};
   const UVec4 Vec4::zero = UVec4{Vec4(0.0, 0.0, 0.0, 0.0)};
-}  // namespace GameEngine
+}  // namespace GLaDOS

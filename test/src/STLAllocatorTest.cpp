@@ -3,7 +3,7 @@
 
 #include "memory/STLAllocator.h"
 
-using namespace GameEngine;
+using namespace GLaDOS;
 
 TEST_CASE("STLAllocator unit tests", "[STLAllocator]") {
   struct CustomType {

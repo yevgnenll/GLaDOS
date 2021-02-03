@@ -1,13 +1,11 @@
-#ifndef GAMEENGINE_COCOAPLATFORM_H
-#define GAMEENGINE_COCOAPLATFORM_H
+#ifndef GLADOS_COCOAPLATFORM_H
+#define GLADOS_COCOAPLATFORM_H
 
 #include "platform/OSTypes.h"
 
 #ifdef PLATFORM_MACOS
 
 #import <Cocoa/Cocoa.h>
-#import <Metal/Metal.h>
-#import <QuartzCore/CAMetalLayer.h>
 #include <string>
 #include "platform/Platform.h"
 
@@ -17,7 +15,8 @@
 @interface ContentView : NSView <NSWindowDelegate, NSApplicationDelegate>
 @end
 
-namespace GameEngine {
+namespace GLaDOS {
+  class MetalRenderer;
   class Platform;
   class CocoaPlatform {
     friend class Platform;
@@ -43,12 +42,10 @@ namespace GameEngine {
     static CocoaPlatform* cocoaPlatformInstance;
     static Platform* platformInstance;
 
+    MetalRenderer* mMetalRenderer{nullptr};
     NSWindow* mWindow{nullptr};
-    CAMetalLayer* mMetalLayer{nullptr};
     ContentView* mContentView{nullptr};
-    CVDisplayLinkRef mDisplayLink;
-    id<MTLDevice> mMetalDevice;
-    id<MTLCommandQueue> mMetalCommandQueue;
+    CVDisplayLinkRef mDisplayLink{nullptr};
     NSAutoreleasePool* mAutoReleasePool{nullptr};
   };
 }

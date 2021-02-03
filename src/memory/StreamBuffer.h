@@ -1,14 +1,15 @@
-#ifndef GAMEENGINE_STREAMBUFFER_H
-#define GAMEENGINE_STREAMBUFFER_H
+#ifndef GLADOS_STREAMBUFFER_H
+#define GLADOS_STREAMBUFFER_H
 
 #include <cstdint>
-#include <vector>
 
-namespace GameEngine {
+#include "utils/Utility.h"
+
+namespace GLaDOS {
   class StreamBuffer {
   public:
     StreamBuffer() = default;
-    ~StreamBuffer() = default;
+    virtual ~StreamBuffer() = default;
 
     StreamBuffer& operator<<(int8_t i);
     StreamBuffer& operator<<(int16_t i);
@@ -23,12 +24,15 @@ namespace GameEngine {
 
     void* pointer();
     std::size_t size() const;
+    void resize(std::size_t n);
+    void clear();
+    bool isEmpty() const;
 
   private:
-    void writeBytes(unsigned char* bytes, unsigned int count);
+    void writeBytes(std::byte* bytes, unsigned int count);
 
-    std::vector<unsigned char> mData;
+    Vector<std::byte> mData;
   };
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #endif

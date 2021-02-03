@@ -1,9 +1,9 @@
-#ifndef GAMEENGINE_STRINGUTILS_H
-#define GAMEENGINE_STRINGUTILS_H
+#ifndef GLADOS_STRINGUTILS_H
+#define GLADOS_STRINGUTILS_H
 
 #include <string>
 
-namespace GameEngine {
+namespace GLaDOS {
   class StringUtils {
   public:
     StringUtils() = delete;
@@ -16,8 +16,8 @@ namespace GameEngine {
     static std::string toString(char c);
     static float toFloat(const std::string& str);
     static double toDouble(const std::string& str);
-    static int toInt(const std::string& str);
-    static long toLong(const std::string& str);
+    static int toInt(const std::string& str, int base = 10);
+    static long toLong(const std::string& str, int base = 10);
     static std::pair<std::string, std::string> extractBaseFileNamePair(const std::string& fullPath);
   };
 
@@ -25,6 +25,6 @@ namespace GameEngine {
   std::string StringUtils::normalize(const T& t) {
     return std::to_string(t);
   }
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #endif

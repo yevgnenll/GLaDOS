@@ -1,5 +1,5 @@
-#ifndef GAMEENGINE_ALLOCATION_H
-#define GAMEENGINE_ALLOCATION_H
+#ifndef GLADOS_ALLOCATION_H
+#define GLADOS_ALLOCATION_H
 
 #include <cassert>
 #include <cstddef>
@@ -7,7 +7,7 @@
 
 #include "Config.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   struct MemoryHeader {
     const char* file;
     int line;
@@ -22,35 +22,41 @@ namespace GameEngine {
   extern void mfree(void* ptr);
   extern void mprint(const char* reason, MemoryHeader* mi);
   extern void dumpMemory();
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #if MEMORY_DEBUG == 1
-#define MALLOC(bytes) GameEngine::mmalloc(bytes, __FILE__, __LINE__, __FUNCTION__)
-#define FREE(ptr) GameEngine::mfree(static_cast<void*>(ptr))
-#define NEW_T(T) new (GameEngine::mmalloc(sizeof(T), __FILE__, __LINE__, __FUNCTION__)) T
+#define MALLOC(bytes) GLaDOS::mmalloc(bytes, __FILE__, __LINE__, __FUNCTION__)
+#define FREE(ptr) GLaDOS::mfree(static_cast<void*>(ptr))
+#define NEW_T(T) new (GLaDOS::mmalloc(sizeof(T), __FILE__, __LINE__, __FUNCTION__)) T
+#define DELETE_POD(ptr) \
+  if (ptr) { \
+    FREE(ptr); \
+    (ptr) = nullptr; \
+  }
 #define DELETE_T(ptr, T) \
   if (ptr) { \
     (ptr)->~T(); \
     FREE(ptr); \
-    ptr = nullptr; \
+    (ptr) = nullptr; \
   }
-#define NEW_ARRAY_T(T, count) new (GameEngine::mmalloc(sizeof(T) * (count), __FILE__, __LINE__, __FUNCTION__)) T
+#define NEW_ARRAY_T(T, count) new (GLaDOS::mmalloc(sizeof(T) * (count), __FILE__, __LINE__, __FUNCTION__)) T
 #define DELETE_ARRAY_T(ptr, T, count) \
   if (ptr) { \
     for (size_t i = 0; i < count; i++) { \
       (ptr)[i]->~T(); \
     } \
-    GameEngine::mfree(static_cast<void*>(ptr)); \
+    GLaDOS::mfree(static_cast<void*>(ptr)); \
   }
 #else
 #define MALLOC(bytes) std::malloc(bytes)
 #define FREE(ptr) std::free(ptr)
 #define NEW_T(T) new T
-#define DELETE_T(ptr, T) \
+#define DELETE_POD(ptr) \
   if (ptr) { \
     delete (ptr); \
     (ptr) = nullptr; \
   }
+#define DELETE_T(ptr, T) DELETE_POD(ptr)
 #define NEW_ARRAY_T(T, count) new T[count]
 #define DELETE_ARRAY_T(ptr, T, count) \
   if (ptr) { \

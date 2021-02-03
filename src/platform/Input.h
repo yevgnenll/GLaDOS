@@ -1,10 +1,11 @@
-#ifndef GAMEENGINE_INPUT_H
-#define GAMEENGINE_INPUT_H
+#ifndef GLADOS_INPUT_H
+#define GLADOS_INPUT_H
 
 #include "KeyCode.h"
+#include "math/Vec3.h"
 #include "utils/Singleton.hpp"
 
-namespace GameEngine {
+namespace GLaDOS {
   class Input : public Singleton<Input> {
   public:
     Input();
@@ -18,6 +19,8 @@ namespace GameEngine {
     static bool isKeyUp(KeyCode keyCode);
     static bool isKeyPress(KeyCode keyCode);
 
+    static Vec3 mousePosition();
+    static Vec3 mouseDeltaPosition();
     static bool isMouseDown(MouseButton button);
     static bool isMouseUp(MouseButton button);
     static bool isMousePress(MouseButton button);
@@ -32,7 +35,10 @@ namespace GameEngine {
 
     bool mPreviousMouseButtons[static_cast<int>(MouseButton::MOUSE_BUTTON_MAX)];
     bool mCurrentMouseButtons[static_cast<int>(MouseButton::MOUSE_BUTTON_MAX)];
+
+    Vec3 mlastMousePos;
+    Vec3 mMouseDelta;
   };
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #endif

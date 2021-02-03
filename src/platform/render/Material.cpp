@@ -1,5 +1,5 @@
 #include "Material.h"
 
-namespace GameEngine {
+namespace GLaDOS {
 
 }

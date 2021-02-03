@@ -2,7 +2,7 @@
 
 #include "memory/StreamBuffer.h"
 
-using namespace GameEngine;
+using namespace GLaDOS;
 
 TEST_CASE("StreamBuffer unit tests", "[StreamBuffer]") {
   StreamBuffer sb;

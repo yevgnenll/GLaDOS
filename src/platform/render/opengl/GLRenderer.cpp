@@ -4,7 +4,7 @@
 
 #ifdef PLATFORM_LINUX
 
-namespace GameEngine {
+namespace GLaDOS {
   GLRenderer::GLRenderer() {
   }
 
@@ -25,6 +25,6 @@ namespace GameEngine {
 
   ShaderProgram* GLRenderer::createShaderProgram() {
   }
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #endif

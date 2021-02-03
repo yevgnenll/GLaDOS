@@ -1,9 +1,9 @@
-#ifndef GAMEENGINE_MATERIAL_H
-#define GAMEENGINE_MATERIAL_H
+#ifndef GLADOS_MATERIAL_H
+#define GLADOS_MATERIAL_H
 
-namespace GameEngine {
+namespace GLaDOS {
   class Material {
   };
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #endif

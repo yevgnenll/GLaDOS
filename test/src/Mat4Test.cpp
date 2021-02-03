@@ -3,7 +3,7 @@
 
 #include "math/Mat4.hpp"
 
-using namespace GameEngine;
+using namespace GLaDOS;
 
 TEST_CASE("Matrix unit test", "[Matrix]") {
   SECTION("default constructor test") {
@@ -167,5 +167,11 @@ TEST_CASE("Matrix unit test", "[Matrix]") {
         1.F, 2.F, 3.F, 1.F};
 
     REQUIRE(Mat4r::abs(m1) == result);
+  }
+
+  SECTION("matrix perspective test") {
+    Mat4r m1;
+    auto m2 = Mat4r::perspective(20_rad, 0.2f, 0.1f, 100.f);
+    printf("asd");
   }
 }

@@ -1,5 +1,5 @@
-#ifndef GAMEENGINE_GLRENDERER_H
-#define GAMEENGINE_GLRENDERER_H
+#ifndef GLADOS_GLRENDERER_H
+#define GLADOS_GLRENDERER_H
 
 #include "platform/OSTypes.h"
 
@@ -7,7 +7,7 @@
 
 #include "platform/render/Renderer.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   class GLRenderer : public Renderer {
   public:
     GLRenderer();
@@ -22,7 +22,7 @@ namespace GameEngine {
 
   private:
   };
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #endif
 

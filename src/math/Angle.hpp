@@ -1,11 +1,11 @@
-#ifndef GAMEENGINE_ANGLE_HPP
-#define GAMEENGINE_ANGLE_HPP
+#ifndef GLADOS_ANGLE_HPP
+#define GLADOS_ANGLE_HPP
 
 #include <ratio>
 
 #include "utils/Enumeration.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   template <typename Ratio>
   class Angle {
   public:
@@ -49,6 +49,6 @@ namespace GameEngine {
 
   constexpr Deg operator""_deg(unsigned long long f) noexcept { return Deg{static_cast<real>(f)}; }
   constexpr Deg operator""_deg(long double f) noexcept { return Deg{static_cast<real>(f)}; }
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
-#endif  //GAMEENGINE_ANGLE_HPP
+#endif  //GLADOS_ANGLE_HPP

@@ -1,10 +1,10 @@
-#ifndef GAMEENGINE_VEC2_H
-#define GAMEENGINE_VEC2_H
+#ifndef GLADOS_VEC2_H
+#define GLADOS_VEC2_H
 
 #include "Angle.hpp"
 #include "utils/Enumeration.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   class UVec2;
   class Vec4;
   class Vec3;
@@ -83,6 +83,6 @@ namespace GameEngine {
   private:
     static void swap(Vec2& first, Vec2& second);
   };
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
-#endif  //GAMEENGINE_VEC2_H
+#endif  //GLADOS_VEC2_H

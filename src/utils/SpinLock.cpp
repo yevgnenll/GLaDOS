@@ -1,6 +1,6 @@
 #include "SpinLock.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   void SpinLock::lock() noexcept {
     for (;;) {
       // Optimistically assume the lock is free on the first try
@@ -22,4 +22,4 @@ namespace GameEngine {
   void SpinLock::unlock() noexcept {
     mAtomicLock.store(false, std::memory_order_release);
   }
-}  // namespace GameEngine
+}  // namespace GLaDOS

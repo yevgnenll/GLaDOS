@@ -1,5 +1,5 @@
-#ifndef GAMEENGINE_METALBUFFER_H
-#define GAMEENGINE_METALBUFFER_H
+#ifndef GLADOS_METALBUFFER_H
+#define GLADOS_METALBUFFER_H
 
 #include "platform/OSTypes.h"
 
@@ -9,10 +9,10 @@
 
 #include "platform/render/Buffer.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   class MetalBuffer : public Buffer {
   public:
-    MetalBuffer(BufferType type, BufferUsage usage, StreamBuffer& buffer);
+    MetalBuffer(BufferType type, BufferUsage usage);
     ~MetalBuffer() override = default;
 
     bool uploadData(StreamBuffer& buffer) override;
@@ -21,7 +21,7 @@ namespace GameEngine {
   private:
     id<MTLBuffer> mMetalBuffer{nullptr};
   };
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #endif
 

@@ -9,7 +9,7 @@
 #include <unistd.h>
 #endif
 
-namespace GameEngine {
+namespace GLaDOS {
   void Platform::quit() { mIsRunning = false; }
 
   int Platform::getWidth() const { return mWidth; }
@@ -30,6 +30,11 @@ namespace GameEngine {
 
   void Platform::setIsOccluded(bool isOccluded) {
     mIsOccluded = isOccluded;
+  }
+
+  void Platform::setMousePosition(real x, real y) {
+    mMousePosition.x = x;
+    mMousePosition.y = y;
   }
 
   bool Platform::isFocused() const {
@@ -92,4 +97,4 @@ namespace GameEngine {
     return static_cast<int>(getpid());
 #endif
   }
-}  // namespace GameEngine
+}  // namespace GLaDOS

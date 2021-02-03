@@ -2,7 +2,7 @@
 
 #ifdef PLATFORM_LINUX
 
-namespace GameEngine {
+namespace GLaDOS {
 
 }
 

@@ -1,23 +1,23 @@
-#ifndef GAMEENGINE_BUFFER_H
-#define GAMEENGINE_BUFFER_H
+#ifndef GLADOS_BUFFER_H
+#define GLADOS_BUFFER_H
 
 #include "memory/StreamBuffer.h"
 #include "utils/Enumeration.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   class Buffer {
   public:
-    Buffer(BufferType type, BufferUsage usage, const StreamBuffer& buffer);
+    Buffer(BufferType type, BufferUsage usage);
     virtual ~Buffer() = default;
 
     std::size_t getSize() const;
     virtual bool uploadData(StreamBuffer& buffer) = 0;
 
-  private:
+  protected:
     BufferType mType;
     BufferUsage mUsage;
-    std::size_t mSize;
+    std::size_t mSize{0};
   };
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #endif

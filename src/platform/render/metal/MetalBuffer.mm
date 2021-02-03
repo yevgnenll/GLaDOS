@@ -4,23 +4,24 @@
 
 #include "MetalRenderer.h"
 
-namespace GameEngine {
-  MetalBuffer::MetalBuffer(BufferType type, BufferUsage usage, StreamBuffer& buffer) : Buffer{type, usage, buffer} {
-    uploadData(buffer);
-  }
+namespace GLaDOS {
+  MetalBuffer::MetalBuffer(BufferType type, BufferUsage usage) : Buffer{type, usage} {}
 
   bool MetalBuffer::uploadData(StreamBuffer& buffer) {
     if (mMetalBuffer != nullptr) {
       [mMetalBuffer release];
     }
 
-    id<MTLDevice> device = MetalRenderer::getInstance()->getMetalDevice();
-    if (device != nullptr) {
-      mMetalBuffer = [device newBufferWithBytes:buffer.pointer() length:buffer.size() options:MTLResourceOptionCPUCacheModeDefault];
-      return true;
+    mSize = buffer.size();
+
+    id<MTLDevice> device = MetalRenderer::getInstance()->getDevice();
+    if (device == nullptr) {
+      LOG_ERROR("Invalid Metal device state");
+      return false;
     }
 
-    return false;
+    mMetalBuffer = [device newBufferWithBytes:buffer.pointer() length:buffer.size() options:MTLResourceOptionCPUCacheModeDefault];
+    return true;
   }
 
   id<MTLBuffer> MetalBuffer::getMetalBuffer() const {

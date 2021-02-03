@@ -1,9 +1,9 @@
-#ifndef GAMEENGINE_SPINLOCK_H
-#define GAMEENGINE_SPINLOCK_H
+#ifndef GLADOS_SPINLOCK_H
+#define GLADOS_SPINLOCK_H
 
 #include <atomic>
 
-namespace GameEngine {
+namespace GLaDOS {
   class SpinLock {
   public:
     SpinLock() = default;
@@ -15,6 +15,6 @@ namespace GameEngine {
   private:
     std::atomic_bool mAtomicLock{false};
   };
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
-#endif  //GAMEENGINE_SPINLOCK_H
+#endif  //GLADOS_SPINLOCK_H

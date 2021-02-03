@@ -1,11 +1,11 @@
-#ifndef GAMEENGINE_STRINGFORMATTER_H
-#define GAMEENGINE_STRINGFORMATTER_H
+#ifndef GLADOS_STRINGFORMATTER_H
+#define GLADOS_STRINGFORMATTER_H
 
 #include <string>
 
 #include "StringUtils.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   class Argument {
   public:
     Argument() = default;
@@ -83,6 +83,6 @@ namespace GameEngine {
     Argument const* array[sizeof...(args)] = {static_cast<Argument const*>(&args)...};
     return formatToImplInner(fmt, array);
   }
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #endif

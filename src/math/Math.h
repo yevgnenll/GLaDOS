@@ -1,5 +1,5 @@
-#ifndef GAMEENGINE_MATH_H
-#define GAMEENGINE_MATH_H
+#ifndef GLADOS_MATH_H
+#define GLADOS_MATH_H
 
 #include <cmath>
 #include <limits>
@@ -10,7 +10,7 @@
 #include "Vec3.h"
 #include "utils/Enumeration.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   class Quat;
   class Math {
   public:
@@ -144,6 +144,6 @@ namespace GameEngine {
     }
     return m;
   }
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #endif

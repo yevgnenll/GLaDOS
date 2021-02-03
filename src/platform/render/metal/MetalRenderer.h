@@ -1,5 +1,5 @@
-#ifndef GAMEENGINE_METALRENDERER_H
-#define GAMEENGINE_METALRENDERER_H
+#ifndef GLADOS_METALRENDERER_H
+#define GLADOS_METALRENDERER_H
 
 #include "platform/OSTypes.h"
 
@@ -10,35 +10,35 @@
 
 #include "memory/StreamBuffer.h"
 #include "platform/render/Renderer.h"
+#include "utils/Singleton.hpp"
 
-namespace GameEngine {
+namespace GLaDOS {
   class Buffer;
-  class MetalRenderer : public Renderer {
+  class MetalRenderer : public Renderer, public Singleton<MetalRenderer> {
   public:
-    MetalRenderer();
-    virtual ~MetalRenderer();
+    MetalRenderer() = default;
+    ~MetalRenderer() override;
 
     bool initialize() override;
-    void render() const override;
+    void render(Renderable* renderable) override;
 
     Buffer* createVertexBuffer(BufferUsage usage, StreamBuffer& buffer) override;
     Buffer* createIndexBuffer(BufferUsage usage, StreamBuffer& buffer) override;
     ShaderProgram* createShaderProgram() override;
+    Renderable* createRenderable() override;
 
-    id<MTLDevice> getMetalDevice() const;
-    id<MTLCommandQueue> getMetalCommandQueue() const;
+    id<MTLDevice> getDevice() const;
+    id<MTLCommandQueue> getCommandQueue() const;
+    id<MTLRenderCommandEncoder> getCommandEncoder() const;
     CAMetalLayer* getMetalLayer() const;
-    static MetalRenderer* getInstance();
 
   private:
-    static MetalRenderer* instance;
-
-    id<MTLDevice> mMetalDevice;
-    id<MTLCommandQueue> mMetalCommandQueue;
-    id<MTLRenderCommandEncoder> mMetalRenderCommandEncoder;
+    id<MTLDevice> mMetalDevice{nullptr};
+    id<MTLCommandQueue> mMetalCommandQueue{nullptr};
+    id<MTLRenderCommandEncoder> mMetalRenderCommandEncoder{nullptr};
     CAMetalLayer* mMetalLayer{nullptr};
   };
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #endif
 

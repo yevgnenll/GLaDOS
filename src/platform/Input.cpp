@@ -2,7 +2,7 @@
 
 #include "Platform.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   Input::Input() {
     for (int i = 0; i < static_cast<int>(KeyCode::KEY_MAX); i++) {
       mPreviousKeys[i] = mCurrentKeys[i] = false;
@@ -24,6 +24,9 @@ namespace GameEngine {
         mPreviousMouseButtons[i] = mCurrentMouseButtons[i];
         mCurrentMouseButtons[i] = Platform::getInstance()->mMouseButtons[i];
       }
+
+      mMouseDelta = Platform::getInstance()->mMousePosition - mlastMousePos;
+      mlastMousePos = Platform::getInstance()->mMousePosition;
     }
   }
 
@@ -37,6 +40,14 @@ namespace GameEngine {
 
   bool Input::isKeyPress(KeyCode keyCode) {
     return Input::getInstance()->mCurrentKeys[static_cast<int>(keyCode)];
+  }
+
+  Vec3 Input::mousePosition() {
+    return Input::getInstance()->mlastMousePos;
+  }
+
+  Vec3 Input::mouseDeltaPosition() {
+    return Input::getInstance()->mMouseDelta;
   }
 
   bool Input::isMouseDown(MouseButton button) {
@@ -98,4 +109,4 @@ namespace GameEngine {
 
     return false;
   }
-}  // namespace GameEngine
+}  // namespace GLaDOS

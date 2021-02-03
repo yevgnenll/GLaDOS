@@ -1,11 +1,11 @@
-#ifndef GAMEENGINE_SINGLETON_HPP
-#define GAMEENGINE_SINGLETON_HPP
+#ifndef GLADOS_SINGLETON_HPP
+#define GLADOS_SINGLETON_HPP
 
 #include <mutex>
 
 #include "SpinLock.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   template <typename T>
   class Singleton {
   public:
@@ -53,6 +53,6 @@ namespace GameEngine {
   void Singleton<T>::destroy() {
     reinterpret_cast<T*>(getBuffer())->~T();
   }
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
-#endif  //GAMEENGINE_SINGLETON_HPP
+#endif  //GLADOS_SINGLETON_HPP

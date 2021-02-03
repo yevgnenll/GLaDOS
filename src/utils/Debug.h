@@ -1,5 +1,5 @@
-#ifndef GAMEENGINE_DEBUG_H
-#define GAMEENGINE_DEBUG_H
+#ifndef GLADOS_DEBUG_H
+#define GLADOS_DEBUG_H
 
 #include <iostream>
 #include <string>
@@ -9,7 +9,7 @@
 #include "utils/Singleton.hpp"
 #include "utils/StringFormatter.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   struct SourceLocation {
     SourceLocation(const char* filename, int line, const char* functionName)
         : mFilename{filename}, mLine{line}, mFunctionName{functionName} {}
@@ -76,7 +76,7 @@ namespace GameEngine {
     static std::string formatStdTime(const TimePoint& tp, TimeZone timeZone);
     static std::chrono::milliseconds ms(TimePoint tp);
 
-    std::string mName{"GameEngine"};
+    std::string mName{"GLaDOS"};
     LogLevel mLevel{LogLevel::Info};
   };
 
@@ -149,6 +149,6 @@ namespace GameEngine {
   void Debug::error(SourceLocation loc, const T& fmt) {
     log(loc, LogLevel::Error, fmt);
   }
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #endif

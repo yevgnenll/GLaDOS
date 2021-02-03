@@ -4,7 +4,7 @@
 
 #include "utils/Utility.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   // TODO: not thread safe
   void* mmalloc(size_t size, const char* file, int line, const char* function) {
     auto* mi = static_cast<MemoryHeader*>(malloc(size + sizeof(MemoryHeader)));
@@ -72,4 +72,4 @@ namespace GameEngine {
       mi = mi->next;
     }
   }
-}  // namespace GameEngine
+}  // namespace GLaDOS

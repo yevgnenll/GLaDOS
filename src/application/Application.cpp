@@ -5,7 +5,7 @@
 #include "platform/Timer.h"
 #include "utils/Utility.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   std::string Application::resourcePath = RESOURCE_DIR;
   std::string Application::shaderPath = SHADER_DIR;
 
@@ -26,7 +26,7 @@ namespace GameEngine {
       Input::getInstance()->update();
       Timer::getInstance()->update();
 
-      update(Timer::getInstance()->deltaTime());
+      update(Timer::deltaTime());
       render();
 
       if (Input::isKeyDown(KeyCode::KEY_ESCAPE)) {
@@ -48,4 +48,4 @@ namespace GameEngine {
 
   void Application::update(real deltaTime) {
   }
-}  // namespace GameEngine
+}  // namespace GLaDOS

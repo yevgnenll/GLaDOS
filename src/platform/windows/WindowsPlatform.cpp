@@ -2,7 +2,7 @@
 
 #ifdef PLATFORM_WINDOW
 
-namespace GameEngine {
+namespace GLaDOS {
 
 }
 

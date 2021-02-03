@@ -2,7 +2,7 @@
 
 #include "Quat.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   real Math::clamp01(real value) { return value < real(0.0) ? real(0.0) : (value > real(1.0) ? real(1.0) : value); }
 
   real Math::lerp(real a, real b, real t) {
@@ -169,4 +169,4 @@ namespace GameEngine {
   Deg Math::roll(const Quat& q) {
     return toDegrees(Math::atan2(real(2.0) * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.y * q.y - q.z * q.z));
   }
-}  // namespace GameEngine
+}  // namespace GLaDOS

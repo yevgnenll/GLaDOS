@@ -1,10 +1,10 @@
-#ifndef GAMEENGINE_APPLICATION_H
-#define GAMEENGINE_APPLICATION_H
+#ifndef GLADOS_APPLICATION_H
+#define GLADOS_APPLICATION_H
 
 #include "platform/Platform.h"
 #include "utils/Singleton.hpp"
 
-namespace GameEngine {
+namespace GLaDOS {
   class Application : public Singleton<Application> {
   public:
     Application() = default;
@@ -22,6 +22,6 @@ namespace GameEngine {
     static std::string resourcePath;
     static std::string shaderPath;
   };
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #endif

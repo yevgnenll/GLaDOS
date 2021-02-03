@@ -1,11 +1,11 @@
-#ifndef GAMEENGINE_STLALLOCATOR_H
-#define GAMEENGINE_STLALLOCATOR_H
+#ifndef GLADOS_STLALLOCATOR_H
+#define GLADOS_STLALLOCATOR_H
 
 #include <limits>
 
 #include "Allocation.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   template <typename T>
   class STLAllocator {
   public:
@@ -53,6 +53,6 @@ namespace GameEngine {
   void STLAllocator<T>::destroy(pointer ptr) {
     ptr->~T();
   }
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #endif

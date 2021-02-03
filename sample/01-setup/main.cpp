@@ -1,6 +1,6 @@
 #include "application/Application.h"
 
-using namespace GameEngine;
+using namespace GLaDOS;
 
 int main(int argc, char** argv) {
   PlatformParams params{1024, 800, "Powered by gameengine"};

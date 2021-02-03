@@ -7,7 +7,7 @@
 #include "StringUtils.h"
 #include "platform/OSTypes.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   std::string SourceLocation::getFileName() const {
     auto path = std::string(mFilename);
     return path.substr(path.find_last_of(PATH_SEPARATOR) + 1);
@@ -75,4 +75,4 @@ namespace GameEngine {
   std::chrono::milliseconds Debug::ms(TimePoint tp) {
     return std::chrono::duration_cast<std::chrono::milliseconds>(tp.time_since_epoch()) % 1000;
   }
-}  // namespace GameEngine
+}  // namespace GLaDOS

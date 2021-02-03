@@ -1,16 +1,18 @@
-#ifndef GAMEENGINE_MAT4_HPP
-#define GAMEENGINE_MAT4_HPP
+#ifndef GLADOS_MAT4_HPP
+#define GLADOS_MAT4_HPP
 
 #include <stdexcept>
 
 #include "Angle.hpp"
 #include "Math.h"
+#include "Quat.h"
 #include "UVec3.h"
 #include "UVec4.h"
 #include "Vec3.h"
 #include "Vec4.h"
+#include "utils/Utility.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   template <typename T>
   class Mat4 {
   public:
@@ -26,7 +28,7 @@ namespace GameEngine {
     bool isIdentity() const;
     Mat4<T>& makeTranspose();
     Mat4<T>& makeInverse();
-    T* pointer() const;
+    const T* pointer() const;
 
     Mat4<T> operator+(const Mat4<T>& m) const;
     Mat4<T>& operator+=(const Mat4<T>& m);
@@ -55,22 +57,23 @@ namespace GameEngine {
     real operator[](unsigned int index) const;
     real at(int index) const;
     real at(int row, int col) const;
+    std::size_t size() const;
 
     static constexpr Mat4<T> identity();
     static Mat4<T> inverse(const Mat4<T>& other);
     static Mat4<T> toMat3(const Mat4<T>& other);
     static Mat4<T> abs(const Mat4<T>& other);
-    static Mat4<real> perspective(Rad fieldOfView, real aspectRatio, real znear, real zfar);
-    static Mat4<real> orthogonal(real left, real right, real bottom, real top, real znear, real zfar);
-    static Mat4<real> lookAt(const Vec3& eye, const UVec3& forward, const UVec3& up);
-    static Mat4<real> translate(const Vec3& trans);
-    static Mat4<real> scale(const Vec3& scale);
-    static Mat4<real> rotate(Rad angle, const UVec3& axis);
-    static Mat4<real> normalizeComponents(const Mat4<real>& matrix);
-    static Vec3 decomposeTranslation(const Mat4<real>& matrix);
-    static Vec3 decomposeRotation(const Mat4<real>& matrix);
-    static Vec3 decomposeScale(const Mat4<real>& matrix);
-    static Mat4<real> buildTRS(const Vec3& p, const Vec3& q, const Vec3& s);
+    static std::enable_if_t<is_real_v<T>, Mat4<T>> perspective(Rad fieldOfView, const T& aspectRatio, const T& znear, const T& zfar);
+    static std::enable_if_t<is_real_v<T>, Mat4<T>> orthogonal(const T& left, const T& right, const T& bottom, const T& top, const T& znear, const T& zfar);
+    static std::enable_if_t<is_real_v<T>, Mat4<T>> lookAt(const Vec3& eye, const UVec3& forward, const UVec3& up);
+    static std::enable_if_t<is_real_v<T>, Mat4<T>> translate(const Vec3& trans);
+    static std::enable_if_t<is_real_v<T>, Mat4<T>> scale(const Vec3& scale);
+    static std::enable_if_t<is_real_v<T>, Mat4<T>> rotate(Rad angle, const UVec3& axis);
+    static std::enable_if_t<is_real_v<T>, Mat4<T>> normalizeComponents(const Mat4<T>& matrix);
+    static std::enable_if_t<is_real_v<T>, Vec3> decomposeTranslation(const Mat4<T>& matrix);
+    static std::enable_if_t<is_real_v<T>, Vec3> decomposeRotation(const Mat4<T>& matrix);
+    static std::enable_if_t<is_real_v<T>, Vec3> decomposeScale(const Mat4<T>& matrix);
+    static std::enable_if_t<is_real_v<T>, Mat4<T>> buildTRS(const Vec3& p, const Quat& q, const Vec3& s);
 
     union {
       struct {
@@ -82,6 +85,7 @@ namespace GameEngine {
 
       T _m44[4][4];
       T _m16[16];
+      Vec4 rows[4];
     };
     static const Mat4<T> one;
     static const Mat4<T> zero;
@@ -178,7 +182,7 @@ namespace GameEngine {
   }
 
   template <typename T>
-  T* Mat4<T>::pointer() const {
+  const T* Mat4<T>::pointer() const {
     return _m16;
   }
 
@@ -362,6 +366,11 @@ namespace GameEngine {
   }
 
   template <typename T>
+  std::size_t Mat4<T>::size() const {
+    return 16;
+  }
+
+  template <typename T>
   constexpr Mat4<T> Mat4<T>::identity() {
     Mat4<T> mat;
     for (unsigned c = 0; c < 4; c++) {
@@ -447,30 +456,30 @@ namespace GameEngine {
                    Math::abs(other._m16[12]), Math::abs(other._m16[13]), Math::abs(other._m16[14]), Math::abs(other._m16[15]));
   }
 
-  template <>
-  Mat4<real> Mat4<real>::perspective(Rad fieldOfView, real aspectRatio, real znear, real zfar) {
-    real tanHalfFovy = Math::tan(static_cast<real>(fieldOfView) / 2.f);
+  template <typename T>
+  std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::perspective(Rad fieldOfView, const T& aspectRatio, const T& znear, const T& zfar) {
+    auto tanHalfFovy = Math::tan(static_cast<T>(fieldOfView) / T(2.0));
 
-    Mat4<real> mat = Mat4<real>::zero;
-    mat._m16[0] = 1.0f / (aspectRatio * tanHalfFovy);
-    mat._m16[5] = 1.0f / tanHalfFovy;
+    Mat4<real> mat = Mat4<T>::zero;
+    mat._m16[0] = T(1.0) / (aspectRatio * tanHalfFovy);
+    mat._m16[5] = T(1.0) / tanHalfFovy;
     mat._m16[10] = -(zfar + znear) / (zfar - znear);
-    mat._m16[11] = -1.0f;
-    mat._m16[14] = -(2.0f * zfar * znear) / (zfar - znear);
+    mat._m16[11] = T(-1.0);
+    mat._m16[14] = -(T(2.0) * zfar * znear) / (zfar - znear);
 
     return mat;
   }
 
-  template <>
-  Mat4<real> Mat4<real>::orthogonal(real left, real right, real bottom, real top, real znear, real zfar) {
-    real rl = 1.0f / (right - left);
-    real tb = 1.0f / (top - bottom);
-    real fn = 1.0f / (zfar - znear);
+  template <typename T>
+  std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::orthogonal(const T& left, const T& right, const T& bottom, const T& top, const T& znear, const T& zfar) {
+    T rl = T(1.0) / (right - left);
+    T tb = T(1.0) / (top - bottom);
+    T fn = T(1.0) / (zfar - znear);
 
-    Mat4<real> mat{};
-    mat._m16[0] = 2.f * rl;
-    mat._m16[5] = 2.f * tb;
-    mat._m16[10] = -2.f * fn;
+    Mat4<T> mat{};
+    mat._m16[0] = T(2.0) * rl;
+    mat._m16[5] = T(2.0) * tb;
+    mat._m16[10] = T(-2.0) * fn;
     mat._m16[12] = -(right + left) * rl;
     mat._m16[13] = -(top + bottom) * tb;
     mat._m16[14] = -(zfar + znear) * fn;
@@ -478,27 +487,27 @@ namespace GameEngine {
     return mat;
   }
 
-  template <>
-  Mat4<real> Mat4<real>::lookAt(const Vec3& eye, const UVec3& forward, const UVec3& up) {
+  template <typename T>
+  std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::lookAt(const Vec3& eye, const UVec3& forward, const UVec3& up) {
     UVec3 zaxis = Vec3::normalize((eye - forward));
     UVec3 xaxis = Vec3::normalize(Vec3::cross(up, zaxis));
     Vec3 yaxis = Vec3::cross(zaxis, xaxis);
 
-    return Mat4<real>(xaxis->x, yaxis.x, zaxis->x, 0.F,
-                      xaxis->y, yaxis.y, zaxis->y, 0.F,
-                      xaxis->z, yaxis.z, zaxis->z, 0.F,
-                      -Vec3::dot(xaxis, eye), -Vec3::dot(yaxis, eye), -Vec3::dot(zaxis, eye), 1.F);
+    return Mat4<real>{xaxis->x, yaxis.x, zaxis->x, T(0.0),
+                      xaxis->y, yaxis.y, zaxis->y, T(0.0),
+                      xaxis->z, yaxis.z, zaxis->z, T(0.0),
+                      -Vec3::dot(xaxis, eye), -Vec3::dot(yaxis, eye), -Vec3::dot(zaxis, eye), T(1.0)};
   }
 
-  template <>
-  Mat4<real> Mat4<real>::translate(const Vec3& trans) {
+  template <typename T>
+  std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::translate(const Vec3& trans) {
     /*
      |1 0 0 0|
      |0 1 0 0|
      |0 0 1 0|
      |x y z 1|
     */
-    Mat4<real> mat;
+    Mat4<T> mat;
     mat._m16[12] = trans.x;
     mat._m16[13] = trans.y;
     mat._m16[14] = trans.z;
@@ -506,15 +515,15 @@ namespace GameEngine {
     return mat;
   }
 
-  template <>
-  Mat4<real> Mat4<real>::scale(const Vec3& scale) {
+  template <typename T>
+  std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::scale(const Vec3& scale) {
     /*
      |x 0 0 0|
      |0 y 0 0|
      |0 0 z 0|
      |0 0 0 1|
     */
-    Mat4<real> mat;
+    Mat4<T> mat;
     mat._m16[0] = scale.x;
     mat._m16[5] = scale.y;
     mat._m16[10] = scale.z;
@@ -522,8 +531,8 @@ namespace GameEngine {
     return mat;
   }
 
-  template <>
-  Mat4<real> Mat4<real>::rotate(Rad angle, const UVec3& axis) {
+  template <typename T>
+  std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::rotate(Rad angle, const UVec3& axis) {
     /*
      x = | 1  0    0   0 |
          | 0 cos -sin  0 |
@@ -540,22 +549,67 @@ namespace GameEngine {
          |  0    0   1  0 |
          |  0    0   0  1 |
     */
-    real c = Math::cos(static_cast<real>(angle));
-    real s = Math::sin(static_cast<real>(angle));
-    real t = 1.F - c;
+    T c = Math::cos(static_cast<T>(angle));
+    T s = Math::sin(static_cast<T>(angle));
+    T t = 1.F - c;
 
-    real tx = t * axis->x;
-    real ty = t * axis->y;
-    real tz = t * axis->z;
+    T tx = t * axis->x;
+    T ty = t * axis->y;
+    T tz = t * axis->z;
 
-    real sx = s * axis->x;
-    real sy = s * axis->y;
-    real sz = s * axis->z;
+    T sx = s * axis->x;
+    T sy = s * axis->y;
+    T sz = s * axis->z;
 
-    return Mat4<real>(tx * axis->x + c, tx * axis->y + sz, tx * axis->z - sy, 0.F,
-                      ty * axis->x - sz, ty * axis->y + c, ty * axis->z + sx, 0.F,
-                      tz * axis->x + sy, tz * axis->y - sx, tz * axis->z + c, 0.F,
-                      0.F, 0.F, 0.F, 1.F);
+    return Mat4<T>{tx * axis->x + c, tx * axis->y + sz, tx * axis->z - sy, T(0.0),
+                   ty * axis->x - sz, ty * axis->y + c, ty * axis->z + sx, T(0.0),
+                   tz * axis->x + sy, tz * axis->y - sx, tz * axis->z + c, T(0.0),
+                   T(0.0), T(0.0), T(0.0), T(1.0)};
+  }
+
+  template <typename T>
+  std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::normalizeComponents(const Mat4<T>& matrix) {
+    UVec4 first = Vec4::normalize(Vec4{matrix._11, matrix._12, matrix._13, matrix._14});
+    UVec4 second = Vec4::normalize(Vec4{matrix._21, matrix._22, matrix._23, matrix._24});
+    UVec4 third = Vec4::normalize(Vec4{matrix._31, matrix._32, matrix._33, matrix._34});
+
+    return Mat4<T>{first->x, first->y, first->z, first->w,
+                   second->x, second->y, second->z, second->w,
+                   third->x, third->y, third->z, third->w,
+                   matrix._41, matrix._42, matrix._43, matrix._44};
+  }
+
+  template <typename T>
+  std::enable_if_t<is_real_v<T>, Vec3> Mat4<T>::decomposeTranslation(const Mat4<T>& matrix) {
+    return Vec3{matrix._41, matrix._42, matrix._43};
+  }
+
+  template <typename T>
+  std::enable_if_t<is_real_v<T>, Vec3> Mat4<T>::decomposeRotation(const Mat4<T>& matrix) {
+    Mat4<T> components = Mat4<T>::normalizeComponents(matrix);
+
+    // In radian unit
+    return Vec3{Math::atan2(components._23, components._33), -Math::sin(components._13), Math::atan2(components._12, components._11)};
+  }
+
+  template <typename T>
+  std::enable_if_t<is_real_v<T>, Vec3> Mat4<T>::decomposeScale(const Mat4<T>& matrix) {
+    real first = Vec3(matrix._11, matrix._12, matrix._13).length();
+    real second = Vec3(matrix._21, matrix._22, matrix._23).length();
+    real third = Vec3(matrix._31, matrix._32, matrix._33).length();
+
+    return Vec3{first, second, third};
+  }
+
+  template <typename T>
+  std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::buildTRS(const Vec3& p, const Quat& q, const Vec3& s) {
+    /*
+      if using column vectors
+      M := T * R * S
+      else if using row vectors
+      M := S * R * T
+    */
+    return Mat4<real>::scale(s) * Quat::toRotMat(q) * Mat4<real>::translate(p);
   }
 
   template <typename T>
@@ -569,56 +623,9 @@ namespace GameEngine {
     }
   }
 
-  template <>
-  Mat4<real> Mat4<real>::normalizeComponents(const Mat4<real>& matrix) {
-    UVec4 first = Vec4::normalize(Vec4{matrix._11, matrix._12, matrix._13, matrix._14});
-    UVec4 second = Vec4::normalize(Vec4{matrix._21, matrix._22, matrix._23, matrix._24});
-    UVec4 third = Vec4::normalize(Vec4{matrix._31, matrix._32, matrix._33, matrix._34});
-
-    return Mat4<real>(first->x, first->y, first->z, first->w,
-                      second->x, second->y, second->z, second->w,
-                      third->x, third->y, third->z, third->w,
-                      matrix._41, matrix._42, matrix._43, matrix._44);
-  }
-
-  template <>
-  Vec3 Mat4<real>::decomposeTranslation(const Mat4<real>& matrix) {
-    return Vec3{matrix._41, matrix._42, matrix._43};
-  }
-
-  template <>
-  Vec3 Mat4<real>::decomposeRotation(const Mat4<real>& matrix) {
-    Mat4<real> components = Mat4<real>::normalizeComponents(matrix);
-
-    // In radian unit
-    return Vec3{Math::atan2(components._23, components._33), -Math::sin(components._13), Math::atan2(components._12, components._11)};
-  }
-
-  template <>
-  Vec3 Mat4<real>::decomposeScale(const Mat4<real>& matrix) {
-    real first = Vec3(matrix._11, matrix._12, matrix._13).length();
-    real second = Vec3(matrix._21, matrix._22, matrix._23).length();
-    real third = Vec3(matrix._31, matrix._32, matrix._33).length();
-
-    return Vec3{first, second, third};
-  }
-
-  template <>
-  Mat4<real> Mat4<real>::buildTRS(const Vec3& p, const Vec3& q, const Vec3& s) {
-    /*
-      if using column vectors
-      M := T * R * S
-      else if using row vectors
-      M := S * R * T
-    */
-    // TODO
-    //    return Mat4<real>::scale(s) * Quaternion::ToRotationMatrix(q) * Mat4<real>::translate(p);
-    return Mat4<real>{};
-  }
-
   using Mat4r = Mat4<real>;
   using Mat4i = Mat4<int>;
   using Mat4l = Mat4<long>;
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
-#endif  //GAMEENGINE_MAT4_HPP
+#endif  //GLADOS_MAT4_HPP

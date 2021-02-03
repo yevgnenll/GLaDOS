@@ -1,14 +1,29 @@
-#ifndef GAMEENGINE_RENDERABLE_H
-#define GAMEENGINE_RENDERABLE_H
+#ifndef GLADOS_RENDERABLE_H
+#define GLADOS_RENDERABLE_H
 
-namespace GameEngine {
+#include <cstdint>
+
+namespace GLaDOS {
+  using RenderableId = int32_t;
+  class Material;
+  class Mesh;
   class Renderable {
+    friend class Renderer;
+
   public:
-    Renderable();
+    static Renderable* create(Mesh* _mesh, Material* _material);
+    virtual void release() = 0;
+    RenderableId getId() const;
+
+  protected:
+    explicit Renderable(RenderableId _id);
     virtual ~Renderable();
 
   private:
+    RenderableId mId;
+    Mesh* mMesh{nullptr};
+    Material* mMaterial{nullptr};
   };
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #endif

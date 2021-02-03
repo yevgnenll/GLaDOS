@@ -1,9 +1,9 @@
-#ifndef GAMEENGINE_UVEC3_H
-#define GAMEENGINE_UVEC3_H
+#ifndef GLADOS_UVEC3_H
+#define GLADOS_UVEC3_H
 
 #include "Vec3.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   class UVec3 {
   private:
     friend Vec3;
@@ -15,6 +15,6 @@ namespace GameEngine {
     const Vec3* operator->() const;
     const Vec3& operator*() const;
   };
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
-#endif  //GAMEENGINE_UVEC3_H
+#endif  //GLADOS_UVEC3_H

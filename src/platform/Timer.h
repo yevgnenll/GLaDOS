@@ -1,5 +1,5 @@
-#ifndef GAMEENGINE_TIMER_H
-#define GAMEENGINE_TIMER_H
+#ifndef GLADOS_TIMER_H
+#define GLADOS_TIMER_H
 
 #include <chrono>
 #include <ctime>
@@ -8,23 +8,23 @@
 #include "utils/Enumeration.h"
 #include "utils/Singleton.hpp"
 
-namespace GameEngine {
+namespace GLaDOS {
   class Timer : public Singleton<Timer> {
   public:
     Timer() = default;
 
-    void reset();
     void update();
 
-    real deltaTime() const;
-    real deltaTimeUnscaled() const;
-    real elapsedTime() const;
-    real elapsedTimeUnscaled() const;
-    real fixedDeltaTime() const;
-    real fixedDeltaTimeUnscaled() const;
+    static void reset();
+    static real deltaTime();
+    static real deltaTimeUnscaled();
+    static real elapsedTime();
+    static real elapsedTimeUnscaled();
+    static real fixedDeltaTime();
+    static real fixedDeltaTimeUnscaled();
 
-    int fps() const;
-    void setTimeScale(real value);
+    static int fps();
+    static void setTimeScale(real value);
     static HighResolutionTimePoint now();
     static real getInterval(HighResolutionTimePoint start, HighResolutionTimePoint end);
 
@@ -43,6 +43,6 @@ namespace GameEngine {
     real mFixedDeltaTime{0.0};
     real mUnscaledFixedDeltaTime{0.02};
   };
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #endif

@@ -2,7 +2,7 @@
 
 #include "utils/StringUtils.h"
 
-using namespace GameEngine;
+using namespace GLaDOS;
 
 TEST_CASE("StringUtils unit tests", "[StringUtils]") {
   SECTION("base path and file name extraction test") {

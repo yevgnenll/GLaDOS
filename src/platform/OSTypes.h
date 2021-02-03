@@ -1,5 +1,5 @@
-#ifndef GAMEENGINE_OSTYPES_H
-#define GAMEENGINE_OSTYPES_H
+#ifndef GLADOS_OSTYPES_H
+#define GLADOS_OSTYPES_H
 
 #if defined(_WIN32) || defined(_WIN64)
 #if _WIN64

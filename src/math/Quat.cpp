@@ -1,9 +1,10 @@
 #include "Quat.h"
 
+#include "Mat4.hpp"
 #include "Math.h"
 #include "Vec3.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   Quat::Quat(real _w, real _x, real _y, real _z) : w{_w}, x{_x}, y{_y}, z{_z} {}
 
   Quat::Quat(real _w, const Vec3& _v) : w{_w}, x{_v.x}, y{_v.y}, z{_v.z} {}
@@ -331,4 +332,4 @@ namespace GameEngine {
 
   const Quat Quat::zero(0.0, 0.0, 0.0, 0.0);
   const Quat Quat::identity(1.0, 0.0, 0.0, 0.0);
-}  // namespace GameEngine
+}  // namespace GLaDOS

@@ -1,7 +1,7 @@
-#ifndef GAMEENGINE_KEYCODE_H
-#define GAMEENGINE_KEYCODE_H
+#ifndef GLADOS_KEYCODE_H
+#define GLADOS_KEYCODE_H
 
-namespace GameEngine {
+namespace GLaDOS {
   enum class MouseButton { MOUSE_UNDEFINED = -1,
                            MOUSE_LEFT = 0,
                            MOUSE_RIGHT,
@@ -143,6 +143,6 @@ namespace GameEngine {
     KEY_UNKNOWN21,
     KEY_MAX
   };
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #endif

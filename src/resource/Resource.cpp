@@ -2,7 +2,7 @@
 
 #include "utils/StringUtils.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   unsigned int Resource::getReferenceCount() const {
     return mReferenceCount;
   }
@@ -32,4 +32,4 @@ namespace GameEngine {
   void Resource::RemoveReference() {
     mReferenceCount--;
   }
-}  // namespace GameEngine
+}  // namespace GLaDOS

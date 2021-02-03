@@ -2,7 +2,7 @@
 
 #include "platform/OSTypes.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   std::string StringUtils::normalize(const std::string& t) {
     return t;
   }
@@ -36,12 +36,12 @@ namespace GameEngine {
     return std::stod(str);
   }
 
-  int StringUtils::toInt(const std::string& str) {
-    return std::stoi(str);
+  int StringUtils::toInt(const std::string& str, int base) {
+    return std::stoi(str, 0, base);
   }
 
-  long StringUtils::toLong(const std::string& str) {
-    return std::stol(str);
+  long StringUtils::toLong(const std::string& str, int base) {
+    return std::stol(str, 0, base);
   }
 
   std::pair<std::string, std::string> StringUtils::extractBaseFileNamePair(const std::string& fullPath) {
@@ -52,4 +52,4 @@ namespace GameEngine {
 
     return std::make_pair("", "");
   }
-}  // namespace GameEngine
+}  // namespace GLaDOS

@@ -1,9 +1,9 @@
-#ifndef GAMEENGINE_ENUMERATION_H
-#define GAMEENGINE_ENUMERATION_H
+#ifndef GLADOS_ENUMERATION_H
+#define GLADOS_ENUMERATION_H
 
 #include <chrono>
 
-namespace GameEngine {
+namespace GLaDOS {
   using real = float;
   using SystemClock = std::chrono::system_clock;
   using TimePoint = SystemClock::time_point;
@@ -22,19 +22,21 @@ namespace GameEngine {
   };
 
   enum class ResourceType {
+    Undefined = -1,
     ShaderProgram = 0,
     Sound = 1,
-    Texture2D = 2,
-    Undefined = -1
+    Texture2D = 2
   };
 
   enum class ShaderType {
+    Unknown = -1,
     VertexShader,
     FragmentShader,
     GeometryShader,
     TessControlShader,
     TessEvalShader,
-    ComputeShader
+    ComputeShader,
+    NumberOfShaderType
   };
 
   enum class BufferType {
@@ -53,6 +55,69 @@ namespace GameEngine {
     DynamicDraw,
     DynamicRead,
     DynamicCopy
+  };
+
+  enum class VertexSemantic {
+    Unknown = -1,
+    Position,
+    Normal,
+    Color,
+    TexCoord0,
+    TexCoord1,
+    TexCoord2,
+    TexCoord3,
+    Tangent,
+    BiTangent,
+    NumberOfSemantic
+  };
+
+  enum class VertexAttributeType {
+    Unknown = -1,
+    Float,
+    Float2,
+    Float3,
+    Float4,
+    Half,
+    Half2,
+    Half3,
+    Half4,
+    Int,
+    Int2,
+    Int3,
+    Int4,
+    Byte,
+    Byte2,
+    Byte3,
+    Byte4,
+    UByte,
+    UByte2,
+    UByte3,
+    UByte4,
+    UByteNorm,
+    UByte4Norm,
+    Short2,
+    Short4,
+    UShort2,
+    UShort2Norm,
+    Uint,
+    UShortNorm,
+    UShort4Norm,
+    NumberOfAttributeType
+  };
+
+  enum class UniformType {
+    Unknown = -1,
+    Bool,
+    Int,
+    UInt,
+    Float,
+    Vec2,
+    Vec3,
+    Vec4,
+    Mat4,
+    Texture,
+    Sampler,
+    NumberOfUniformType
   };
 
   enum class TimeZone {
@@ -84,6 +149,6 @@ namespace GameEngine {
                                                   WindowStyle::Maximizable |
                                                   WindowStyle::Minimizable;
   }
-}  // namespace GameEngine
+}  // namespace GLaDOS
 
 #endif

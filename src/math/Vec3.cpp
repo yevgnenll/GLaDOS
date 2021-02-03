@@ -8,7 +8,7 @@
 #include "UVec3.h"
 #include "Vec4.h"
 
-namespace GameEngine {
+namespace GLaDOS {
   Vec3::Vec3(real _x) : x{_x}, y{0.0}, z{0.0} {}
 
   Vec3::Vec3(const real _x, const real _y) : x{_x}, y{_y}, z{0.0} {}
@@ -238,4 +238,4 @@ namespace GameEngine {
   const UVec3 Vec3::backward = UVec3{Vec3(0.0, 0.0, 1.0)};
   const UVec3 Vec3::one = UVec3{Vec3(1.0, 1.0, 1.0)};
   const UVec3 Vec3::zero = UVec3{Vec3(0.0, 0.0, 0.0)};
-}  // namespace GameEngine
+}  // namespace GLaDOS
