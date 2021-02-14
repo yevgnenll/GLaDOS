@@ -1,31 +1,31 @@
 #ifndef GLADOS_RENDERER_H
 #define GLADOS_RENDERER_H
 
-#include "Buffer.h"
-#include "Renderable.h"
+#include "memory/StreamBuffer.h"
 #include "utils/Enumeration.h"
-#include "utils/Utility.h"
 
 namespace GLaDOS {
+  class Mesh;
+  class Material;
+  class Buffer;
   class Renderable;
   class ShaderProgram;
+  class FrameBuffer;
+  class RenderBuffer;
   class Renderer {
   public:
     Renderer() = default;
-    virtual ~Renderer();
+    virtual ~Renderer() = default;
 
     virtual bool initialize() = 0;
-    virtual void render(Renderable* renderable) = 0;
+    virtual void render(Renderable* _renderable) = 0;
 
     virtual Buffer* createVertexBuffer(BufferUsage usage, StreamBuffer& buffer) = 0;
     virtual Buffer* createIndexBuffer(BufferUsage usage, StreamBuffer& buffer) = 0;
-    virtual ShaderProgram* createShaderProgram() = 0;
-    virtual Renderable* createRenderable() = 0;
-    Renderable* getRenderable(RenderableId id);
-    void releaseRenderable(Renderable* renderable);
-
-  protected:
-    Map<RenderableId, Renderable*> mRenderable;
+    virtual ShaderProgram* createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath) = 0;
+    virtual Renderable* createRenderable(Mesh* mesh, Material* material) = 0;
+    virtual FrameBuffer* createFrameBuffer() = 0;
+    virtual RenderBuffer* createRenderBuffer() = 0;
   };
 }  // namespace GLaDOS
 

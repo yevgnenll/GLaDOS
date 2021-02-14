@@ -11,6 +11,19 @@ namespace GLaDOS {
   using HighResolutionTimePoint = std::chrono::time_point<HighResolutionClock>;
   using millisecond = std::chrono::duration<real, std::milli>;
 
+  enum class CursorMode {
+    Show,
+    Hidden
+  };
+
+  enum class PrimitiveType {
+    Point = 0,
+    Line,
+    LineStrip,
+    Triangle,
+    TriangleStrip
+  };
+
   enum class WindowStyle {
     None = 0,
     Resizable = 1 << 0,
@@ -125,18 +138,66 @@ namespace GLaDOS {
     UTC
   };
 
-  enum class LogLevel {
-    Trace = 0,
-    Debug,
-    Info,
-    Warn,
-    Error,
-    Off,
-    NumberOfLevel
+  enum class OpenMode {
+    Read = 0,
+    Write,
+    ReadWrite,
+    AppendOnly,
+    ReadBinary,
+    WriteBinary,
+    ReadWriteBinary
   };
 
-  static const char* logLevelName[static_cast<int>(LogLevel::NumberOfLevel)] = {
-      "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "OFF"};
+  class LogLevel {
+  public:
+    enum Value : uint8_t {
+      Trace = 0,
+      Debug,
+      Info,
+      Warn,
+      Error,
+      Off,
+      NumberOfLevel
+    };
+
+    LogLevel() = delete;
+    constexpr LogLevel(Value _value) : value{_value} {}
+
+    constexpr operator Value() const { return value; }
+    explicit operator bool() = delete;
+    constexpr bool operator==(const LogLevel& other) const { return value == other.value; }
+    constexpr bool operator!=(const LogLevel& other) const { return value != other.value; }
+    bool operator>=(const LogLevel& other) const { return value >= other.value; }
+    constexpr bool operator>(const LogLevel& other) const { return value > other.value; }
+    constexpr bool operator<=(const LogLevel& other) const { return value <= other.value; }
+    constexpr bool operator<(const LogLevel& other) const { return value < other.value; }
+
+    const char* toString() const {
+      switch (value) {
+        case Trace:
+          return "TRACE";
+        case Debug:
+          return "DEBUG";
+        case Info:
+          return "INFO";
+        case Warn:
+          return "WARN";
+        case Error:
+          return "ERROR";
+        case Off:
+          return "OFF";
+        default:
+          return "UNDEFINED";
+      }
+    }
+
+    static std::size_t size() {
+      return NumberOfLevel;
+    }
+
+  private:
+    Value value;
+  };
 
   inline WindowStyle operator|(const WindowStyle a, const WindowStyle b) { return static_cast<WindowStyle>(static_cast<int>(a) | static_cast<int>(b)); }
 

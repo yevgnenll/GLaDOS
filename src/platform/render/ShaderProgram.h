@@ -12,7 +12,7 @@ namespace GLaDOS {
   class Color;
   class ShaderProgram : public Resource {
   public:
-    ShaderProgram() = default;
+    ShaderProgram();
     ~ShaderProgram() override;
 
     void setUniform(const std::string& name, int value);
@@ -31,11 +31,11 @@ namespace GLaDOS {
     void setUniform(const std::string& name, bool value);
     Uniform* getUniform(const std::string& name);
     Map<std::string, Uniform*>& getUniforms();
-    std::size_t getUniformCount() const;
+    std::size_t uniformSize() const;
     bool isValid() const;
 
   private:
-    virtual bool createShaderProgram(const std::string& vertexSource, const std::string& fragmentSource) = 0;
+    virtual bool createShaderProgram(const std::string& vertex, const std::string& fragment) = 0;
 
   protected:
     std::string mVertexShaderCode;

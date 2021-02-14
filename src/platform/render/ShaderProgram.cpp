@@ -5,8 +5,13 @@
 #include "math/Vec3.h"
 #include "math/Vec4.h"
 #include "platform/render/Uniform.h"
+#include "RootDir.h"
 
 namespace GLaDOS {
+  ShaderProgram::ShaderProgram() : Resource{ResourceType::ShaderProgram} {
+    setResourceDir(SHADER_DIR);
+  }
+
   ShaderProgram::~ShaderProgram() {
     deallocValueInMap(mUniforms);
   }
@@ -176,7 +181,7 @@ namespace GLaDOS {
     return mUniforms;
   }
 
-  std::size_t ShaderProgram::getUniformCount() const {
+  std::size_t ShaderProgram::uniformSize() const {
     return mUniforms.size();
   }
 

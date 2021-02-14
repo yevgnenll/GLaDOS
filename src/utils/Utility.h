@@ -10,8 +10,8 @@
 #include "utils/Debug.h"
 
 namespace GLaDOS {
-#define LOG_TRACE(fmt, ...) GLaDOS::Debug::getInstance()->info({__FILE__, __LINE__, __FUNCTION__}, fmt, ##__VA_ARGS__)
-#define LOG_DEBUG(fmt, ...) GLaDOS::Debug::getInstance()->info({__FILE__, __LINE__, __FUNCTION__}, fmt, ##__VA_ARGS__)
+#define LOG_TRACE(fmt, ...) GLaDOS::Debug::getInstance()->trace({__FILE__, __LINE__, __FUNCTION__}, fmt, ##__VA_ARGS__)
+#define LOG_DEBUG(fmt, ...) GLaDOS::Debug::getInstance()->debug({__FILE__, __LINE__, __FUNCTION__}, fmt, ##__VA_ARGS__)
 #define LOG_INFO(fmt, ...) GLaDOS::Debug::getInstance()->info({__FILE__, __LINE__, __FUNCTION__}, fmt, ##__VA_ARGS__)
 #define LOG_WARN(fmt, ...) GLaDOS::Debug::getInstance()->warn({__FILE__, __LINE__, __FUNCTION__}, fmt, ##__VA_ARGS__)
 #define LOG_ERROR(fmt, ...) GLaDOS::Debug::getInstance()->error({__FILE__, __LINE__, __FUNCTION__}, fmt, ##__VA_ARGS__)

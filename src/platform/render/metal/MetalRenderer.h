@@ -5,8 +5,8 @@
 
 #ifdef PLATFORM_MACOS
 
-#import <Metal/Metal.h>
-#import <QuartzCore/CAMetalLayer.h>
+#include <Metal/Metal.h>
+#include <QuartzCore/CAMetalLayer.h>
 
 #include "memory/StreamBuffer.h"
 #include "platform/render/Renderer.h"
@@ -20,22 +20,26 @@ namespace GLaDOS {
     ~MetalRenderer() override;
 
     bool initialize() override;
-    void render(Renderable* renderable) override;
+    void render(Renderable* _renderable) override;
 
     Buffer* createVertexBuffer(BufferUsage usage, StreamBuffer& buffer) override;
     Buffer* createIndexBuffer(BufferUsage usage, StreamBuffer& buffer) override;
-    ShaderProgram* createShaderProgram() override;
-    Renderable* createRenderable() override;
+    ShaderProgram* createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath) override;
+    Renderable* createRenderable(Mesh* mesh, Material* material) override;
+    FrameBuffer* createFrameBuffer() override;
+    RenderBuffer* createRenderBuffer() override;
 
     id<MTLDevice> getDevice() const;
-    id<MTLCommandQueue> getCommandQueue() const;
     id<MTLRenderCommandEncoder> getCommandEncoder() const;
+    void setCommandEncoder(id<MTLRenderCommandEncoder> commandEncoder);
     CAMetalLayer* getMetalLayer() const;
 
   private:
-    id<MTLDevice> mMetalDevice{nullptr};
-    id<MTLCommandQueue> mMetalCommandQueue{nullptr};
-    id<MTLRenderCommandEncoder> mMetalRenderCommandEncoder{nullptr};
+    static MTLPrimitiveType mapPrimitiveType(PrimitiveType type);
+    static MTLIndexType mapIndexType(int size);
+
+    id<MTLDevice> mMetalDevice{nil};
+    id<MTLRenderCommandEncoder> mCommandEncoder{nil};
     CAMetalLayer* mMetalLayer{nullptr};
   };
 }  // namespace GLaDOS

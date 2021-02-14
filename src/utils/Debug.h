@@ -77,7 +77,7 @@ namespace GLaDOS {
     static std::chrono::milliseconds ms(TimePoint tp);
 
     std::string mName{"GLaDOS"};
-    LogLevel mLevel{LogLevel::Info};
+    LogLevel mLevel{LogLevel::Trace};
   };
 
   template <typename T, typename... Ts>

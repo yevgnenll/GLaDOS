@@ -1,26 +1,26 @@
 #ifndef GLADOS_RENDERABLE_H
 #define GLADOS_RENDERABLE_H
 
-#include <cstdint>
+#include "resource/UniqueId.h"
 
 namespace GLaDOS {
-  using RenderableId = int32_t;
   class Material;
   class Mesh;
-  class Renderable {
+  class Renderable : public UniqueId {
     friend class Renderer;
+    friend class MetalRenderer;
 
   public:
-    static Renderable* create(Mesh* _mesh, Material* _material);
-    virtual void release() = 0;
-    RenderableId getId() const;
+    Renderable() = default;
+    virtual ~Renderable() = default;
+
+    virtual void build() = 0;
+    virtual void bindParams() = 0;  // called very frame in rendering loop
+
+    Mesh* getMesh() const { return mMesh; }
+    Material* getMaterial() const { return mMaterial; }
 
   protected:
-    explicit Renderable(RenderableId _id);
-    virtual ~Renderable();
-
-  private:
-    RenderableId mId;
     Mesh* mMesh{nullptr};
     Material* mMaterial{nullptr};
   };

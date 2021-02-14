@@ -3,18 +3,22 @@
 #ifdef PLATFORM_MACOS
 
 #include "MetalBuffer.h"
+#include "MetalFrameBuffer.h"
+#include "MetalRenderBuffer.h"
 #include "MetalRenderable.h"
 #include "MetalShaderProgram.h"
+#include "platform/render/Mesh.h"
+#include "utils/FileSystem.h"
 
 namespace GLaDOS {
   MetalRenderer::~MetalRenderer() {
-    [mMetalCommandQueue release];
     [mMetalDevice release];
+    [mMetalLayer release];
   }
 
   bool MetalRenderer::initialize() {
     mMetalDevice = MTLCreateSystemDefaultDevice();
-    if (mMetalDevice == nullptr) {
+    if (nil == mMetalDevice) {
       LOG_ERROR("System does not support metal.");
       return false;
     }
@@ -24,35 +28,47 @@ namespace GLaDOS {
       LOG_ERROR("System does not support metal layer.");
       return false;
     }
+
     mMetalLayer.device = mMetalDevice;
     mMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
-
-    mMetalCommandQueue = [mMetalDevice newCommandQueue];
-    if (mMetalCommandQueue == nullptr) {
-      LOG_ERROR("System does not support metal command queue.");
-      return false;
-    }
+    mMetalLayer.allowsNextDrawableTimeout = NO;
+    // these properties are crucial to resizing working
+    mMetalLayer.autoresizingMask = kCALayerHeightSizable | kCALayerWidthSizable;
+    mMetalLayer.needsDisplayOnBoundsChange = YES;
+    mMetalLayer.presentsWithTransaction = YES;
 
     return true;
   }
 
-  void MetalRenderer::render(Renderable* renderable) {
-    id<CAMetalDrawable> drawable = [mMetalLayer nextDrawable];
-    id<MTLTexture> texture = drawable.texture;
+  void MetalRenderer::render(Renderable* _renderable) {
+    if (_renderable == nullptr) {
+      return;
+    }
+    MetalRenderable* renderable = static_cast<MetalRenderable*>(_renderable);  // INTEND: do not use dynamic_cast here
+    renderable->bindParams();
 
-    MTLRenderPassDescriptor* passDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];
-    passDescriptor.colorAttachments[0].texture = texture;
-    passDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
-    passDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
-    passDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(0.f, 0.0f, 0.0f, 1.0f);
+    Mesh* mesh = renderable->getMesh();
+    Buffer* indexBuffer = mesh->getIndexBuffer();
+    MTLPrimitiveType primitiveType = MetalRenderer::mapPrimitiveType(mesh->getPrimitiveType());
 
-    id<MTLCommandBuffer> commandBuffer = [mMetalCommandQueue commandBuffer];
+    [mCommandEncoder setRenderPipelineState:renderable->getPipelineState()];
+    if (indexBuffer != nullptr) {
+      // index primitive draw
+      MTLIndexType indexType = MetalRenderer::mapIndexType(sizeof(mesh->getIndexStride()));
+      uint32_t indexCount = mesh->getIndexCount();
+      NSUInteger indexOffset = mesh->getIndexStart() * mesh->getIndexStride();
 
-    mMetalRenderCommandEncoder = [commandBuffer renderCommandEncoderWithDescriptor:passDescriptor];
-    [mMetalRenderCommandEncoder endEncoding];
+      [mCommandEncoder setVertexBuffer:renderable->getVertexBuffer() offset:0 atIndex:1];
+      [mCommandEncoder drawIndexedPrimitives:primitiveType indexCount:indexCount indexType:indexType indexBuffer:renderable->getIndexBuffer() indexBufferOffset:indexOffset];
+      return;
+    }
 
-    [commandBuffer presentDrawable:drawable];
-    [commandBuffer commit];
+    // vertex primitive draw
+    uint32_t start = mesh->getVertexStart();
+    uint32_t count = mesh->getVertexCount();
+
+    [mCommandEncoder setVertexBuffer:renderable->getVertexBuffer() offset:0 atIndex:1];
+    [mCommandEncoder drawPrimitives:primitiveType vertexStart:start vertexCount:count];
   }
 
   Buffer* MetalRenderer::createVertexBuffer(BufferUsage usage, StreamBuffer& buffer) {
@@ -67,31 +83,90 @@ namespace GLaDOS {
     return indexBuffer;
   }
 
-  ShaderProgram* MetalRenderer::createShaderProgram() {
-    return NEW_T(MetalShaderProgram);
+  ShaderProgram* MetalRenderer::createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath) {
+    MetalShaderProgram* shaderProgram = NEW_T(MetalShaderProgram);
+    std::string shaderDirectory = shaderProgram->directory();
+
+    FileSystem vertexFile{shaderDirectory + vertexPath, OpenMode::ReadBinary};
+    std::string vertexSource;
+    if (!vertexFile.readAll(vertexSource)) {
+      LOG_ERROR("Vertex shader {0} is not found.", vertexPath);
+      return nullptr;
+    }
+
+    FileSystem fragmentFile{shaderDirectory + fragmentPath, OpenMode::ReadBinary};
+    std::string fragmentSource;
+    if (!fragmentFile.readAll(fragmentSource)) {
+      LOG_ERROR("Fragment shader {0} is not found.", fragmentPath);
+      return nullptr;
+    }
+
+    if (!shaderProgram->createShaderProgram(vertexSource, fragmentSource)) {
+      return nullptr;
+    }
+
+    return shaderProgram;
   }
 
-  Renderable* MetalRenderer::createRenderable() {
-    static std::atomic<RenderableId> id = 0;
-    Renderable* renderable = NEW_T(MetalRenderable(id++));
-    mRenderable.try_emplace(id.load(), renderable);
+  Renderable* MetalRenderer::createRenderable(Mesh* mesh, Material* material) {
+    Renderable* renderable = NEW_T(MetalRenderable);
+    renderable->mMesh = mesh;
+    renderable->mMaterial = material;
+    renderable->build();
+
     return renderable;
+  }
+
+  FrameBuffer* MetalRenderer::createFrameBuffer() {
+    return NEW_T(MetalFrameBuffer);
+  }
+
+  RenderBuffer* MetalRenderer::createRenderBuffer() {
+    return NEW_T(MetalRenderBuffer);
   }
 
   id<MTLDevice> MetalRenderer::getDevice() const {
     return mMetalDevice;
   }
 
-  id<MTLCommandQueue> MetalRenderer::getCommandQueue() const {
-    return mMetalCommandQueue;
+  id<MTLRenderCommandEncoder> MetalRenderer::getCommandEncoder() const {
+    return mCommandEncoder;
   }
 
-  id<MTLRenderCommandEncoder> MetalRenderer::getCommandEncoder() const {
-    return mMetalRenderCommandEncoder;
+  void MetalRenderer::setCommandEncoder(id<MTLRenderCommandEncoder> commandEncoder) {
+    mCommandEncoder = commandEncoder;
   }
 
   CAMetalLayer* MetalRenderer::getMetalLayer() const {
     return mMetalLayer;
+  }
+
+  MTLPrimitiveType MetalRenderer::mapPrimitiveType(PrimitiveType type) {
+    switch (type) {
+      case PrimitiveType::Point:
+        return MTLPrimitiveTypePoint;
+      case PrimitiveType::Line:
+        return MTLPrimitiveTypeLine;
+      case PrimitiveType::LineStrip:
+        return MTLPrimitiveTypeLineStrip;
+      case PrimitiveType::Triangle:
+        return MTLPrimitiveTypeTriangle;
+      case PrimitiveType::TriangleStrip:
+        return MTLPrimitiveTypeTriangleStrip;
+    }
+  }
+
+  MTLIndexType MetalRenderer::mapIndexType(int size) {
+    switch (size) {
+      case sizeof(uint32_t):
+        return MTLIndexTypeUInt32;
+      case sizeof(uint16_t):
+        return MTLIndexTypeUInt16;
+      default:
+        break;
+    }
+
+    return MTLIndexTypeUInt16;
   }
 }  // namespace GLaDOS
 

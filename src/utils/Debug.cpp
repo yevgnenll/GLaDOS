@@ -26,13 +26,13 @@ namespace GLaDOS {
   }
 
   bool Debug::shouldLog(LogLevel level) const {
-    return mLevel >= level;
+    return mLevel <= level;
   }
 
   std::string Debug::formatLogMessage(const LogMessage& msg) {
     std::string result;
     result.append(formatStdTime(msg.mTime, msg.mTimeZone))
-        .append(StringUtils::padLeft(logLevelName[static_cast<std::size_t>(msg.mLevel)], 7))
+        .append(StringUtils::padLeft(msg.mLevel.toString(), 7))
         .append(" (")
         .append(msg.mLocation.getFileName())
         .append(":")

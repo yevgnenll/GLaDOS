@@ -52,7 +52,7 @@ namespace GLaDOS {
     while (mi != nullptr) {
       if ((ptrdiff_t)mi->size >= 0) {
         if (!leak) {
-          LOG_TRACE("[Memory Debug] Detected memory leaks!\n");
+          LOG_TRACE("[Memory Debug] Detected memory leaks!");
           leak = true;
         }
         mprint("Leaked", mi);
@@ -61,7 +61,7 @@ namespace GLaDOS {
     }
 
     if (!leak) {
-      LOG_TRACE("[Memory Debug] No memory leaks.\n");
+      LOG_TRACE("[Memory Debug] No memory leaks.");
     }
 
     mi = headOfMemory;

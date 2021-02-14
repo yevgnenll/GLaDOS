@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "Vec3.h"
+#include "Vec4.h"
 #include "utils/Enumeration.h"
 
 namespace GLaDOS {
@@ -14,15 +16,20 @@ namespace GLaDOS {
 
     bool operator==(const Color& rhs) const;
     bool operator!=(const Color& rhs) const;
-    float& operator[](unsigned int i);
+    real& operator[](unsigned int i);
+
+    Vec3 toVec3() const;
+    Vec4 toVec4() const;
 
     static Color lerp(const Color& a, const Color& b, float t);
     static unsigned char toByte(real value);
-    static Color fromRGBA(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
-    static Color fromHex(unsigned int hexValue);
+    static Color fromRGB(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255);
+    static Color fromRGB(uint32_t rgb, real a = real(1.0));
+    static Color fromHex(uint32_t hexValue);
     static Color fromHex(const std::string& hexString);
     static Color fromCMYK(real c, real m, real y, real k);
-    static Color fromHSV(int hueInDegree, real saturation, real value);
+    static Color fromHSV(real hue, real saturation, real value, real alpha = real(1.0));
+    static Color fromHSV(const Vec3& hsv, real alpha = real(1.0));
 
     static Color white;
     static Color grey;
@@ -37,7 +44,6 @@ namespace GLaDOS {
     static Color GizmoGreen;
     static Color GizmoBlue;
 
-    // Red, green, blue, alpha
     real r{1.0}, g{1.0}, b{1.0}, a{1.0};
 
   private:

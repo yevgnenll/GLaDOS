@@ -10,22 +10,19 @@
 namespace GLaDOS {
   class Resource {
   public:
-    Resource() = default;
+    Resource(ResourceType resourceType);
     virtual ~Resource() = default;
 
-    unsigned int getReferenceCount() const;
-    void setResourcePath(const std::string& path);
-    std::string getBasePath() const;
-    std::string getFileName() const;
-    std::string getFullFilePath() const;
+    unsigned int getRefCount() const;
+    void setResourceDir(const std::string& dir);
+    std::string directory() const;
 
-    void AddReference();
-    void RemoveReference();
+    void AddRef();
+    void RemoveRef();
 
   protected:
-    std::atomic<unsigned int> mReferenceCount{0};
-    std::string mBasePath{};
-    std::string mFileName{};
+    std::atomic<uint32_t> mReferenceCount{0};
+    std::string mFileDirectory;
     ResourceType mResourceType{ResourceType::Undefined};
   };
 }  // namespace GLaDOS

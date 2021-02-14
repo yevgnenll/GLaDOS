@@ -5,7 +5,7 @@
 
 #ifdef PLATFORM_MACOS
 
-#import <Metal/MTLBuffer.h>
+#include <Metal/MTLBuffer.h>
 
 #include "platform/render/Buffer.h"
 
@@ -19,7 +19,7 @@ namespace GLaDOS {
     id<MTLBuffer> getMetalBuffer() const;
 
   private:
-    id<MTLBuffer> mMetalBuffer{nullptr};
+    id<MTLBuffer> mMetalBuffer{nil};
   };
 }  // namespace GLaDOS
 

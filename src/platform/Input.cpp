@@ -24,10 +24,10 @@ namespace GLaDOS {
         mPreviousMouseButtons[i] = mCurrentMouseButtons[i];
         mCurrentMouseButtons[i] = Platform::getInstance()->mMouseButtons[i];
       }
-
-      mMouseDelta = Platform::getInstance()->mMousePosition - mlastMousePos;
-      mlastMousePos = Platform::getInstance()->mMousePosition;
     }
+
+    mMouseDelta = Platform::getInstance()->mMousePosition - mlastMousePos;
+    mlastMousePos = Platform::getInstance()->mMousePosition;
   }
 
   bool Input::isKeyDown(KeyCode keyCode) {

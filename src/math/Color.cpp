@@ -27,12 +27,21 @@ namespace GLaDOS {
     }
   }
 
+  Vec3 Color::toVec3() const {
+    return Vec3{r, g, b};
+  }
+
+  Vec4 Color::toVec4() const {
+    return Vec4{r, g, b, a};
+  }
+
   Color Color::lerp(const Color& a, const Color& b, real t) {
     // c = a+(b-a)*t
-    return Color{Math::max(real(0.0), Math::min(real(1.0), a.r + (b.r - a.r) * t)),
-                 Math::max(real(0.0), Math::min(real(1.0), a.g + (b.g - a.g) * t)),
-                 Math::max(real(0.0), Math::min(real(1.0), a.b + (b.b - a.b) * t)),
-                 Math::max(real(0.0), Math::min(real(1.0), a.a + (b.a - a.a) * t))};
+    return Color{
+        Math::lerp(a.r, b.r, t),
+        Math::lerp(a.g, b.g, t),
+        Math::lerp(a.b, b.b, t),
+        Math::lerp(a.a, b.a, t)};
   }
 
   unsigned char Color::toByte(real value) {
@@ -40,23 +49,31 @@ namespace GLaDOS {
     return static_cast<unsigned char>(Math::floor(f2 == real(1.0) ? 255 : f2 * 256));
   }
 
-  Color Color::fromRGBA(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
+  Color Color::fromRGB(uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
     return Color{r * invConverter, g * invConverter, b * invConverter, a * invConverter};
   }
 
-  Color Color::fromHex(unsigned int hexValue) {
-    return Color{((hexValue >> 16) & 0xFF) * invConverter,  // Extract the R byte
-                 ((hexValue >> 8) & 0xFF) * invConverter,  // Extract the G byte
-                 ((hexValue)&0xFF) * invConverter,  // Extract the B byte
-                 ((hexValue >> 24) & 0xFF) * invConverter};  // Extract the A byte
+  Color Color::fromRGB(uint32_t rgb, real a) {
+    return Color{
+        static_cast<real>(rgb >> 16 & 0xff) * invConverter,
+        static_cast<real>(rgb >> 8 & 0xff) * invConverter,
+        static_cast<real>(rgb & 0xff) * invConverter,
+        a};
+  }
+
+  Color Color::fromHex(uint32_t hexValue) {
+    return Color{((hexValue >> 16) & 0xff) * invConverter,
+                 ((hexValue >> 8) & 0xff) * invConverter,
+                 ((hexValue)&0xff) * invConverter,
+                 ((hexValue >> 24) & 0xff) * invConverter};
   }
 
   Color Color::fromHex(const std::string& hexString) {
     int hexValue = StringUtils::toInt(hexString.substr(1, hexString.size() - 1), 16);
-    return Color(((hexValue >> 16) & 0xFF) * invConverter,  // Extract the R byte
-                 ((hexValue >> 8) & 0xFF) * invConverter,  // Extract the G byte
-                 ((hexValue)&0xFF) * invConverter,  // Extract the B byte
-                 real(1.0));  // alpha is fixed to 1
+    return Color(((hexValue >> 16) & 0xff) * invConverter,
+                 ((hexValue >> 8) & 0xff) * invConverter,
+                 ((hexValue)&0xff) * invConverter,
+                 real(1.0));
   }
 
   Color Color::fromCMYK(real c, real m, real y, real k) {
@@ -72,14 +89,39 @@ namespace GLaDOS {
         real(1.0)};
   }
 
-  Color Color::fromHSV(int hueInDegree, real saturation, real value) {
+  Color Color::fromHSV(real hue, real saturation, real value, real alpha) {
     /*
     * H(Hue): 0 - 360 degree (int)
     * S(Saturation): 0 - 1.00 (real)
     * V(Value): 0 - 1.00 (real)
     */
-    // TODO
-    return Color();
+    const real hDiv60 = hue / 60.0f;
+    const real hDiv60Floor = Math::floor(hDiv60);
+    const real hDiv60Fraction = hDiv60 - hDiv60Floor;
+
+    const real rgbValues[4] = {
+        value,
+        value * (real(1.0) - saturation),
+        value * (real(1.0) - hDiv60Fraction * saturation),
+        value * (real(1.0) - (real(1.0) - hDiv60Fraction) * saturation)};
+    constexpr int32_t rgbSwizzle[6][3] = {
+        {0, 3, 1},
+        {2, 0, 1},
+        {1, 0, 3},
+        {1, 2, 0},
+        {3, 1, 0},
+        {0, 1, 2}};
+    const int32_t swizzleIndex = (int32_t)hDiv60Floor % 6;
+
+    return Color{
+        rgbValues[rgbSwizzle[swizzleIndex][0]],
+        rgbValues[rgbSwizzle[swizzleIndex][1]],
+        rgbValues[rgbSwizzle[swizzleIndex][2]],
+        alpha};
+  }
+
+  Color Color::fromHSV(const Vec3& hsv, real alpha) {
+    return fromHSV(hsv.x, hsv.y, hsv.z, alpha);
   }
 
   Color Color::white = Color(1., 1.0, 1.0, 1.0);

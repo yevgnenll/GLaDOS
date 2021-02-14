@@ -3,107 +3,278 @@
 
 #include "CocoaPlatform.h"
 #include "math/Math.h"
-#include "platform/render/metal/MetalRenderer.h"
-#include "utils/Utility.h"
+#include "platform/render/metal/MetalFrameBuffer.h"
 
 #ifdef PLATFORM_MACOS
 
 namespace GLaDOS {
   NSApplication* CocoaPlatform::applicationInstance = nullptr;
   CocoaPlatform* CocoaPlatform::cocoaPlatformInstance = nullptr;
-  Platform* CocoaPlatform::platformInstance = nullptr;
 
   CocoaPlatform::CocoaPlatform() {
-    mAutoReleasePool = [[NSAutoreleasePool alloc] init];
-    mMetalRenderer = NEW_T(MetalRenderer);
   }
 
   CocoaPlatform::~CocoaPlatform() {
     CVDisplayLinkStop(mDisplayLink);
     CVDisplayLinkRelease(mDisplayLink);
-    DELETE_T(mMetalRenderer, MetalRenderer);
-    [mAutoReleasePool drain];
   }
 
   bool CocoaPlatform::initialize(const PlatformParams& params) {
-    LOG_TRACE("Initialize Cocoa Platform...");
+    @autoreleasepool {
+      LOG_TRACE("Initialize Cocoa Platform...");
 
-    if (params.width <= 0 || params.height <= 0) {
-      LOG_ERROR("Platform width and height should not be less than 0.");
-      return false;
+      if (params.width <= 0 || params.height <= 0) {
+        LOG_ERROR("Platform width and height should not be less than 0.");
+        return false;
+      }
+
+      if (!MetalRenderer::getInstance()->initialize()) {
+        LOG_ERROR("MetalRenderer initialize failed.");
+        return false;
+      }
+
+      // create contentView
+      mContentView = [[ContentView alloc] initWithFrame:makeViewRect(params.width, params.height, params.isFullscreen)];
+      [mContentView setWantsLayer:YES];  // you must still call the setWantsLayer: method to let the view know that it should use layers.
+      [mContentView setLayer:MetalRenderer::getInstance()->getMetalLayer()];
+      [mContentView setLayerContentsRedrawPolicy:NSViewLayerContentsRedrawDuringViewResize];
+      [mContentView setLayerContentsPlacement:NSViewLayerContentsPlacementScaleAxesIndependently];
+      Platform::getInstance()->mMainFrameBuffer = MetalRenderer::getInstance()->createFrameBuffer();
+      updateTrackingAreas();
+
+      // create cocoa application
+      applicationInstance = [NSApplication sharedApplication];
+      [applicationInstance setDelegate:mContentView];
+      initCursorMode(params.isShowCursor);
+      // 해당 코드가 없을시 windowDelegate 의 windowWillClose, windowDidDeminiaturize 콜백 함수가 호출되지 않음
+      [applicationInstance finishLaunching];
+
+      // create window
+      NSWindowStyleMask windowStyle = Platform::getInstance()->mIsFullScreen ? NSWindowStyleMaskBorderless : CocoaPlatform::makeWindowStyle(params.windowStyle);
+      mWindow = [[CocoaWindow alloc] initWithContentRect:[mContentView frame] styleMask:windowStyle backing:NSBackingStoreBuffered defer:YES];
+      Platform::getInstance()->setTitleName(params.titleName);
+      [mWindow setOpaque:YES];
+      [mWindow setContentView:mContentView];
+      [mWindow setDelegate:mContentView];
+      [mWindow makeMainWindow];
+      [mWindow makeFirstResponder:nil];
+      if (Platform::getInstance()->mIsFullScreen) {
+        [mWindow setLevel:NSMainMenuWindowLevel + 1];
+        [mWindow setHidesOnDeactivate:YES];
+      } else {
+        [mWindow setLevel:NSNormalWindowLevel];
+        [mWindow setHidesOnDeactivate:NO];
+      }
+      [mWindow makeKeyAndOrderFront:nil];
+      [mWindow orderFrontRegardless];
+
+      // 초기 backingScaleFactor 셋팅
+      [MetalRenderer::getInstance()->getMetalLayer() setContentsScale:[mWindow backingScaleFactor]];
+      Platform::getInstance()->mContentScale = static_cast<real>([mWindow backingScaleFactor]);
+
+      CVDisplayLinkCreateWithActiveCGDisplays(&mDisplayLink);
+      CVDisplayLinkSetOutputCallback(mDisplayLink, &displayLinkCb, nullptr);
+      CVDisplayLinkSetCurrentCGDisplay(mDisplayLink, 0);
+      CVDisplayLinkStart(mDisplayLink);
     }
-
-    if (!mMetalRenderer->initialize()) {
-      return false;
-    }
-
-    platformInstance->mWindowStyle = params.windowStyle;
-    platformInstance->mIsFullScreen = params.isFullscreen;
-    CocoaPlatform::platformInstance->setIsShowCursor(params.isShowCursor);
-    NSRect contentSize;
-    if (platformInstance->mIsFullScreen) {
-      NSRect screenRect = [[NSScreen mainScreen] frame];
-      platformInstance->mWidth = static_cast<int>(screenRect.size.width);
-      platformInstance->mHeight = static_cast<int>(screenRect.size.height);
-      contentSize = NSMakeRect(0, 0, platformInstance->mWidth, platformInstance->mHeight);
-    } else {
-      platformInstance->mWidth = params.width;
-      platformInstance->mHeight = params.height;
-      const auto [x, y] = centerOfScreen();
-      contentSize = NSMakeRect(x, y, platformInstance->mWidth, platformInstance->mHeight);
-    }
-    platformInstance->mLastWidth = platformInstance->mWidth;
-    platformInstance->mLastHeight = platformInstance->mHeight;
-
-    // create contentView
-    mContentView = [[ContentView alloc] initWithFrame:contentSize];
-    [mContentView setWantsLayer:YES];  // you must still call the setWantsLayer: method to let the view know that it should use layers.
-    [mContentView setLayer:mMetalRenderer->getMetalLayer()];
-    NSTrackingAreaOptions options = (NSTrackingActiveAlways | NSTrackingInVisibleRect |
-                                     NSTrackingMouseEnteredAndExited | NSTrackingMouseMoved);
-
-    NSTrackingArea* area = [[NSTrackingArea alloc] initWithRect:[mContentView bounds]
-                                                        options:options
-                                                          owner:mContentView
-                                                       userInfo:nil];
-    [mContentView addTrackingArea:area];
-    [area release];
-
-    // create cocoa application
-    applicationInstance = [NSApplication sharedApplication];
-    [applicationInstance setDelegate:mContentView];
-    // 해당 코드가 없을시 windowDelegate 의 windowWillClose, windowDidDeminiaturize 콜백 함수가 호출되지 않음
-    [applicationInstance finishLaunching];
-
-    // create window
-    NSWindowStyleMask windowStyle = platformInstance->mIsFullScreen ? NSWindowStyleMaskBorderless : makeWindowStyle(params.windowStyle);
-    mWindow = [[CocoaWindow alloc] initWithContentRect:contentSize styleMask:windowStyle backing:NSBackingStoreBuffered defer:YES];
-    CocoaPlatform::platformInstance->setTitleName(params.titleName);
-    [mWindow setOpaque:YES];
-    [mWindow setContentView:mContentView];
-    [mWindow setDelegate:mContentView];
-    [mWindow makeMainWindow];
-    [mWindow makeFirstResponder:nil];
-    if (platformInstance->mIsFullScreen) {
-      [mWindow setLevel:NSMainMenuWindowLevel + 1];
-      [mWindow setHidesOnDeactivate:YES];
-    } else {
-      [mWindow setLevel:NSNormalWindowLevel];
-      [mWindow setHidesOnDeactivate:NO];
-    }
-
-    [mWindow makeKeyAndOrderFront:nil];
-    [mWindow orderFrontRegardless];
-
-    CVDisplayLinkCreateWithActiveCGDisplays(&mDisplayLink);
-    CVDisplayLinkSetOutputCallback(mDisplayLink, &displayLinkCb, nullptr);
-    CVDisplayLinkSetCurrentCGDisplay(mDisplayLink, 0);
-    CVDisplayLinkStart(mDisplayLink);
 
     return true;
   }
 
-  NSWindowStyleMask CocoaPlatform::makeWindowStyle(WindowStyle windowStyle) const {
+  NSRect CocoaPlatform::makeViewRect(int width, int height, bool isFullScreen) {
+    Platform::getInstance()->mIsFullScreen = isFullScreen;
+    NSRect contentSize;
+    if (Platform::getInstance()->mIsFullScreen) {
+      NSRect screenRect = [[NSScreen mainScreen] frame];
+      Platform::getInstance()->mWidth = static_cast<int>(screenRect.size.width);
+      Platform::getInstance()->mHeight = static_cast<int>(screenRect.size.height);
+      contentSize = NSMakeRect(0, 0, Platform::getInstance()->mWidth, Platform::getInstance()->mHeight);
+    } else {
+      Platform::getInstance()->mWidth = width;
+      Platform::getInstance()->mHeight = height;
+      const auto [x, y] = CocoaPlatform::centerOfScreen();
+      contentSize = NSMakeRect(x, y, Platform::getInstance()->mWidth, Platform::getInstance()->mHeight);
+    }
+    Platform::getInstance()->mLastWidth = Platform::getInstance()->mWidth;
+    Platform::getInstance()->mLastHeight = Platform::getInstance()->mHeight;
+    return contentSize;
+  }
+
+  void CocoaPlatform::initCursorMode(bool isShowCursor) {
+    if (isShowCursor) {
+      Platform::getInstance()->mCursorMode = CursorMode::Show;
+    } else {
+      Platform::getInstance()->mCursorMode = CursorMode::Hidden;
+    }
+    Platform::getInstance()->showCursor(isShowCursor);
+  }
+
+  //////////////////////////////////////////////////////////////
+  //// CocoaPlatform delegate methods definition
+  //////////////////////////////////////////////////////////////
+
+  void CocoaPlatform::keyDown(unsigned short keycode) {
+    KeyCode localKey = Platform::getInstance()->getKeyCode(keycode);
+    Platform::getInstance()->setKeyDown(localKey);
+  }
+
+  void CocoaPlatform::keyUp(unsigned short keycode) {
+    KeyCode localKey = Platform::getInstance()->getKeyCode(keycode);
+    Platform::getInstance()->setKeyUp(localKey);
+  }
+
+  void CocoaPlatform::mouseMoved(NSPoint point) {
+    Platform::getInstance()->mMousePosition.x = static_cast<real>(point.x);
+    Platform::getInstance()->mMousePosition.y = static_cast<real>(point.y);
+  }
+
+  void CocoaPlatform::scrollWheel(CGFloat deltaX, CGFloat deltaY, bool precise) {
+    if (precise) {
+      deltaY *= 0.1;
+    }
+
+    if (Math::abs(deltaY) > 0.0) {
+      Platform::getInstance()->mMousePosition.z = static_cast<real>(deltaY);
+    }
+  }
+
+  void CocoaPlatform::mouseDown() {
+    Platform::getInstance()->leftMouseDown(true);
+  }
+
+  void CocoaPlatform::mouseUp() {
+    Platform::getInstance()->leftMouseDown(false);
+  }
+
+  void CocoaPlatform::rightMouseDown() {
+    Platform::getInstance()->rightMouseDown(true);
+  }
+
+  void CocoaPlatform::rightMouseUp() {
+    Platform::getInstance()->rightMouseDown(false);
+  }
+
+  void CocoaPlatform::otherMouseDown() {
+    Platform::getInstance()->middleMouseDown(true);
+  }
+
+  void CocoaPlatform::otherMouseUp() {
+    Platform::getInstance()->middleMouseDown(false);
+  }
+
+  void CocoaPlatform::mouseExited() {
+    LOG_TRACE("mouse exited from window");
+    if (Platform::getInstance()->mCursorMode == GLaDOS::CursorMode::Hidden) {
+      Platform::getInstance()->showCursor(true);
+    }
+  }
+
+  void CocoaPlatform::mouseEntered() {
+    LOG_TRACE("mouse entered from window");
+    if (Platform::getInstance()->mCursorMode == GLaDOS::CursorMode::Hidden) {
+      Platform::getInstance()->showCursor(false);
+    }
+  }
+
+  void CocoaPlatform::updateTrackingAreas() {
+    // To remove out of date tracking areas and add recomputed tracking areas.
+    if (mTrackingArea != nullptr) {
+      [mContentView removeTrackingArea:mTrackingArea];
+      [mTrackingArea release];
+    }
+
+    const NSTrackingAreaOptions options = NSTrackingMouseEnteredAndExited |
+                                          NSTrackingActiveInKeyWindow |
+                                          NSTrackingEnabledDuringMouseDrag |
+                                          NSTrackingMouseMoved |
+                                          NSTrackingCursorUpdate |
+                                          NSTrackingInVisibleRect |
+                                          NSTrackingAssumeInside;
+    mTrackingArea = [[NSTrackingArea alloc] initWithRect:[mContentView bounds] options:options owner:mContentView userInfo:nil];
+    [mContentView addTrackingArea:mTrackingArea];
+  }
+
+  void CocoaPlatform::windowDidResize() {
+    CGRect frame = [mWindow frame];
+    CGRect contentRect = [mWindow contentRectForFrameRect:frame];
+    Platform::getInstance()->mLastWidth = Platform::getInstance()->mWidth;
+    Platform::getInstance()->mLastHeight = Platform::getInstance()->mHeight;
+    Platform::getInstance()->mWidth = static_cast<int>(contentRect.size.width);
+    Platform::getInstance()->mHeight = static_cast<int>(contentRect.size.height);
+    CGFloat scaleFactor = static_cast<CGFloat>(Platform::getInstance()->mContentScale);
+    [MetalRenderer::getInstance()->getMetalLayer() setDrawableSize:NSMakeSize(contentRect.size.width * scaleFactor, contentRect.size.height * scaleFactor)];
+  }
+
+  void CocoaPlatform::windowDidMiniaturize() {
+    // TODO: 윈도우를 최소화 할 때 호출 되는 콜백
+    LOG_TRACE("window miniaturized");
+  }
+
+  void CocoaPlatform::windowDidDeminiaturize() {
+    // TODO: 윈도우를 최소화를 되돌릴 때 호출 되는 콜백
+    LOG_TRACE("window deminiaturized");
+  }
+
+  void CocoaPlatform::windowDidMove() {
+    // TODO: 윈도우 이동시 호출 되는 콜백
+    LOG_TRACE("window moved");
+  }
+
+  void CocoaPlatform::windowDidChangeBackingProperties(CGFloat scaleFactor) {
+    // 레티나 디스플레이 scaleFactor 변화를 감지하여 Metal drawable와 MetalLayer의 contentScale을 갱신한다.
+    CGFloat oldScaleFactor = static_cast<CGFloat>(Platform::getInstance()->mContentScale);
+    if (scaleFactor != oldScaleFactor) {
+      Platform::getInstance()->mContentScale = static_cast<real>(scaleFactor);
+      CAMetalLayer* metalLayer = MetalRenderer::getInstance()->getMetalLayer();
+      [metalLayer setContentsScale:scaleFactor];
+      CGRect bounds = metalLayer.bounds;
+      [metalLayer setDrawableSize:NSMakeSize(bounds.size.width * scaleFactor, bounds.size.height * scaleFactor)];
+    }
+  }
+
+  void CocoaPlatform::applicationWillBecomeActive() {
+    Platform::getInstance()->mIsFocused = true;
+  }
+
+  void CocoaPlatform::applicationWillResignActive() {
+    Platform::getInstance()->mIsFocused = false;
+  }
+
+  void CocoaPlatform::applicationWillFinishLaunching() {
+    [applicationInstance setActivationPolicy:NSApplicationActivationPolicyRegular];
+    [applicationInstance setPresentationOptions:NSApplicationPresentationDefault];
+    CocoaPlatform::createMenuBar();
+  }
+
+  void CocoaPlatform::applicationDidFinishLaunching() {
+    [applicationInstance activateIgnoringOtherApps:YES];
+  }
+
+  void CocoaPlatform::windowShouldClose() {
+    // 윈도우의 빨간색 x 버튼을 클릭시 호출되는 콜백
+    Platform::getInstance()->quit();
+  }
+
+  void CocoaPlatform::windowWillClose() {
+    // 윈도우를 강제종료 할 때 호출되는 콜백
+    if (Platform::getInstance()->isRunning()) {
+      Platform::getInstance()->quit();
+    }
+  }
+
+  void CocoaPlatform::windowDidChangeOcclusionState() {
+    if ([[applicationInstance mainWindow] occlusionState] & NSWindowOcclusionStateVisible) {
+      Platform::getInstance()->mIsOccluded = false;
+    } else {
+      Platform::getInstance()->mIsOccluded = true;
+    }
+  }
+
+  //////////////////////////////////////////////////////////////
+  //// CocoaPlatform static methods definition
+  //////////////////////////////////////////////////////////////
+
+  NSWindowStyleMask CocoaPlatform::makeWindowStyle(WindowStyle windowStyle) {
     NSWindowStyleMask style = NSWindowStyleMaskBorderless;
     if (windowStyle & WindowStyle::Resizable) {
       style |= NSWindowStyleMaskResizable;
@@ -127,9 +298,9 @@ namespace GLaDOS {
     return style;
   }
 
-  std::pair<int, int> CocoaPlatform::centerOfScreen() const {
+  std::pair<int, int> CocoaPlatform::centerOfScreen() {
     const auto [w, h] = CocoaPlatform::getScreenSize();
-    return std::make_pair((w - platformInstance->mWidth) / 2, (h - platformInstance->mHeight) / 2);
+    return std::make_pair((w - Platform::getInstance()->mWidth) / 2, (h - Platform::getInstance()->mHeight) / 2);
   }
 
   std::pair<int, int> CocoaPlatform::getScreenSize() {
@@ -139,31 +310,31 @@ namespace GLaDOS {
   }
 
   void CocoaPlatform::createMenuBar() {
-    NSString* appName = CocoaPlatform::toString(platformInstance->getTitleName());
-    NSMenu* menuBar = [[NSMenu alloc] init];
-    NSMenuItem* appMenuItem = [menuBar addItemWithTitle:@"" action:NULL keyEquivalent:@""];
-    [applicationInstance setMainMenu:menuBar];
-    [menuBar release];
+    @autoreleasepool {
+      NSString* appName = CocoaPlatform::toString(Platform::getInstance()->titleName());
+      NSMenu* menuBar = [NSMenu new];
+      NSMenuItem* appMenuItem = [menuBar addItemWithTitle:@"" action:NULL keyEquivalent:@""];
+      [applicationInstance setMainMenu:menuBar];
 
-    NSMenu* appMenu = [[NSMenu alloc] init];
-    [appMenuItem setSubmenu:appMenu];
+      NSMenu* appMenu = [NSMenu new];
+      [appMenuItem setSubmenu:appMenu];
 
-    // About menu item
-    [appMenu addItemWithTitle:[NSString stringWithFormat:@"About %@", appName] action:@selector(orderFrontStandardAboutPanel:) keyEquivalent:@""];
-    // Hide menu item
-    [appMenu addItemWithTitle:[NSString stringWithFormat:@"Hide %@", appName] action:@selector(hide:) keyEquivalent:@"h"];
-    // Hide Others menu item
-    [[appMenu addItemWithTitle:@"Hide Others" action:@selector(hideOtherApplications:) keyEquivalent:@"h"]
-        setKeyEquivalentModifierMask:(NSEventModifierFlagOption | NSEventModifierFlagCommand)];
-    // show all menu item
-    [appMenu addItemWithTitle:@"Show All" action:@selector(unhideAllApplications:) keyEquivalent:@""];
-    // quit menu item
-    [appMenu addItem:[NSMenuItem separatorItem]];
-    [appMenu addItemWithTitle:[NSString stringWithFormat:@"Quit %@", appName] action:@selector(terminate:) keyEquivalent:@"q"];
+      // About menu item
+      [appMenu addItemWithTitle:[NSString stringWithFormat:@"About %@", appName] action:@selector(orderFrontStandardAboutPanel:) keyEquivalent:@""];
+      // Hide menu item
+      [appMenu addItemWithTitle:[NSString stringWithFormat:@"Hide %@", appName] action:@selector(hide:) keyEquivalent:@"h"];
+      // Hide Others menu item
+      [[appMenu addItemWithTitle:@"Hide Others" action:@selector(hideOtherApplications:) keyEquivalent:@"h"]
+          setKeyEquivalentModifierMask:(NSEventModifierFlagOption | NSEventModifierFlagCommand)];
+      // show all menu item
+      [appMenu addItemWithTitle:@"Show All" action:@selector(unhideAllApplications:) keyEquivalent:@""];
+      // quit menu item
+      [appMenu addItem:[NSMenuItem separatorItem]];
+      [appMenu addItemWithTitle:[NSString stringWithFormat:@"Quit %@", appName] action:@selector(terminate:) keyEquivalent:@"q"];
 
-    SEL setAppleMenuSelector = NSSelectorFromString(@"setAppleMenu:");
-    [applicationInstance performSelector:setAppleMenuSelector withObject:appMenu];
-    [appMenu release];
+      SEL setAppleMenuSelector = NSSelectorFromString(@"setAppleMenu:");
+      [applicationInstance performSelector:setAppleMenuSelector withObject:appMenu];
+    }
   }
 
   NSString* CocoaPlatform::toString(const std::string& str) {
@@ -171,17 +342,17 @@ namespace GLaDOS {
   }
 
   CVReturn CocoaPlatform::displayLinkCb(CVDisplayLinkRef displayLink, const CVTimeStamp* now, const CVTimeStamp* outputTime, CVOptionFlags flagsIn, CVOptionFlags* flagsOut, void* displayLinkContext) {
-    CocoaPlatform::platformInstance->render();
+    Platform::getInstance()->render();
     return kCVReturnSuccess;
   }
 
-  NSApplication* CocoaPlatform::getAppInstance() {
-    return applicationInstance;
+  CocoaPlatform* CocoaPlatform::getCocoaPlatform() {
+    return cocoaPlatformInstance;
   }
 
-  Platform* CocoaPlatform::getPlatformInstance() {
-    return platformInstance;
-  }
+  //////////////////////////////////////////////////////////////
+  //// Platform definition
+  //////////////////////////////////////////////////////////////
 
   Platform::Platform() {
     CocoaPlatform::cocoaPlatformInstance = NEW_T(CocoaPlatform);
@@ -190,6 +361,7 @@ namespace GLaDOS {
 
   Platform::~Platform() {
     DELETE_T(CocoaPlatform::cocoaPlatformInstance, CocoaPlatform);
+    DELETE_T(mMainFrameBuffer, FrameBuffer);
   }
 
   void Platform::registerKeyMap() {
@@ -336,45 +508,47 @@ namespace GLaDOS {
   }
 
   bool Platform::initialize(const PlatformParams& params) {
-    CocoaPlatform::platformInstance = Platform::getInstance();
     return CocoaPlatform::cocoaPlatformInstance->initialize(params);
   }
 
   void Platform::render() {
-    CocoaPlatform::cocoaPlatformInstance->mMetalRenderer->render(nullptr);
+    mMainFrameBuffer->begin();
+    MetalRenderer::getInstance()->render(nullptr);
+    mMainFrameBuffer->end();
   }
 
   void Platform::update() {
+    // 큐잉 지연 후 큐에서 이벤트를 패치하는 로직, CPU 100% 를 막기위해 사용된다.
     // wait event
-    NSEvent* eventFuture = [CocoaPlatform::getAppInstance() nextEventMatchingMask:NSEventMaskAny
-                                                                        untilDate:[NSDate distantFuture]
-                                                                           inMode:NSDefaultRunLoopMode
-                                                                          dequeue:YES];
-    [CocoaPlatform::getAppInstance() sendEvent:eventFuture];
+    NSEvent* eventFuture = [CocoaPlatform::applicationInstance nextEventMatchingMask:NSEventMaskAny
+                                                                           untilDate:[NSDate distantFuture]
+                                                                              inMode:NSDefaultRunLoopMode
+                                                                             dequeue:YES];
+    [CocoaPlatform::applicationInstance sendEvent:eventFuture];
 
     // polling event
     for (;;) {
-      NSEvent* eventPast = [CocoaPlatform::getAppInstance() nextEventMatchingMask:NSEventMaskAny
-                                                                        untilDate:[NSDate distantPast]
-                                                                           inMode:NSDefaultRunLoopMode
-                                                                          dequeue:YES];
+      NSEvent* eventPast = [CocoaPlatform::applicationInstance nextEventMatchingMask:NSEventMaskAny
+                                                                           untilDate:[NSDate distantPast]
+                                                                              inMode:NSDefaultRunLoopMode
+                                                                             dequeue:YES];
       if (eventPast == nil) break;
-      [CocoaPlatform::getAppInstance() sendEvent:eventPast];
+      [CocoaPlatform::applicationInstance sendEvent:eventPast];
     }
   }
 
-  void Platform::setWidthHeight(int width, int height) {
+  void Platform::setViewport(int width, int height) {
+    // TODO: 테스트 필요
     if (mWidth == width && mHeight == height) return;
-    NSRect frame = [CocoaPlatform::cocoaPlatformInstance->mWindow frame];
-    frame.origin.y += frame.size.height;  // origin.y is top Y coordinate now
-    frame.origin.y -= height;             // new Y coordinate for the origin
-    frame.size = CGSizeMake(static_cast<CGFloat>(width), static_cast<CGFloat>(height));
-    [CocoaPlatform::cocoaPlatformInstance->mWindow setFrame:frame display:YES];
-    mWidth = width;
-    mHeight = height;
+    NSRect contentRect = [CocoaPlatform::cocoaPlatformInstance->mWindow contentRectForFrameRect:[CocoaPlatform::cocoaPlatformInstance->mWindow frame]];
+    contentRect.origin.y += contentRect.size.height;  // origin.y is top Y coordinate now
+    contentRect.origin.y -= height;                   // new Y coordinate for the origin
+    contentRect.size = CGSizeMake(static_cast<CGFloat>(width), static_cast<CGFloat>(height));
+    [CocoaPlatform::cocoaPlatformInstance->mWindow setFrame:contentRect display:YES];
     mLastWidth = mWidth;
     mLastHeight = mHeight;
-    // TODO: resize viewport of metal
+    mWidth = width;
+    mHeight = height;
   }
 
   void Platform::setTitleName(const std::string& titleName) {
@@ -383,49 +557,51 @@ namespace GLaDOS {
     mTitleName = titleName;
   }
 
-  void Platform::setIsShowCursor(bool isShowCursor) {
-    if (mIsShowCursor == isShowCursor) return;
+  void Platform::showCursor(bool isShowCursor) {
+    mIsShowCursor = isShowCursor;
     if (isShowCursor) {
       [NSCursor unhide];
-    } else {
-      [NSCursor hide];
+      return;
     }
-    mIsShowCursor = isShowCursor;
+    [NSCursor hide];
   }
 
-  void Platform::setIsFullScreen(bool isFullScreen) {
-    if (mIsFullScreen == isFullScreen) return;
-    NSWindow* window = CocoaPlatform::cocoaPlatformInstance->mWindow;
-
+  void Platform::fullScreen(bool isFullScreen) {
+    // TODO: 테스트 필요
+    // set window viewport
+    NSRect frame;
     if (isFullScreen) {
-      NSRect screenRect = [[NSScreen mainScreen] frame];
+      frame = [[NSScreen mainScreen] frame];
+    } else {
+      const auto [x, y] = CocoaPlatform::centerOfScreen();
+      frame = NSMakeRect(x, y, mWidth, mHeight);
+    }
+    setViewport(static_cast<int>(frame.size.width), static_cast<int>(frame.size.height));
+
+    // set window options
+    NSWindow* window = CocoaPlatform::cocoaPlatformInstance->mWindow;
+    if (isFullScreen) {
       [window orderOut:nil];
-      [window setStyleMask:NSWindowStyleMaskBorderless];
+      [window setStyleMask:CocoaPlatform::makeWindowStyle(WindowStyle::Borderless)];
       [window makeKeyAndOrderFront:nil];
-      [window setFrame:screenRect display:YES];
       [window setLevel:NSMainMenuWindowLevel + 1];
       [window setOpaque:YES];
       [window setHidesOnDeactivate:YES];
-      mWidth = static_cast<int>(screenRect.size.width);
-      mHeight = static_cast<int>(screenRect.size.height);
+      // TODO
+      //      [window toggleFullScreen:window];
     } else {
-      mWidth = mLastWidth;
-      mHeight = mLastHeight;
-      const auto [x, y] = CocoaPlatform::cocoaPlatformInstance->centerOfScreen();
-      [window setFrame:NSMakeRect(x, y, mWidth, mHeight) display:YES];
       [window orderOut:nil];
-      [window setStyleMask:CocoaPlatform::cocoaPlatformInstance->makeWindowStyle(mWindowStyle)];
+      [window setStyleMask:CocoaPlatform::makeWindowStyle(EnumConstant::defaultWindowStyle)];
       [window makeKeyAndOrderFront:nil];
       [window setLevel:NSNormalWindowLevel];
       [window setOpaque:YES];
       [window setHidesOnDeactivate:NO];
     }
-    // TODO: destroy and reinitialize metalView
     mIsFullScreen = isFullScreen;
   }
 
   Renderer* Platform::getRenderer() {
-    return CocoaPlatform::cocoaPlatformInstance->mMetalRenderer;
+    return MetalRenderer::getInstance();
   }
 }
 
@@ -441,117 +617,114 @@ namespace GLaDOS {
 }
 
 - (void)keyDown:(NSEvent*)event {
-  unsigned short keyCode = [event keyCode];
-  GLaDOS::KeyCode localKey = GLaDOS::CocoaPlatform::getPlatformInstance()->getKeyCode(keyCode);
-  GLaDOS::CocoaPlatform::getPlatformInstance()->setKeyDown(localKey);
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->keyDown([event keyCode]);
 }
 
 - (void)keyUp:(NSEvent*)event {
-  unsigned short keyCode = [event keyCode];
-  GLaDOS::KeyCode localKey = GLaDOS::CocoaPlatform::getPlatformInstance()->getKeyCode(keyCode);
-  GLaDOS::CocoaPlatform::getPlatformInstance()->setKeyUp(localKey);
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->keyUp([event keyCode]);
 }
 @end
 
 @implementation ContentView
 - (void)mouseMoved:(NSEvent*)event {
   NSPoint point = [self convertPoint:[event locationInWindow] fromView:nil];
-  GLaDOS::CocoaPlatform::getPlatformInstance()->setMousePosition(point.x, point.y);
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->mouseMoved(point);
 }
 
 - (void)mouseDragged:(NSEvent*)event {
-  NSPoint point = [self convertPoint:[event locationInWindow] fromView:nil];
-  LOG_INFO("mouseDragged, Mouse pos={0},{1}", point.x, point.y);
+  [self mouseMoved:event];
 }
 
 - (void)scrollWheel:(NSEvent*)event {
-  // TODO
-  NSPoint point = [self convertPoint:[event locationInWindow] fromView:nil];
-  LOG_INFO("scrollWheel, Mouse wheel at={0},{1}, Delta={2}", point.x, point.y, [event deltaY] * 10.0);
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->scrollWheel([event scrollingDeltaX], [event scrollingDeltaY], [event hasPreciseScrollingDeltas]);
 }
 
 - (void)mouseDown:(NSEvent*)event {
-  GLaDOS::CocoaPlatform::getPlatformInstance()->leftMouseDown(true);
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->mouseDown();
 }
 
 - (void)mouseUp:(NSEvent*)event {
-  GLaDOS::CocoaPlatform::getPlatformInstance()->leftMouseDown(false);
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->mouseUp();
 }
 
 - (void)rightMouseDown:(NSEvent*)event {
-  GLaDOS::CocoaPlatform::getPlatformInstance()->rightMouseDown(true);
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->rightMouseDown();
 }
 
 - (void)rightMouseUp:(NSEvent*)event {
-  GLaDOS::CocoaPlatform::getPlatformInstance()->rightMouseDown(false);
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->rightMouseUp();
 }
 
 - (void)otherMouseDown:(NSEvent*)event {
-  GLaDOS::CocoaPlatform::getPlatformInstance()->middleMouseDown(true);
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->otherMouseDown();
 }
 
 - (void)otherMouseUp:(NSEvent*)event {
-  GLaDOS::CocoaPlatform::getPlatformInstance()->middleMouseDown(false);
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->otherMouseUp();
+}
+
+- (void)mouseExited:(NSEvent*)event {
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->mouseExited();
+}
+
+- (void)mouseEntered:(NSEvent*)event {
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->mouseEntered();
+}
+
+- (void)updateTrackingAreas {
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->updateTrackingAreas();
+  [super updateTrackingAreas];
 }
 
 - (void)windowDidResize:(NSNotification*)notification {
-  LOG_INFO("windowDidResize");
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->windowDidResize();
 }
 
 - (void)windowDidMiniaturize:(NSNotification*)notification {
-  // 윈도우를 최소화 할 때 호출 되는 콜백
-  LOG_INFO("windowDidMiniaturize");
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->windowDidMiniaturize();
 }
 
 - (void)windowDidDeminiaturize:(NSNotification*)notification {
-  // 윈도우를 최소화를 되돌릴 때 호출 되는 콜백
-  LOG_INFO("windowDidDeminiaturize");
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->windowDidDeminiaturize();
 }
 
 - (void)windowDidMove:(NSNotification*)notification {
-  LOG_INFO("windowDidMove");
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->windowDidMove();
 }
 
-- (void)windowDidChangeScreen:(NSNotification*)notification {
-  LOG_INFO("windowDidChangeScreen");
+- (void)windowDidChangeBackingProperties:(NSNotification*)notification {
+  // https://developer.apple.com/library/archive/documentation/GraphicsAnimation/Conceptual/HighResolutionOSX/CapturingScreenContents/CapturingScreenContents.html#//apple_ref/doc/uid/TP40012302-CH10-SW20
+  NSWindow* theWindow = (NSWindow*)[notification object];
+  CGFloat newBackingScaleFactor = [theWindow backingScaleFactor];
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->windowDidChangeBackingProperties(newBackingScaleFactor);
 }
 
 - (void)applicationWillBecomeActive:(NSNotification*)notification {
-  GLaDOS::CocoaPlatform::getPlatformInstance()->setIsFocused(true);
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->applicationWillBecomeActive();
 }
 
 - (void)applicationWillResignActive:(NSNotification*)notification {
-  GLaDOS::CocoaPlatform::getPlatformInstance()->setIsFocused(false);
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->applicationWillResignActive();
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification*)notification {
-  [GLaDOS::CocoaPlatform::getAppInstance() setActivationPolicy:NSApplicationActivationPolicyRegular];
-  [GLaDOS::CocoaPlatform::getAppInstance() setPresentationOptions:NSApplicationPresentationDefault];
-  GLaDOS::CocoaPlatform::createMenuBar();
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->applicationWillFinishLaunching();
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification*)notification {
-  [GLaDOS::CocoaPlatform::getAppInstance() activateIgnoringOtherApps:YES];
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->applicationDidFinishLaunching();
 }
 
 - (BOOL)windowShouldClose:(id)sender {
-  // 윈도우의 빨간색 x 버튼을 클릭시 호출되는 콜백
-  GLaDOS::CocoaPlatform::getPlatformInstance()->quit();
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->windowShouldClose();
 }
 
 - (void)windowWillClose:(NSNotification*)notification {
-  // 윈도우를 강제종료 할 때 호출 됨
-  if (GLaDOS::CocoaPlatform::getPlatformInstance()->isRunning()) {
-    GLaDOS::CocoaPlatform::getPlatformInstance()->quit();
-  }
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->windowWillClose();
 }
 
 - (void)windowDidChangeOcclusionState:(NSNotification*)notification {
-  if ([GLaDOS::CocoaPlatform::getAppInstance().mainWindow occlusionState] & NSWindowOcclusionStateVisible) {
-    GLaDOS::CocoaPlatform::getPlatformInstance()->setIsOccluded(false);
-  } else {
-    GLaDOS::CocoaPlatform::getPlatformInstance()->setIsOccluded(true);
-  }
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->windowDidChangeOcclusionState();
 }
 @end
 
