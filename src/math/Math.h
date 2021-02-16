@@ -17,7 +17,7 @@ namespace GLaDOS {
     Math() = delete;
 
     template <typename T>
-    static std::enable_if_t<not std::is_floating_point_v<T>, bool> equal(const T& a, const T& b);
+    static std::enable_if_t<!std::is_floating_point_v<T>, bool> equal(const T& a, const T& b);
     template <typename T>
     static std::enable_if_t<std::is_floating_point_v<T>, bool> equal(const T& a, const T& b);
     template <typename T>
@@ -91,7 +91,7 @@ namespace GLaDOS {
   };
 
   template <typename T>
-  std::enable_if_t<not std::is_floating_point_v<T>, bool> Math::equal(const T& a, const T& b) {
+  std::enable_if_t<!std::is_floating_point_v<T>, bool> Math::equal(const T& a, const T& b) {
     return a == b;
   }
 

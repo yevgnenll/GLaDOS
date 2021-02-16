@@ -1,5 +1,6 @@
 #include "FileSystem.h"
 #include "StringUtils.h"
+#include <cstdarg>
 
 namespace GLaDOS {
   FileSystem::FileSystem(const std::string& name, OpenMode accessType) {

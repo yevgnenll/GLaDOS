@@ -7,7 +7,7 @@
 
 namespace GLaDOS {
   template <typename T>
-  class STLAllocator {
+  class STLAllocator : public std::allocator<T> {
   public:
     using value_type = T;
     using pointer = T*;

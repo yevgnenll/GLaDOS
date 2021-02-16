@@ -6,6 +6,8 @@
 #include "platform/render/FrameBuffer.h"
 #ifdef PLATFORM_WINDOW
 #include <process.h>
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
 #else
 #include <unistd.h>
 #endif
@@ -36,13 +38,13 @@ namespace GLaDOS {
   void Platform::setClearColor(const Color& clearColor) { mMainFrameBuffer->setClearColor(clearColor); }
 
   std::size_t Platform::getThreadId() noexcept {
-#ifdef PLATFORM_MACOS
+#if defined(PLATFORM_MACOS)
     uint64_t tid;
     pthread_threadid_np(nullptr, &tid);
     return static_cast<std::size_t>(tid);
-#elif PLATFORM_LINUX
+#elif defined(PLATFORM_LINUX)
     return static_cast<std::size_t>(::syscall(SYS_gettid));
-#elif PLATFORM_WINDOW
+#elif defined(PLATFORM_WINDOW)
     return static_cast<std::size_t>(::GetCurrentThreadId());
 #else  // Default to standard C++11 (other Unix)
     return static_cast<std::size_t>(std::hash<std::thread::id>()(std::this_thread::get_id()));
