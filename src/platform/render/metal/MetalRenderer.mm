@@ -31,11 +31,9 @@ namespace GLaDOS {
 
     mMetalLayer.device = mMetalDevice;
     mMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
+    // If YES, the nextDrawable method returns nil if it can’t provide a drawable object within one second.
+    // If NO, the nextDrawable method waits indefinitely for a drawable to become available.
     mMetalLayer.allowsNextDrawableTimeout = NO;
-    // these properties are crucial to resizing working
-    mMetalLayer.autoresizingMask = kCALayerHeightSizable | kCALayerWidthSizable;
-    mMetalLayer.needsDisplayOnBoundsChange = YES;
-    mMetalLayer.presentsWithTransaction = YES;
 
     return true;
   }
@@ -55,7 +53,7 @@ namespace GLaDOS {
     if (indexBuffer != nullptr) {
       // index primitive draw
       MTLIndexType indexType = MetalRenderer::mapIndexType(sizeof(mesh->getIndexStride()));
-      uint32_t indexCount = mesh->getIndexCount();
+      std::size_t indexCount = mesh->getIndexCount();
       NSUInteger indexOffset = mesh->getIndexStart() * mesh->getIndexStride();
 
       [mCommandEncoder setVertexBuffer:renderable->getVertexBuffer() offset:0 atIndex:1];
@@ -64,8 +62,8 @@ namespace GLaDOS {
     }
 
     // vertex primitive draw
-    uint32_t start = mesh->getVertexStart();
-    uint32_t count = mesh->getVertexCount();
+    std::size_t start = mesh->getVertexStart();
+    std::size_t count = mesh->getVertexCount();
 
     [mCommandEncoder setVertexBuffer:renderable->getVertexBuffer() offset:0 atIndex:1];
     [mCommandEncoder drawPrimitives:primitiveType vertexStart:start vertexCount:count];
@@ -73,13 +71,19 @@ namespace GLaDOS {
 
   Buffer* MetalRenderer::createVertexBuffer(BufferUsage usage, StreamBuffer& buffer) {
     Buffer* vertexBuffer = NEW_T(MetalBuffer(BufferType::VertexBuffer, usage));
-    vertexBuffer->uploadData(buffer);
+    if (!vertexBuffer->uploadData(buffer)) {
+      return nullptr;
+    }
+
     return vertexBuffer;
   }
 
   Buffer* MetalRenderer::createIndexBuffer(BufferUsage usage, StreamBuffer& buffer) {
     Buffer* indexBuffer = NEW_T(MetalBuffer(BufferType::IndexBuffer, usage));
-    indexBuffer->uploadData(buffer);
+    if (!indexBuffer->uploadData(buffer)) {
+      return nullptr;
+    }
+
     return indexBuffer;
   }
 
@@ -115,6 +119,21 @@ namespace GLaDOS {
     renderable->build();
 
     return renderable;
+  }
+
+  Mesh* MetalRenderer::createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveType primitiveType, bool dynamicVertex, bool dynamicIndex) {
+    Mesh* mesh = NEW_T(Mesh(primitiveType, dynamicVertex, dynamicIndex));
+    if (!mesh->build(vertexData, indexData)) {
+      return nullptr;
+    }
+    return mesh;
+  }
+
+  Mesh* MetalRenderer::createMesh(const std::string& meshPath, PrimitiveType primitiveType, bool dynamicVertex, bool dynamicIndex) {
+    // TODO
+    // const auto& [vertexData, indexData] = MeshLoader::loadFromFile(meshPath);
+    // return createMesh(vertexData, indexData, primitiveType, dynamicVertex, dynamicIndex);
+    return nullptr;
   }
 
   FrameBuffer* MetalRenderer::createFrameBuffer() {

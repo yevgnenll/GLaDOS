@@ -58,6 +58,7 @@ namespace GLaDOS {
     static Renderer* getRenderer();
     static std::size_t getThreadId() noexcept;
     static int getPid() noexcept;
+    static std::size_t getConcurrency() noexcept;
 
   private:
     void registerKeyMap();

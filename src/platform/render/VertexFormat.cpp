@@ -84,4 +84,82 @@ namespace GLaDOS {
   std::size_t VertexFormat::sizeAlign4() const {
     return align4(size());
   }
+
+  //////////////////////////////////////////////////////////////
+  //// VertexFormatBuilder definition
+  //////////////////////////////////////////////////////////////
+
+  VertexFormatBuilder VertexFormatBuilder::withPosition() {
+    mUsePosition = true;
+    return *this;
+  }
+
+  VertexFormatBuilder VertexFormatBuilder::withNormal() {
+    mUseNormal = true;
+    return *this;
+  }
+
+  VertexFormatBuilder VertexFormatBuilder::withDiffuseTexCoord() {
+    mUseDiffuseTexCoord = true;
+    return *this;
+  }
+
+  VertexFormatBuilder VertexFormatBuilder::withReflectionTexCoord() {
+    mUseReflectionTexCoord = true;
+    return *this;
+  }
+
+  VertexFormatBuilder VertexFormatBuilder::withNormalTexCoord() {
+    mUseNormalTexCoord = true;
+    return *this;
+  }
+
+  VertexFormatBuilder VertexFormatBuilder::withColor() {
+    mUseColor = true;
+    return *this;
+  }
+
+  Vector<VertexFormat*> VertexFormatBuilder::build() const {
+    Vector<VertexFormat*> vertexFormats;
+
+    if (mUsePosition) {
+      mPositionOffset = 0;  // position offset always zero
+      vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::Position, VertexAttributeType::Float4)));
+    }
+
+    if (mUseNormal) {
+      mNormalOffset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+      vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::Normal, VertexAttributeType::Float3)));
+    }
+
+    if (mUseDiffuseTexCoord) {
+      mDiffuseTexCoordOffset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+      vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::TexCoord0, VertexAttributeType::Float2)));
+    }
+
+    if (mUseReflectionTexCoord) {
+      mReflectionTexCoordOffset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+      vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::TexCoord1, VertexAttributeType::Float2)));
+    }
+
+    if (mUseNormalTexCoord) {
+      mNormalTexCoordOffset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+      vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::TexCoord2, VertexAttributeType::Float2)));
+    }
+
+    if (mUseColor) {
+      mColorOffset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+      vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::Color, VertexAttributeType::Float4)));
+    }
+
+    return vertexFormats;
+  }
+
+  std::size_t VertexFormatBuilder::sumOfPreviousOffset(const Vector<VertexFormat*>& vertexFormats) {
+    std::size_t sum = 0;
+    for (const auto& vertexFormat : vertexFormats) {
+      sum += vertexFormat->size();
+    }
+    return sum;
+  }
 }  // namespace GLaDOS

@@ -2,35 +2,51 @@
 #define GLADOS_MESH_H
 
 #include "Buffer.h"
-#include "VertexFormat.h"
+#include "resource/Resource.h"
 #include "utils/Enumeration.h"
 
 namespace GLaDOS {
-  class Mesh {
+  class VertexFormat;
+  class VertexData;
+  class IndexData;
+  class Mesh : public Resource {
   public:
-    Mesh() = default;
-    ~Mesh() = default;
+    explicit Mesh(PrimitiveType primitiveType, bool dynamicVertex, bool dynamicIndex);
+    ~Mesh() override;
 
     PrimitiveType getPrimitiveType() const;
-    void setPrimitiveType(PrimitiveType _primitiveType);
+    void setPrimitiveType(PrimitiveType primitiveType);
     Buffer* getVertexBuffer() const;
     Buffer* getIndexBuffer() const;
-    Vector<VertexFormat> getVertexFormats() const;
-    uint32_t getVertexStart() const;
-    uint32_t getVertexCount() const;
-    uint32_t getIndexStart() const;
-    uint32_t getIndexCount() const;
-    uint32_t getIndexStride() const;
+    Vector<VertexFormat*> getVertexFormats() const;
+    std::size_t getVertexStart() const;
+    void setVertexStart(std::size_t vertexStart);
+    std::size_t getIndexStart() const;
+    void setIndexStart(std::size_t indexStart);
+    std::size_t getVertexCount() const;
+    std::size_t getVertexStride() const;
+    std::size_t getIndexCount() const;
+    std::size_t getIndexStride() const;
+    std::size_t getMemoryUsage() const;
+    std::size_t getFaceCount() const;
+    bool isDynamicVertex() const;
+    bool isDynamicIndex() const;
+
+    bool build(VertexData* vertexData, IndexData* indexData);
+    void RecalculateNormals();
+    void RecalculateTangent();
+    void RecalculateBounds();
 
   private:
-    PrimitiveType mPrimitiveType{PrimitiveType::Triangle};
+    PrimitiveType mPrimitiveType;
     Buffer* mVertexBuffer{nullptr};
     Buffer* mIndexBuffer{nullptr};
-    uint32_t mVertexStart;
-    uint32_t mVertexCount;
-    uint32_t mIndexStart;
-    uint32_t mIndexCount;
-    uint32_t mIndexStride;
+    VertexData* mVertexData{nullptr};
+    IndexData* mIndexData{nullptr};
+    std::size_t mVertexStart{0};
+    std::size_t mIndexStart{0};
+    bool mIsDynamicVertex{false};
+    bool mIsDynamicIndex{false};
   };
 }  // namespace GLaDOS
 

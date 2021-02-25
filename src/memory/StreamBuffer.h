@@ -22,6 +22,7 @@ namespace GLaDOS {
     StreamBuffer& operator<<(float i);
     StreamBuffer& operator<<(double i);
 
+    void* offsetOf(std::size_t offset);
     void* pointer();
     std::size_t size() const;
     void resize(std::size_t n);

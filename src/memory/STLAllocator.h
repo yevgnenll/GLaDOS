@@ -18,8 +18,6 @@ namespace GLaDOS {
 
     STLAllocator() = default;
     ~STLAllocator() = default;
-    STLAllocator(const STLAllocator<T>&) = delete;
-    STLAllocator<T>& operator=(const STLAllocator<T>&) = delete;
 
     pointer allocate(size_type count);
     void deallocate(pointer ptr, size_type count);

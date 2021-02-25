@@ -1,6 +1,10 @@
 #include "Timer.h"
 
 namespace GLaDOS {
+  Timer::Timer() {
+    reset();
+  }
+
   void Timer::update() {
     mCurrentTime = now();
 
@@ -23,25 +27,25 @@ namespace GLaDOS {
   }
 
   void Timer::reset() {
-    getInstance()->mStart = now();
-    getInstance()->mTimeScale = 1.0;
+    mStart = now();
+    mTimeScale = 1.0;
   }
 
-  real Timer::deltaTime() { return getInstance()->mDeltaTime; }
+  real Timer::deltaTime() { return mDeltaTime; }
 
-  real Timer::deltaTimeUnscaled() { return getInstance()->mUnscaledDeltaTime; }
+  real Timer::deltaTimeUnscaled() { return mUnscaledDeltaTime; }
 
-  real Timer::elapsedTime() { return getInstance()->mTime; }
+  real Timer::elapsedTime() { return mTime; }
 
-  real Timer::elapsedTimeUnscaled() { return getInstance()->mUnscaledTime; }
+  real Timer::elapsedTimeUnscaled() { return mUnscaledTime; }
 
-  real Timer::fixedDeltaTime() { return getInstance()->mFixedDeltaTime; }
+  real Timer::fixedDeltaTime() { return mFixedDeltaTime; }
 
-  real Timer::fixedDeltaTimeUnscaled() { return getInstance()->mUnscaledFixedDeltaTime; }
+  real Timer::fixedDeltaTimeUnscaled() { return mUnscaledFixedDeltaTime; }
 
-  int Timer::fps() { return getInstance()->mFrameRate; }
+  int Timer::fps() { return mFrameRate; }
 
-  void Timer::setTimeScale(real value) { getInstance()->mTimeScale = value; }
+  void Timer::setTimeScale(real value) { mTimeScale = value; }
 
   HighResolutionTimePoint Timer::now() { return HighResolutionClock::now(); }
 

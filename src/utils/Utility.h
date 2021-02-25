@@ -1,8 +1,11 @@
 #ifndef GLADOS_UTILITY_H
 #define GLADOS_UTILITY_H
 
+#include <list>
 #include <map>
+#include <set>
 #include <type_traits>
+#include <unordered_map>
 #include <vector>
 
 #include "memory/Allocation.h"
@@ -32,8 +35,28 @@ namespace GLaDOS {
   template <typename K, typename V>
   using Map = std::map<K, V, std::less<K>, STLAllocator<std::pair<const K, V>>>;
 
+  // https://stackoverflow.com/questions/18837857/cant-use-enum-class-as-unordered-map-key
+  struct EnumClassHash {
+    template <typename T>
+    std::size_t operator()(T t) const {
+      return static_cast<std::size_t>(t);
+    }
+  };
+
+  template <typename Key>
+  using HashType = typename std::conditional<std::is_enum<Key>::value, EnumClassHash, std::hash<Key>>::type;
+
+  template <typename K, typename V>
+  using UnorderedMap = std::unordered_map<K, V, HashType<K>, std::less<K>, STLAllocator<std::pair<const K, V>>>;
+
   template <typename T>
-  static constexpr void deallocIterable(Vector<T>& iterable) {
+  using List = std::list<T, STLAllocator<T>>;
+
+  template <typename T>
+  using Set = std::set<T, std::less<T>, STLAllocator<T>>;
+
+  template <typename T>
+  static constexpr void deallocIterable(Vector<T*>& iterable) {
     for (auto& i : iterable) {
       DELETE_T(i, T);
     }
@@ -42,6 +65,14 @@ namespace GLaDOS {
 
   template <typename K, typename V>
   static constexpr void deallocValueInMap(Map<K, V*>& iterable) {
+    for (auto& [k, v] : iterable) {
+      DELETE_T(v, V);
+    }
+    iterable.clear();
+  }
+
+  template <typename K, typename V>
+  static constexpr void deallocValueInMap(UnorderedMap<K, V*>& iterable) {
     for (auto& [k, v] : iterable) {
       DELETE_T(v, V);
     }

@@ -26,6 +26,8 @@ namespace GLaDOS {
     Buffer* createIndexBuffer(BufferUsage usage, StreamBuffer& buffer) override;
     ShaderProgram* createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath) override;
     Renderable* createRenderable(Mesh* mesh, Material* material) override;
+    Mesh* createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveType primitiveType, bool dynamicVertex, bool dynamicIndex) override;
+    Mesh* createMesh(const std::string& meshPath, PrimitiveType primitiveType, bool dynamicVertex, bool dynamicIndex) override;
     FrameBuffer* createFrameBuffer() override;
     RenderBuffer* createRenderBuffer() override;
 

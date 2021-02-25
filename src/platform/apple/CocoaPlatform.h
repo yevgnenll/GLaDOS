@@ -54,6 +54,7 @@ namespace GLaDOS {
     inline void windowShouldClose();
     inline void windowWillClose();
     inline void windowDidChangeOcclusionState();
+    inline void applicationShouldTerminate();
 
     // static methods
     static NSWindowStyleMask makeWindowStyle(WindowStyle windowStyle);

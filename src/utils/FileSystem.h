@@ -25,9 +25,9 @@ namespace GLaDOS {
     std::size_t readBuffer(T (&buffer)[count]);
     std::size_t readBuffer(void* buffer, std::size_t size, std::size_t count);
 
-    std::string getLine(); // Retrieve one line delimited by '\n'
-    std::string getLine(char delim); // Retrieve one line delimited by delim
-    std::string getLine(const char* delims); // Retrieve one line delimited by chars within delims
+    std::string getLine();  // Retrieve one line delimited by '\n'
+    std::string getLine(char delim);  // Retrieve one line delimited by delim
+    std::string getLine(const char* delims);  // Retrieve one line delimited by chars within delims
     long size();
 
     void rewind();
@@ -66,6 +66,6 @@ namespace GLaDOS {
 
     return std::fread(buffer, sizeof(T), count, mFilePointer);
   }
-}
+}  // namespace GLaDOS
 
 #endif  //GLADOS_FILESYSTEM_H

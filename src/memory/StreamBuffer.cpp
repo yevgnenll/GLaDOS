@@ -51,6 +51,10 @@ namespace GLaDOS {
     return *this;
   }
 
+  void* StreamBuffer::offsetOf(std::size_t offset) {
+    return static_cast<std::byte*>(pointer()) + offset;
+  }
+
   void* StreamBuffer::pointer() {
     return &mData[0];
   }
@@ -72,8 +76,13 @@ namespace GLaDOS {
   }
 
   void StreamBuffer::writeBytes(std::byte* bytes, unsigned int count) {
+    if (size() < count) {
+      LOG_ERROR("buffer overflow");
+      return;
+    }
+
     for (std::size_t i = 0; i < count; i++) {
-      mData.push_back(bytes[i]);
+      mData[i] = bytes[i];
     }
   }
 }  // namespace GLaDOS

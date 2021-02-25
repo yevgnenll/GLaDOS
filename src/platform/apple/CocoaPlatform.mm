@@ -4,6 +4,7 @@
 #include "CocoaPlatform.h"
 #include "math/Math.h"
 #include "platform/render/metal/MetalFrameBuffer.h"
+#include "Core/SceneManager.h"
 
 #ifdef PLATFORM_MACOS
 
@@ -37,8 +38,6 @@ namespace GLaDOS {
       mContentView = [[ContentView alloc] initWithFrame:makeViewRect(params.width, params.height, params.isFullscreen)];
       [mContentView setWantsLayer:YES];  // you must still call the setWantsLayer: method to let the view know that it should use layers.
       [mContentView setLayer:MetalRenderer::getInstance()->getMetalLayer()];
-      [mContentView setLayerContentsRedrawPolicy:NSViewLayerContentsRedrawDuringViewResize];
-      [mContentView setLayerContentsPlacement:NSViewLayerContentsPlacementScaleAxesIndependently];
       Platform::getInstance()->mMainFrameBuffer = MetalRenderer::getInstance()->createFrameBuffer();
       updateTrackingAreas();
 
@@ -177,6 +176,7 @@ namespace GLaDOS {
   }
 
   void CocoaPlatform::updateTrackingAreas() {
+    LOG_TRACE("updateTrackingAreas");
     // To remove out of date tracking areas and add recomputed tracking areas.
     if (mTrackingArea != nullptr) {
       [mContentView removeTrackingArea:mTrackingArea];
@@ -195,6 +195,7 @@ namespace GLaDOS {
   }
 
   void CocoaPlatform::windowDidResize() {
+    LOG_TRACE("windowDidResize");
     CGRect frame = [mWindow frame];
     CGRect contentRect = [mWindow contentRectForFrameRect:frame];
     Platform::getInstance()->mLastWidth = Platform::getInstance()->mWidth;
@@ -221,6 +222,7 @@ namespace GLaDOS {
   }
 
   void CocoaPlatform::windowDidChangeBackingProperties(CGFloat scaleFactor) {
+    LOG_TRACE("windowDidChangeBackingProperties");
     // 레티나 디스플레이 scaleFactor 변화를 감지하여 Metal drawable와 MetalLayer의 contentScale을 갱신한다.
     CGFloat oldScaleFactor = static_cast<CGFloat>(Platform::getInstance()->mContentScale);
     if (scaleFactor != oldScaleFactor) {
@@ -267,6 +269,13 @@ namespace GLaDOS {
       Platform::getInstance()->mIsOccluded = false;
     } else {
       Platform::getInstance()->mIsOccluded = true;
+    }
+  }
+
+  void CocoaPlatform::applicationShouldTerminate() {
+    // cocoa 메뉴의 quit 버튼을 클릭할때 호출되는 콜백
+    if (Platform::getInstance()->isRunning()) {
+      Platform::getInstance()->quit();
     }
   }
 
@@ -513,18 +522,18 @@ namespace GLaDOS {
 
   void Platform::render() {
     mMainFrameBuffer->begin();
-    MetalRenderer::getInstance()->render(nullptr);
+    SceneManager::getInstance()->render();
     mMainFrameBuffer->end();
   }
 
   void Platform::update() {
     // 큐잉 지연 후 큐에서 이벤트를 패치하는 로직, CPU 100% 를 막기위해 사용된다.
     // wait event
-    NSEvent* eventFuture = [CocoaPlatform::applicationInstance nextEventMatchingMask:NSEventMaskAny
-                                                                           untilDate:[NSDate distantFuture]
-                                                                              inMode:NSDefaultRunLoopMode
-                                                                             dequeue:YES];
-    [CocoaPlatform::applicationInstance sendEvent:eventFuture];
+//    NSEvent* eventFuture = [CocoaPlatform::applicationInstance nextEventMatchingMask:NSEventMaskAny
+//                                                                           untilDate:[NSDate distantFuture]
+//                                                                              inMode:NSDefaultRunLoopMode
+//                                                                             dequeue:YES];
+//    [CocoaPlatform::applicationInstance sendEvent:eventFuture];
 
     // polling event
     for (;;) {
@@ -725,6 +734,11 @@ namespace GLaDOS {
 
 - (void)windowDidChangeOcclusionState:(NSNotification*)notification {
   GLaDOS::CocoaPlatform::getCocoaPlatform()->windowDidChangeOcclusionState();
+}
+
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication*)aNotification {
+  GLaDOS::CocoaPlatform::getCocoaPlatform()->applicationShouldTerminate();
+  return NSTerminateCancel;
 }
 @end
 

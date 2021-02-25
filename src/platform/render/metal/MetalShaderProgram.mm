@@ -24,15 +24,15 @@ namespace GLaDOS {
     for (const auto& [key, uniform] : mUniforms) {
       void* data = uniform->pointer();
       if ((data != nullptr) && uniform->isNumericUniformType()) {
-        std::byte* pointer = nullptr;
+        StreamBuffer* buffer = nullptr;
         if (uniform->mShaderType == ShaderType::VertexShader) {
-          pointer = static_cast<std::byte*>(mVertexUniformBuffer.pointer());
+          buffer = &mVertexUniformBuffer;
         } else if (uniform->mShaderType == ShaderType::FragmentShader) {
-          pointer = static_cast<std::byte*>(mFragmentUniformBuffer.pointer());
+          buffer = &mFragmentUniformBuffer;
         } else {
           continue;
         }
-        std::memcpy(pointer + uniform->mOffset, data, uniform->mSize);
+        std::memcpy(buffer->offsetOf(uniform->mOffset), data, uniform->mSize);
       }
     }
 
@@ -43,25 +43,25 @@ namespace GLaDOS {
     }
 
     if (!mFragmentUniformBuffer.isEmpty()) {
-      [commandEncoder setVertexBytes:mFragmentUniformBuffer.pointer() length:mFragmentUniformBuffer.size() atIndex:0];
+      [commandEncoder setFragmentBytes:mFragmentUniformBuffer.pointer() length:mFragmentUniformBuffer.size() atIndex:0];
     }
   }
 
-  MTLVertexDescriptor* MetalShaderProgram::makeVertexDescriptor(const Vector<VertexFormat>& vertexFormats) {
+  MTLVertexDescriptor* MetalShaderProgram::makeVertexDescriptor(const Vector<VertexFormat*>& vertexFormats) {
     MTLVertexDescriptor* vertexDescriptor = [MTLVertexDescriptor new];
 
     std::size_t bufferIndex = 1;  // bufferIndex 0번은 유니폼으로 사용됨
     std::size_t offset = 0;
     for (const auto& format : vertexFormats) {
-      MTLVertexAttribute* attribute = findVertexAttribute(format.semantic());
+      MTLVertexAttribute* attribute = findVertexAttribute(format->semantic());
       if (attribute != nullptr) {
         std::size_t attributeIndex = attribute.attributeIndex;
-        vertexDescriptor.attributes[attributeIndex].format = MetalShaderProgram::mapVertexFormatFrom(format.type());
+        vertexDescriptor.attributes[attributeIndex].format = MetalShaderProgram::mapVertexFormatFrom(format->type());
         vertexDescriptor.attributes[attributeIndex].bufferIndex = bufferIndex;
-        vertexDescriptor.attributes[attributeIndex].offset = 0;
+        vertexDescriptor.attributes[attributeIndex].offset = offset;
       }
 
-      offset += format.sizeAlign4();
+      offset += format->sizeAlign4();
     }
 
     if (offset != 0) {
@@ -127,12 +127,8 @@ namespace GLaDOS {
     }
 
     // TODO: build vertexformat
-    Vector<VertexFormat> vf;
-    vf.emplace_back(VertexSemantic::Position, VertexAttributeType::Float4);
-    vf.emplace_back(VertexSemantic::Color, VertexAttributeType::Float4);
-    // TODO: temporary code
-
-    MTLVertexDescriptor* vertexDescriptor = makeVertexDescriptor(vf);
+    VertexFormatBuilder builder;
+    MTLVertexDescriptor* vertexDescriptor = makeVertexDescriptor(builder.withPosition().withColor().build());
     [mPipelineDescriptor setVertexDescriptor:vertexDescriptor];
     [vertexDescriptor release];
 
@@ -189,6 +185,7 @@ namespace GLaDOS {
             uniform->mCount = member.arrayType != nullptr ? member.arrayType.arrayLength : 1;
             uniform->mSize = uniform->mCount * MetalShaderProgram::mapUniformTypeSizeForm(uniform->mUniformType);
             uniform->mOffset = member.offset;
+            uniform->resize(uniform->mSize);
             mUniforms.try_emplace(uniform->mName, uniform);
           }
         }
@@ -413,7 +410,7 @@ namespace GLaDOS {
     NSError* compileError = nullptr;
     id<MTLLibrary> library = [device newLibraryWithSource:shaderSource options:compileOptions error:&compileError];
     [compileOptions release];
-    
+
     if (compileError != nullptr) {
       NSString* errorMessage = [NSString stringWithFormat:@"%@", compileError];
       LOG_ERROR([errorMessage UTF8String]);

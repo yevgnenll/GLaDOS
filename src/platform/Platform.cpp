@@ -59,6 +59,10 @@ namespace GLaDOS {
 #endif
   }
 
+  std::size_t Platform::getConcurrency() noexcept {
+    return std::thread::hardware_concurrency();
+  }
+
   void Platform::leftMouseDown(bool isDown) {
     mMouseButtons[static_cast<int>(MouseButton::MOUSE_LEFT)] = isDown;
   }

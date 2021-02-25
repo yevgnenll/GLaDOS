@@ -12,6 +12,8 @@ namespace GLaDOS {
   class ShaderProgram;
   class FrameBuffer;
   class RenderBuffer;
+  class VertexData;
+  class IndexData;
   class Renderer {
   public:
     Renderer() = default;
@@ -24,6 +26,8 @@ namespace GLaDOS {
     virtual Buffer* createIndexBuffer(BufferUsage usage, StreamBuffer& buffer) = 0;
     virtual ShaderProgram* createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath) = 0;
     virtual Renderable* createRenderable(Mesh* mesh, Material* material) = 0;
+    virtual Mesh* createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveType primitiveType, bool dynamicVertex, bool dynamicIndex) = 0;
+    virtual Mesh* createMesh(const std::string& meshPath, PrimitiveType primitiveType, bool dynamicVertex, bool dynamicIndex) = 0;
     virtual FrameBuffer* createFrameBuffer() = 0;
     virtual RenderBuffer* createRenderBuffer() = 0;
   };

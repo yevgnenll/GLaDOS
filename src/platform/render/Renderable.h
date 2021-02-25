@@ -12,7 +12,7 @@ namespace GLaDOS {
 
   public:
     Renderable() = default;
-    virtual ~Renderable() = default;
+    virtual ~Renderable();
 
     virtual void build() = 0;
     virtual void bindParams() = 0;  // called very frame in rendering loop

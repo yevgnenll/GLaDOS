@@ -11,22 +11,22 @@
 namespace GLaDOS {
   class Timer : public Singleton<Timer> {
   public:
-    Timer() = default;
+    Timer();
 
     void update();
 
-    static void reset();
-    static real deltaTime();
-    static real deltaTimeUnscaled();
-    static real elapsedTime();
-    static real elapsedTimeUnscaled();
-    static real fixedDeltaTime();
-    static real fixedDeltaTimeUnscaled();
+    void reset();
+    real deltaTime();
+    real deltaTimeUnscaled();
+    real elapsedTime();
+    real elapsedTimeUnscaled();
+    real fixedDeltaTime();
+    real fixedDeltaTimeUnscaled();
 
-    static int fps();
-    static void setTimeScale(real value);
-    static HighResolutionTimePoint now();
-    static real getInterval(HighResolutionTimePoint start, HighResolutionTimePoint end);
+    int fps();
+    void setTimeScale(real value);
+    HighResolutionTimePoint now();
+    real getInterval(HighResolutionTimePoint start, HighResolutionTimePoint end);
 
   private:
     HighResolutionTimePoint mStart;

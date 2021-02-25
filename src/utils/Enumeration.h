@@ -36,9 +36,11 @@ namespace GLaDOS {
 
   enum class ResourceType {
     Undefined = -1,
-    ShaderProgram = 0,
-    Sound = 1,
-    Texture2D = 2
+    ShaderProgram,
+    Sound,
+    Texture,
+    Mesh,
+    Font
   };
 
   enum class ShaderType {
@@ -59,15 +61,8 @@ namespace GLaDOS {
   };
 
   enum class BufferUsage {
-    StreamDraw,
-    StreamRead,
-    StreamCopy,
-    StaticDraw,
-    StaticRead,
-    StaticCopy,
-    DynamicDraw,
-    DynamicRead,
-    DynamicCopy
+    Static,
+    Dynamic
   };
 
   enum class VertexSemantic {
@@ -148,6 +143,43 @@ namespace GLaDOS {
     ReadWriteBinary
   };
 
+  enum class MessageResult {
+    False = 0,
+    True,
+    Ignored,
+    Error
+  };
+
+  class MessageType {
+  public:
+    enum Value : uint16_t {
+      Undefined = 0,
+      OnCollisionEnter,
+      OnCollisionExit,
+      OnCollisionStay,
+      TheNumberOfMessageType
+    };
+
+    MessageType() = delete;
+    constexpr MessageType(Value _value) : value{_value} {}  // no explicit
+
+    constexpr operator Value() const { return value; }  // no explicit
+    explicit operator bool() = delete;
+    constexpr bool operator==(const MessageType& other) const { return value == other.value; }
+    constexpr bool operator!=(const MessageType& other) const { return value != other.value; }
+    bool operator>=(const MessageType& other) const { return value >= other.value; }
+    constexpr bool operator>(const MessageType& other) const { return value > other.value; }
+    constexpr bool operator<=(const MessageType& other) const { return value <= other.value; }
+    constexpr bool operator<(const MessageType& other) const { return value < other.value; }
+
+    constexpr static std::size_t size() {
+      return TheNumberOfMessageType;
+    }
+
+  private:
+    Value value;
+  };
+
   class LogLevel {
   public:
     enum Value : uint8_t {
@@ -161,9 +193,9 @@ namespace GLaDOS {
     };
 
     LogLevel() = delete;
-    constexpr LogLevel(Value _value) : value{_value} {}
+    constexpr LogLevel(Value _value) : value{_value} {}  // no explicit
 
-    constexpr operator Value() const { return value; }
+    constexpr operator Value() const { return value; }  // no explicit
     explicit operator bool() = delete;
     constexpr bool operator==(const LogLevel& other) const { return value == other.value; }
     constexpr bool operator!=(const LogLevel& other) const { return value != other.value; }
@@ -172,7 +204,7 @@ namespace GLaDOS {
     constexpr bool operator<=(const LogLevel& other) const { return value <= other.value; }
     constexpr bool operator<(const LogLevel& other) const { return value < other.value; }
 
-    const char* toString() const {
+    constexpr const char* toString() const {
       switch (value) {
         case Trace:
           return "TRACE";
@@ -191,7 +223,7 @@ namespace GLaDOS {
       }
     }
 
-    static std::size_t size() {
+    constexpr static std::size_t size() {
       return NumberOfLevel;
     }
 

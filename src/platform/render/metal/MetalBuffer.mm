@@ -20,7 +20,7 @@ namespace GLaDOS {
       return false;
     }
 
-    mMetalBuffer = [device newBufferWithBytes:buffer.pointer() length:buffer.size() options:MTLResourceOptionCPUCacheModeDefault];
+    mMetalBuffer = [device newBufferWithBytes:buffer.pointer() length:mSize options:MTLResourceOptionCPUCacheModeDefault];
     return true;
   }
 

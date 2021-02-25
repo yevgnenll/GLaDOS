@@ -1,11 +1,11 @@
 #include "ShaderProgram.h"
 
+#include "RootDir.h"
 #include "math/Color.h"
 #include "math/Vec2.h"
 #include "math/Vec3.h"
 #include "math/Vec4.h"
 #include "platform/render/Uniform.h"
-#include "RootDir.h"
 
 namespace GLaDOS {
   ShaderProgram::ShaderProgram() : Resource{ResourceType::ShaderProgram} {

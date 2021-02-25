@@ -16,14 +16,14 @@ namespace GLaDOS {
       return;
     }
 
-    mShaderProgram = dynamic_cast<MetalShaderProgram*>(mMaterial->getShaderProgram());
-    if (mShaderProgram == nullptr && !mShaderProgram->isValid() && mVertexDescriptor != nullptr) {
+    auto* shaderProgram = static_cast<MetalShaderProgram*>(mMaterial->getShaderProgram());  // INTEND: do not use dynamic_cast here
+    if (shaderProgram == nullptr && !shaderProgram->isValid() && mVertexDescriptor != nullptr) {
       LOG_ERROR("Invalid shader program state");
       return;
     }
 
-    mVertexDescriptor = mShaderProgram->makeVertexDescriptor(mMesh->getVertexFormats());
-    MTLRenderPipelineDescriptor* pipelineDescriptor = mShaderProgram->getPipelineDescriptor();
+    mVertexDescriptor = shaderProgram->makeVertexDescriptor(mMesh->getVertexFormats());
+    MTLRenderPipelineDescriptor* pipelineDescriptor = shaderProgram->getPipelineDescriptor();
     if (pipelineDescriptor == nullptr && mPipelineState != nullptr) {
       LOG_ERROR("Invalid pipeline Descriptor");
       return;
@@ -38,11 +38,12 @@ namespace GLaDOS {
   }
 
   void MetalRenderable::bindParams() {
+    auto* shaderProgram = static_cast<MetalShaderProgram*>(mMaterial->getShaderProgram());  // INTEND: do not use dynamic_cast here
     //    for (const auto& [key, uniform] : mShaderProgram->getUniforms()) {
     //      // TODO
     //    }
 
-    mShaderProgram->bindUniforms(this);
+    shaderProgram->bindUniforms(this);
   }
 
   id<MTLRenderPipelineState> MetalRenderable::getPipelineState() const {

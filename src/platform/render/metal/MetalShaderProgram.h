@@ -23,7 +23,7 @@ namespace GLaDOS {
 
     MTLRenderPipelineDescriptor* getPipelineDescriptor() const;
     void bindUniforms(MetalRenderable* _renderable);
-    MTLVertexDescriptor* makeVertexDescriptor(const Vector<VertexFormat>& vertexFormats);
+    MTLVertexDescriptor* makeVertexDescriptor(const Vector<VertexFormat*>& vertexFormats);
 
   private:
     bool createShaderProgram(const std::string& vertex, const std::string& fragment) override;

@@ -9,7 +9,6 @@
 #include "platform/render/Renderable.h"
 
 namespace GLaDOS {
-  class MetalShaderProgram;
   class MetalRenderable : public Renderable {
   public:
     MetalRenderable() = default;
@@ -25,7 +24,6 @@ namespace GLaDOS {
   private:
     MTLVertexDescriptor* mVertexDescriptor{nullptr};
     id<MTLRenderPipelineState> mPipelineState{nil};
-    MetalShaderProgram* mShaderProgram{nullptr};
   };
 }  // namespace GLaDOS
 

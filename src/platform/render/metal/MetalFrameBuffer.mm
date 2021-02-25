@@ -30,7 +30,6 @@ namespace GLaDOS {
     [mCommandEncoder endEncoding];
     [mCommandBuffer presentDrawable:mNextDrawable];
     [mCommandBuffer commit];
-    [mCommandBuffer waitUntilScheduled];
   }
 }
 
