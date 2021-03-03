@@ -2,9 +2,9 @@
 #include <platform/Platform.h>
 
 #include "CocoaPlatform.h"
+#include "core/SceneManager.h"
 #include "math/Math.h"
 #include "platform/render/metal/MetalFrameBuffer.h"
-#include "Core/SceneManager.h"
 
 #ifdef PLATFORM_MACOS
 
@@ -529,11 +529,11 @@ namespace GLaDOS {
   void Platform::update() {
     // 큐잉 지연 후 큐에서 이벤트를 패치하는 로직, CPU 100% 를 막기위해 사용된다.
     // wait event
-//    NSEvent* eventFuture = [CocoaPlatform::applicationInstance nextEventMatchingMask:NSEventMaskAny
-//                                                                           untilDate:[NSDate distantFuture]
-//                                                                              inMode:NSDefaultRunLoopMode
-//                                                                             dequeue:YES];
-//    [CocoaPlatform::applicationInstance sendEvent:eventFuture];
+    //    NSEvent* eventFuture = [CocoaPlatform::applicationInstance nextEventMatchingMask:NSEventMaskAny
+    //                                                                           untilDate:[NSDate distantFuture]
+    //                                                                              inMode:NSDefaultRunLoopMode
+    //                                                                             dequeue:YES];
+    //    [CocoaPlatform::applicationInstance sendEvent:eventFuture];
 
     // polling event
     for (;;) {

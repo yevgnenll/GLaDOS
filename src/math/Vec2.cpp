@@ -1,12 +1,7 @@
 #include "Vec2.h"
 
-#include <algorithm>
-#include <cmath>
-#include <utility>
-
 #include "Math.h"
 #include "UVec2.h"
-#include "Vec3.h"
 #include "Vec4.h"
 
 namespace GLaDOS {
@@ -17,6 +12,10 @@ namespace GLaDOS {
   Vec2::Vec2(const Vec3& other) : x{other.x}, y{other.y} {}
 
   Vec2::Vec2(const Vec4& other) : x{other.x}, y{other.y} {}
+
+  Vec2::Vec2(Vec2&& other) noexcept : Vec2{} {
+    Vec2::swap(*this, other);
+  }
 
   Vec2& Vec2::operator=(Vec2 other) {
     // copy and swap idiom (effective c++ section 11)
@@ -205,10 +204,10 @@ namespace GLaDOS {
     swap(first.y, second.y);
   }
 
-  const UVec2 Vec2::up = UVec2{Vec2(0.0, 1.0)};
-  const UVec2 Vec2::down = UVec2{Vec2(0.0, -1.0)};
-  const UVec2 Vec2::left = UVec2{Vec2(-1.0, 0.0)};
-  const UVec2 Vec2::right = UVec2{Vec2(1.0, 0.0)};
-  const UVec2 Vec2::one = UVec2{Vec2(1.0, 1.0)};
-  const UVec2 Vec2::zero = UVec2{Vec2(0.0, 0.0)};
+  const Vec2 Vec2::up = Vec2{0.0, 1.0};
+  const Vec2 Vec2::down = Vec2{0.0, -1.0};
+  const Vec2 Vec2::left = Vec2{-1.0, 0.0};
+  const Vec2 Vec2::right = Vec2{1.0, 0.0};
+  const Vec2 Vec2::one = Vec2{1.0, 1.0};
+  const Vec2 Vec2::zero = Vec2{0.0, 0.0};
 }  // namespace GLaDOS

@@ -109,3 +109,4 @@ function(make_sample TARGET ENTRYPOINT)
 endfunction()
 
 make_sample(01-setup "01-setup/main.cpp")
+make_sample(02-camera "02-camera/main.cpp")

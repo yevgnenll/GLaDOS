@@ -1,13 +1,7 @@
 #include "Vec4.h"
 
-#include <algorithm>
-#include <cmath>
-#include <utility>
-
 #include "Math.h"
 #include "UVec4.h"
-#include "Vec2.h"
-#include "Vec3.h"
 
 namespace GLaDOS {
   Vec4::Vec4(real _x, real _y, real _z, real _w) : x{_x}, y{_y}, z{_z}, w{_w} {}
@@ -19,6 +13,10 @@ namespace GLaDOS {
   Vec4::Vec4(const Vec2& other, real _z, real _w) : x{other.x}, y{other.y}, z{_z}, w{_w} {}
 
   Vec4::Vec4(const Vec3& other, real _w) : x{other.x}, y{other.y}, z{other.z}, w{_w} {}
+
+  Vec4::Vec4(Vec4&& other) noexcept : Vec4{} {
+    Vec4::swap(*this, other);
+  }
 
   Vec4& Vec4::operator=(Vec4 other) {
     Vec4::swap(*this, other);
@@ -215,12 +213,12 @@ namespace GLaDOS {
     swap(first.w, second.w);
   }
 
-  const UVec4 Vec4::up = UVec4{Vec4(0.0, 1.0, 0.0, 1.0)};
-  const UVec4 Vec4::down = UVec4{Vec4(0.0, -1.0, 0.0, 1.0)};
-  const UVec4 Vec4::left = UVec4{Vec4(-1.0, 0.0, 0.0, 1.0)};
-  const UVec4 Vec4::right = UVec4{Vec4(1.0, 0.0, 0.0, 1.0)};
-  const UVec4 Vec4::forward = UVec4{Vec4(0.0, 0.0, -1.0, 1.0)};
-  const UVec4 Vec4::backward = UVec4{Vec4(0.0, 0.0, 1.0, 1.0)};
-  const UVec4 Vec4::one = UVec4{Vec4(1.0, 1.0, 1.0, 1.0)};
-  const UVec4 Vec4::zero = UVec4{Vec4(0.0, 0.0, 0.0, 0.0)};
+  const Vec4 Vec4::up = Vec4{0.0, 1.0, 0.0, 1.0};
+  const Vec4 Vec4::down = Vec4{0.0, -1.0, 0.0, 1.0};
+  const Vec4 Vec4::left = Vec4{-1.0, 0.0, 0.0, 1.0};
+  const Vec4 Vec4::right = Vec4{1.0, 0.0, 0.0, 1.0};
+  const Vec4 Vec4::forward = Vec4{0.0, 0.0, -1.0, 1.0};
+  const Vec4 Vec4::backward = Vec4{0.0, 0.0, 1.0, 1.0};
+  const Vec4 Vec4::one = Vec4{1.0, 1.0, 1.0, 1.0};
+  const Vec4 Vec4::zero = Vec4{0.0, 0.0, 0.0, 0.0};
 }  // namespace GLaDOS

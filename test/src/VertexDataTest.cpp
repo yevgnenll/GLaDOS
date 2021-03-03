@@ -42,16 +42,6 @@ TEST_CASE("VertexData unit tests", "[VertexData]") {
     testVertexData(vd);
   }
 
-  SECTION("Bulk vertex data upload with StreamBuffer test") {
-    VertexData vd{VertexFormatBuilder().withPosition().withColor(), vertexCount};
-    StreamBuffer sb;
-    for (float i : quad) {
-      sb << i;
-    }
-    vd.uploadData(sb);
-    testVertexData(vd);
-  }
-
   SECTION("Bulk vertex data upload with Vector of bytes test") {
     VertexData vd{VertexFormatBuilder().withPosition().withColor(), vertexCount};
     Vector<std::byte> data;

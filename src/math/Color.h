@@ -11,17 +11,22 @@ namespace GLaDOS {
   class Color {
   public:
     Color() = default;
+    ~Color() = default;
     Color(real _r, real _g, real _b);
     Color(real _r, real _g, real _b, real _a);
+    Color(const Color& other) = default;
+    Color(Color&& other) noexcept;
+    Color& operator=(Color other);  // copy and swap idiom
 
     bool operator==(const Color& rhs) const;
     bool operator!=(const Color& rhs) const;
     real& operator[](unsigned int i);
+    const real& operator[](unsigned int i) const;
 
     Vec3 toVec3() const;
     Vec4 toVec4() const;
 
-    static Color lerp(const Color& a, const Color& b, float t);
+    static Color lerp(const Color& a, const Color& b, real t);
     static unsigned char toByte(real value);
     static Color fromRGB(uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255);
     static Color fromRGB(uint32_t rgb, real a = real(1.0));
@@ -47,6 +52,7 @@ namespace GLaDOS {
     real r{1.0}, g{1.0}, b{1.0}, a{1.0};
 
   private:
+    static void swap(Color& first, Color& second);
     static constexpr real invConverter = real(1) / real(255);
   };
 }  // namespace GLaDOS

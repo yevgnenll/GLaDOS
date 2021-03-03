@@ -11,7 +11,7 @@ namespace GLaDOS {
     friend class GameObject;
 
   public:
-    Component();
+    Component(const std::string& name);
     virtual ~Component() = default;
 
     Component(const Component& other) = delete;
@@ -19,13 +19,12 @@ namespace GLaDOS {
 
     GameObject* gameObject();
 
-  private:
+  protected:
     virtual void update(real deltaTime) = 0;
     virtual void render() = 0;
     virtual MessageResult handleMessage(Message& msg);
 
-  protected:
-    GameObject* mGameObject{nullptr};
+    GameObject* mGameObject; // NOTE: do not initialize game object.
   };
 }  // namespace GLaDOS
 

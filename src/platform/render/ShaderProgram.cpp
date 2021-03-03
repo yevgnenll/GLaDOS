@@ -53,7 +53,7 @@ namespace GLaDOS {
       return;
     }
 
-    (*it->second) << value.x << value.y;
+    (*it->second) << value;
   }
 
   void ShaderProgram::setUniform(const std::string& name, const Vec3& value) {
@@ -63,7 +63,7 @@ namespace GLaDOS {
       return;
     }
 
-    (*it->second) << value.x << value.y << value.z;
+    (*it->second) << value;
   }
 
   void ShaderProgram::setUniform(const std::string& name, const Vec4& value) {
@@ -73,7 +73,7 @@ namespace GLaDOS {
       return;
     }
 
-    (*it->second) << value.x << value.y << value.z << value.w;
+    (*it->second) << value;
   }
 
   void ShaderProgram::setUniform(const std::string& name, const Color& value) {
@@ -83,7 +83,7 @@ namespace GLaDOS {
       return;
     }
 
-    (*it->second) << value.r << value.g << value.b << value.a;
+    (*it->second) << value;
   }
 
   void ShaderProgram::setUniform(const std::string& name, const float* values, int count) {
@@ -106,7 +106,7 @@ namespace GLaDOS {
     }
 
     for (int i = 0; i < count; ++i) {
-      (*it->second) << values[i].x << values[i].y;
+      (*it->second) << values[i];
     }
   }
 
@@ -118,7 +118,7 @@ namespace GLaDOS {
     }
 
     for (int i = 0; i < count; ++i) {
-      (*it->second) << values[i].x << values[i].y << values[i].z;
+      (*it->second) << values[i];
     }
   }
 
@@ -130,7 +130,7 @@ namespace GLaDOS {
     }
 
     for (int i = 0; i < count; ++i) {
-      (*it->second) << values[i].x << values[i].y << values[i].z << values[i].w;
+      (*it->second) << values[i];
     }
   }
 
@@ -142,7 +142,7 @@ namespace GLaDOS {
     }
 
     for (int i = 0; i < count; ++i) {
-      (*it->second) << values[i].r << values[i].g << values[i].b << values[i].a;
+      (*it->second) << values[i];
     }
   }
 
@@ -153,9 +153,7 @@ namespace GLaDOS {
       return;
     }
 
-    for (std::size_t i = 0; i < value.size(); ++i) {
-      (*it->second) << *(value.pointer() + i);
-    }
+    (*it->second) << value;
   }
 
   void ShaderProgram::setUniform(const std::string& name, bool value) {

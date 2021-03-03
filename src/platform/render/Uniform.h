@@ -17,7 +17,6 @@ namespace GLaDOS {
     UniformType mUniformType{UniformType::Unknown};
     std::string mName{"unknown"};
     std::size_t mCount{0};
-    std::size_t mSize{0};
     std::size_t mOffset{0};
   };
 }  // namespace GLaDOS

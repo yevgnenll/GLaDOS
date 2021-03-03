@@ -1,9 +1,11 @@
 #ifndef GLADOS_MATH_H
 #define GLADOS_MATH_H
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <type_traits>
+#include <utility>
 
 #include "Angle.hpp"
 #include "Vec2.h"
@@ -15,6 +17,7 @@ namespace GLaDOS {
   class Math {
   public:
     Math() = delete;
+    ~Math() = delete;
 
     template <typename T>
     static std::enable_if_t<!std::is_floating_point_v<T>, bool> equal(const T& a, const T& b);
@@ -30,7 +33,9 @@ namespace GLaDOS {
     static real lerpAngle(real a, real b, real t);
     static real inverseLerp(real a, real b, real value);
     static Rad toRadians(real deg);
+    static Vec3 toRadians(Vec3 degVec);
     static Deg toDegrees(real rad);
+    static Vec3 toDegrees(Vec3 radVec);
     static real sign(real f);
     static real repeat(real t, real length);
     static real deltaAngle(real current, real target);
@@ -71,12 +76,12 @@ namespace GLaDOS {
 
     template <typename T>
     static constexpr auto max(const T& a, const T& b);
+    template <typename T, typename... Ts>
+    static constexpr auto max(const T& a, const T& b, const Ts&... ts);
     template <typename T>
     static constexpr auto min(const T& a, const T& b);
     template <typename T, typename... Ts>
     static constexpr auto min(const T& a, const T& b, const Ts&... ts);
-    template <typename T, typename... Ts>
-    static constexpr auto max(const T& a, const T& b, const Ts&... ts);
 
     static Deg pitch(const Quat& q);
     static Deg yaw(const Quat& q);
@@ -122,6 +127,15 @@ namespace GLaDOS {
     return (a < b) ? b : a;
   }
 
+  template <typename T, typename... Ts>
+  constexpr auto Math::max(const T& a, const T& b, const Ts&... ts) {
+    const auto m = a < b ? b : a;
+    if constexpr (sizeof...(ts) > 0) {
+      return max(m, ts...);
+    }
+    return m;
+  }
+
   template <typename T>
   constexpr auto Math::min(const T& a, const T& b) {
     return (a < b) ? a : b;
@@ -132,15 +146,6 @@ namespace GLaDOS {
     const auto m = a < b ? a : b;
     if constexpr (sizeof...(ts) > 0) {
       return min(m, ts...);
-    }
-    return m;
-  }
-
-  template <typename T, typename... Ts>
-  constexpr auto Math::max(const T& a, const T& b, const Ts&... ts) {
-    const auto m = a < b ? b : a;
-    if constexpr (sizeof...(ts) > 0) {
-      return max(m, ts...);
     }
     return m;
   }

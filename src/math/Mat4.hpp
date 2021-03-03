@@ -17,12 +17,14 @@ namespace GLaDOS {
   class Mat4 {
   public:
     Mat4();
+    ~Mat4() = default;
     Mat4(T m11, T m12, T m13, T m14,
          T m21, T m22, T m23, T m24,
          T m31, T m32, T m33, T m34,
          T m41, T m42, T m43, T m44);
     Mat4(const Mat4& other);
-    Mat4<T>& operator=(Mat4<T> other);
+    Mat4(Mat4<T>&& other) noexcept;
+    Mat4<T>& operator=(Mat4<T> other);  // copy and swap idiom
 
     void makeIdentity();
     bool isIdentity() const;
@@ -95,15 +97,15 @@ namespace GLaDOS {
   };
 
   template <typename T>
-  const Mat4<T> Mat4<T>::one(1, 1, 1, 1,
+  const Mat4<T> Mat4<T>::one{1, 1, 1, 1,
                              1, 1, 1, 1,
                              1, 1, 1, 1,
-                             1, 1, 1, 1);
+                             1, 1, 1, 1};
   template <typename T>
-  const Mat4<T> Mat4<T>::zero(0, 0, 0, 0,
+  const Mat4<T> Mat4<T>::zero{0, 0, 0, 0,
                               0, 0, 0, 0,
                               0, 0, 0, 0,
-                              0, 0, 0, 0);
+                              0, 0, 0, 0};
 
   template <typename T>
   Mat4<T>::Mat4() {
@@ -144,6 +146,11 @@ namespace GLaDOS {
         _m44[c][r] = other._m44[c][r];
       }
     }
+  }
+
+  template <typename T>
+  Mat4<T>::Mat4(Mat4<T>&& other) noexcept : Mat4<T>{} {
+    Mat4<T>::swap(*this, other);
   }
 
   template <typename T>
@@ -359,7 +366,7 @@ namespace GLaDOS {
   template <typename T>
   real Mat4<T>::at(int row, int col) const {
     if (row >= 0 && row <= 3 && col >= 0 && col <= 3) {
-      return (*this).m44[row][col];
+      return (*this)._m44[row][col];
     }
 
     throw std::out_of_range("index is out of range!");
@@ -489,7 +496,7 @@ namespace GLaDOS {
 
   template <typename T>
   std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::lookAt(const Vec3& eye, const UVec3& forward, const UVec3& up) {
-    UVec3 zaxis = Vec3::normalize((eye - forward));
+    UVec3 zaxis = Vec3::normalize(eye - forward);
     UVec3 xaxis = Vec3::normalize(Vec3::cross(up, zaxis));
     Vec3 yaxis = Vec3::cross(zaxis, xaxis);
 
@@ -623,7 +630,7 @@ namespace GLaDOS {
     }
   }
 
-  using Mat4r = Mat4<real>;
+  using Mat4x = Mat4<real>;
   using Mat4i = Mat4<int>;
   using Mat4l = Mat4<long>;
 }  // namespace GLaDOS

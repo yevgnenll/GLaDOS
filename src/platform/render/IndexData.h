@@ -1,10 +1,10 @@
 #ifndef GLADOS_INDEXDATA_H
 #define GLADOS_INDEXDATA_H
 
-#include "ByteContainer.h"
+#include "ByteBuffer.h"
 
 namespace GLaDOS {
-  class IndexData : public ByteContainer {
+  class IndexData : public ByteBuffer {
   public:
     IndexData() = default;
     ~IndexData() override = default;

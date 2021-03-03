@@ -27,7 +27,15 @@ namespace GLaDOS {
 
   Rad Math::toRadians(real deg) { return Rad{deg * deg2Rad}; }
 
+  Vec3 Math::toRadians(Vec3 degVec) {
+    return Vec3{degVec.x * deg2Rad, degVec.y * deg2Rad, degVec.z * deg2Rad};
+  }
+
   Deg Math::toDegrees(real rad) { return Deg{rad * rad2Deg}; }
+
+  Vec3 Math::toDegrees(Vec3 radVec) {
+    return Vec3{radVec.x * rad2Deg, radVec.y * rad2Deg, radVec.z * rad2Deg};
+  }
 
   real Math::sign(real f) {
     return f >= real(0.0) ? real(1.0) : real(-1.0);

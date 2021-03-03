@@ -1,5 +1,11 @@
 #include "StreamBuffer.h"
 
+#include "math/Color.h"
+#include "math/Quat.h"
+#include "math/Vec2.h"
+#include "math/Vec3.h"
+#include "math/Vec4.h"
+
 namespace GLaDOS {
   StreamBuffer& StreamBuffer::operator<<(int8_t i) {
     writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
@@ -48,6 +54,31 @@ namespace GLaDOS {
 
   StreamBuffer& StreamBuffer::operator<<(double i) {
     writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
+    return *this;
+  }
+
+  StreamBuffer& StreamBuffer::operator<<(const Vec2& i) {
+    writeBytes(reinterpret_cast<std::byte*>(const_cast<real*>(&i[0])), sizeof(i));
+    return *this;
+  }
+
+  StreamBuffer& StreamBuffer::operator<<(const Vec3& i) {
+    writeBytes(reinterpret_cast<std::byte*>(const_cast<real*>(&i[0])), sizeof(i));
+    return *this;
+  }
+
+  StreamBuffer& StreamBuffer::operator<<(const Vec4& i) {
+    writeBytes(reinterpret_cast<std::byte*>(const_cast<real*>(&i[0])), sizeof(i));
+    return *this;
+  }
+
+  StreamBuffer& StreamBuffer::operator<<(const Quat& i) {
+    writeBytes(reinterpret_cast<std::byte*>(const_cast<real*>(&i[0])), sizeof(i));
+    return *this;
+  }
+
+  StreamBuffer& StreamBuffer::operator<<(const Color& i) {
+    writeBytes(reinterpret_cast<std::byte*>(const_cast<real*>(&i[0])), sizeof(i));
     return *this;
   }
 

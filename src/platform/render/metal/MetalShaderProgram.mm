@@ -32,7 +32,7 @@ namespace GLaDOS {
         } else {
           continue;
         }
-        std::memcpy(buffer->offsetOf(uniform->mOffset), data, uniform->mSize);
+        std::memcpy(buffer->offsetOf(uniform->mOffset), data, uniform->size());  // TODO: reimplement to c++ std::copy
       }
     }
 
@@ -183,9 +183,8 @@ namespace GLaDOS {
             uniform->mUniformType = MetalShaderProgram::mapUniformTypeFrom(member.dataType);
             uniform->mName = [member.name UTF8String];
             uniform->mCount = member.arrayType != nullptr ? member.arrayType.arrayLength : 1;
-            uniform->mSize = uniform->mCount * MetalShaderProgram::mapUniformTypeSizeForm(uniform->mUniformType);
             uniform->mOffset = member.offset;
-            uniform->resize(uniform->mSize);
+            uniform->resize(uniform->mCount * MetalShaderProgram::mapUniformTypeSizeForm(uniform->mUniformType));
             mUniforms.try_emplace(uniform->mName, uniform);
           }
         }
@@ -226,10 +225,10 @@ namespace GLaDOS {
 
       switch (uniform->mShaderType) {
         case ShaderType::VertexShader:
-          vertexUniformSize += (uniform->mOffset + uniform->mSize);
+          vertexUniformSize += (uniform->mOffset + uniform->size());
           break;
         case ShaderType::FragmentShader:
-          fragmentUniformSize += (uniform->mOffset + uniform->mSize);
+          fragmentUniformSize += (uniform->mOffset + uniform->size());
           break;
         default:
           LOG_WARN("Not supported type yet!");

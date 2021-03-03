@@ -14,6 +14,7 @@ namespace GLaDOS {
     operator const Vec4&() const;  // should not be explicit
     const Vec4* operator->() const;
     const Vec4& operator*() const;
+    ~UVec4() = default;
   };
 }  // namespace GLaDOS
 

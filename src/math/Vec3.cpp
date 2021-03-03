@@ -1,9 +1,5 @@
 #include "Vec3.h"
 
-#include <algorithm>
-#include <cmath>
-#include <utility>
-
 #include "Math.h"
 #include "UVec3.h"
 #include "Vec4.h"
@@ -20,6 +16,10 @@ namespace GLaDOS {
   Vec3::Vec3(const Vec4& other) : x{other.x}, y{other.y}, z{other.z} {}
 
   Vec3::Vec3(const Vec2& other, real _z) : x{other.x}, y{other.y}, z{_z} {}
+
+  Vec3::Vec3(Vec3&& other) noexcept : Vec3{} {
+    Vec3::swap(*this, other);
+  }
 
   Vec3& Vec3::operator=(Vec3 other) {
     // copy and swap idiom (effective c++ section 11)
@@ -230,12 +230,12 @@ namespace GLaDOS {
     swap(first.z, second.z);
   }
 
-  const UVec3 Vec3::up = UVec3{Vec3(0.0, 1.0, 0.0)};
-  const UVec3 Vec3::down = UVec3{Vec3(0.0, -1.0, 0.0)};
-  const UVec3 Vec3::left = UVec3{Vec3(-1.0, 0.0, 0.0)};
-  const UVec3 Vec3::right = UVec3{Vec3(1.0, 0.0, 0.0)};
-  const UVec3 Vec3::forward = UVec3{Vec3(0.0, 0.0, -1.0)};
-  const UVec3 Vec3::backward = UVec3{Vec3(0.0, 0.0, 1.0)};
-  const UVec3 Vec3::one = UVec3{Vec3(1.0, 1.0, 1.0)};
-  const UVec3 Vec3::zero = UVec3{Vec3(0.0, 0.0, 0.0)};
+  const Vec3 Vec3::up = Vec3{0.0, 1.0, 0.0};
+  const Vec3 Vec3::down = Vec3{0.0, -1.0, 0.0};
+  const Vec3 Vec3::left = Vec3{-1.0, 0.0, 0.0};
+  const Vec3 Vec3::right = Vec3{1.0, 0.0, 0.0};
+  const Vec3 Vec3::forward = Vec3{0.0, 0.0, -1.0};
+  const Vec3 Vec3::backward = Vec3{0.0, 0.0, 1.0};
+  const Vec3 Vec3::one = Vec3{1.0, 1.0, 1.0};
+  const Vec3 Vec3::zero = Vec3{0.0, 0.0, 0.0};
 }  // namespace GLaDOS

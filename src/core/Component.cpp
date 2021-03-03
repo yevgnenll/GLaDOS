@@ -1,7 +1,7 @@
 #include "Component.h"
 
 namespace GLaDOS {
-  Component::Component() : Object{"Component"} {
+  Component::Component(const std::string& name) : Object{name} {
   }
 
   GameObject* Component::gameObject() {

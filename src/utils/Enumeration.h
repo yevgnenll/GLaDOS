@@ -11,6 +11,11 @@ namespace GLaDOS {
   using HighResolutionTimePoint = std::chrono::time_point<HighResolutionClock>;
   using millisecond = std::chrono::duration<real, std::milli>;
 
+  enum class Space {
+    Self,
+    World
+  };
+
   enum class CursorMode {
     Show,
     Hidden

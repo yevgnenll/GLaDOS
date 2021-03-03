@@ -1,11 +1,15 @@
 #ifndef GLADOS_STREAMBUFFER_H
 #define GLADOS_STREAMBUFFER_H
 
-#include <cstdint>
-
+#include "math/Mat4.hpp"
 #include "utils/Utility.h"
 
 namespace GLaDOS {
+  class Vec2;
+  class Vec3;
+  class Vec4;
+  class Quat;
+  class Color;
   class StreamBuffer {
   public:
     StreamBuffer() = default;
@@ -21,6 +25,13 @@ namespace GLaDOS {
     StreamBuffer& operator<<(uint64_t i);
     StreamBuffer& operator<<(float i);
     StreamBuffer& operator<<(double i);
+    StreamBuffer& operator<<(const Vec2& i);
+    StreamBuffer& operator<<(const Vec3& i);
+    StreamBuffer& operator<<(const Vec4& i);
+    StreamBuffer& operator<<(const Quat& i);
+    StreamBuffer& operator<<(const Color& i);
+    template <typename T>
+    StreamBuffer& operator<<(const Mat4<T>& i);
 
     void* offsetOf(std::size_t offset);
     void* pointer();
@@ -34,6 +45,12 @@ namespace GLaDOS {
 
     Vector<std::byte> mData;
   };
+
+  template <typename T>
+  StreamBuffer& StreamBuffer::operator<<(const Mat4<T>& i) {
+    writeBytes(reinterpret_cast<std::byte*>(const_cast<real*>(i.pointer())), sizeof(T) * i.size());
+    return *this;
+  }
 }  // namespace GLaDOS
 
 #endif

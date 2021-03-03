@@ -14,6 +14,9 @@ namespace GLaDOS {
     operator const Vec2&() const;  // should not be explicit
     const Vec2* operator->() const;
     const Vec2& operator*() const;
+    ~UVec2() = default;
+
+    static const UVec2 up, down, left, right, one, zero;
   };
 }  // namespace GLaDOS
 

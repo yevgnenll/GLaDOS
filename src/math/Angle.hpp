@@ -18,7 +18,7 @@ namespace GLaDOS {
     template <typename S>
     constexpr explicit Angle(const Angle<S>& r) noexcept : val{r.get() / r.ratio * ratio} {}
 
-    [[nodiscard]] constexpr float get() const noexcept { return val; }
+    [[nodiscard]] constexpr real get() const noexcept { return val; }
     explicit constexpr operator real() const noexcept { return val; }
 
     Angle operator+(const real& value) const {
@@ -44,11 +44,11 @@ namespace GLaDOS {
   using Rad = Angle<RadRatio>;
   using Deg = Angle<DegRatio>;
 
-  constexpr Rad operator""_rad(unsigned long long f) noexcept { return Rad{static_cast<real>(f)}; }
-  constexpr Rad operator""_rad(long double f) noexcept { return Rad{static_cast<real>(f)}; }
+  constexpr Rad operator""_rad(unsigned long long value) noexcept { return Rad{static_cast<real>(value)}; }
+  constexpr Rad operator""_rad(long double value) noexcept { return Rad{static_cast<real>(value)}; }
 
-  constexpr Deg operator""_deg(unsigned long long f) noexcept { return Deg{static_cast<real>(f)}; }
-  constexpr Deg operator""_deg(long double f) noexcept { return Deg{static_cast<real>(f)}; }
+  constexpr Deg operator""_deg(unsigned long long value) noexcept { return Deg{static_cast<real>(value)}; }
+  constexpr Deg operator""_deg(long double value) noexcept { return Deg{static_cast<real>(value)}; }
 }  // namespace GLaDOS
 
 #endif  //GLADOS_ANGLE_HPP

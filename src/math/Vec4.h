@@ -4,21 +4,21 @@
 #include "Angle.hpp"
 #include "Vec2.h"
 #include "Vec3.h"
-#include "utils/Enumeration.h"
 
 namespace GLaDOS {
   class UVec4;
   class Vec4 {
   public:
     Vec4() = default;
+    ~Vec4() = default;
     Vec4(real _x, real _y, real _z, real _w);
     explicit Vec4(const Vec2& other);
     explicit Vec4(const Vec3& other);
     Vec4(const Vec2& other, real _z, real _w);
     Vec4(const Vec3& other, real _w);
-
+    Vec4(Vec4&& other) noexcept;
     Vec4(const Vec4& other) = default;
-    Vec4& operator=(Vec4 other);
+    Vec4& operator=(Vec4 other);  // copy and swap idiom
 
     real& operator[](unsigned int i);
     const real& operator[](unsigned int i) const;
@@ -148,7 +148,7 @@ namespace GLaDOS {
     static Deg angle(const UVec4& from, const UVec4& to);
 
     real x{0.0}, y{0.0}, z{0.0}, w{1.0};
-    static const UVec4 up, down, left, right, forward, backward, one, zero;
+    static const Vec4 up, down, left, right, forward, backward, one, zero;
 
   private:
     static void swap(Vec4& first, Vec4& second);

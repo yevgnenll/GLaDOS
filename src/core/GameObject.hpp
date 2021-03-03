@@ -16,6 +16,7 @@ namespace GLaDOS {
   class Component;
   class GameObject : public Object {
     friend class Scene;
+    friend class Transform;
 
   public:
     GameObject(std::string name, Scene* scene);
@@ -152,8 +153,8 @@ namespace GLaDOS {
   bool GameObject::subscribeAllMessageType() {
     auto ret = getComponent<T>();
     if (!ret) return false;
-    for (auto& i : mSubscriber) {
-      mSubscriber->insert(ret);
+    for (auto& subscriber : mSubscriber) {
+      subscriber.insert(ret);
     }
     return true;
   }

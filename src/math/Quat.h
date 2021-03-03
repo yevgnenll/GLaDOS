@@ -13,11 +13,12 @@ namespace GLaDOS {
   class Quat {
   public:
     Quat() = default;
+    ~Quat() = default;
     Quat(real _w, real _x, real _y, real _z);
     Quat(real _w, const Vec3& _v);
-
+    Quat(Quat&& other) noexcept;
     Quat(const Quat& other) = default;
-    Quat& operator=(Quat other);
+    Quat& operator=(Quat other);  // copy and swap idiom
 
     Quat operator+(const Quat& other) const;
     Quat& operator+=(const Quat& other);

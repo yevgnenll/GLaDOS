@@ -7,14 +7,14 @@ namespace GLaDOS {
   class Renderable;
   class MeshRenderer : public Component {
   public:
-    MeshRenderer() = default;
+    MeshRenderer();
     ~MeshRenderer() override;
 
     void setRenderable(Renderable* renderable);
 
   private:
-    virtual void update(real deltaTime);
-    virtual void render();
+    void update(real deltaTime) override;
+    void render() override;
 
     Renderable* mRenderable;
   };

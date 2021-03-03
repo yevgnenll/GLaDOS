@@ -8,6 +8,16 @@ namespace GLaDOS {
 
   Color::Color(real _r, real _g, real _b, real _a) : r{_r}, g{_g}, b{_b}, a{_a} {}
 
+  Color::Color(Color&& other) noexcept : Color{} {
+    Color::swap(*this, other);
+  }
+
+  Color& Color::operator=(Color other) {
+    // copy and swap idiom (effective c++ section 11)
+    Color::swap(*this, other);
+    return *this;
+  }
+
   bool Color::operator==(const Color& rhs) const {
     return Math::equal(r, rhs.r) && Math::equal(g, rhs.g) && Math::equal(b, rhs.b) && Math::equal(a, rhs.a);
   }
@@ -15,6 +25,19 @@ namespace GLaDOS {
   bool Color::operator!=(const Color& rhs) const { return !(*this == rhs); }
 
   real& Color::operator[](unsigned int i) {
+    switch (i) {
+      case 0:
+        return r;
+      case 1:
+        return g;
+      case 2:
+        return b;
+      default:
+        return a;
+    }
+  }
+
+  const real& Color::operator[](unsigned int i) const {
     switch (i) {
       case 0:
         return r;
@@ -122,6 +145,15 @@ namespace GLaDOS {
 
   Color Color::fromHSV(const Vec3& hsv, real alpha) {
     return fromHSV(hsv.x, hsv.y, hsv.z, alpha);
+  }
+
+  void Color::swap(Color& first, Color& second) {
+    using std::swap;
+
+    swap(first.r, second.r);
+    swap(first.g, second.g);
+    swap(first.b, second.b);
+    swap(first.a, second.a);
   }
 
   Color Color::white = Color(1., 1.0, 1.0, 1.0);

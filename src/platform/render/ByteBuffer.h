@@ -1,13 +1,13 @@
-#ifndef GLADOS_BYTECONTAINER_H
-#define GLADOS_BYTECONTAINER_H
+#ifndef GLADOS_BYTEBUFFER_H
+#define GLADOS_BYTEBUFFER_H
 
 #include "memory/StreamBuffer.h"
 
 namespace GLaDOS {
-  class ByteContainer {
+  class ByteBuffer {
   public:
-    ByteContainer() = default;
-    virtual ~ByteContainer() = default;
+    ByteBuffer() = default;
+    virtual ~ByteBuffer() = default;
 
     std::size_t size() const;
     std::size_t count() const;
@@ -15,7 +15,6 @@ namespace GLaDOS {
     StreamBuffer& buffer();
     void uploadData(const Vector<std::byte>& data);
     void uploadData(const std::byte* data);
-    void uploadData(const StreamBuffer& data);
 
   protected:
     StreamBuffer mStreamBuffer;
@@ -23,4 +22,4 @@ namespace GLaDOS {
   };
 }  // namespace GLaDOS
 
-#endif  //GLADOS_BYTECONTAINER_H
+#endif  //GLADOS_BYTEBUFFER_H

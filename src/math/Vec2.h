@@ -2,7 +2,6 @@
 #define GLADOS_VEC2_H
 
 #include "Angle.hpp"
-#include "utils/Enumeration.h"
 
 namespace GLaDOS {
   class UVec2;
@@ -11,13 +10,14 @@ namespace GLaDOS {
   class Vec2 {
   public:
     Vec2() = default;
+    ~Vec2() = default;
     explicit Vec2(real _x);
     Vec2(real _x, real _y);
     explicit Vec2(const Vec3& other);
     explicit Vec2(const Vec4& other);
-
+    Vec2(Vec2&& other) noexcept;
     Vec2(const Vec2& other) = default;
-    Vec2& operator=(Vec2 other);
+    Vec2& operator=(Vec2 other);  // copy and swap idiom
 
     real& operator[](unsigned int i);
     const real& operator[](unsigned int i) const;
@@ -78,7 +78,7 @@ namespace GLaDOS {
     static Deg angle(const UVec2& from, const UVec2& to);
 
     real x{0.0}, y{0.0};
-    static const UVec2 up, down, left, right, one, zero;
+    static const Vec2 up, down, left, right, one, zero;
 
   private:
     static void swap(Vec2& first, Vec2& second);

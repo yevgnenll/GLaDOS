@@ -1,7 +1,7 @@
 #ifndef GLADOS_VERTEXDATA_H
 #define GLADOS_VERTEXDATA_H
 
-#include "ByteContainer.h"
+#include "ByteBuffer.h"
 #include "VertexFormat.h"
 #include "math/Color.h"
 #include "math/Vec2.h"
@@ -9,7 +9,7 @@
 
 namespace GLaDOS {
   class VertexFormat;
-  class VertexData : public ByteContainer {
+  class VertexData : public ByteBuffer {
   public:
     explicit VertexData(const VertexFormatBuilder& vertexFormatBuilder, std::size_t count);
     ~VertexData() override;

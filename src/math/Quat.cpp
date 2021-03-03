@@ -9,6 +9,10 @@ namespace GLaDOS {
 
   Quat::Quat(real _w, const Vec3& _v) : w{_w}, x{_v.x}, y{_v.y}, z{_v.z} {}
 
+  Quat::Quat(Quat&& other) noexcept : Quat{} {
+    Quat::swap(*this, other);
+  }
+
   Quat& Quat::operator=(Quat other) {
     // copy and swap idiom (effective c++ section 11)
     Quat::swap(*this, other);

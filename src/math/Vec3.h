@@ -11,15 +11,16 @@ namespace GLaDOS {
   class Vec3 {
   public:
     Vec3() = default;
+    ~Vec3() = default;
     explicit Vec3(real _x);
     Vec3(real _x, real _y);
     Vec3(real _x, real _y, real _z);
     explicit Vec3(const Vec2& other);
     explicit Vec3(const Vec4& other);
     Vec3(const Vec2& other, real _z);
-
+    Vec3(Vec3&& other) noexcept;
     Vec3(const Vec3& other) = default;
-    Vec3& operator=(Vec3 other);
+    Vec3& operator=(Vec3 other);  // copy and swap idiom
 
     real& operator[](unsigned int i);
     const real& operator[](unsigned int i) const;
@@ -117,7 +118,7 @@ namespace GLaDOS {
     static Deg angle(const UVec3& from, const UVec3& to);
 
     real x{0.0}, y{0.0}, z{0.0};
-    static const UVec3 up, down, left, right, forward, backward, one, zero;
+    static const Vec3 up, down, left, right, forward, backward, one, zero;
 
   private:
     static void swap(Vec3& first, Vec3& second);
