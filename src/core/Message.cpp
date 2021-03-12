@@ -1,4 +1,5 @@
 #include "Message.h"
+#include <cstring>
 
 namespace GLaDOS {
   Message::Message(MessageType type) : mType(type) {}

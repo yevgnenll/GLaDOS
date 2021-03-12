@@ -10,6 +10,8 @@
 #include <Windows.h>
 #else
 #include <unistd.h>
+#include <sys/syscall.h>
+#define gettid() syscall(SYS_gettid)
 #endif
 
 namespace GLaDOS {
@@ -43,9 +45,9 @@ namespace GLaDOS {
     pthread_threadid_np(nullptr, &tid);
     return static_cast<std::size_t>(tid);
 #elif defined(PLATFORM_LINUX)
-    return static_cast<std::size_t>(::syscall(SYS_gettid));
+    return static_cast<std::size_t>(gettid());
 #elif defined(PLATFORM_WINDOW)
-    return static_cast<std::size_t>(::GetCurrentThreadId());
+    return static_cast<std::size_t>(GetCurrentThreadId());
 #else  // Default to standard C++11 (other Unix)
     return static_cast<std::size_t>(std::hash<std::thread::id>()(std::this_thread::get_id()));
 #endif

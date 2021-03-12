@@ -1,4 +1,5 @@
 #include "ByteBuffer.h"
+#include <cstring>
 
 namespace GLaDOS {
   std::size_t ByteBuffer::size() const {
