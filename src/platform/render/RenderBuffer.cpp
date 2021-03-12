@@ -6,4 +6,7 @@ namespace GLaDOS {
 
   void RenderBuffer::end() {
   }
+
+  void RenderBuffer::makeDepthStencilTexture() {
+  }
 }  // namespace GLaDOS

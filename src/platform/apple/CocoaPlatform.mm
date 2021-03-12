@@ -4,6 +4,8 @@
 #include "CocoaPlatform.h"
 #include "core/SceneManager.h"
 #include "math/Math.h"
+#include "platform/Input.h"
+#include "platform/Timer.h"
 #include "platform/render/metal/MetalFrameBuffer.h"
 
 #ifdef PLATFORM_MACOS
@@ -70,14 +72,14 @@ namespace GLaDOS {
       // 초기 backingScaleFactor 셋팅
       [MetalRenderer::getInstance()->getMetalLayer() setContentsScale:[mWindow backingScaleFactor]];
       Platform::getInstance()->mContentScale = static_cast<real>([mWindow backingScaleFactor]);
+      windowDidResize(); // force invoke resize event to create depth texture
 
       CVDisplayLinkCreateWithActiveCGDisplays(&mDisplayLink);
       CVDisplayLinkSetOutputCallback(mDisplayLink, &displayLinkCb, nullptr);
       CVDisplayLinkSetCurrentCGDisplay(mDisplayLink, 0);
       CVDisplayLinkStart(mDisplayLink);
+      return true;
     }
-
-    return true;
   }
 
   NSRect CocoaPlatform::makeViewRect(int width, int height, bool isFullScreen) {
@@ -122,7 +124,7 @@ namespace GLaDOS {
     Platform::getInstance()->setKeyUp(localKey);
   }
 
-  void CocoaPlatform::mouseMoved(NSPoint point) {
+  void CocoaPlatform::mouseMoved(NSPoint& point) {
     Platform::getInstance()->mMousePosition.x = static_cast<real>(point.x);
     Platform::getInstance()->mMousePosition.y = static_cast<real>(point.y);
   }
@@ -204,6 +206,7 @@ namespace GLaDOS {
     Platform::getInstance()->mHeight = static_cast<int>(contentRect.size.height);
     CGFloat scaleFactor = static_cast<CGFloat>(Platform::getInstance()->mContentScale);
     [MetalRenderer::getInstance()->getMetalLayer() setDrawableSize:NSMakeSize(contentRect.size.width * scaleFactor, contentRect.size.height * scaleFactor)];
+    Platform::getInstance()->mMainFrameBuffer->makeDepthStencilTexture();
   }
 
   void CocoaPlatform::windowDidMiniaturize() {
@@ -231,6 +234,7 @@ namespace GLaDOS {
       [metalLayer setContentsScale:scaleFactor];
       CGRect bounds = metalLayer.bounds;
       [metalLayer setDrawableSize:NSMakeSize(bounds.size.width * scaleFactor, bounds.size.height * scaleFactor)];
+      Platform::getInstance()->mMainFrameBuffer->makeDepthStencilTexture();
     }
   }
 
@@ -521,7 +525,13 @@ namespace GLaDOS {
   }
 
   void Platform::render() {
+    // vsync with timer, input update
+    Input::getInstance()->update();
+    Timer::getInstance()->update();
+
+    // actual rendering start
     mMainFrameBuffer->begin();
+    SceneManager::getInstance()->update(Timer::getInstance()->deltaTime());
     SceneManager::getInstance()->render();
     mMainFrameBuffer->end();
   }
@@ -529,20 +539,22 @@ namespace GLaDOS {
   void Platform::update() {
     // 큐잉 지연 후 큐에서 이벤트를 패치하는 로직, CPU 100% 를 막기위해 사용된다.
     // wait event
-    //    NSEvent* eventFuture = [CocoaPlatform::applicationInstance nextEventMatchingMask:NSEventMaskAny
-    //                                                                           untilDate:[NSDate distantFuture]
-    //                                                                              inMode:NSDefaultRunLoopMode
-    //                                                                             dequeue:YES];
-    //    [CocoaPlatform::applicationInstance sendEvent:eventFuture];
-
-    // polling event
-    for (;;) {
-      NSEvent* eventPast = [CocoaPlatform::applicationInstance nextEventMatchingMask:NSEventMaskAny
-                                                                           untilDate:[NSDate distantPast]
+    NSEvent* eventFuture = [CocoaPlatform::applicationInstance nextEventMatchingMask:NSEventMaskAny
+                                                                           untilDate:[NSDate distantFuture]
                                                                               inMode:NSDefaultRunLoopMode
                                                                              dequeue:YES];
-      if (eventPast == nil) break;
-      [CocoaPlatform::applicationInstance sendEvent:eventPast];
+    [CocoaPlatform::applicationInstance sendEvent:eventFuture];
+
+    // polling event
+    @autoreleasepool {
+      for (;;) {
+        NSEvent* eventPast = [CocoaPlatform::applicationInstance nextEventMatchingMask:NSEventMaskAny
+                                                                             untilDate:[NSDate distantPast]
+                                                                                inMode:NSDefaultRunLoopMode
+                                                                               dequeue:YES];
+        if (eventPast == nil) break;
+        [CocoaPlatform::applicationInstance sendEvent:eventPast];
+      }
     }
   }
 
@@ -618,127 +630,203 @@ namespace GLaDOS {
 - (BOOL)canBecomeMainWindow {
   return YES;
 }
+
 - (BOOL)canBecomeKeyWindow {
   return YES;
 }
+
 - (BOOL)acceptsFirstResponder {
   return YES;
 }
 
+- (BOOL)wantsUpdateLayer {
+  return YES;
+}
+
 - (void)keyDown:(NSEvent*)event {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->keyDown([event keyCode]);
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->keyDown([event keyCode]);
+  }
 }
 
 - (void)keyUp:(NSEvent*)event {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->keyUp([event keyCode]);
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->keyUp([event keyCode]);
+  }
 }
 @end
 
 @implementation ContentView
+- (void)dealloc {
+  [super dealloc];
+}
+
 - (void)mouseMoved:(NSEvent*)event {
-  NSPoint point = [self convertPoint:[event locationInWindow] fromView:nil];
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->mouseMoved(point);
+  @autoreleasepool {
+    NSPoint point = [self convertPoint:[event locationInWindow] fromView:nil];
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->mouseMoved(point);
+  }
 }
 
 - (void)mouseDragged:(NSEvent*)event {
-  [self mouseMoved:event];
+  @autoreleasepool {
+    [self mouseMoved:event];
+  }
+}
+
+- (void)rightMouseDragged:(NSEvent*)event {
+  @autoreleasepool {
+    [self mouseMoved:event];
+  }
+}
+
+- (void)otherMouseDragged:(NSEvent*)event {
+  @autoreleasepool {
+    [self mouseMoved:event];
+  }
 }
 
 - (void)scrollWheel:(NSEvent*)event {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->scrollWheel([event scrollingDeltaX], [event scrollingDeltaY], [event hasPreciseScrollingDeltas]);
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->scrollWheel([event scrollingDeltaX], [event scrollingDeltaY], [event hasPreciseScrollingDeltas]);
+  }
 }
 
 - (void)mouseDown:(NSEvent*)event {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->mouseDown();
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->mouseDown();
+  }
 }
 
 - (void)mouseUp:(NSEvent*)event {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->mouseUp();
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->mouseUp();
+  }
 }
 
 - (void)rightMouseDown:(NSEvent*)event {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->rightMouseDown();
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->rightMouseDown();
+  }
 }
 
 - (void)rightMouseUp:(NSEvent*)event {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->rightMouseUp();
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->rightMouseUp();
+  }
 }
 
 - (void)otherMouseDown:(NSEvent*)event {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->otherMouseDown();
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->otherMouseDown();
+  }
 }
 
 - (void)otherMouseUp:(NSEvent*)event {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->otherMouseUp();
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->otherMouseUp();
+  }
 }
 
 - (void)mouseExited:(NSEvent*)event {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->mouseExited();
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->mouseExited();
+  }
 }
 
 - (void)mouseEntered:(NSEvent*)event {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->mouseEntered();
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->mouseEntered();
+  }
 }
 
 - (void)updateTrackingAreas {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->updateTrackingAreas();
-  [super updateTrackingAreas];
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->updateTrackingAreas();
+    [super updateTrackingAreas];
+  }
 }
 
 - (void)windowDidResize:(NSNotification*)notification {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->windowDidResize();
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->windowDidResize();
+  }
 }
 
 - (void)windowDidMiniaturize:(NSNotification*)notification {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->windowDidMiniaturize();
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->windowDidMiniaturize();
+  }
 }
 
 - (void)windowDidDeminiaturize:(NSNotification*)notification {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->windowDidDeminiaturize();
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->windowDidDeminiaturize();
+  }
 }
 
 - (void)windowDidMove:(NSNotification*)notification {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->windowDidMove();
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->windowDidMove();
+  }
 }
 
 - (void)windowDidChangeBackingProperties:(NSNotification*)notification {
-  // https://developer.apple.com/library/archive/documentation/GraphicsAnimation/Conceptual/HighResolutionOSX/CapturingScreenContents/CapturingScreenContents.html#//apple_ref/doc/uid/TP40012302-CH10-SW20
-  NSWindow* theWindow = (NSWindow*)[notification object];
-  CGFloat newBackingScaleFactor = [theWindow backingScaleFactor];
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->windowDidChangeBackingProperties(newBackingScaleFactor);
+  @autoreleasepool {
+    // https://developer.apple.com/library/archive/documentation/GraphicsAnimation/Conceptual/HighResolutionOSX/CapturingScreenContents/CapturingScreenContents.html#//apple_ref/doc/uid/TP40012302-CH10-SW20
+    NSWindow* theWindow = (NSWindow*)[notification object];
+    CGFloat newBackingScaleFactor = [theWindow backingScaleFactor];
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->windowDidChangeBackingProperties(newBackingScaleFactor);
+  }
 }
 
 - (void)applicationWillBecomeActive:(NSNotification*)notification {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->applicationWillBecomeActive();
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->applicationWillBecomeActive();
+  }
 }
 
 - (void)applicationWillResignActive:(NSNotification*)notification {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->applicationWillResignActive();
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->applicationWillResignActive();
+  }
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification*)notification {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->applicationWillFinishLaunching();
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->applicationWillFinishLaunching();
+  }
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification*)notification {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->applicationDidFinishLaunching();
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->applicationDidFinishLaunching();
+  }
 }
 
 - (BOOL)windowShouldClose:(id)sender {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->windowShouldClose();
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->windowShouldClose();
+  }
 }
 
 - (void)windowWillClose:(NSNotification*)notification {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->windowWillClose();
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->windowWillClose();
+  }
 }
 
 - (void)windowDidChangeOcclusionState:(NSNotification*)notification {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->windowDidChangeOcclusionState();
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->windowDidChangeOcclusionState();
+  }
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication*)aNotification {
-  GLaDOS::CocoaPlatform::getCocoaPlatform()->applicationShouldTerminate();
-  return NSTerminateCancel;
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->applicationShouldTerminate();
+    return NSTerminateCancel;
+  }
 }
 @end
 

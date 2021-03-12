@@ -1,0 +1,7 @@
+#ifndef GLADOS_ABSTRACTDIALOG_H
+#define GLADOS_ABSTRACTDIALOG_H
+
+class AbstractDialog {
+};
+
+#endif  //GLADOS_ABSTRACTDIALOG_H

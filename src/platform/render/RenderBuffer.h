@@ -11,6 +11,7 @@ namespace GLaDOS {
 
     void begin() override;
     void end() override;
+    void makeDepthStencilTexture() override;
   };
 }  // namespace GLaDOS
 

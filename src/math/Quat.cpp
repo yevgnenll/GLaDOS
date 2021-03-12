@@ -60,11 +60,28 @@ namespace GLaDOS {
   }
 
   Vec3 Quat::operator*(const Vec3& other) const {
-    Vec3 quatVec{x, y, z};
-    Vec3 uv = Vec3::cross(quatVec, other) * (real(2.0) * w);
-    Vec3 uuv = Vec3::cross(quatVec, uv) * real(2.0);
+    // https://answers.unity.com/questions/372371/multiply-quaternion-by-vector3-how-is-done.html
+    static real one = real(1.0);
+    static real two = real(2.0);
+    real num = x * two;
+    real num2 = y * two;
+    real num3 = z * two;
+    real num4 = x * num;
+    real num5 = y * num2;
+    real num6 = z * num3;
+    real num7 = x * num2;
+    real num8 = x * num3;
+    real num9 = y * num3;
+    real num10 = w * num;
+    real num11 = w * num2;
+    real num12 = w * num3;
 
-    return other + uv + uuv;
+    Vec3 result;
+    result.x = (one - (num5 + num6)) * other.x + (num7 - num12) * other.y + (num8 + num11) * other.z;
+    result.y = (num7 + num12) * other.x + (one - (num4 + num6)) * other.y + (num9 - num10) * other.z;
+    result.z = (num8 - num11) * other.x + (num9 + num10) * other.y + (one - (num4 + num5)) * other.z;
+
+    return result;
   }
 
   Vec4 Quat::operator*(const Vec4& other) const {
@@ -213,7 +230,7 @@ namespace GLaDOS {
     return qx * qy * qz;
   }
 
-  Quat Quat::angleAxis(Deg angle, const UVec3& axis) {
+  Quat Quat::angleAxis(Rad angle, const UVec3& axis) {
     auto halfAngle = angle * real(0.5);
     auto halfSin = Math::sin(halfAngle.get());
 

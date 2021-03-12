@@ -67,7 +67,7 @@ namespace GLaDOS {
     static Mat4<T> abs(const Mat4<T>& other);
     static std::enable_if_t<is_real_v<T>, Mat4<T>> perspective(Rad fieldOfView, const T& aspectRatio, const T& znear, const T& zfar);
     static std::enable_if_t<is_real_v<T>, Mat4<T>> orthogonal(const T& left, const T& right, const T& bottom, const T& top, const T& znear, const T& zfar);
-    static std::enable_if_t<is_real_v<T>, Mat4<T>> lookAt(const Vec3& eye, const UVec3& forward, const UVec3& up);
+    static std::enable_if_t<is_real_v<T>, Mat4<T>> lookAt(const Vec3& eye, const Vec3& forward, const UVec3& up);
     static std::enable_if_t<is_real_v<T>, Mat4<T>> translate(const Vec3& trans);
     static std::enable_if_t<is_real_v<T>, Mat4<T>> scale(const Vec3& scale);
     static std::enable_if_t<is_real_v<T>, Mat4<T>> rotate(Rad angle, const UVec3& axis);
@@ -495,7 +495,7 @@ namespace GLaDOS {
   }
 
   template <typename T>
-  std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::lookAt(const Vec3& eye, const UVec3& forward, const UVec3& up) {
+  std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::lookAt(const Vec3& eye, const Vec3& forward, const UVec3& up) {
     UVec3 zaxis = Vec3::normalize(eye - forward);
     UVec3 xaxis = Vec3::normalize(Vec3::cross(up, zaxis));
     Vec3 yaxis = Vec3::cross(zaxis, xaxis);

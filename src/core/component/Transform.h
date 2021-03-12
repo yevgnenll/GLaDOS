@@ -13,7 +13,7 @@ namespace GLaDOS {
     ~Transform() override = default;
 
     void translate(const Vec3& translation, Space relativeTo = Space::Self);
-    void rotate(const UVec3& axis, Deg angle, Space relativeTo = Space::Self);
+    void rotate(const UVec3& axis, Rad angle, Space relativeTo = Space::Self);
     void rotate(const Vec3& eulerAngles, Space relativeTo = Space::Self);
     void rotateAround(const Vec3& point, const UVec3& axis, Deg angle);
     void scale(const Vec3& axis, Space relativeTo = Space::Self);

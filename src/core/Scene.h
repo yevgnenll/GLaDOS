@@ -13,7 +13,7 @@ namespace GLaDOS {
     friend class SceneManager;
 
   public:
-    explicit Scene(std::string name, uint32_t buildIndex);
+    explicit Scene(std::string name);
     ~Scene() override;
 
     void addGameObject(GameObject* object);
@@ -21,19 +21,20 @@ namespace GLaDOS {
     Camera* getMainCamera();
 
     // Only at once being called when scene object is created
-    virtual void onAwake() {}
+    virtual bool onInit() { return true; }
     // being called whenever scene is activated
-    virtual void onStart() {}
+    virtual bool onStart() { return true; }
     // every frame
-    virtual void onUpdate() {}
+    virtual void onUpdate(real deltaTime) {}
     // last update every frame after OnUpdate called
-    virtual void onLateUpdate() {}
+    virtual void onLateUpdate(real deltaTime) {}
+    // fixed time update (TODO)
+    virtual void fixedUpdate() {}
 
   private:
     void update(real deltaTime) override;
     void render() override;
 
-    SceneManager* mManager{nullptr};
     uint32_t mBuildIndex{0};
     Vector<GameObject*> mGameObjects;
     Camera* mMainCamera;

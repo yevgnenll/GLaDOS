@@ -24,7 +24,7 @@ namespace GLaDOS {
     virtual void render() = 0;
     virtual MessageResult handleMessage(Message& msg);
 
-    GameObject* mGameObject; // NOTE: do not initialize game object.
+    GameObject* mGameObject;  // NOTE: do not initialize game object.
   };
 }  // namespace GLaDOS
 

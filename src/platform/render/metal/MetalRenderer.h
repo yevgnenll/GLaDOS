@@ -30,6 +30,8 @@ namespace GLaDOS {
     Mesh* createMesh(const std::string& meshPath, PrimitiveType primitiveType, bool dynamicVertex, bool dynamicIndex) override;
     FrameBuffer* createFrameBuffer() override;
     RenderBuffer* createRenderBuffer() override;
+    DepthStencilState* createDepthStencilState(const DepthStencilDescription& desc) override;
+    SamplerState* createSamplerState(const SamplerDescription& desc) override;
 
     id<MTLDevice> getDevice() const;
     id<MTLRenderCommandEncoder> getCommandEncoder() const;

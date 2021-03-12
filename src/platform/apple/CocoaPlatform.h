@@ -31,7 +31,7 @@ namespace GLaDOS {
     // delegate methods
     inline void keyDown(unsigned short keycode);
     inline void keyUp(unsigned short keycode);
-    inline void mouseMoved(NSPoint point);
+    inline void mouseMoved(NSPoint& point);
     inline void scrollWheel(CGFloat deltaX, CGFloat deltaY, bool precise);
     inline void mouseDown();
     inline void mouseUp();
@@ -72,10 +72,10 @@ namespace GLaDOS {
     static NSApplication* applicationInstance;
     static CocoaPlatform* cocoaPlatformInstance;
 
-    NSWindow* mWindow{nullptr};
-    ContentView* mContentView{nullptr};
-    CVDisplayLinkRef mDisplayLink{nullptr};
-    NSTrackingArea* mTrackingArea{nullptr};
+    NSWindow* mWindow{nil};
+    ContentView* mContentView{nil};
+    CVDisplayLinkRef mDisplayLink{nil};
+    NSTrackingArea* mTrackingArea{nil};
   };
 }
 

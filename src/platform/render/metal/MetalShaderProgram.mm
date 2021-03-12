@@ -4,7 +4,9 @@
 
 #include "platform/apple/CocoaPlatform.h"
 #include "platform/render/Uniform.h"
-#include "platform/render/metal/MetalRenderable.h"
+#include "MetalRenderable.h"
+#include "MetalRenderState.h"
+#include <cstring>
 
 namespace GLaDOS {
   MetalShaderProgram::~MetalShaderProgram() {
@@ -45,6 +47,14 @@ namespace GLaDOS {
     if (!mFragmentUniformBuffer.isEmpty()) {
       [commandEncoder setFragmentBytes:mFragmentUniformBuffer.pointer() length:mFragmentUniformBuffer.size() atIndex:0];
     }
+
+    // set the metal depth stencil state
+    if (mDepthStencilState != nullptr) {
+      [commandEncoder setDepthStencilState:metalDepthStencilState()];
+      [commandEncoder setFrontFacingWinding:MTLWindingCounterClockwise];
+      [commandEncoder setCullMode:MTLCullModeNone];
+//      [commandEncoder setStencilFrontReferenceValue:1 backReferenceValue:1];
+    }
   }
 
   MTLVertexDescriptor* MetalShaderProgram::makeVertexDescriptor(const Vector<VertexFormat*>& vertexFormats) {
@@ -69,6 +79,10 @@ namespace GLaDOS {
     }
 
     return vertexDescriptor;
+  }
+
+  id<MTLDepthStencilState> MetalShaderProgram::metalDepthStencilState() {
+    return static_cast<MetalDepthStencilState*>(depthStencilState())->getMetalDepthStencilState();
   }
 
   bool MetalShaderProgram::createShaderProgram(const std::string& vertex, const std::string& fragment) {
@@ -118,7 +132,8 @@ namespace GLaDOS {
       return false;
     }
     colorAttachmentDescriptor.pixelFormat = [MetalRenderer::getInstance()->getMetalLayer() pixelFormat];
-    mPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatDepth32Float;
+    mPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatDepth32Float_Stencil8;
+    mPipelineDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatDepth32Float_Stencil8;
 
     id<MTLDevice> device = MetalRenderer::getInstance()->getDevice();
     if (device == nullptr) {

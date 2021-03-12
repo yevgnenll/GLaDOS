@@ -6,6 +6,7 @@
 #include "math/Vec3.h"
 #include "math/Vec4.h"
 #include "platform/render/Uniform.h"
+#include "RenderState.h"
 
 namespace GLaDOS {
   ShaderProgram::ShaderProgram() : Resource{ResourceType::ShaderProgram} {
@@ -14,6 +15,7 @@ namespace GLaDOS {
 
   ShaderProgram::~ShaderProgram() {
     deallocValueInMap(mUniforms);
+    DELETE_T(mDepthStencilState, DepthStencilState);
   }
 
   void ShaderProgram::setUniform(const std::string& name, int value) {
@@ -185,5 +187,13 @@ namespace GLaDOS {
 
   bool ShaderProgram::isValid() const {
     return mIsValid;
+  }
+
+  DepthStencilState* ShaderProgram::depthStencilState() {
+    return mDepthStencilState;
+  }
+
+  void ShaderProgram::setDepthStencilState(DepthStencilState* depthStencilState) {
+    mDepthStencilState = depthStencilState;
   }
 }  // namespace GLaDOS

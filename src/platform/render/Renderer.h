@@ -14,6 +14,10 @@ namespace GLaDOS {
   class RenderBuffer;
   class VertexData;
   class IndexData;
+  class DepthStencilState;
+  class DepthStencilDescription;
+  class SamplerState;
+  class SamplerDescription;
   class Renderer {
   public:
     Renderer() = default;
@@ -30,6 +34,8 @@ namespace GLaDOS {
     virtual Mesh* createMesh(const std::string& meshPath, PrimitiveType primitiveType, bool dynamicVertex, bool dynamicIndex) = 0;
     virtual FrameBuffer* createFrameBuffer() = 0;
     virtual RenderBuffer* createRenderBuffer() = 0;
+    virtual DepthStencilState* createDepthStencilState(const DepthStencilDescription& desc) = 0;
+    virtual SamplerState* createSamplerState(const SamplerDescription& desc) = 0;
   };
 }  // namespace GLaDOS
 

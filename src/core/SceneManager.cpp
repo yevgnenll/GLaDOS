@@ -8,20 +8,6 @@ namespace GLaDOS {
     deallocValueInMap(mScenes);
   }
 
-  Scene* SceneManager::createScene(const std::string& name) {
-    if (sceneByName(name) != nullptr) {
-      LOG_ERROR("Already exist scene name");
-      return nullptr;
-    }
-
-    Scene* scene = NEW_T(Scene(name, mLastSceneCount));
-    scene->onAwake();
-    mScenes.try_emplace(mLastSceneCount, scene);
-    mLastSceneCount++;
-
-    return scene;
-  }
-
   Scene* SceneManager::activeScene() const {
     return mCurrentScene;
   }
@@ -49,9 +35,14 @@ namespace GLaDOS {
       return false;
     }
 
-    mCurrentScene = scene;
-    mCurrentScene->onStart();
-    return true;
+    if (scene->onStart()) {
+      LOG_TRACE("Scene {0} activated.", scene->getName());
+      mCurrentScene = scene;
+      return true;
+    }
+    LOG_TRACE("Scene {0} failed to onStart()", scene->getName());
+
+    return false;
   }
 
   bool SceneManager::loadScene(uint32_t buildIndex) {

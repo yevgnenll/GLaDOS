@@ -3,8 +3,8 @@
 
 #include "core/Component.h"
 #include "math/Mat4.hpp"
-#include "math/Rect.hpp"
 #include "math/Ray.h"
+#include "math/Rect.hpp"
 
 namespace GLaDOS {
   class Camera : public Component {
@@ -37,7 +37,7 @@ namespace GLaDOS {
 
   private:
     real mFieldOfView{60.0};
-    real mNearClipPlane{0.3};
+    real mNearClipPlane{0.1};
     real mFarClipPlane{1000.0};
     bool mIsOrthographic{false};
     Rect<uint32_t> mViewportRect;

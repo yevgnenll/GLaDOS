@@ -10,6 +10,7 @@
 namespace GLaDOS {
   class Uniform;
   class Color;
+  class DepthStencilState;
   class ShaderProgram : public Resource {
   public:
     ShaderProgram();
@@ -33,6 +34,8 @@ namespace GLaDOS {
     Map<std::string, Uniform*>& getUniforms();
     std::size_t uniformSize() const;
     bool isValid() const;
+    DepthStencilState* depthStencilState();
+    void setDepthStencilState(DepthStencilState* depthStencilState);
 
   private:
     virtual bool createShaderProgram(const std::string& vertex, const std::string& fragment) = 0;
@@ -41,6 +44,7 @@ namespace GLaDOS {
     std::string mVertexShaderCode;
     std::string mFragmentShaderCode;
     Map<std::string, Uniform*> mUniforms;
+    DepthStencilState* mDepthStencilState{nullptr};
     bool mIsValid{false};
   };
 }  // namespace GLaDOS

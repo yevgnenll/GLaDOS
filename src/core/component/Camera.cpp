@@ -1,6 +1,8 @@
 #include "Camera.h"
+
 #include "core/GameObject.hpp"
 #include "core/component/Transform.h"
+#include "math/UVec3.h"
 #include "math/Vec2.h"
 
 namespace GLaDOS {
@@ -20,7 +22,7 @@ namespace GLaDOS {
 
   Mat4<real> Camera::worldToCameraMatrix() const {
     Transform* transform = mGameObject->transform();
-    return Mat4<real>::lookAt(transform->localPosition(), Vec3::normalize(transform->localPosition() + transform->forward()), transform->up());
+    return Mat4<real>::lookAt(transform->localPosition(), transform->localPosition() + transform->forward(), transform->up());
   }
 
   Mat4<real> Camera::cameraToWorldMatrix() const {
@@ -75,7 +77,7 @@ namespace GLaDOS {
   }
 
   Rect<uint32_t> Camera::viewportRect() const {
-    return mViewportRect; // TODO: Graphics::getViewport()
+    return mViewportRect;  // TODO: Graphics::getViewport()
   }
 
   void Camera::setFieldOfView(real fov) {

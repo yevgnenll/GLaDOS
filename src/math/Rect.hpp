@@ -1,8 +1,8 @@
 #ifndef GLADOS_RECT_HPP
 #define GLADOS_RECT_HPP
 
-#include "Size.hpp"
 #include "Math.h"
+#include "Size.hpp"
 
 namespace GLaDOS {
   class Vec2;
@@ -47,8 +47,8 @@ namespace GLaDOS {
 
     static Rect<T> expand(Rect<T>& rect, T to);
     static Rect<T> fromPoints(const Vec2& p1, const Vec2& p2);
-    static Rect<T> merge(const Rect<T>& a, const Rect<T>& b); // 합집합
-    static Rect<T> intersection(const Rect<T>& a, const Rect<T>& b); // 교집합
+    static Rect<T> merge(const Rect<T>& a, const Rect<T>& b);  // 합집합
+    static Rect<T> intersection(const Rect<T>& a, const Rect<T>& b);  // 교집합
 
     static const Rect<T> zero, one;
 
@@ -94,7 +94,7 @@ namespace GLaDOS {
 
   template <typename T>
   Rect<T> Rect<T>::operator+(const Rect<T>& other) const {
-// using op= (more effective c++ section 22)
+    // using op= (more effective c++ section 22)
     return Rect<T>(*this) += other;
   }
 
@@ -213,10 +213,10 @@ namespace GLaDOS {
 
   template <typename T>
   Rect<T> Rect<T>::fromPoints(const Vec2& p1, const Vec2& p2) {
-//    const Vec2 upperLeft = Vec2::min(p1, p2);
-//    const Vec2 rightBottom = Vec2::max(p1, p2);
-//    return Rect<T>(upperLeft, Math::Max(rightBottom - upperLeft, Vector2::Zero));
-// TODO
+    //    const Vec2 upperLeft = Vec2::min(p1, p2);
+    //    const Vec2 rightBottom = Vec2::max(p1, p2);
+    //    return Rect<T>(upperLeft, Math::Max(rightBottom - upperLeft, Vector2::Zero));
+    // TODO
   }
 
   template <typename T>
@@ -246,6 +246,6 @@ namespace GLaDOS {
     swap(first.right, second.right);
     swap(first.bottom, second.bottom);
   }
-}
+}  // namespace GLaDOS
 
 #endif  //GLADOS_RECT_HPP

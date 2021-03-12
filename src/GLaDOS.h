@@ -21,6 +21,8 @@
 #include "platform/render/Uniform.h"
 #include "platform/render/VertexData.h"
 #include "platform/render/VertexFormat.h"
+#include "platform/render/RenderState.h"
+#include "platform/InputHandler.h"
 #include "utils/Utility.h"
 
 #endif  //GLADOS_GLADOS_H

@@ -14,6 +14,7 @@ set(SHADER_DIR "${CMAKE_SOURCE_DIR}/shader")
 set(SCRIPT_DIR "${CMAKE_SOURCE_DIR}/script")
 set(SAMPLE_DIR "${CMAKE_SOURCE_DIR}/sample")
 set(VENDOR_DIR "${CMAKE_SOURCE_DIR}/vendor")
+set(STB_LIB_DIR "${VENDOR_DIR}/stb")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(MEMORY_DEBUG 1)
@@ -77,7 +78,7 @@ target_link_libraries(${PROJECT_NAME}
         ${LINK_LIBRARIES}
         project_options
         project_warnings)
-target_include_directories(${PROJECT_NAME} PRIVATE ${SOURCE_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${SOURCE_DIR} ${STB_LIB_DIR})
 configure_file("${CMAKE_SOURCE_DIR}/cmake/RootDir.h.in" "${SOURCE_DIR}/RootDir.h")
 configure_file("${CMAKE_SOURCE_DIR}/cmake/Config.h.in" "${SOURCE_DIR}/Config.h")
 
@@ -110,3 +111,5 @@ endfunction()
 
 make_sample(01-setup "01-setup/main.cpp")
 make_sample(02-camera "02-camera/main.cpp")
+make_sample(03-gui "03-gui/main.cpp")
+make_sample(04-rotateObject "04-rotateObject/main.cpp")

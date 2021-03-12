@@ -4,10 +4,11 @@
 #include "component/Camera.h"
 
 namespace GLaDOS {
-  Scene::Scene(std::string name, uint32_t buildIndex) : Object{std::move(name)}, mBuildIndex{buildIndex} {
+  Scene::Scene(std::string name) : Object{std::move(name)} {
     // Every scene has at least a camera.
     auto* cameraObject = NEW_T(GameObject("MainCamera", this));
     mMainCamera = cameraObject->addComponent<Camera>();
+    LOG_TRACE("Scene {0} created with buildIndex {1}.", mName, mBuildIndex);
   }
 
   Scene::~Scene() {
@@ -16,7 +17,7 @@ namespace GLaDOS {
 
   void Scene::addGameObject(GameObject* object) {
     if (object == nullptr) {
-      LOG_ERROR("Null GameObject can not be added scene.");
+      LOG_ERROR("Null GameObject can not be added to scene.");
       return;
     }
     object->mScene = this;
@@ -32,13 +33,13 @@ namespace GLaDOS {
   }
 
   void Scene::update(real deltaTime) {
-    onUpdate();
+    onUpdate(deltaTime);
     for (auto& gameObject : mGameObjects) {
       if (gameObject->isActive()) {
         gameObject->update(deltaTime);
       }
     }
-    onLateUpdate();
+    onLateUpdate(deltaTime);
   }
 
   void Scene::render() {

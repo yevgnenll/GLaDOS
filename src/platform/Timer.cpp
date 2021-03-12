@@ -8,7 +8,7 @@ namespace GLaDOS {
   void Timer::update() {
     mCurrentTime = now();
 
-    mUnscaledDeltaTime = std::chrono::duration_cast<millisecond>(mCurrentTime - mStart).count() * 0.001;
+    mUnscaledDeltaTime = static_cast<real>(getInterval(mStart, mCurrentTime) * 0.001);
     mDeltaTime = mUnscaledDeltaTime * mTimeScale;
 
     mUnscaledTime += mUnscaledDeltaTime;

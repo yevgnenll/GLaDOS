@@ -23,7 +23,6 @@ namespace GLaDOS {
 
   template <typename T>
   Size<T>::Size() : x{(T)0}, y{(T)0} {
-
   }
 
   template <typename T>
@@ -59,6 +58,6 @@ namespace GLaDOS {
     swap(first.x, second.x);
     swap(first.y, second.y);
   }
-}
+}  // namespace GLaDOS
 
 #endif  //GLADOS_SIZE_HPP

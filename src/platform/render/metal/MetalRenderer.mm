@@ -7,6 +7,7 @@
 #include "MetalRenderBuffer.h"
 #include "MetalRenderable.h"
 #include "MetalShaderProgram.h"
+#include "MetalRenderState.h"
 #include "platform/render/Mesh.h"
 #include "utils/FileSystem.h"
 
@@ -34,6 +35,8 @@ namespace GLaDOS {
     // If YES, the nextDrawable method returns nil if it can’t provide a drawable object within one second.
     // If NO, the nextDrawable method waits indefinitely for a drawable to become available.
     mMetalLayer.allowsNextDrawableTimeout = NO;
+
+    LOG_TRACE("MetalRenderer init success with Graphics Card: {0}", [[mMetalDevice name] UTF8String]);
 
     return true;
   }
@@ -142,6 +145,14 @@ namespace GLaDOS {
 
   RenderBuffer* MetalRenderer::createRenderBuffer() {
     return NEW_T(MetalRenderBuffer);
+  }
+
+  DepthStencilState* MetalRenderer::createDepthStencilState(const DepthStencilDescription& desc) {
+    return NEW_T(MetalDepthStencilState(desc));
+  }
+
+  SamplerState* MetalRenderer::createSamplerState(const SamplerDescription& desc) {
+    return NEW_T(MetalSamplerState(desc));
   }
 
   id<MTLDevice> MetalRenderer::getDevice() const {

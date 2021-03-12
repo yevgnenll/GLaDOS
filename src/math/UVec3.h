@@ -6,7 +6,7 @@
 namespace GLaDOS {
   class UVec3 {
   private:
-    friend Vec3;
+    friend class Vec3;
     explicit UVec3(const Vec3& vec);
     Vec3 mVec;
 

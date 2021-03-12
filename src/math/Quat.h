@@ -58,7 +58,7 @@ namespace GLaDOS {
     static Quat conjugate(const Quat& q);
     static Vec3 toEuler(const Quat& q);
     static Quat fromEuler(const Vec3& euler);
-    static Quat angleAxis(Deg angle, const UVec3& axis);
+    static Quat angleAxis(Rad angle, const UVec3& axis);
     static Quat fromToRot(const Vec3& from, const Vec3& to);
     static Mat4<real> toRotMat(const Quat& q);
     static Quat fromRotMat(const Mat4<real>& m);

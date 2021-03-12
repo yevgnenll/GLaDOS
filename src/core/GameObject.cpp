@@ -9,7 +9,7 @@ namespace GLaDOS {
     if (scene != nullptr) {
       scene->addGameObject(this);
     }
-    LOG_TRACE("GameObject {0} created.", mName);
+    LOG_TRACE("GameObject {0} created in scene {1}.", mName, scene->getName());
   }
 
   GameObject::GameObject(std::string name, GameObject* parent, Scene* scene) : Object{std::move(name)}, mParent{parent} {
@@ -18,7 +18,7 @@ namespace GLaDOS {
     if (scene != nullptr) {
       scene->addGameObject(this);
     }
-    LOG_TRACE("GameObject {0} created.", mName);
+    LOG_TRACE("GameObject {0} created in scene {1}.", mName, scene->getName());
   }
 
   GameObject::~GameObject() {

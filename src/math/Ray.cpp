@@ -33,4 +33,4 @@ namespace GLaDOS {
     swap(first.mDirection, second.mDirection);
     swap(first.mInvDirection, second.mInvDirection);
   }
-}
+}  // namespace GLaDOS

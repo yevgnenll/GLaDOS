@@ -15,7 +15,7 @@ namespace GLaDOS {
     }
   }
 
-  void Transform::rotate(const UVec3& axis, Deg angle, Space relativeTo) {
+  void Transform::rotate(const UVec3& axis, Rad angle, Space relativeTo) {
     Quat angleAxis = Quat::angleAxis(angle, axis);
     if (relativeTo == Space::Self) {
       mLocalRotation = angleAxis * mLocalRotation;
