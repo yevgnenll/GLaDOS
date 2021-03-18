@@ -28,10 +28,10 @@ namespace GLaDOS {
     id<MTLDepthStencilState> metalDepthStencilState();
 
   private:
-    bool createShaderProgram(const std::string& vertex, const std::string& fragment) override;
+    bool createShaderProgram(const std::string& vertex, const std::string& fragment, const VertexData* vertexData) override;
 
     MTLVertexAttribute* findVertexAttribute(VertexSemantic semantic);
-    bool makePipelineDescriptor();
+    bool makePipelineDescriptor(const VertexData* vertexData);
     bool addShaderArguments(MTLRenderPipelineReflection* pipelineReflection);
     void addUniform(MTLArgument* argument, ShaderType type);
     void reserveUniformMemory();

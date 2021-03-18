@@ -2,27 +2,36 @@
 #define GLADOS_TEXTURE_H
 
 #include "resource/Resource.h"
-#include "math/Color.h"
 
 namespace GLaDOS {
+  class Color;
   class SamplerState;
+  class SamplerDescription;
+  class StreamBuffer;
   class Texture : public Resource {
   public:
-    Texture();
-    ~Texture();
+    Texture(const std::string& name, TextureFormat format);
+    ~Texture() override;
 
-    uint8_t* nativePointer();
+    SamplerState* samplerState();
+    void setSamplerState(const SamplerDescription& desc);
+    void setColorKey(const Color& colorKey);
+    Color colorKey() const;
 
-  private:
-    uint8_t* mNativeTexturePointer{nullptr};
-    int mWidth{0};
-    int mHeight{0};
+    virtual bool loadTextureFromFile() = 0;
+    virtual bool loadTextureFromBuffer(StreamBuffer& buffer) = 0;
+
+  protected:
+    static int mapChannelNumberFrom(TextureFormat format);
+
+    uint32_t mWidth{0};
+    uint32_t mHeight{0};
+    uint32_t mChannels{0};
     TextureFormat mFormat{TextureFormat::Unknown};
     TextureUsage mUsage{TextureUsage::Unknown};
     TextureDimension mDimension{TextureDimension::Unknown};
     SamplerState* mSamplerState{nullptr};
-    bool mIsUseColorKey{false};
-    Color mColorKey;
+    Color* mColorKey{nullptr};
   };
 }  // namespace GLaDOS
 

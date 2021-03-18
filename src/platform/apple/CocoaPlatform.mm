@@ -1,14 +1,14 @@
-
-#include <platform/Platform.h>
+#include "platform/Platform.h"
 
 #include "CocoaPlatform.h"
+
+#ifdef PLATFORM_MACOS
+
 #include "core/SceneManager.h"
 #include "math/Math.h"
 #include "platform/Input.h"
 #include "platform/Timer.h"
 #include "platform/render/metal/MetalFrameBuffer.h"
-
-#ifdef PLATFORM_MACOS
 
 namespace GLaDOS {
   NSApplication* CocoaPlatform::applicationInstance = nullptr;
@@ -23,63 +23,65 @@ namespace GLaDOS {
   }
 
   bool CocoaPlatform::initialize(const PlatformParams& params) {
-    @autoreleasepool {
-      LOG_TRACE("Initialize Cocoa Platform...");
+    LOG_TRACE("Initialize Cocoa Platform...");
 
-      if (params.width <= 0 || params.height <= 0) {
-        LOG_ERROR("Platform width and height should not be less than 0.");
-        return false;
-      }
-
-      if (!MetalRenderer::getInstance()->initialize()) {
-        LOG_ERROR("MetalRenderer initialize failed.");
-        return false;
-      }
-
-      // create contentView
-      mContentView = [[ContentView alloc] initWithFrame:makeViewRect(params.width, params.height, params.isFullscreen)];
-      [mContentView setWantsLayer:YES];  // you must still call the setWantsLayer: method to let the view know that it should use layers.
-      [mContentView setLayer:MetalRenderer::getInstance()->getMetalLayer()];
-      Platform::getInstance()->mMainFrameBuffer = MetalRenderer::getInstance()->createFrameBuffer();
-      updateTrackingAreas();
-
-      // create cocoa application
-      applicationInstance = [NSApplication sharedApplication];
-      [applicationInstance setDelegate:mContentView];
-      initCursorMode(params.isShowCursor);
-      // 해당 코드가 없을시 windowDelegate 의 windowWillClose, windowDidDeminiaturize 콜백 함수가 호출되지 않음
-      [applicationInstance finishLaunching];
-
-      // create window
-      NSWindowStyleMask windowStyle = Platform::getInstance()->mIsFullScreen ? NSWindowStyleMaskBorderless : CocoaPlatform::makeWindowStyle(params.windowStyle);
-      mWindow = [[CocoaWindow alloc] initWithContentRect:[mContentView frame] styleMask:windowStyle backing:NSBackingStoreBuffered defer:YES];
-      Platform::getInstance()->setTitleName(params.titleName);
-      [mWindow setOpaque:YES];
-      [mWindow setContentView:mContentView];
-      [mWindow setDelegate:mContentView];
-      [mWindow makeMainWindow];
-      [mWindow makeFirstResponder:nil];
-      if (Platform::getInstance()->mIsFullScreen) {
-        [mWindow setLevel:NSMainMenuWindowLevel + 1];
-        [mWindow setHidesOnDeactivate:YES];
-      } else {
-        [mWindow setLevel:NSNormalWindowLevel];
-        [mWindow setHidesOnDeactivate:NO];
-      }
-      [mWindow makeKeyAndOrderFront:nil];
-      [mWindow orderFrontRegardless];
-
-      // 초기 backingScaleFactor 셋팅
-      [MetalRenderer::getInstance()->getMetalLayer() setContentsScale:[mWindow backingScaleFactor]];
-      Platform::getInstance()->mContentScale = static_cast<real>([mWindow backingScaleFactor]);
-      windowDidResize(); // force invoke resize event to create depth texture
-
-      CVDisplayLinkCreateWithActiveCGDisplays(&mDisplayLink);
-      CVDisplayLinkSetOutputCallback(mDisplayLink, &displayLinkCb, nullptr);
-      CVDisplayLinkSetCurrentCGDisplay(mDisplayLink, 0);
-      CVDisplayLinkStart(mDisplayLink);
-      return true;
+    if (params.width <= 0 || params.height <= 0) {
+      LOG_ERROR("Platform width and height should not be less than 0.");
+      return false;
     }
+
+    if (!MetalRenderer::getInstance()->initialize()) {
+      LOG_ERROR("MetalRenderer initialize failed.");
+      return false;
+    }
+
+    // create contentView
+    mContentView = [[ContentView alloc] initWithFrame:makeViewRect(params.width, params.height, params.isFullscreen)];
+    [mContentView setWantsLayer:YES];  // you must still call the setWantsLayer: method to let the view know that it should use layers.
+    [mContentView setLayer:MetalRenderer::getInstance()->getMetalLayer()];
+    Platform::getInstance()->mMainFrameBuffer = MetalRenderer::getInstance()->createFrameBuffer();
+    updateTrackingAreas();
+
+    // create cocoa application
+    applicationInstance = [NSApplication sharedApplication];
+    [applicationInstance setDelegate:mContentView];
+    initCursorMode(params.isShowCursor);
+    // 해당 코드가 없을시 windowDelegate 의 windowWillClose, windowDidDeminiaturize 콜백 함수가 호출되지 않음
+    [applicationInstance finishLaunching];
+
+    // create window
+    NSWindowStyleMask windowStyle = Platform::getInstance()->mIsFullScreen ? NSWindowStyleMaskBorderless : CocoaPlatform::makeWindowStyle(params.windowStyle);
+    mWindow = [[CocoaWindow alloc] initWithContentRect:[mContentView frame] styleMask:windowStyle backing:NSBackingStoreBuffered defer:YES];
+    Platform::getInstance()->setTitleName(params.titleName);
+    [mWindow setOpaque:YES];
+    [mWindow setContentView:mContentView];
+    [mWindow setDelegate:mContentView];
+    [mWindow makeMainWindow];
+    [mWindow makeFirstResponder:nil];
+    if (Platform::getInstance()->mIsFullScreen) {
+      [mWindow setLevel:NSMainMenuWindowLevel + 1];
+      [mWindow setHidesOnDeactivate:YES];
+    } else {
+      [mWindow setLevel:NSNormalWindowLevel];
+      [mWindow setHidesOnDeactivate:NO];
+    }
+    [mWindow makeKeyAndOrderFront:nil];
+    [mWindow orderFrontRegardless];
+
+    // 초기 backingScaleFactor 셋팅
+    [MetalRenderer::getInstance()->getMetalLayer() setContentsScale:[mWindow backingScaleFactor]];
+    Platform::getInstance()->mContentScale = static_cast<real>([mWindow backingScaleFactor]);
+    viewDidEndLiveResize();  // force invoke resize drawbleSize.
+
+    if (CVDisplayLinkCreateWithActiveCGDisplays(&mDisplayLink) != kCVReturnSuccess) {
+      LOG_ERROR("Quartz core display link creation failed.");
+      return false;
+    }
+    CVDisplayLinkSetOutputCallback(mDisplayLink, &displayLinkCb, nullptr);
+    CVDisplayLinkSetCurrentCGDisplay(mDisplayLink, 0);
+    CVDisplayLinkStart(mDisplayLink);
+
+    return true;
   }
 
   NSRect CocoaPlatform::makeViewRect(int width, int height, bool isFullScreen) {
@@ -122,6 +124,18 @@ namespace GLaDOS {
   void CocoaPlatform::keyUp(unsigned short keycode) {
     KeyCode localKey = Platform::getInstance()->getKeyCode(keycode);
     Platform::getInstance()->setKeyUp(localKey);
+  }
+
+  void CocoaPlatform::viewDidEndLiveResize() {
+    CGRect frame = [mWindow frame];
+    CGRect contentRect = [mWindow contentRectForFrameRect:frame];
+    Platform::getInstance()->mLastWidth = Platform::getInstance()->mWidth;
+    Platform::getInstance()->mLastHeight = Platform::getInstance()->mHeight;
+    Platform::getInstance()->mWidth = static_cast<int>(contentRect.size.width);
+    Platform::getInstance()->mHeight = static_cast<int>(contentRect.size.height);
+    CGFloat scaleFactor = static_cast<CGFloat>(Platform::getInstance()->mContentScale);
+    [MetalRenderer::getInstance()->getMetalLayer() setDrawableSize:NSMakeSize(contentRect.size.width * scaleFactor, contentRect.size.height * scaleFactor)];
+    Platform::getInstance()->mMainFrameBuffer->makeDepthStencilTexture();
   }
 
   void CocoaPlatform::mouseMoved(NSPoint& point) {
@@ -180,7 +194,7 @@ namespace GLaDOS {
   void CocoaPlatform::updateTrackingAreas() {
     LOG_TRACE("updateTrackingAreas");
     // To remove out of date tracking areas and add recomputed tracking areas.
-    if (mTrackingArea != nullptr) {
+    if (mTrackingArea != nil) {
       [mContentView removeTrackingArea:mTrackingArea];
       [mTrackingArea release];
     }
@@ -194,19 +208,6 @@ namespace GLaDOS {
                                           NSTrackingAssumeInside;
     mTrackingArea = [[NSTrackingArea alloc] initWithRect:[mContentView bounds] options:options owner:mContentView userInfo:nil];
     [mContentView addTrackingArea:mTrackingArea];
-  }
-
-  void CocoaPlatform::windowDidResize() {
-    LOG_TRACE("windowDidResize");
-    CGRect frame = [mWindow frame];
-    CGRect contentRect = [mWindow contentRectForFrameRect:frame];
-    Platform::getInstance()->mLastWidth = Platform::getInstance()->mWidth;
-    Platform::getInstance()->mLastHeight = Platform::getInstance()->mHeight;
-    Platform::getInstance()->mWidth = static_cast<int>(contentRect.size.width);
-    Platform::getInstance()->mHeight = static_cast<int>(contentRect.size.height);
-    CGFloat scaleFactor = static_cast<CGFloat>(Platform::getInstance()->mContentScale);
-    [MetalRenderer::getInstance()->getMetalLayer() setDrawableSize:NSMakeSize(contentRect.size.width * scaleFactor, contentRect.size.height * scaleFactor)];
-    Platform::getInstance()->mMainFrameBuffer->makeDepthStencilTexture();
   }
 
   void CocoaPlatform::windowDidMiniaturize() {
@@ -355,8 +356,10 @@ namespace GLaDOS {
   }
 
   CVReturn CocoaPlatform::displayLinkCb(CVDisplayLinkRef displayLink, const CVTimeStamp* now, const CVTimeStamp* outputTime, CVOptionFlags flagsIn, CVOptionFlags* flagsOut, void* displayLinkContext) {
-    Platform::getInstance()->render();
-    return kCVReturnSuccess;
+    @autoreleasepool {
+      Platform::getInstance()->render();
+      return kCVReturnSuccess;
+    }
   }
 
   CocoaPlatform* CocoaPlatform::getCocoaPlatform() {
@@ -521,7 +524,9 @@ namespace GLaDOS {
   }
 
   bool Platform::initialize(const PlatformParams& params) {
-    return CocoaPlatform::cocoaPlatformInstance->initialize(params);
+    @autoreleasepool {
+      return CocoaPlatform::cocoaPlatformInstance->initialize(params);
+    }
   }
 
   void Platform::render() {
@@ -537,16 +542,16 @@ namespace GLaDOS {
   }
 
   void Platform::update() {
-    // 큐잉 지연 후 큐에서 이벤트를 패치하는 로직, CPU 100% 를 막기위해 사용된다.
-    // wait event
-    NSEvent* eventFuture = [CocoaPlatform::applicationInstance nextEventMatchingMask:NSEventMaskAny
-                                                                           untilDate:[NSDate distantFuture]
-                                                                              inMode:NSDefaultRunLoopMode
-                                                                             dequeue:YES];
-    [CocoaPlatform::applicationInstance sendEvent:eventFuture];
-
-    // polling event
     @autoreleasepool {
+      // 큐잉 지연 후 큐에서 이벤트를 패치하는 로직, CPU 100% 를 막기위해 사용된다.
+      // wait event
+      NSEvent* eventFuture = [CocoaPlatform::applicationInstance nextEventMatchingMask:NSEventMaskAny
+                                                                             untilDate:[NSDate distantFuture]
+                                                                                inMode:NSDefaultRunLoopMode
+                                                                               dequeue:YES];
+      [CocoaPlatform::applicationInstance sendEvent:eventFuture];
+
+      // polling event
       for (;;) {
         NSEvent* eventPast = [CocoaPlatform::applicationInstance nextEventMatchingMask:NSEventMaskAny
                                                                              untilDate:[NSDate distantPast]
@@ -573,18 +578,22 @@ namespace GLaDOS {
   }
 
   void Platform::setTitleName(const std::string& titleName) {
-    if (mTitleName == titleName) return;
-    [CocoaPlatform::cocoaPlatformInstance->mWindow setTitle:CocoaPlatform::toString(titleName)];
-    mTitleName = titleName;
+    @autoreleasepool {
+      if (mTitleName == titleName) return;
+      [CocoaPlatform::cocoaPlatformInstance->mWindow setTitle:CocoaPlatform::toString(titleName)];
+      mTitleName = titleName;
+    }
   }
 
   void Platform::showCursor(bool isShowCursor) {
-    mIsShowCursor = isShowCursor;
-    if (isShowCursor) {
-      [NSCursor unhide];
-      return;
+    @autoreleasepool {
+      mIsShowCursor = isShowCursor;
+      if (isShowCursor) {
+        [NSCursor unhide];
+        return;
+      }
+      [NSCursor hide];
     }
-    [NSCursor hide];
   }
 
   void Platform::fullScreen(bool isFullScreen) {
@@ -659,6 +668,12 @@ namespace GLaDOS {
 @implementation ContentView
 - (void)dealloc {
   [super dealloc];
+}
+
+- (void)viewDidEndLiveResize {
+  @autoreleasepool {
+    GLaDOS::CocoaPlatform::getCocoaPlatform()->viewDidEndLiveResize();
+  }
 }
 
 - (void)mouseMoved:(NSEvent*)event {
@@ -747,12 +762,6 @@ namespace GLaDOS {
   }
 }
 
-- (void)windowDidResize:(NSNotification*)notification {
-  @autoreleasepool {
-    GLaDOS::CocoaPlatform::getCocoaPlatform()->windowDidResize();
-  }
-}
-
 - (void)windowDidMiniaturize:(NSNotification*)notification {
   @autoreleasepool {
     GLaDOS::CocoaPlatform::getCocoaPlatform()->windowDidMiniaturize();
@@ -825,7 +834,7 @@ namespace GLaDOS {
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication*)aNotification {
   @autoreleasepool {
     GLaDOS::CocoaPlatform::getCocoaPlatform()->applicationShouldTerminate();
-    return NSTerminateCancel;
+    return NSTerminateCancel;  // 즉시 종료를 막고 main 함수로 빠져나가기 위함
   }
 }
 @end

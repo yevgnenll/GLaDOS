@@ -15,7 +15,7 @@ namespace GLaDOS {
     // }
 
     id<MTLDevice> device = MetalRenderer::getInstance()->getDevice();
-    if (device != nullptr) {
+    if (device != nil) {
       mDepthStencilState = [device newDepthStencilStateWithDescriptor:mDepthStencilDescriptor];
     }
   }
@@ -30,7 +30,7 @@ namespace GLaDOS {
   }
 
   constexpr MTLCompareFunction MetalDepthStencilState::mapComparisonFunctionFrom(ComparisonFunction func) {
-    switch(func) {
+    switch (func) {
       case ComparisonFunction::Never:
         return MTLCompareFunctionNever;
       case ComparisonFunction::Always:
@@ -92,7 +92,7 @@ namespace GLaDOS {
     mSamplerDescriptor.maxAnisotropy = desc.mMaxAnisotropyLevel;
 
     id<MTLDevice> device = MetalRenderer::getInstance()->getDevice();
-    if (device != nullptr) {
+    if (device != nil) {
       mSamplerState = [device newSamplerStateWithDescriptor:mSamplerDescriptor];
     }
   }

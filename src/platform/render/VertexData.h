@@ -16,16 +16,26 @@ namespace GLaDOS {
 
     Vector<VertexFormat*> getVertexFormats() const;
 
-    Vec4 getPosition(std::size_t index);
-    void setPosition(std::size_t index, const Vec4& position);
+    Vec3 getPosition(std::size_t index);
+    void setPosition(std::size_t index, const Vec3& position);
     Vec3 getNormal(std::size_t index);
     void setNormal(std::size_t index, const Vec3& normal);
-    Vec2 getDiffuseTexCoord(std::size_t index);
-    void setDiffuseTexCoord(std::size_t index, const Vec2& texCoord);
-    Vec2 getReflectionTexCoord(std::size_t index);
-    void setReflectionTexCoord(std::size_t index, const Vec2& texCoord);
-    Vec2 getNormalTexCoord(std::size_t index);
-    void setNormalTexCoord(std::size_t index, const Vec2& texCoord);
+    Vec2 getTexCoord0(std::size_t index);
+    void setTexCoord0(std::size_t index, const Vec2& texCoord);
+    Vec2 getTexCoord1(std::size_t index);
+    void setTexCoord1(std::size_t index, const Vec2& texCoord);
+    Vec2 getTexCoord2(std::size_t index);
+    void setTexCoord2(std::size_t index, const Vec2& texCoord);
+    Vec2 getTexCoord3(std::size_t index);
+    void setTexCoord3(std::size_t index, const Vec2& texCoord);
+    Vec2 getTexCoord4(std::size_t index);
+    void setTexCoord4(std::size_t index, const Vec2& texCoord);
+    Vec2 getTexCoord5(std::size_t index);
+    void setTexCoord5(std::size_t index, const Vec2& texCoord);
+    Vec2 getTexCoord6(std::size_t index);
+    void setTexCoord6(std::size_t index, const Vec2& texCoord);
+    Vec2 getTexCoord7(std::size_t index);
+    void setTexCoord7(std::size_t index, const Vec2& texCoord);
     Color getColor(std::size_t index);
     void setColor(std::size_t index, const Color& color);
 

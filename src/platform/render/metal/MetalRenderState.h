@@ -39,7 +39,7 @@ namespace GLaDOS {
     MTLSamplerDescriptor* mSamplerDescriptor{nil};
     id<MTLSamplerState> mSamplerState{nil};
   };
-}
+}  // namespace GLaDOS
 
 #endif
 

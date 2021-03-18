@@ -6,7 +6,7 @@
 namespace GLaDOS {
   class IndexData : public ByteBuffer {
   public:
-    IndexData() = default;
+    IndexData(std::size_t stride, std::size_t count);
     ~IndexData() override = default;
   };
 }  // namespace GLaDOS

@@ -9,8 +9,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #else
-#include <unistd.h>
 #include <sys/syscall.h>
+#include <unistd.h>
 #define gettid() syscall(SYS_gettid)
 #endif
 

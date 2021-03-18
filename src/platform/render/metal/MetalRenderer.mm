@@ -5,9 +5,10 @@
 #include "MetalBuffer.h"
 #include "MetalFrameBuffer.h"
 #include "MetalRenderBuffer.h"
+#include "MetalRenderState.h"
 #include "MetalRenderable.h"
 #include "MetalShaderProgram.h"
-#include "MetalRenderState.h"
+#include "MetalTexture2D.h"
 #include "platform/render/Mesh.h"
 #include "utils/FileSystem.h"
 
@@ -19,13 +20,13 @@ namespace GLaDOS {
 
   bool MetalRenderer::initialize() {
     mMetalDevice = MTLCreateSystemDefaultDevice();
-    if (nil == mMetalDevice) {
+    if (mMetalDevice == nil) {
       LOG_ERROR("System does not support metal.");
       return false;
     }
 
     mMetalLayer = [CAMetalLayer layer];
-    if (mMetalLayer == nullptr) {
+    if (mMetalLayer == nil) {
       LOG_ERROR("System does not support metal layer.");
       return false;
     }
@@ -53,13 +54,12 @@ namespace GLaDOS {
     MTLPrimitiveType primitiveType = MetalRenderer::mapPrimitiveType(mesh->getPrimitiveType());
 
     [mCommandEncoder setRenderPipelineState:renderable->getPipelineState()];
+    [mCommandEncoder setVertexBuffer:renderable->getVertexBuffer() offset:0 atIndex:1];
     if (indexBuffer != nullptr) {
       // index primitive draw
-      MTLIndexType indexType = MetalRenderer::mapIndexType(sizeof(mesh->getIndexStride()));
+      MTLIndexType indexType = MetalRenderer::mapIndexType(mesh->getIndexStride());
       std::size_t indexCount = mesh->getIndexCount();
       NSUInteger indexOffset = mesh->getIndexStart() * mesh->getIndexStride();
-
-      [mCommandEncoder setVertexBuffer:renderable->getVertexBuffer() offset:0 atIndex:1];
       [mCommandEncoder drawIndexedPrimitives:primitiveType indexCount:indexCount indexType:indexType indexBuffer:renderable->getIndexBuffer() indexBufferOffset:indexOffset];
       return;
     }
@@ -67,8 +67,6 @@ namespace GLaDOS {
     // vertex primitive draw
     std::size_t start = mesh->getVertexStart();
     std::size_t count = mesh->getVertexCount();
-
-    [mCommandEncoder setVertexBuffer:renderable->getVertexBuffer() offset:0 atIndex:1];
     [mCommandEncoder drawPrimitives:primitiveType vertexStart:start vertexCount:count];
   }
 
@@ -90,7 +88,7 @@ namespace GLaDOS {
     return indexBuffer;
   }
 
-  ShaderProgram* MetalRenderer::createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath) {
+  ShaderProgram* MetalRenderer::createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath, const VertexData* vertexData) {
     MetalShaderProgram* shaderProgram = NEW_T(MetalShaderProgram);
     std::string shaderDirectory = shaderProgram->directory();
 
@@ -108,7 +106,8 @@ namespace GLaDOS {
       return nullptr;
     }
 
-    if (!shaderProgram->createShaderProgram(vertexSource, fragmentSource)) {
+    if (!shaderProgram->createShaderProgram(vertexSource, fragmentSource, vertexData)) {
+      LOG_ERROR("Shader compilation error");
       return nullptr;
     }
 
@@ -155,6 +154,40 @@ namespace GLaDOS {
     return NEW_T(MetalSamplerState(desc));
   }
 
+  Texture2D* MetalRenderer::createTexture2D(const std::string& name, TextureFormat format, const Color& colorKey) {
+    MetalTexture2D* texture = NEW_T(MetalTexture2D(name, format));
+    texture->setColorKey(colorKey);
+    return texture;
+  }
+
+  Texture2D* MetalRenderer::createTexture2D(const std::string& name, TextureFormat format) {
+    return NEW_T(MetalTexture2D(name, format));
+  }
+
+  Texture2D* MetalRenderer::createTexture2D(TextureFormat format, StreamBuffer& data, const Color& colorKey) {
+    return nullptr;
+  }
+
+  Texture2D* MetalRenderer::createTexture2D(TextureFormat format, StreamBuffer& data) {
+    return nullptr;
+  }
+
+  Texture2D* MetalRenderer::createTexture2D(uint32_t width, uint32_t height, TextureFormat format, unsigned char* data) {
+    return nullptr;
+  }
+
+  Texture3D* MetalRenderer::createTexture3D(const std::string& name) {
+    return nullptr;
+  }
+
+  TextureCube* MetalRenderer::createTextureCube(const std::string& name) {
+    return nullptr;
+  }
+
+  RenderTexture* MetalRenderer::createRenderTexture(const std::string& name) {
+    return nullptr;
+  }
+
   id<MTLDevice> MetalRenderer::getDevice() const {
     return mMetalDevice;
   }
@@ -186,7 +219,7 @@ namespace GLaDOS {
     }
   }
 
-  MTLIndexType MetalRenderer::mapIndexType(int size) {
+  MTLIndexType MetalRenderer::mapIndexType(std::size_t size) {
     switch (size) {
       case sizeof(uint32_t):
         return MTLIndexTypeUInt32;

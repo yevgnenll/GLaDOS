@@ -13,6 +13,7 @@ namespace GLaDOS {
   class StreamBuffer {
   public:
     StreamBuffer() = default;
+    StreamBuffer(std::size_t size, void* data);
     virtual ~StreamBuffer() = default;
 
     StreamBuffer& operator<<(int8_t i);
@@ -35,6 +36,7 @@ namespace GLaDOS {
 
     void* offsetOf(std::size_t offset);
     void* pointer();
+    const void* constPointer() const;
     std::size_t size() const;
     void resize(std::size_t n);
     void clear();

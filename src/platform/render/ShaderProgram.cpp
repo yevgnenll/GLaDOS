@@ -1,12 +1,12 @@
 #include "ShaderProgram.h"
 
+#include "platform/render/Renderer.h"
 #include "RootDir.h"
 #include "math/Color.h"
 #include "math/Vec2.h"
 #include "math/Vec3.h"
 #include "math/Vec4.h"
 #include "platform/render/Uniform.h"
-#include "RenderState.h"
 
 namespace GLaDOS {
   ShaderProgram::ShaderProgram() : Resource{ResourceType::ShaderProgram} {
@@ -193,7 +193,10 @@ namespace GLaDOS {
     return mDepthStencilState;
   }
 
-  void ShaderProgram::setDepthStencilState(DepthStencilState* depthStencilState) {
-    mDepthStencilState = depthStencilState;
+  void ShaderProgram::setDepthStencilState(const DepthStencilDescription& desc) {
+    if (mDepthStencilState != nullptr) {
+      DELETE_T(mDepthStencilState, DepthStencilState);
+    }
+    mDepthStencilState = Platform::getRenderer()->createDepthStencilState(desc);
   }
 }  // namespace GLaDOS

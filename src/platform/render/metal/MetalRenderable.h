@@ -12,7 +12,7 @@ namespace GLaDOS {
   class MetalRenderable : public Renderable {
   public:
     MetalRenderable() = default;
-    ~MetalRenderable() override = default;
+    ~MetalRenderable() override;
 
     void build() override;
     void bindParams() override;
@@ -22,7 +22,7 @@ namespace GLaDOS {
     id<MTLBuffer> getIndexBuffer() const;
 
   private:
-    MTLVertexDescriptor* mVertexDescriptor{nullptr};
+    MTLVertexDescriptor* mVertexDescriptor{nil};
     id<MTLRenderPipelineState> mPipelineState{nil};
   };
 }  // namespace GLaDOS

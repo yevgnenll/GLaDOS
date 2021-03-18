@@ -99,18 +99,43 @@ namespace GLaDOS {
     return *this;
   }
 
-  VertexFormatBuilder VertexFormatBuilder::withDiffuseTexCoord() {
-    mUseDiffuseTexCoord = true;
+  VertexFormatBuilder VertexFormatBuilder::withTexCoord0() {
+    mUseTexCoord0 = true;
     return *this;
   }
 
-  VertexFormatBuilder VertexFormatBuilder::withReflectionTexCoord() {
-    mUseReflectionTexCoord = true;
+  VertexFormatBuilder VertexFormatBuilder::withTexCoord1() {
+    mUseTexCoord1 = true;
     return *this;
   }
 
-  VertexFormatBuilder VertexFormatBuilder::withNormalTexCoord() {
-    mUseNormalTexCoord = true;
+  VertexFormatBuilder VertexFormatBuilder::withTexCoord2() {
+    mUseTexCoord2 = true;
+    return *this;
+  }
+
+  VertexFormatBuilder VertexFormatBuilder::withTexCoord3() {
+    mUseTexCoord3 = true;
+    return *this;
+  }
+
+  VertexFormatBuilder VertexFormatBuilder::withTexCoord4() {
+    mUseTexCoord4 = true;
+    return *this;
+  }
+
+  VertexFormatBuilder VertexFormatBuilder::withTexCoord5() {
+    mUseTexCoord5 = true;
+    return *this;
+  }
+
+  VertexFormatBuilder VertexFormatBuilder::withTexCoord6() {
+    mUseTexCoord6 = true;
+    return *this;
+  }
+
+  VertexFormatBuilder VertexFormatBuilder::withTexCoord7() {
+    mUseTexCoord7 = true;
     return *this;
   }
 
@@ -124,7 +149,7 @@ namespace GLaDOS {
 
     if (mUsePosition) {
       mPositionOffset = 0;  // position offset always zero
-      vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::Position, VertexAttributeType::Float4)));
+      vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::Position, VertexAttributeType::Float3)));
     }
 
     if (mUseNormal) {
@@ -132,19 +157,44 @@ namespace GLaDOS {
       vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::Normal, VertexAttributeType::Float3)));
     }
 
-    if (mUseDiffuseTexCoord) {
-      mDiffuseTexCoordOffset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+    if (mUseTexCoord0) {
+      mTexCoord0Offset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
       vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::TexCoord0, VertexAttributeType::Float2)));
     }
 
-    if (mUseReflectionTexCoord) {
-      mReflectionTexCoordOffset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+    if (mUseTexCoord1) {
+      mTexCoord1Offset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
       vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::TexCoord1, VertexAttributeType::Float2)));
     }
 
-    if (mUseNormalTexCoord) {
-      mNormalTexCoordOffset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+    if (mUseTexCoord2) {
+      mTexCoord2Offset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
       vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::TexCoord2, VertexAttributeType::Float2)));
+    }
+
+    if (mUseTexCoord3) {
+      mTexCoord3Offset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+      vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::TexCoord3, VertexAttributeType::Float2)));
+    }
+
+    if (mUseTexCoord4) {
+      mTexCoord4Offset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+      vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::TexCoord4, VertexAttributeType::Float2)));
+    }
+
+    if (mUseTexCoord5) {
+      mTexCoord5Offset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+      vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::TexCoord5, VertexAttributeType::Float2)));
+    }
+
+    if (mUseTexCoord6) {
+      mTexCoord6Offset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+      vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::TexCoord6, VertexAttributeType::Float2)));
+    }
+
+    if (mUseTexCoord7) {
+      mTexCoord7Offset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+      vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::TexCoord7, VertexAttributeType::Float2)));
     }
 
     if (mUseColor) {

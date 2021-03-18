@@ -13,7 +13,7 @@ namespace GLaDOS {
   class MetalBuffer : public Buffer {
   public:
     MetalBuffer(BufferType type, BufferUsage usage);
-    ~MetalBuffer() override = default;
+    ~MetalBuffer() override;
 
     bool uploadData(StreamBuffer& buffer) override;
     id<MTLBuffer> getMetalBuffer() const;

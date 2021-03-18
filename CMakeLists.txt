@@ -109,5 +109,6 @@ endfunction()
 
 make_sample(01-setup "01-setup/main.cpp")
 make_sample(02-camera "02-camera/main.cpp")
-make_sample(03-gui "03-gui/main.cpp")
+make_sample(03-texture "03-texture/main.cpp")
 make_sample(04-rotateObject "04-rotateObject/main.cpp")
+make_sample(05-index "05-index/main.cpp")

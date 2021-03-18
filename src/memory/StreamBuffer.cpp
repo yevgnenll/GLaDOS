@@ -7,6 +7,11 @@
 #include "math/Vec4.h"
 
 namespace GLaDOS {
+  StreamBuffer::StreamBuffer(std::size_t size, void* data) {
+    resize(size);
+    std::memcpy(pointer(), data, size);
+  }
+
   StreamBuffer& StreamBuffer::operator<<(int8_t i) {
     writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
     return *this;
@@ -88,6 +93,10 @@ namespace GLaDOS {
 
   void* StreamBuffer::pointer() {
     return &mData[0];
+  }
+
+  void const* StreamBuffer::constPointer() const {
+    return &mData.front();
   }
 
   std::size_t StreamBuffer::size() const {

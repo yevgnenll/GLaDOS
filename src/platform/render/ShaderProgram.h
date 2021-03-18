@@ -6,11 +6,12 @@
 #include "math/Mat4.hpp"
 #include "resource/Resource.h"
 #include "utils/Utility.h"
+#include "platform/render/RenderState.h"
 
 namespace GLaDOS {
   class Uniform;
   class Color;
-  class DepthStencilState;
+  class VertexData;
   class ShaderProgram : public Resource {
   public:
     ShaderProgram();
@@ -35,10 +36,10 @@ namespace GLaDOS {
     std::size_t uniformSize() const;
     bool isValid() const;
     DepthStencilState* depthStencilState();
-    void setDepthStencilState(DepthStencilState* depthStencilState);
+    void setDepthStencilState(const DepthStencilDescription& desc);
 
   private:
-    virtual bool createShaderProgram(const std::string& vertex, const std::string& fragment) = 0;
+    virtual bool createShaderProgram(const std::string& vertex, const std::string& fragment, const VertexData* vertexData) = 0;
 
   protected:
     std::string mVertexShaderCode;

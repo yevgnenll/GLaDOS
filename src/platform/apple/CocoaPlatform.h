@@ -31,6 +31,7 @@ namespace GLaDOS {
     // delegate methods
     inline void keyDown(unsigned short keycode);
     inline void keyUp(unsigned short keycode);
+    inline void viewDidEndLiveResize();
     inline void mouseMoved(NSPoint& point);
     inline void scrollWheel(CGFloat deltaX, CGFloat deltaY, bool precise);
     inline void mouseDown();
@@ -42,7 +43,6 @@ namespace GLaDOS {
     inline void mouseExited();
     inline void mouseEntered();
     inline void updateTrackingAreas();
-    inline void windowDidResize();
     inline void windowDidMiniaturize();
     inline void windowDidDeminiaturize();
     inline void windowDidMove();

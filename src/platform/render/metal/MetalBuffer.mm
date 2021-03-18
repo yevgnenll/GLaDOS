@@ -7,20 +7,28 @@
 namespace GLaDOS {
   MetalBuffer::MetalBuffer(BufferType type, BufferUsage usage) : Buffer{type, usage} {}
 
+  MetalBuffer::~MetalBuffer() {
+    [mMetalBuffer release];
+  }
+
   bool MetalBuffer::uploadData(StreamBuffer& buffer) {
-    if (mMetalBuffer != nullptr) {
+    id<MTLDevice> device = MetalRenderer::getInstance()->getDevice();
+    if (device == nil) {
+      LOG_ERROR("Invalid Metal device state, upload Buffer failed.");
+      return false;
+    }
+
+    if (mMetalBuffer != nil) {
       [mMetalBuffer release];
     }
 
     mSize = buffer.size();
-
-    id<MTLDevice> device = MetalRenderer::getInstance()->getDevice();
-    if (device == nullptr) {
-      LOG_ERROR("Invalid Metal device state");
+    mMetalBuffer = [device newBufferWithBytes:buffer.pointer() length:mSize options:MTLResourceOptionCPUCacheModeDefault];
+    if (mMetalBuffer == nil) {
+      LOG_ERROR("Metal buffer initialization failed.");
       return false;
     }
 
-    mMetalBuffer = [device newBufferWithBytes:buffer.pointer() length:mSize options:MTLResourceOptionCPUCacheModeDefault];
     return true;
   }
 

@@ -6,24 +6,24 @@ using namespace GLaDOS;
 
 // clang-format off
 float quad[] = {
-    0.5, -0.5, 0.0, 1.0,     1.0, 0.0, 0.0, 1.0,
-    -0.5, -0.5, 0.0, 1.0,     0.0, 1.0, 0.0, 1.0,
-    -0.5,  0.5, 0.0, 1.0,     0.0, 0.0, 1.0, 1.0,
+    0.5, -0.5, 0.0,     1.0, 0.0, 0.0, 1.0,
+    -0.5, -0.5, 0.0,     0.0, 1.0, 0.0, 1.0,
+    -0.5,  0.5, 0.0,     0.0, 0.0, 1.0, 1.0,
 
-    0.5,  0.5, 0.0, 1.0,     1.0, 1.0, 0.0, 1.0,
-    0.5, -0.5, 0.0, 1.0,     1.0, 0.0, 0.0, 1.0,
-    -0.5,  0.5, 0.0, 1.0,     0.0, 0.0, 1.0, 1.0,
+    0.5,  0.5, 0.0,     1.0, 1.0, 0.0, 1.0,
+    0.5, -0.5, 0.0,     1.0, 0.0, 0.0, 1.0,
+    -0.5,  0.5, 0.0,     0.0, 0.0, 1.0, 1.0,
 };
 // clang-format on
 std::size_t vertexCount = 6;
-std::size_t stride = 8;
+std::size_t stride = 7;
 
 void testVertexData(VertexData& vd) {
   for (std::size_t i = 0; i < vertexCount * stride; i += stride) {
     std::size_t index = i / stride;
-    Vec4 pos{quad[i], quad[i + 1], quad[i + 2], quad[i + 3]};
+    Vec3 pos{quad[i], quad[i + 1], quad[i + 2]};
     REQUIRE(pos == vd.getPosition(index));
-    Color color{quad[i + 4], quad[i + 5], quad[i + 6], quad[i + 7]};
+    Color color{quad[i + 3], quad[i + 4], quad[i + 5], quad[i + 6]};
     REQUIRE(color == vd.getColor(index));
   }
 }
@@ -36,8 +36,8 @@ TEST_CASE("VertexData unit tests", "[VertexData]") {
 
     for (std::size_t i = 0; i < vertexCount * stride; i += stride) {
       std::size_t index = i / stride;
-      vd.setPosition(index, Vec4(quad[i], quad[i + 1], quad[i + 2], quad[i + 3]));
-      vd.setColor(index, Color(quad[i + 4], quad[i + 5], quad[i + 6], quad[i + 7]));
+      vd.setPosition(index, Vec3{quad[i], quad[i + 1], quad[i + 2]});
+      vd.setColor(index, Color{quad[i + 3], quad[i + 4], quad[i + 5], quad[i + 6]});
     }
     testVertexData(vd);
   }

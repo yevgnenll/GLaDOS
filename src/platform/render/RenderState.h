@@ -41,13 +41,13 @@ namespace GLaDOS {
   };
 
   struct SamplerDescription {
-    FilterMode mMinFilter{FilterMode::Nearest};
-    FilterMode mMagFilter{FilterMode::Nearest};
-    FilterMode mMipFilter{FilterMode::None};
-    WrapMode mSWrap{WrapMode::Clamp};
-    WrapMode mTWrap{WrapMode::Clamp};
-    WrapMode mRWrap{WrapMode::Clamp};
-    uint8_t mMaxAnisotropyLevel{16};
+    FilterMode mMinFilter{FilterMode::Bilinear};
+    FilterMode mMagFilter{FilterMode::Bilinear};
+    FilterMode mMipFilter{FilterMode::Bilinear};
+    WrapMode mSWrap{WrapMode::ClampEdge};
+    WrapMode mTWrap{WrapMode::ClampEdge};
+    WrapMode mRWrap{WrapMode::ClampEdge};
+    uint8_t mMaxAnisotropyLevel{1};
     real mMipBias{0};
   };
 
@@ -59,6 +59,6 @@ namespace GLaDOS {
   protected:
     SamplerDescription mSamplerDescription;
   };
-}
+}  // namespace GLaDOS
 
 #endif  //GLADOS_RENDERSTATE_H

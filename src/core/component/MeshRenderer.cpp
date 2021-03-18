@@ -7,6 +7,14 @@ namespace GLaDOS {
   MeshRenderer::MeshRenderer() : Component{"MeshRenderer"} {
   }
 
+  MeshRenderer::MeshRenderer(Mesh* mesh, Material* material) : Component{"MeshRenderer"} {
+    Renderable* renderable = Platform::getRenderer()->createRenderable(mesh, material);
+    if (renderable == nullptr) {
+      LOG_ERROR("MeshRenderer initialize failed!");
+    }
+    mRenderable = renderable;
+  }
+
   MeshRenderer::~MeshRenderer() {
     DELETE_T(mRenderable, Renderable);
   }

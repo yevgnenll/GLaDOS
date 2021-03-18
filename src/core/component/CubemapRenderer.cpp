@@ -1,5 +1,15 @@
-//
-// Created by bodguy on 2021/02/28.
-//
-
 #include "CubemapRenderer.h"
+
+namespace GLaDOS {
+  CubemapRenderer::CubemapRenderer() : Component{"CubemapRenderer"} {
+  }
+
+  CubemapRenderer::~CubemapRenderer() {
+  }
+
+  void CubemapRenderer::update(real deltaTime) {
+  }
+
+  void CubemapRenderer::render() {
+  }
+}  // namespace GLaDOS

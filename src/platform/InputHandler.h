@@ -1,8 +1,8 @@
 #ifndef GLADOS_INPUTHANDLER_H
 #define GLADOS_INPUTHANDLER_H
 
-#include "utils/Enumeration.h"
 #include "KeyCode.h"
+#include "utils/Enumeration.h"
 
 namespace GLaDOS {
   class InputHandler {
@@ -23,6 +23,6 @@ namespace GLaDOS {
     real mAccumulator{0};
     real mDeltaSpeed{0};
   };
-}
+}  // namespace GLaDOS
 
 #endif  //GLADOS_INPUTHANDLER_H

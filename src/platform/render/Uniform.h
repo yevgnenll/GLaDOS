@@ -11,7 +11,9 @@ namespace GLaDOS {
     Uniform() = default;
     ~Uniform() override = default;
 
-    bool isNumericUniformType() const;
+    bool isUniformType() const;
+    bool isTextureType() const;
+    std::string toString() const;
 
     ShaderType mShaderType{ShaderType::Unknown};
     UniformType mUniformType{UniformType::Unknown};

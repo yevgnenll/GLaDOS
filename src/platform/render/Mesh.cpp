@@ -63,19 +63,20 @@ namespace GLaDOS {
   }
 
   std::size_t Mesh::getIndexCount() const {
-    return mIndexData->count();
+    return mIndexData == nullptr ? 0 : mIndexData->count();
   }
 
   std::size_t Mesh::getIndexStride() const {
-    return mIndexData->stride();
+    return mIndexData == nullptr ? 0 : mIndexData->stride();
   }
 
   std::size_t Mesh::getMemoryUsage() const {
-    return mVertexData->size() + mIndexData->size();
+    std::size_t vertexSize = mVertexData->size();
+    return mIndexData == nullptr ? vertexSize : vertexSize + mIndexData->size();
   }
 
   std::size_t Mesh::getFaceCount() const {
-    std::size_t count = mIndexData != nullptr ? mIndexData->count() : mVertexData->count();
+    std::size_t count = mIndexData == nullptr ? mVertexData->count() : mIndexData->count();
     switch (mPrimitiveType) {
       case PrimitiveType::Point:
         return count;
@@ -103,21 +104,22 @@ namespace GLaDOS {
     mIndexData = indexData;
 
     if (mVertexData == nullptr) {
-      LOG_ERROR("Vertex data must not be null");
+      LOG_ERROR("Vertex data must not be null.");
       return false;
     }
 
     BufferUsage vertexUsage = mIsDynamicVertex ? BufferUsage::Dynamic : BufferUsage::Static;
     mVertexBuffer = Platform::getRenderer()->createVertexBuffer(vertexUsage, vertexData->buffer());
-
     if (mVertexBuffer == nullptr) {
+      LOG_ERROR("VertexBuffer creation failed.");
       return false;
     }
 
     if (mIndexData != nullptr) {
-      BufferUsage indexUsage = mIsDynamicVertex ? BufferUsage::Dynamic : BufferUsage::Static;
-      mIndexBuffer = Platform::getRenderer()->createIndexBuffer(indexUsage, indexData->buffer());
+      BufferUsage indexUsage = mIsDynamicIndex ? BufferUsage::Dynamic : BufferUsage::Static;
+      mIndexBuffer = Platform::getRenderer()->createIndexBuffer(indexUsage, mIndexData->buffer());
       if (mIndexBuffer == nullptr) {
+        LOG_ERROR("IndexBuffer creation failed.");
         return false;
       }
     }

@@ -11,9 +11,8 @@ namespace GLaDOS {
   }
 
   MetalFrameBuffer::~MetalFrameBuffer() {
-    if (mDepthStencilTexture != nil) {
-      [mDepthStencilTexture release];
-    }
+    [mDepthStencilTexture release];
+    [mCommandQueue release];
   }
 
   void MetalFrameBuffer::begin() {
@@ -26,12 +25,12 @@ namespace GLaDOS {
 
     // color, depth, stencil parameter setting
     colorAttachment.texture = mNextDrawable.texture;
-    colorAttachment.clearColor  = MTLClearColorMake(static_cast<double>(mClearColor.r),
-                                                    static_cast<double>(mClearColor.g),
-                                                    static_cast<double>(mClearColor.b),
-                                                    static_cast<double>(mClearColor.a));
+    colorAttachment.clearColor = MTLClearColorMake(static_cast<double>(mClearColor.r),
+                                                   static_cast<double>(mClearColor.g),
+                                                   static_cast<double>(mClearColor.b),
+                                                   static_cast<double>(mClearColor.a));
     colorAttachment.storeAction = MTLStoreActionStore;
-    colorAttachment.loadAction  = MTLLoadActionClear;
+    colorAttachment.loadAction = MTLLoadActionClear;
 
     MTLRenderPassDepthAttachmentDescriptor* depthAttachment = passDescriptor.depthAttachment;
     depthAttachment.texture = mDepthStencilTexture;

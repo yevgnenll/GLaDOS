@@ -1,10 +1,10 @@
 #include "InputHandler.h"
+
 #include "math/Math.h"
 
 namespace GLaDOS {
   InputHandler::InputHandler(KeyCode positive, KeyCode negative, real delta)
-    : mPositive(positive), mNegative(negative), mDeltaSpeed(delta) {
-
+      : mPositive(positive), mNegative(negative), mDeltaSpeed(delta) {
   }
 
   KeyCode InputHandler::positive() const {
@@ -30,4 +30,4 @@ namespace GLaDOS {
   real InputHandler::delta() const {
     return mDeltaSpeed;
   }
-}
+}  // namespace GLaDOS

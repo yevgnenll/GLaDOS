@@ -6,10 +6,14 @@
 namespace GLaDOS {
   class RenderTexture : public Texture {
   public:
+    RenderTexture(TextureFormat format);
+    ~RenderTexture() override;
+
+    bool loadTextureFromFile() override { return false; }
+    bool loadTextureFromBuffer(StreamBuffer& buffer) override { return false; }
 
   private:
-
   };
-}
+}  // namespace GLaDOS
 
 #endif  //GLADOS_RENDERTEXTURE_H

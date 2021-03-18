@@ -11,7 +11,7 @@ namespace GLaDOS {
     friend class MetalRenderer;
 
   public:
-    Renderable() = default;
+    Renderable();
     virtual ~Renderable();
 
     virtual void build() = 0;

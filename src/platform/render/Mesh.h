@@ -11,7 +11,7 @@ namespace GLaDOS {
   class IndexData;
   class Mesh : public Resource {
   public:
-    explicit Mesh(PrimitiveType primitiveType, bool dynamicVertex, bool dynamicIndex);
+    Mesh(PrimitiveType primitiveType, bool dynamicVertex, bool dynamicIndex);
     ~Mesh() override;
 
     PrimitiveType getPrimitiveType() const;
@@ -45,8 +45,8 @@ namespace GLaDOS {
     IndexData* mIndexData{nullptr};
     std::size_t mVertexStart{0};
     std::size_t mIndexStart{0};
-    bool mIsDynamicVertex{false};
-    bool mIsDynamicIndex{false};
+    bool mIsDynamicVertex{false};  // TODO
+    bool mIsDynamicIndex{false};  // TODO
   };
 }  // namespace GLaDOS
 

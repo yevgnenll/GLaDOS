@@ -5,6 +5,10 @@
 #include "utils/Utility.h"
 
 namespace GLaDOS {
+  Renderable::Renderable() {
+    LOG_TRACE("Renderable instance created: {0}", mInstanceId);
+  }
+
   Renderable::~Renderable() {
     DELETE_T(mMesh, Mesh);
     DELETE_T(mMaterial, Material);

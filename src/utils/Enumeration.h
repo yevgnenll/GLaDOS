@@ -48,7 +48,8 @@ namespace GLaDOS {
     PositiveY,
     NegativeY,
     PositiveZ,
-    NegativeZ
+    NegativeZ,
+    TheNumberOfFace
   };
 
   enum class TextureDimension {
@@ -57,16 +58,30 @@ namespace GLaDOS {
     Tex2D,
     Tex3D,
     MSAATex2D,
-    CubeMap
+    CubeMapTex
   };
 
   enum class TextureFormat {
     Unknown = -1,
-    RGB24,
-    RGBA32,
-    Red8,
-    Green8,
-    Blue8,
+
+    Red8, // Single channel (R) texture format, 8 bit floating point.
+    Red16, // Single channel (R) texture format, 16 bit floating point.
+    RedHalf, // Scalar (R) texture format, 16 bit floating point.
+    RedFloat, // Scalar (R) texture format, 32 bit floating point.
+
+    RG16, // Two color (RG) texture format, 8-bits floating point per channel.
+    RG32, // Two channel (RG) texture format, 16 bit floating point per channel.
+    RGHalf, // Two color (RG) texture format, 16 bit floating point per channel.
+    RGFloat, // Two color (RG) texture format, 32 bit floating point per channel.
+
+    RGB24, // Color texture format, 8-bits per channel.
+    RGBA32, // Color with alpha texture format, 8-bits per channel.
+    BGRA32, // Color with alpha texture format, 8-bits per channel.
+    RGBA64, // Four channel (RGBA) texture format, 16 bit floating point per channel.
+    RGBAHalf, // RGB color and alpha texture format, 16 bit floating point per channel.
+    RGBAFloat, // RGB color and alpha texture format, 32-bit floats per channel.
+
+    Alpha8, // Alpha-only texture format, 8 bit integer.
     sRGB24,
     sRGBA32,
     Depth32,
@@ -79,8 +94,7 @@ namespace GLaDOS {
     Unknown = -1,
     ShaderRead,
     ShaderWrite,
-    RenderTarget,
-    PixelFormatView
+    RenderTarget
   };
 
   enum class FillMode {
@@ -102,14 +116,14 @@ namespace GLaDOS {
   };
 
   enum class StencilOperator {
-    Keep = 0, // 현재 저장된 stencil 값을 유지
-    Zero, // stencil 값을 0으로 설정
-    Replace, // stencil 값을 Ref 값으로 변경
-    Increase, // Clamp(최대값, stencil + 1)
-    IncreaseWrap, // Increase와 같지만 최대값보다 크면 0으로 되돌림
-    Decrease, // Clamp(최소값, stencil - 1)
-    DecreaseWrap, // Decrease와 같지만 0 보다 작으면 최소값으로 되돌림
-    Invert, // 현재 stencil 값의 비트를 뒤집음
+    Keep = 0,  // 현재 저장된 stencil 값을 유지
+    Zero,  // stencil 값을 0으로 설정
+    Replace,  // stencil 값을 Ref 값으로 변경
+    Increase,  // Clamp(최대값, stencil + 1)
+    IncreaseWrap,  // Increase와 같지만 최대값보다 크면 0으로 되돌림
+    Decrease,  // Clamp(최소값, stencil - 1)
+    DecreaseWrap,  // Decrease와 같지만 0 보다 작으면 최소값으로 되돌림
+    Invert,  // 현재 stencil 값의 비트를 뒤집음
     TheNumberOfStencilOp
   };
 
@@ -150,17 +164,6 @@ namespace GLaDOS {
     Font
   };
 
-  enum class ShaderType {
-    Unknown = -1,
-    VertexShader,
-    FragmentShader,
-    GeometryShader,
-    TessControlShader,
-    TessEvalShader,
-    ComputeShader,
-    NumberOfShaderType
-  };
-
   enum class BufferType {
     VertexBuffer,
     IndexBuffer,
@@ -181,6 +184,10 @@ namespace GLaDOS {
     TexCoord1,
     TexCoord2,
     TexCoord3,
+    TexCoord4,
+    TexCoord5,
+    TexCoord6,
+    TexCoord7,
     Tangent,
     BiTangent,
     NumberOfSemantic
@@ -220,21 +227,6 @@ namespace GLaDOS {
     NumberOfAttributeType
   };
 
-  enum class UniformType {
-    Unknown = -1,
-    Bool,
-    Int,
-    UInt,
-    Float,
-    Vec2,
-    Vec3,
-    Vec4,
-    Mat4,
-    Texture,
-    Sampler,
-    NumberOfUniformType
-  };
-
   enum class TimeZone {
     Local,
     UTC
@@ -255,6 +247,106 @@ namespace GLaDOS {
     True,
     Ignored,
     Error
+  };
+
+  class UniformType {
+  public:
+    enum Value : int8_t {
+      Unknown = -1,
+      Bool,
+      Int,
+      UInt,
+      Float,
+      Vec2,
+      Vec3,
+      Vec4,
+      Mat4,
+      Texture,
+      Sampler,
+      TheNumberOfUniformType
+    };
+
+    UniformType() = delete;
+    constexpr UniformType(Value _value) : value{_value} {}  // no explicit
+
+    constexpr operator Value() const { return value; }  // no explicit
+    explicit operator bool() = delete;
+    constexpr const char* toString() const {
+      switch (value) {
+        case Bool:
+          return "Bool";
+        case Int:
+          return "Int";
+        case UInt:
+          return "UInt";
+        case Float:
+          return "Float";
+        case Vec2:
+          return "Vec2";
+        case Vec3:
+          return "Vec3";
+        case Vec4:
+          return "Vec4";
+        case Mat4:
+          return "Mat4";
+        case Texture:
+          return "Texture";
+        case Sampler:
+          return "Sampler";
+        default:
+          return "Undefined";
+      }
+    }
+    constexpr static std::size_t size() {
+      return TheNumberOfUniformType;
+    }
+
+  private:
+    Value value;
+  };
+
+  class ShaderType {
+  public:
+    enum Value : int8_t {
+      Unknown = -1,
+      VertexShader,
+      FragmentShader,
+      GeometryShader,
+      TessControlShader,
+      TessEvalShader,
+      ComputeShader,
+      TheNumberOfShaderType
+    };
+
+    ShaderType() = delete;
+    constexpr ShaderType(Value _value) : value{_value} {}  // no explicit
+
+    constexpr operator Value() const { return value; }  // no explicit
+    explicit operator bool() = delete;
+    constexpr const char* toString() const {
+      switch (value) {
+        case VertexShader:
+          return "Vertex shader";
+        case FragmentShader:
+          return "Fragment shader";
+        case GeometryShader:
+          return "Geometry shader";
+        case TessControlShader:
+          return "Tessellation control shader";
+        case TessEvalShader:
+          return "Tessellation evaluation shader";
+        case ComputeShader:
+          return "Compute shader";
+        default:
+          return "Undefined";
+      }
+    }
+    constexpr static std::size_t size() {
+      return TheNumberOfShaderType;
+    }
+
+  private:
+    Value value;
   };
 
   class MessageType {
@@ -340,6 +432,8 @@ namespace GLaDOS {
 
   inline WindowStyle operator|(const WindowStyle a, const WindowStyle b) { return static_cast<WindowStyle>(static_cast<int>(a) | static_cast<int>(b)); }
   inline bool operator&(const WindowStyle a, const WindowStyle b) { return static_cast<WindowStyle>(static_cast<int>(a) & static_cast<int>(b)) == b; }
+  inline TextureUsage operator|(const TextureUsage a, const TextureUsage b) { return static_cast<TextureUsage>(static_cast<int>(a) | static_cast<int>(b)); }
+  inline bool operator&(const TextureUsage a, const TextureUsage b) { return static_cast<TextureUsage>(static_cast<int>(a) & static_cast<int>(b)) == b; }
 
   namespace EnumConstant {
     static const WindowStyle defaultWindowStyle = WindowStyle::Resizable |

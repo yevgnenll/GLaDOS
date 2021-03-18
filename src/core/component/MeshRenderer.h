@@ -4,10 +4,13 @@
 #include "core/Component.h"
 
 namespace GLaDOS {
+  class Mesh;
+  class Material;
   class Renderable;
   class MeshRenderer : public Component {
   public:
     MeshRenderer();
+    MeshRenderer(Mesh* mesh, Material* material);
     ~MeshRenderer() override;
 
     void setRenderable(Renderable* renderable);
@@ -16,7 +19,7 @@ namespace GLaDOS {
     void update(real deltaTime) override;
     void render() override;
 
-    Renderable* mRenderable;
+    Renderable* mRenderable{nullptr};
   };
 }  // namespace GLaDOS
 

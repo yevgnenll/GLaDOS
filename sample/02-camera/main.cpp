@@ -12,7 +12,23 @@ public:
   }
 
   bool onInit() override {
-    shaderProgram = Platform::getRenderer()->createShaderProgram("basicVertex.metal", "basicFragment.metal");
+    float quad[] = {
+        0.5, -0.5, 0.0,   1.0, 0.0, 0.0, 1.0,
+        -0.5, -0.5, 0.0,  0.0, 1.0, 0.0, 1.0,
+        -0.5,  0.5, 0.0,  0.0, 0.0, 1.0, 1.0,
+
+        0.5,  0.5, 0.0,   1.0, 1.0, 0.0, 1.0,
+        0.5, -0.5, 0.0,   1.0, 0.0, 0.0, 1.0,
+        -0.5,  0.5, 0.0,  0.0, 0.0, 1.0, 1.0,
+    };
+    VertexData* vertexData = NEW_T(VertexData(VertexFormatBuilder().withPosition().withColor(), 6));
+    vertexData->uploadData(reinterpret_cast<std::byte*>(quad));
+    Mesh* mesh = Platform::getRenderer()->createMesh(vertexData, nullptr, PrimitiveType::Triangle, false, false);
+    if (mesh == nullptr) {
+      LOG_ERROR("Mesh initialize failed!");
+      return false;
+    }
+    shaderProgram = Platform::getRenderer()->createShaderProgram("basicVertex.metal", "basicFragment.metal", vertexData);
     if (shaderProgram == nullptr) {
       LOG_ERROR("Shader initialize failed!");
       return false;
@@ -20,30 +36,8 @@ public:
     Material* material = NEW_T(Material);
     material->setShaderProgram(shaderProgram);
 
-    float quad[] = {
-        0.5, -0.5, 0.0, 1.0,     1.0, 0.0, 0.0, 1.0,
-        -0.5, -0.5, 0.0, 1.0,     0.0, 1.0, 0.0, 1.0,
-        -0.5,  0.5, 0.0, 1.0,     0.0, 0.0, 1.0, 1.0,
-
-        0.5,  0.5, 0.0, 1.0,     1.0, 1.0, 0.0, 1.0,
-        0.5, -0.5, 0.0, 1.0,     1.0, 0.0, 0.0, 1.0,
-        -0.5,  0.5, 0.0, 1.0,     0.0, 0.0, 1.0, 1.0,
-    };
-    auto* vertexData = NEW_T(VertexData(VertexFormatBuilder().withPosition().withColor(), 6));
-    vertexData->uploadData(reinterpret_cast<std::byte*>(quad));
-    Mesh* mesh = Platform::getRenderer()->createMesh(vertexData, nullptr, PrimitiveType::Triangle, false, false);
-    if (mesh == nullptr) {
-      LOG_ERROR("Mesh initialize failed!");
-      return false;
-    }
-    Renderable* renderable = Platform::getRenderer()->createRenderable(mesh, material);
-    if (renderable == nullptr) {
-      LOG_ERROR("Renderable initialize failed!");
-      return false;
-    }
     rectObject = NEW_T(GameObject("rectObject", this));
-    auto* meshRenderer = rectObject->addComponent<MeshRenderer>();
-    meshRenderer->setRenderable(renderable);
+    auto* meshRenderer = rectObject->addComponent<MeshRenderer>(mesh, material);
 
     camera = getMainCamera();
     cameraTransform = camera->gameObject()->transform();
