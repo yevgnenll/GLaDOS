@@ -130,9 +130,13 @@ namespace GLaDOS {
 
   real Math::abs(real a) { return std::abs(a); }
 
+  real Math::logBase(real a, real base) { return log(a) / log(base); }
+
   real Math::log(real a) { return std::log(a); }
 
   real Math::log10(real a) { return std::log10(a); }
+
+  real Math::log2(real a) { return logBase(a, (real)2); }
 
   real Math::exp(real a) { return std::exp(a); }
 
@@ -140,6 +144,10 @@ namespace GLaDOS {
 
   real Math::pow(real a, real exp) {
     return std::pow(a, exp);
+  }
+
+  bool Math::isPowerOfTwo(uint32_t a) {
+    return !(a == 0) && !(a & (a - 1));
   }
 
   real Math::dot(const Vec3& v1, const Vec3& v2) {

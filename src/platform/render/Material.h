@@ -34,7 +34,9 @@ namespace GLaDOS {
 
   private:
     ShaderProgram* mShaderProgram{nullptr};
-    Texture* mTextures[8] = {nullptr, };
+    Texture* mTextures[8] = {
+        nullptr,
+    };
   };
 }  // namespace GLaDOS
 

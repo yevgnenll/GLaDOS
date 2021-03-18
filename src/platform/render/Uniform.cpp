@@ -12,11 +12,7 @@ namespace GLaDOS {
   std::string Uniform::toString() const {
     std::string outputString;
 
-    outputString.append("ShaderType: ").append(mShaderType.toString()).append(", ")
-        .append("UniformType: ").append(mUniformType.toString()).append(", ")
-        .append("Name: ").append(mName).append(", ")
-        .append("count: ").append(std::to_string(mCount)).append(", ")
-        .append("offset: ").append(std::to_string(mOffset));
+    outputString.append("ShaderType: ").append(mShaderType.toString()).append(", ").append("UniformType: ").append(mUniformType.toString()).append(", ").append("Name: ").append(mName).append(", ").append("count: ").append(std::to_string(mCount)).append(", ").append("offset: ").append(std::to_string(mOffset));
 
     return outputString;
   }

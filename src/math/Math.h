@@ -60,11 +60,14 @@ namespace GLaDOS {
     static real floor(real a);
     static real round(real a);
     static real abs(real a);
+    static real logBase(real a, real base);
     static real log(real a);
     static real log10(real a);
+    static real log2(real a);
     static real exp(real a);
     static real sqrt(real a);
     static real pow(real a, real exp);
+    static bool isPowerOfTwo(uint32_t a);
 
     static real dot(const Vec3& v1, const Vec3& v2);
     static real absDot(const Vec3& v1, const Vec3& v2);

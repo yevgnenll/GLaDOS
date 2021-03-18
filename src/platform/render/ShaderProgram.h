@@ -4,9 +4,9 @@
 #include <string>
 
 #include "math/Mat4.hpp"
+#include "platform/render/RenderState.h"
 #include "resource/Resource.h"
 #include "utils/Utility.h"
-#include "platform/render/RenderState.h"
 
 namespace GLaDOS {
   class Uniform;

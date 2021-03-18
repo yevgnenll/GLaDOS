@@ -64,24 +64,24 @@ namespace GLaDOS {
   enum class TextureFormat {
     Unknown = -1,
 
-    Red8, // Single channel (R) texture format, 8 bit floating point.
-    Red16, // Single channel (R) texture format, 16 bit floating point.
-    RedHalf, // Scalar (R) texture format, 16 bit floating point.
-    RedFloat, // Scalar (R) texture format, 32 bit floating point.
+    Red8,  // Single channel (R) texture format, 8 bit floating point.
+    Red16,  // Single channel (R) texture format, 16 bit floating point.
+    RedHalf,  // Scalar (R) texture format, 16 bit floating point.
+    RedFloat,  // Scalar (R) texture format, 32 bit floating point.
 
-    RG16, // Two color (RG) texture format, 8-bits floating point per channel.
-    RG32, // Two channel (RG) texture format, 16 bit floating point per channel.
-    RGHalf, // Two color (RG) texture format, 16 bit floating point per channel.
-    RGFloat, // Two color (RG) texture format, 32 bit floating point per channel.
+    RG16,  // Two color (RG) texture format, 8-bits floating point per channel.
+    RG32,  // Two channel (RG) texture format, 16 bit floating point per channel.
+    RGHalf,  // Two color (RG) texture format, 16 bit floating point per channel.
+    RGFloat,  // Two color (RG) texture format, 32 bit floating point per channel.
 
-    RGB24, // Color texture format, 8-bits per channel.
-    RGBA32, // Color with alpha texture format, 8-bits per channel.
-    BGRA32, // Color with alpha texture format, 8-bits per channel.
-    RGBA64, // Four channel (RGBA) texture format, 16 bit floating point per channel.
-    RGBAHalf, // RGB color and alpha texture format, 16 bit floating point per channel.
-    RGBAFloat, // RGB color and alpha texture format, 32-bit floats per channel.
+    RGB24,  // Color texture format, 8-bits per channel.
+    RGBA32,  // Color with alpha texture format, 8-bits per channel.
+    BGRA32,  // Color with alpha texture format, 8-bits per channel.
+    RGBA64,  // Four channel (RGBA) texture format, 16 bit floating point per channel.
+    RGBAHalf,  // RGB color and alpha texture format, 16 bit floating point per channel.
+    RGBAFloat,  // RGB color and alpha texture format, 32-bit floats per channel.
 
-    Alpha8, // Alpha-only texture format, 8 bit integer.
+    Alpha8,  // Alpha-only texture format, 8 bit integer.
     sRGB24,
     sRGBA32,
     Depth32,

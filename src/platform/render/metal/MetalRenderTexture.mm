@@ -4,11 +4,9 @@
 
 namespace GLaDOS {
   MetalRenderTexture::MetalRenderTexture(TextureFormat format) : RenderTexture{format} {
-
   }
 
   MetalRenderTexture::~MetalRenderTexture() {
-
   }
 }
 

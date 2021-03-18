@@ -1,11 +1,11 @@
 #include "ShaderProgram.h"
 
-#include "platform/render/Renderer.h"
 #include "RootDir.h"
 #include "math/Color.h"
 #include "math/Vec2.h"
 #include "math/Vec3.h"
 #include "math/Vec4.h"
+#include "platform/render/Renderer.h"
 #include "platform/render/Uniform.h"
 
 namespace GLaDOS {

@@ -1,4 +1,5 @@
 #include "Material.h"
+
 #include "platform/render/Texture.h"
 
 namespace GLaDOS {

@@ -5,4 +5,4 @@ namespace GLaDOS {
     mStride = stride;
     mStreamBuffer.resize(count * mStride);
   }
-}
+}  // namespace GLaDOS

@@ -74,10 +74,10 @@ public:
     }
 
     if (Input::isKeyPress(KeyCode::KEY_Q)) {
-      cubeTransform->scale({ 0.1, 0.1, 0.1 });
+      cubeTransform->scale({ 0.01, 0.01, 0.01 });
     }
     if (Input::isKeyPress(KeyCode::KEY_W)) {
-      cubeTransform->scale({ -0.1, -0.1, -0.1 });
+      cubeTransform->scale({ -0.01, -0.01, -0.01 });
     }
   }
 

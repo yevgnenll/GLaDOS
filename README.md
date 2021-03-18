@@ -17,6 +17,11 @@ cmake -G Ninja ..
 ninja
 ```
 
+### Features
+
+- Supporting texture format (JPEG, PNG, TGA, BMP, PSD, GIF, HDR, PIC, PNM)
+- CPU bounded Mipmaps texture generation
+
 ### Sample
 
 'sample' directory contains various JIT demos.

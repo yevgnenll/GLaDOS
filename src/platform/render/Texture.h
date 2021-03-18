@@ -17,6 +17,12 @@ namespace GLaDOS {
     void setSamplerState(const SamplerDescription& desc);
     void setColorKey(const Color& colorKey);
     Color colorKey() const;
+    uint32_t getWidth() const;
+    uint32_t getHeight() const;
+    uint32_t getChannels() const;
+    bool isUseMipmap() const;
+    uint32_t mipmapCount() const;
+    TextureFormat getTextureFormat() const;
 
     virtual bool loadTextureFromFile() = 0;
     virtual bool loadTextureFromBuffer(StreamBuffer& buffer) = 0;
@@ -27,6 +33,8 @@ namespace GLaDOS {
     uint32_t mWidth{0};
     uint32_t mHeight{0};
     uint32_t mChannels{0};
+    bool mUseMipmap{true};
+    uint32_t mMipmapCount{1};
     TextureFormat mFormat{TextureFormat::Unknown};
     TextureUsage mUsage{TextureUsage::Unknown};
     TextureDimension mDimension{TextureDimension::Unknown};

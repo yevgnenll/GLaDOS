@@ -5,10 +5,10 @@
 #include "MetalBuffer.h"
 #include "MetalRenderable.h"
 #include "MetalShaderProgram.h"
+#include "MetalTexture2D.h"
 #include "platform/render/Material.h"
 #include "platform/render/Mesh.h"
 #include "platform/render/Uniform.h"
-#include "MetalTexture2D.h"
 
 namespace GLaDOS {
   MetalRenderable::~MetalRenderable() {

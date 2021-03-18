@@ -44,13 +44,37 @@ namespace GLaDOS {
     return *mColorKey;
   }
 
+  uint32_t Texture::getWidth() const {
+    return mWidth;
+  }
+
+  uint32_t Texture::getHeight() const {
+    return mHeight;
+  }
+
+  uint32_t Texture::getChannels() const {
+    return mChannels;
+  }
+
+  bool Texture::isUseMipmap() const {
+    return mUseMipmap;
+  }
+
+  uint32_t Texture::mipmapCount() const {
+    return mMipmapCount;
+  }
+
+  TextureFormat Texture::getTextureFormat() const {
+    return mFormat;
+  }
+
   int Texture::mapChannelNumberFrom(TextureFormat format) {
     switch (format) {
       case TextureFormat::Red8:
         return 1;
       case TextureFormat::RG16:
         return 1;
-      case TextureFormat::RGB24: // metal doesn't support rgb format
+      case TextureFormat::RGB24:  // metal doesn't support rgb format
       case TextureFormat::RGBA32:
         return 4;
       case TextureFormat::BGRA32:

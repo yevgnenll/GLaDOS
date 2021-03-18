@@ -14,7 +14,6 @@ namespace GLaDOS {
     ~MetalRenderTexture() override;
 
   private:
-
   };
 }  // namespace GLaDOS
 
