@@ -48,6 +48,12 @@ namespace GLaDOS {
     virtual Texture3D* createTexture3D(const std::string& name) = 0;
     virtual TextureCube* createTextureCube(const std::string& name, PixelFormat format) = 0;
     virtual RenderTexture* createRenderTexture(const std::string& name) = 0;
+
+    FillMode getFillMode() const { return mFillMode; }
+    void setFillMode(FillMode mode) { mFillMode = mode; }
+
+  protected:
+    FillMode mFillMode{FillMode::Fill};
   };
 }  // namespace GLaDOS
 

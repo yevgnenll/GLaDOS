@@ -49,6 +49,7 @@ namespace GLaDOS {
   private:
     static MTLPrimitiveType mapPrimitiveType(PrimitiveType type);
     static MTLIndexType mapIndexType(std::size_t size);
+    static MTLTriangleFillMode mapFillMode(FillMode mode);
 
     id<MTLDevice> mMetalDevice{nil};
     id<MTLRenderCommandEncoder> mCommandEncoder{nil};

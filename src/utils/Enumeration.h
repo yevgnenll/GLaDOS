@@ -99,8 +99,7 @@ namespace GLaDOS {
 
   enum class FillMode {
     Fill = 0,
-    Lines,
-    Shaded
+    Lines
   };
 
   enum class ComparisonFunction {

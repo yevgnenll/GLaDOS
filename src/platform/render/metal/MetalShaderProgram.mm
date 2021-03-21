@@ -8,6 +8,7 @@
 #include "platform/apple/CocoaPlatform.h"
 #include "platform/render/Uniform.h"
 #include "platform/render/VertexData.h"
+#include "utils/Enumeration.h"
 
 namespace GLaDOS {
   MetalShaderProgram::~MetalShaderProgram() {
@@ -54,7 +55,13 @@ namespace GLaDOS {
     if (mDepthStencilState != nullptr) {
       [commandEncoder setDepthStencilState:metalDepthStencilState()];
       [commandEncoder setFrontFacingWinding:MTLWindingCounterClockwise];
-      [commandEncoder setCullMode:MTLCullModeNone];
+      if (MetalRenderer::getInstance()->getFillMode() == FillMode::Lines) {
+        [commandEncoder setCullMode:MTLCullModeNone];
+      } else {
+        // follow setting
+        [commandEncoder setCullMode:MTLCullModeBack];
+      }
+
       //      [commandEncoder setStencilFrontReferenceValue:1 backReferenceValue:1];
     }
   }

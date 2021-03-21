@@ -56,6 +56,7 @@ namespace GLaDOS {
 
     [mCommandEncoder setRenderPipelineState:renderable->getPipelineState()];
     [mCommandEncoder setVertexBuffer:renderable->getVertexBuffer() offset:0 atIndex:1];
+    [mCommandEncoder setTriangleFillMode:MetalRenderer::mapFillMode(mFillMode)];
     if (indexBuffer != nullptr) {
       // index primitive draw
       MTLIndexType indexType = MetalRenderer::mapIndexType(mesh->getIndexStride());
@@ -231,6 +232,15 @@ namespace GLaDOS {
     }
 
     return MTLIndexTypeUInt16;
+  }
+
+  MTLTriangleFillMode MetalRenderer::mapFillMode(FillMode mode) {
+    switch (mode) {
+      case FillMode::Fill:
+        return MTLTriangleFillModeFill;
+      case FillMode::Lines:
+        return MTLTriangleFillModeLines;
+    }
   }
 }  // namespace GLaDOS
 

@@ -62,6 +62,7 @@ public:
     shaderProgram->setUniform("modelViewProj", planeTransform->localToWorldMatrix() * camera->worldToCameraMatrix() * camera->projectionMatrix());
     shaderProgram->setUniform("normal", Mat4x::transpose(planeTransform->worldToLocalMatrix()));
     shaderProgram->setUniform("cameraPos", cameraTransform->position());
+    shaderProgram->setUniform("isWireFrameMode", Platform::getRenderer()->getFillMode() == FillMode::Lines);
 
     // camera translation
     Vec3 right = cameraTransform->right();
@@ -83,6 +84,13 @@ public:
       real rotationY = mouseDelta.x * sensitivity * deltaTime;
       cameraTransform->rotate(cameraTransform->right(), Math::toRadians(rotationX));
       cameraTransform->rotate(UVec3::up, Math::toRadians(-rotationY));
+    }
+
+    if (Input::isKeyDown(KeyCode::KEY_M)) {
+      Platform::getRenderer()->setFillMode(FillMode::Lines);
+    }
+    if (Input::isKeyDown(KeyCode::KEY_N)) {
+      Platform::getRenderer()->setFillMode(FillMode::Fill);
     }
   }
 
