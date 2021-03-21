@@ -62,6 +62,7 @@ namespace GLaDOS {
     std::size_t size() const;
 
     static constexpr Mat4<T> identity();
+    static Mat4<T> transpose(const Mat4<T>& other);
     static Mat4<T> inverse(const Mat4<T>& other);
     static Mat4<T> toMat3(const Mat4<T>& other);
     static Mat4<T> abs(const Mat4<T>& other);
@@ -175,12 +176,7 @@ namespace GLaDOS {
 
   template <typename T>
   Mat4<T>& Mat4<T>::makeTranspose() {
-    for (unsigned c = 0; c < 4; c++) {
-      for (unsigned r = c + 1; r < 4; r++) {
-        std::swap(_m44[c][r], _m44[r][c]);
-      }
-    }
-    return *this;
+    return *this = Mat4<T>::transpose(*this);
   }
 
   template <typename T>
@@ -385,6 +381,18 @@ namespace GLaDOS {
         mat._m44[c][r] = Math::equal(c, r) ? 1.0 : 0.0;
       }
     }
+    return mat;
+  }
+
+  template <typename T>
+  Mat4<T> Mat4<T>::transpose(const Mat4<T>& other) {
+    Mat4<T> mat = other;
+    for (unsigned c = 0; c < 4; c++) {
+      for (unsigned r = c + 1; r < 4; r++) {
+        std::swap(mat._m44[c][r], mat._m44[r][c]);
+      }
+    }
+
     return mat;
   }
 

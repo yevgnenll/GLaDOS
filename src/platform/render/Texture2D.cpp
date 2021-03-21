@@ -8,7 +8,7 @@
 #include <stb_image_resize.h>
 
 namespace GLaDOS {
-  Texture2D::Texture2D(const std::string& name, TextureFormat format) : Texture{name, format} {
+  Texture2D::Texture2D(const std::string& name, PixelFormat format) : Texture{name, format} {
     mDimension = TextureDimension::Tex2D;
     mUsage = TextureUsage::ShaderRead;
   }
@@ -23,7 +23,7 @@ namespace GLaDOS {
     const char* filename = (mFileDirectory + mName).c_str();
     int result = stbi_info(filename, &width, &height, &channels);
     if (result == 0) {
-      LOG_ERROR("Failed to load texture {0}", mName);
+      LOG_ERROR("Failed to load texture {0}, reason: {1}", mName, stbi_failure_reason());
       return false;
     }
 
@@ -34,7 +34,7 @@ namespace GLaDOS {
     uint8_t* data = stbi_load(filename, &width, &height, &channels, desiredChannel);
 
     if (data == nullptr) {
-      LOG_ERROR("Failed to load texture {0}", mName);
+      LOG_ERROR("Failed to load texture {0}, reason: {1}", mName, stbi_failure_reason());
       return false;
     }
 

@@ -36,7 +36,7 @@ public:
     DepthStencilDescription depthStencilDesc{};
     shaderProgram->setDepthStencilState(depthStencilDesc);
 
-    Texture2D* quadTexture = Platform::getRenderer()->createTexture2D("container.jpg", TextureFormat::RGB24);
+    Texture2D* quadTexture = Platform::getRenderer()->createTexture2D("container.jpg", PixelFormat::RGB24);
     if (!quadTexture->loadTextureFromFile()) {
       LOG_ERROR("Failed to load texture!");
       return false;
@@ -47,7 +47,7 @@ public:
     material->setTexture0(quadTexture);
 
     GameObject* quad = NEW_T(GameObject("quad", this));
-    cubeTransform = quad->transform();
+    planeTransform = quad->transform();
     quad->addComponent<MeshRenderer>(mesh, material);
 
     camera = getMainCamera();
@@ -61,7 +61,7 @@ public:
       Platform::getInstance()->quit();
     }
 
-    shaderProgram->setUniform("model", cubeTransform->localToWorldMatrix());
+    shaderProgram->setUniform("model", planeTransform->localToWorldMatrix());
     shaderProgram->setUniform("view", camera->worldToCameraMatrix());
     shaderProgram->setUniform("projection", camera->projectionMatrix());
 
@@ -69,15 +69,15 @@ public:
       Vec3 mouseDelta = Input::mouseDeltaPosition();
       real rotationX = mouseDelta.y * sensitivity * deltaTime;
       real rotationY = mouseDelta.x * sensitivity * deltaTime;
-      cubeTransform->rotate(cubeTransform->right(), Math::toRadians(rotationX));
-      cubeTransform->rotate(cubeTransform->up(), Math::toRadians(-rotationY));
+      planeTransform->rotate(planeTransform->right(), Math::toRadians(rotationX));
+      planeTransform->rotate(planeTransform->up(), Math::toRadians(-rotationY));
     }
 
     if (Input::isKeyPress(KeyCode::KEY_Q)) {
-      cubeTransform->scale({ 0.01, 0.01, 0.01 });
+      planeTransform->scale({ 0.01, 0.01, 0.01 });
     }
     if (Input::isKeyPress(KeyCode::KEY_W)) {
-      cubeTransform->scale({ -0.01, -0.01, -0.01 });
+      planeTransform->scale({ -0.01, -0.01, -0.01 });
     }
   }
 
@@ -85,7 +85,7 @@ private:
   real sensitivity = 15;
   ShaderProgram* shaderProgram = nullptr;
   Camera* camera = nullptr;
-  Transform* cubeTransform = nullptr;
+  Transform* planeTransform = nullptr;
 };
 
 bool init() {

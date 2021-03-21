@@ -46,6 +46,7 @@ namespace GLaDOS {
     void sendMessageUpwards(Message& msg);
     void broadcastMessage(Message& msg);
     Transform* transform();
+    Scene* scene();
 
   private:
     void update(real deltaTime) override;

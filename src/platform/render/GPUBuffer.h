@@ -1,14 +1,14 @@
-#ifndef GLADOS_BUFFER_H
-#define GLADOS_BUFFER_H
+#ifndef GLADOS_GPUBUFFER_H
+#define GLADOS_GPUBUFFER_H
 
 #include "memory/StreamBuffer.h"
 #include "utils/Enumeration.h"
 
 namespace GLaDOS {
-  class Buffer {
+  class GPUBuffer {
   public:
-    Buffer(BufferType type, BufferUsage usage);
-    virtual ~Buffer() = default;
+    GPUBuffer(BufferType type, BufferUsage usage);
+    virtual ~GPUBuffer() = default;
 
     std::size_t getSize() const;
     virtual bool uploadData(StreamBuffer& buffer) = 0;

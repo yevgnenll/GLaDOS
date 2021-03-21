@@ -72,7 +72,7 @@ public:
     DepthStencilDescription depthStencilDesc{};
     shaderProgram->setDepthStencilState(depthStencilDesc);
 
-    Texture2D* cubeTexture = Platform::getRenderer()->createTexture2D("cube.png", TextureFormat::RGBA32);
+    Texture2D* cubeTexture = Platform::getRenderer()->createTexture2D("cube.png", PixelFormat::RGBA32);
     if (!cubeTexture->loadTextureFromFile()) {
       LOG_ERROR("Failed to load texture!");
       return false;
@@ -83,8 +83,8 @@ public:
     material->setTexture0(cubeTexture);
 
     GameObject* cube = NEW_T(GameObject("cube", this));
-    cubeTransform = cube->transform();
-    cubeTransform->setLocalScale({0.5, 0.5, 0.5});
+    planeTransform = cube->transform();
+    planeTransform->setLocalScale({0.5, 0.5, 0.5});
     auto* meshRenderer = cube->addComponent<MeshRenderer>(mesh, material);
 
     camera = getMainCamera();
@@ -98,7 +98,7 @@ public:
       Platform::getInstance()->quit();
     }
 
-    shaderProgram->setUniform("model", cubeTransform->localToWorldMatrix());
+    shaderProgram->setUniform("model", planeTransform->localToWorldMatrix());
     shaderProgram->setUniform("view", camera->worldToCameraMatrix());
     shaderProgram->setUniform("projection", camera->projectionMatrix());
 
@@ -106,8 +106,8 @@ public:
       Vec3 mouseDelta = Input::mouseDeltaPosition();
       real rotationX = mouseDelta.y * sensitivity * deltaTime;
       real rotationY = mouseDelta.x * sensitivity * deltaTime;
-      cubeTransform->rotate(cubeTransform->right(), Math::toRadians(rotationX));
-      cubeTransform->rotate(cubeTransform->up(), Math::toRadians(-rotationY));
+      planeTransform->rotate(planeTransform->right(), Math::toRadians(rotationX));
+      planeTransform->rotate(planeTransform->up(), Math::toRadians(-rotationY));
     }
   }
 
@@ -115,7 +115,7 @@ private:
   real sensitivity = 15;
   ShaderProgram* shaderProgram = nullptr;
   Camera* camera = nullptr;
-  Transform* cubeTransform = nullptr;
+  Transform* planeTransform = nullptr;
 };
 
 bool init() {

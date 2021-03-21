@@ -9,6 +9,7 @@
 #include "MetalRenderable.h"
 #include "MetalShaderProgram.h"
 #include "MetalTexture2D.h"
+#include "MetalTextureCube.h"
 #include "platform/render/Mesh.h"
 #include "utils/FileSystem.h"
 
@@ -50,7 +51,7 @@ namespace GLaDOS {
     renderable->bindParams();
 
     Mesh* mesh = renderable->getMesh();
-    Buffer* indexBuffer = mesh->getIndexBuffer();
+    GPUBuffer* indexBuffer = mesh->getIndexBuffer();
     MTLPrimitiveType primitiveType = MetalRenderer::mapPrimitiveType(mesh->getPrimitiveType());
 
     [mCommandEncoder setRenderPipelineState:renderable->getPipelineState()];
@@ -70,8 +71,8 @@ namespace GLaDOS {
     [mCommandEncoder drawPrimitives:primitiveType vertexStart:start vertexCount:count];
   }
 
-  Buffer* MetalRenderer::createVertexBuffer(BufferUsage usage, StreamBuffer& buffer) {
-    Buffer* vertexBuffer = NEW_T(MetalBuffer(BufferType::VertexBuffer, usage));
+  GPUBuffer* MetalRenderer::createVertexBuffer(BufferUsage usage, StreamBuffer& buffer) {
+    GPUBuffer* vertexBuffer = NEW_T(MetalBuffer(BufferType::VertexBuffer, usage));
     if (!vertexBuffer->uploadData(buffer)) {
       return nullptr;
     }
@@ -79,8 +80,8 @@ namespace GLaDOS {
     return vertexBuffer;
   }
 
-  Buffer* MetalRenderer::createIndexBuffer(BufferUsage usage, StreamBuffer& buffer) {
-    Buffer* indexBuffer = NEW_T(MetalBuffer(BufferType::IndexBuffer, usage));
+  GPUBuffer* MetalRenderer::createIndexBuffer(BufferUsage usage, StreamBuffer& buffer) {
+    GPUBuffer* indexBuffer = NEW_T(MetalBuffer(BufferType::IndexBuffer, usage));
     if (!indexBuffer->uploadData(buffer)) {
       return nullptr;
     }
@@ -154,25 +155,25 @@ namespace GLaDOS {
     return NEW_T(MetalSamplerState(desc));
   }
 
-  Texture2D* MetalRenderer::createTexture2D(const std::string& name, TextureFormat format, const Color& colorKey) {
+  Texture2D* MetalRenderer::createTexture2D(const std::string& name, PixelFormat format, const Color& colorKey) {
     MetalTexture2D* texture = NEW_T(MetalTexture2D(name, format));
     texture->setColorKey(colorKey);
     return texture;
   }
 
-  Texture2D* MetalRenderer::createTexture2D(const std::string& name, TextureFormat format) {
+  Texture2D* MetalRenderer::createTexture2D(const std::string& name, PixelFormat format) {
     return NEW_T(MetalTexture2D(name, format));
   }
 
-  Texture2D* MetalRenderer::createTexture2D(TextureFormat format, StreamBuffer& data, const Color& colorKey) {
+  Texture2D* MetalRenderer::createTexture2D(PixelFormat format, StreamBuffer& data, const Color& colorKey) {
     return nullptr;
   }
 
-  Texture2D* MetalRenderer::createTexture2D(TextureFormat format, StreamBuffer& data) {
+  Texture2D* MetalRenderer::createTexture2D(PixelFormat format, StreamBuffer& data) {
     return nullptr;
   }
 
-  Texture2D* MetalRenderer::createTexture2D(uint32_t width, uint32_t height, TextureFormat format, unsigned char* data) {
+  Texture2D* MetalRenderer::createTexture2D(uint32_t width, uint32_t height, PixelFormat format, unsigned char* data) {
     return nullptr;
   }
 
@@ -180,8 +181,8 @@ namespace GLaDOS {
     return nullptr;
   }
 
-  TextureCube* MetalRenderer::createTextureCube(const std::string& name) {
-    return nullptr;
+  TextureCube* MetalRenderer::createTextureCube(const std::string& name, PixelFormat format) {
+    return NEW_T(MetalTextureCube(name, format));
   }
 
   RenderTexture* MetalRenderer::createRenderTexture(const std::string& name) {

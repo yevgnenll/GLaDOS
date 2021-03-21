@@ -34,6 +34,10 @@ namespace GLaDOS {
     template <typename T>
     StreamBuffer& operator<<(const Mat4<T>& i);
 
+    void uploadData(StreamBuffer& buffer);
+    void uploadData(const Vector<std::byte>& data);
+    void uploadData(const std::byte* data);
+
     void* offsetOf(std::size_t offset);
     void* pointer();
     const void* constPointer() const;

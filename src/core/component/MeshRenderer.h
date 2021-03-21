@@ -19,6 +19,7 @@ namespace GLaDOS {
     void update(real deltaTime) override;
     void render() override;
 
+  protected:
     Renderable* mRenderable{nullptr};
   };
 }  // namespace GLaDOS

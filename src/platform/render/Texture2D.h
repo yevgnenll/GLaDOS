@@ -6,7 +6,7 @@
 namespace GLaDOS {
   class Texture2D : public Texture {
   public:
-    Texture2D(const std::string& name, TextureFormat format);
+    Texture2D(const std::string& name, PixelFormat format);
     ~Texture2D() override;
 
     bool loadTextureFromFile() override;

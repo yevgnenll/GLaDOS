@@ -19,6 +19,11 @@ namespace GLaDOS {
     return mStreamBuffer;
   }
 
+  void ByteBuffer::uploadData(StreamBuffer& buffer) {
+    std::memcpy(mStreamBuffer.pointer(), buffer.pointer(), size());
+
+  }
+
   void ByteBuffer::uploadData(const Vector<std::byte>& data) {
     std::memcpy(mStreamBuffer.pointer(), data.data(), size());
   }

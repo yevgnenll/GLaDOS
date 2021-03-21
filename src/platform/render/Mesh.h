@@ -1,7 +1,7 @@
 #ifndef GLADOS_MESH_H
 #define GLADOS_MESH_H
 
-#include "Buffer.h"
+#include "GPUBuffer.h"
 #include "resource/Resource.h"
 #include "utils/Enumeration.h"
 
@@ -16,8 +16,8 @@ namespace GLaDOS {
 
     PrimitiveType getPrimitiveType() const;
     void setPrimitiveType(PrimitiveType primitiveType);
-    Buffer* getVertexBuffer() const;
-    Buffer* getIndexBuffer() const;
+    GPUBuffer* getVertexBuffer() const;
+    GPUBuffer* getIndexBuffer() const;
     Vector<VertexFormat*> getVertexFormats() const;
     std::size_t getVertexStart() const;
     void setVertexStart(std::size_t vertexStart);
@@ -29,18 +29,20 @@ namespace GLaDOS {
     std::size_t getIndexStride() const;
     std::size_t getMemoryUsage() const;
     std::size_t getFaceCount() const;
+    VertexData* getVertexData();
+    IndexData* getIndexData();
     bool isDynamicVertex() const;
     bool isDynamicIndex() const;
 
     bool build(VertexData* vertexData, IndexData* indexData);
-    void RecalculateNormals();
-    void RecalculateTangent();
-    void RecalculateBounds();
+    void recalculateNormals();
+    void recalculateTangent();
+    void recalculateBounds();
 
   private:
     PrimitiveType mPrimitiveType;
-    Buffer* mVertexBuffer{nullptr};
-    Buffer* mIndexBuffer{nullptr};
+    GPUBuffer* mVertexBuffer{nullptr};
+    GPUBuffer* mIndexBuffer{nullptr};
     VertexData* mVertexData{nullptr};
     IndexData* mIndexData{nullptr};
     std::size_t mVertexStart{0};

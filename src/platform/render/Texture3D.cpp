@@ -1,7 +1,7 @@
 #include "Texture3D.h"
 
 namespace GLaDOS {
-  Texture3D::Texture3D(const std::string& name, TextureFormat format) : Texture{name, format} {
+  Texture3D::Texture3D(const std::string& name, PixelFormat format) : Texture{name, format} {
     mDimension = TextureDimension::Tex3D;
   }
 

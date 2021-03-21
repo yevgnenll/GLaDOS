@@ -5,7 +5,7 @@
 #include "MetalRenderer.h"
 
 namespace GLaDOS {
-  MetalBuffer::MetalBuffer(BufferType type, BufferUsage usage) : Buffer{type, usage} {}
+  MetalBuffer::MetalBuffer(BufferType type, BufferUsage usage) : GPUBuffer{type, usage} {}
 
   MetalBuffer::~MetalBuffer() {
     [mMetalBuffer release];
@@ -14,7 +14,7 @@ namespace GLaDOS {
   bool MetalBuffer::uploadData(StreamBuffer& buffer) {
     id<MTLDevice> device = MetalRenderer::getInstance()->getDevice();
     if (device == nil) {
-      LOG_ERROR("Invalid Metal device state, upload Buffer failed.");
+      LOG_ERROR("Invalid Metal device state, upload GPUBuffer failed.");
       return false;
     }
 

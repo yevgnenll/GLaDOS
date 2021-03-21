@@ -8,6 +8,7 @@
 #include "core/SceneManager.h"
 #include "core/component/Camera.h"
 #include "core/component/MeshRenderer.h"
+#include "core/component/CubemapRenderer.h"
 #include "core/component/Transform.h"
 #include "math/Color.h"
 #include "platform/Input.h"
@@ -25,9 +26,11 @@
 #include "platform/render/Texture.h"
 #include "platform/render/Texture2D.h"
 #include "platform/render/Texture3D.h"
+#include "platform/render/TextureCube.h"
 #include "platform/render/Uniform.h"
 #include "platform/render/VertexData.h"
 #include "platform/render/VertexFormat.h"
 #include "utils/Utility.h"
+#include "utils/MeshGenerator.h"
 
 #endif  //GLADOS_GLADOS_H

@@ -6,7 +6,7 @@
 namespace GLaDOS {
   class Texture3D : public Texture {
   public:
-    Texture3D(const std::string& name, TextureFormat format);
+    Texture3D(const std::string& name, PixelFormat format);
     ~Texture3D() override;
 
     bool loadTextureFromFile() override;

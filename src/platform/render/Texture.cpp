@@ -7,7 +7,7 @@
 #include "platform/render/Renderer.h"
 
 namespace GLaDOS {
-  Texture::Texture(const std::string& name, TextureFormat format) : Resource{ResourceType::Texture}, mFormat{format} {
+  Texture::Texture(const std::string& name, PixelFormat format) : Resource{ResourceType::Texture}, mFormat{format} {
     setResourceDir(RESOURCE_DIR);
     setName(name);
   }
@@ -64,26 +64,30 @@ namespace GLaDOS {
     return mMipmapCount;
   }
 
-  TextureFormat Texture::getTextureFormat() const {
+  PixelFormat Texture::getPixelFormat() const {
     return mFormat;
   }
 
-  int Texture::mapChannelNumberFrom(TextureFormat format) {
+  TextureDimension Texture::getDimension() const {
+    return mDimension;
+  }
+
+  int Texture::mapChannelNumberFrom(PixelFormat format) {
     switch (format) {
-      case TextureFormat::Red8:
+      case PixelFormat::Red8:
         return 1;
-      case TextureFormat::RG16:
+      case PixelFormat::RG16:
         return 1;
-      case TextureFormat::RGB24:  // metal doesn't support rgb format
-      case TextureFormat::RGBA32:
+      case PixelFormat::RGB24:  // metal doesn't support rgb format
+      case PixelFormat::RGBA32:
         return 4;
-      case TextureFormat::BGRA32:
+      case PixelFormat::BGRA32:
         return 4;
-      case TextureFormat::Alpha8:
+      case PixelFormat::Alpha8:
         return 1;
-      case TextureFormat::sRGB24:
+      case PixelFormat::sRGB24:
         return 3;
-      case TextureFormat::sRGBA32:
+      case PixelFormat::sRGBA32:
         return 4;
       default:
         LOG_WARN("Unknown texture channel number fallback to 0");

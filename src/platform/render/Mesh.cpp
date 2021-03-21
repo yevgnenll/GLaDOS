@@ -12,8 +12,8 @@ namespace GLaDOS {
   }
 
   Mesh::~Mesh() {
-    DELETE_T(mVertexBuffer, Buffer);
-    DELETE_T(mIndexBuffer, Buffer);
+    DELETE_T(mVertexBuffer, GPUBuffer);
+    DELETE_T(mIndexBuffer, GPUBuffer);
     DELETE_T(mVertexData, VertexData);
     DELETE_T(mIndexData, IndexData);
   }
@@ -26,11 +26,11 @@ namespace GLaDOS {
     mPrimitiveType = primitiveType;
   }
 
-  Buffer* Mesh::getVertexBuffer() const {
+  GPUBuffer* Mesh::getVertexBuffer() const {
     return mVertexBuffer;
   }
 
-  Buffer* Mesh::getIndexBuffer() const {
+  GPUBuffer* Mesh::getIndexBuffer() const {
     return mIndexBuffer;
   }
 
@@ -91,6 +91,14 @@ namespace GLaDOS {
     }
   }
 
+  VertexData* Mesh::getVertexData() {
+    return mVertexData;
+  }
+
+  IndexData* Mesh::getIndexData() {
+    return mIndexData;
+  }
+
   bool Mesh::isDynamicVertex() const {
     return mIsDynamicVertex;
   }
@@ -127,15 +135,15 @@ namespace GLaDOS {
     return true;
   }
 
-  void Mesh::RecalculateNormals() {
+  void Mesh::recalculateNormals() {
     // TODO
   }
 
-  void Mesh::RecalculateTangent() {
+  void Mesh::recalculateTangent() {
     // TODO
   }
 
-  void Mesh::RecalculateBounds() {
+  void Mesh::recalculateBounds() {
     // TODO
   }
 

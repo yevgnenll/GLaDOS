@@ -6,6 +6,7 @@
 #include "MetalRenderable.h"
 #include "MetalShaderProgram.h"
 #include "MetalTexture2D.h"
+#include "MetalTextureCube.h"
 #include "platform/render/Material.h"
 #include "platform/render/Mesh.h"
 #include "platform/render/Uniform.h"
@@ -44,33 +45,44 @@ namespace GLaDOS {
   }
 
   void MetalRenderable::bindParams() {
-    if (mMaterial == nullptr) {
-      return;
-    }
+    if (mMaterial == nullptr) { return; }
     MetalShaderProgram* shaderProgram = static_cast<MetalShaderProgram*>(mMaterial->getShaderProgram());  // INTEND: do not use dynamic_cast here
-    if (shaderProgram == nullptr) {
-      return;
-    }
+    if (shaderProgram == nullptr) { return; }
+
     id<MTLRenderCommandEncoder> commandEncoder = MetalRenderer::getInstance()->getCommandEncoder();
     for (const auto& [key, uniform] : shaderProgram->getUniforms()) {
-      if (!uniform->isTextureType()) {
-        continue;
-      }
+      if (!uniform->isTextureType()) { continue; }
 
-      MetalTexture2D* textureN = static_cast<MetalTexture2D*>(mMaterial->getTextureFromIndex(uniform->mOffset));  // INTEND: do not use dynamic_cast here
-      if (textureN == nullptr) {
-        continue;
-      }
-      if (uniform->mShaderType == ShaderType::VertexShader) {
-        [commandEncoder setVertexTexture:textureN->texture() atIndex:uniform->mOffset];
-        [commandEncoder setVertexSamplerState:textureN->metalSamplerState() atIndex:uniform->mOffset];
-      } else if (uniform->mShaderType == ShaderType::FragmentShader) {
-        [commandEncoder setFragmentTexture:textureN->texture() atIndex:uniform->mOffset];
-        [commandEncoder setFragmentSamplerState:textureN->metalSamplerState() atIndex:uniform->mOffset];
+      Texture* texture = mMaterial->getTextureFromIndex(uniform->mOffset);
+      switch (texture->getDimension()) {
+        case TextureDimension::Tex2D: {
+          MetalTexture2D* texture2D = static_cast<MetalTexture2D*>(mMaterial->getTextureFromIndex(uniform->mOffset));
+          if (texture2D == nullptr) { continue; }
+          MetalRenderable::setTexture(commandEncoder, texture2D, uniform);
+          break;
+        }
+        case TextureDimension::CubeMapTex: {
+          MetalTextureCube* textureCube = static_cast<MetalTextureCube*>(mMaterial->getTextureFromIndex(uniform->mOffset));
+          if (textureCube == nullptr) { continue; }
+          MetalRenderable::setTexture(commandEncoder, textureCube, uniform);
+          break;
+        }
+        default:
+          continue;
       }
     }
 
     shaderProgram->bindUniforms(this);
+  }
+
+  void MetalRenderable::setTexture(id<MTLRenderCommandEncoder> commandEncoder, MetalTextureBase* texture, Uniform* uniform) {
+    if (uniform->mShaderType == ShaderType::VertexShader) {
+      [commandEncoder setVertexTexture:texture->texture() atIndex:uniform->mOffset];
+      [commandEncoder setVertexSamplerState:texture->metalSamplerState() atIndex:uniform->mOffset];
+    } else if (uniform->mShaderType == ShaderType::FragmentShader) {
+      [commandEncoder setFragmentTexture:texture->texture() atIndex:uniform->mOffset];
+      [commandEncoder setFragmentSamplerState:texture->metalSamplerState() atIndex:uniform->mOffset];
+    }
   }
 
   id<MTLRenderPipelineState> MetalRenderable::getPipelineState() const {

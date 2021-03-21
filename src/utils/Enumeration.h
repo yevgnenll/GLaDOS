@@ -61,7 +61,7 @@ namespace GLaDOS {
     CubeMapTex
   };
 
-  enum class TextureFormat {
+  enum class PixelFormat {
     Unknown = -1,
 
     Red8,  // Single channel (R) texture format, 8 bit floating point.

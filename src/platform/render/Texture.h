@@ -2,6 +2,7 @@
 #define GLADOS_TEXTURE_H
 
 #include "resource/Resource.h"
+#include "utils/Utility.h"
 
 namespace GLaDOS {
   class Color;
@@ -10,7 +11,7 @@ namespace GLaDOS {
   class StreamBuffer;
   class Texture : public Resource {
   public:
-    Texture(const std::string& name, TextureFormat format);
+    Texture(const std::string& name, PixelFormat format);
     ~Texture() override;
 
     SamplerState* samplerState();
@@ -22,20 +23,23 @@ namespace GLaDOS {
     uint32_t getChannels() const;
     bool isUseMipmap() const;
     uint32_t mipmapCount() const;
-    TextureFormat getTextureFormat() const;
+    PixelFormat getPixelFormat() const;
+    TextureDimension getDimension() const;
 
-    virtual bool loadTextureFromFile() = 0;
-    virtual bool loadTextureFromBuffer(StreamBuffer& buffer) = 0;
+    virtual bool loadTextureFromFile() { return false; };
+    virtual bool loadTextureFromBuffer(StreamBuffer& buffer) { return false; };
+    virtual bool loadTextureFromFile(Vector<std::string>& names) { return false; };
+    virtual bool loadTextureFromBuffer(const Vector<std::reference_wrapper<StreamBuffer>>& buffer) { return false; };
 
   protected:
-    static int mapChannelNumberFrom(TextureFormat format);
+    static int mapChannelNumberFrom(PixelFormat format);
 
     uint32_t mWidth{0};
     uint32_t mHeight{0};
     uint32_t mChannels{0};
     bool mUseMipmap{true};
     uint32_t mMipmapCount{1};
-    TextureFormat mFormat{TextureFormat::Unknown};
+    PixelFormat mFormat{PixelFormat::Unknown};
     TextureUsage mUsage{TextureUsage::Unknown};
     TextureDimension mDimension{TextureDimension::Unknown};
     SamplerState* mSamplerState{nullptr};

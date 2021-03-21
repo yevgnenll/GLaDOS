@@ -6,7 +6,7 @@
 namespace GLaDOS {
   class RenderTexture : public Texture {
   public:
-    RenderTexture(TextureFormat format);
+    RenderTexture(PixelFormat format);
     ~RenderTexture() override;
 
     bool loadTextureFromFile() override { return false; }

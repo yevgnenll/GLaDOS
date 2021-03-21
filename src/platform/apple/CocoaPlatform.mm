@@ -536,7 +536,7 @@ namespace GLaDOS {
 
     // actual rendering start
     mMainFrameBuffer->begin();
-    SceneManager::getInstance()->update(Timer::getInstance()->deltaTime());
+    SceneManager::getInstance()->update(Timer::getInstance()->deltaTime()); // should be here in scope of semaphore lock
     SceneManager::getInstance()->render();
     mMainFrameBuffer->end();
   }

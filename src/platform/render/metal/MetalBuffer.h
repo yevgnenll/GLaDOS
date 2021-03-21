@@ -7,10 +7,10 @@
 
 #include <Metal/MTLBuffer.h>
 
-#include "platform/render/Buffer.h"
+#include "platform/render/GPUBuffer.h"
 
 namespace GLaDOS {
-  class MetalBuffer : public Buffer {
+  class MetalBuffer : public GPUBuffer {
   public:
     MetalBuffer(BufferType type, BufferUsage usage);
     ~MetalBuffer() override;

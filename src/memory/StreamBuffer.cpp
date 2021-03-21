@@ -87,6 +87,27 @@ namespace GLaDOS {
     return *this;
   }
 
+  void StreamBuffer::uploadData(StreamBuffer& buffer) {
+    if (size() < buffer.size()) {
+      LOG_ERROR("buffer overflow");
+      return;
+    }
+    std::memcpy(pointer(), buffer.pointer(), size());
+  }
+
+  void StreamBuffer::uploadData(const Vector<std::byte>& data) {
+    if (size() < data.size()) {
+      LOG_ERROR("buffer overflow");
+      return;
+    }
+    std::memcpy(pointer(), data.data(), size());
+  }
+
+  void StreamBuffer::uploadData(const std::byte* data) {
+    // possible bug: buffer overflow
+    std::memcpy(pointer(), data, size());
+  }
+
   void* StreamBuffer::offsetOf(std::size_t offset) {
     return static_cast<std::byte*>(pointer()) + offset;
   }

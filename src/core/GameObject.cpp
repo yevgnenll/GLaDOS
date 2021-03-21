@@ -7,18 +7,20 @@ namespace GLaDOS {
   GameObject::GameObject(std::string name, Scene* scene) : Object{std::move(name)} {
     mTransform = addComponent<Transform>();
     if (scene != nullptr) {
+      mScene = scene;
       scene->addGameObject(this);
     }
-    LOG_TRACE("GameObject {0} created in scene {1}.", mName, scene->getName());
+    LOG_TRACE("GameObject {0} created in scene {1}.", mName, mScene->getName());
   }
 
   GameObject::GameObject(std::string name, GameObject* parent, Scene* scene) : Object{std::move(name)}, mParent{parent} {
     mParent->mChildren.emplace_back(this);
     mTransform = addComponent<Transform>();
     if (scene != nullptr) {
+      mScene = scene;
       scene->addGameObject(this);
     }
-    LOG_TRACE("GameObject {0} created in scene {1}.", mName, scene->getName());
+    LOG_TRACE("GameObject {0} created in scene {1}.", mName, mScene->getName());
   }
 
   GameObject::~GameObject() {
@@ -67,6 +69,10 @@ namespace GLaDOS {
 
   Transform* GameObject::transform() {
     return mTransform;
+  }
+
+  Scene* GameObject::scene() {
+    return mScene;
   }
 
   void GameObject::update(real deltaTime) {

@@ -10,7 +10,7 @@
 namespace GLaDOS {
   class MetalRenderTexture : public RenderTexture {
   public:
-    MetalRenderTexture(TextureFormat format);
+    MetalRenderTexture(PixelFormat format);
     ~MetalRenderTexture() override;
 
   private:

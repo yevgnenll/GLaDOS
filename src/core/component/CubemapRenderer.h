@@ -1,23 +1,23 @@
 #ifndef GLADOS_CUBEMAPRENDERER_H
 #define GLADOS_CUBEMAPRENDERER_H
 
-#include "core/Component.h"
+#include "core/component/MeshRenderer.h"
 #include "utils/Enumeration.h"
 
 namespace GLaDOS {
   class TextureCube;
-  class CubemapRenderer : public Component {
+  class CubemapRenderer : public MeshRenderer {
   public:
     CubemapRenderer();
     ~CubemapRenderer() override;
+
+    void setTextureCube(TextureCube* textureCube);
 
   private:
     void update(real deltaTime) override;
     void render() override;
 
-    TextureCube* mCubeTexture[static_cast<int>(CubeMapFace::TheNumberOfFace)] = {
-        nullptr,
-    };
+    TextureCube* mCubeTexture{nullptr};
   };
 }  // namespace GLaDOS
 

@@ -9,6 +9,8 @@
 #include "platform/render/Renderable.h"
 
 namespace GLaDOS {
+  class MetalTextureBase;
+  class Uniform;
   class MetalRenderable : public Renderable {
   public:
     MetalRenderable() = default;
@@ -22,6 +24,7 @@ namespace GLaDOS {
     id<MTLBuffer> getIndexBuffer() const;
 
   private:
+    static void setTexture(id<MTLRenderCommandEncoder> commandEncoder, MetalTextureBase* texture, Uniform* uniform);
     MTLVertexDescriptor* mVertexDescriptor{nil};
     id<MTLRenderPipelineState> mPipelineState{nil};
   };
