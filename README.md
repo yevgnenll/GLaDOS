@@ -28,6 +28,46 @@ ninja
 
 - 01-setup: simple window and init engine demo.
 
+### Build on your project
+
+1. Grep all the .h, .hpp files into your project include directory.
+```
+cd src
+find . -name '*.h' -o -name '*.hpp' | cpio -pdm ~/your/project/include
+```
+
+2. Build GLaDOS static library and copy to your library directory.
+```
+mkdir build && cd build
+cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release
+ninja
+cp libGLaDOS.a /path/to/your/project/lib
+```
+
+3. Write your proejct main.cpp source code like below then compile on your target compiler.
+```c++
+#include <GLaDOS.h>
+
+using namespace GLaDOS;
+
+int main() {
+  PlatformParams params{1024, 800, "hello, world", "GLaDOS", false};
+  if (!Platform::getInstance()->initialize(params)) {
+    std::cout << "init failed" << std::endl;
+    return -1;
+  }
+  while (Platform::getInstance()->isRunning()) {
+    Platform::getInstance()->update();
+  }
+  return 0;
+}
+```
+Compile
+```
+g++ main.cpp -std=c++1z -Iinclude -Llib -lGLaDOS -lobjc -framework Metal -framework Cocoa -framework QuartzCore -o test
+./test
+```
+
 ### License
 
 no license yet.
