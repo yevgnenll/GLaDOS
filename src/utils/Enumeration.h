@@ -102,6 +102,17 @@ namespace GLaDOS {
     Lines
   };
 
+  enum class CullMode {
+    None = 0,
+    Front,
+    Back
+  };
+
+  enum class WindingMode {
+    ClockWise = 0,
+    CounterClockWise
+  };
+
   enum class ComparisonFunction {
     Never = 0,
     Less,

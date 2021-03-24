@@ -36,7 +36,7 @@ namespace GLaDOS {
         } else {
           continue;
         }
-        std::memcpy(buffer->offsetOf(uniform->mOffset), data, uniform->size());  // TODO: reimplement to c++ std::copy
+        std::memcpy(buffer->offsetOf(uniform->mOffset), data, uniform->size());
       }
     }
 
@@ -50,20 +50,20 @@ namespace GLaDOS {
       [commandEncoder setFragmentBytes:mFragmentUniformBuffer.pointer() length:mFragmentUniformBuffer.size() atIndex:0];
     }
 
-    // set the metal depth stencil state
-    // TODO: 옮기기
-    if (mDepthStencilState != nullptr) {
-      [commandEncoder setDepthStencilState:metalDepthStencilState()];
-      [commandEncoder setFrontFacingWinding:MTLWindingCounterClockwise];
-      if (MetalRenderer::getInstance()->getFillMode() == FillMode::Lines) {
-        [commandEncoder setCullMode:MTLCullModeNone];
-      } else {
-        // follow setting
-        [commandEncoder setCullMode:MTLCullModeBack];
-      }
+    [commandEncoder setDepthStencilState:metalDepthStencilState()];
 
-      //      [commandEncoder setStencilFrontReferenceValue:1 backReferenceValue:1];
+    RasterizerDescription rasterizerDesc = metalRasterizerState()->mRasterizerDescription;
+    [commandEncoder setTriangleFillMode:MetalShaderProgram::mapFillModeFrom(rasterizerDesc.mFillMode)];
+    [commandEncoder setFrontFacingWinding:MetalShaderProgram::mapWindingModeFrom(rasterizerDesc.mWindingMode)];
+    if (rasterizerDesc.mFillMode == FillMode::Lines) {
+      [commandEncoder setCullMode:MTLCullModeNone]; // Wireframe rendering should be no cull.
+    } else {
+      [commandEncoder setCullMode:MetalShaderProgram::mapCullModeFrom(rasterizerDesc.mCullMode)];
     }
+
+    [commandEncoder setDepthBias:rasterizerDesc.mDepthBias slopeScale:rasterizerDesc.mSlopeScaleDepthBias clamp:rasterizerDesc.mDepthBiasClamp];
+
+    // [commandEncoder setStencilFrontReferenceValue:1 backReferenceValue:1];
   }
 
   MTLVertexDescriptor* MetalShaderProgram::makeVertexDescriptor(const Vector<VertexFormat*>& vertexFormats) {
@@ -92,6 +92,10 @@ namespace GLaDOS {
 
   id<MTLDepthStencilState> MetalShaderProgram::metalDepthStencilState() {
     return static_cast<MetalDepthStencilState*>(depthStencilState())->getMetalDepthStencilState();
+  }
+
+  MetalRasterizerState* MetalShaderProgram::metalRasterizerState() {
+    return static_cast<MetalRasterizerState*>(rasterizerState());
   }
 
   bool MetalShaderProgram::createShaderProgram(const std::string& vertex, const std::string& fragment, const VertexData* vertexData) {
@@ -415,6 +419,35 @@ namespace GLaDOS {
     }
 
     return "";
+  }
+
+  constexpr MTLTriangleFillMode MetalShaderProgram::mapFillModeFrom(FillMode mode) {
+    switch (mode) {
+      case FillMode::Fill:
+        return MTLTriangleFillModeFill;
+      case FillMode::Lines:
+        return MTLTriangleFillModeLines;
+    }
+  }
+
+  constexpr MTLWinding MetalShaderProgram::mapWindingModeFrom(WindingMode mode) {
+    switch (mode) {
+      case WindingMode::ClockWise:
+        return MTLWindingClockwise;
+      case WindingMode::CounterClockWise:
+        return MTLWindingCounterClockwise;
+    }
+  }
+
+  constexpr MTLCullMode MetalShaderProgram::mapCullModeFrom(CullMode mode) {
+    switch (mode) {
+      case CullMode::None:
+        return MTLCullModeNone;
+      case CullMode::Front:
+        return MTLCullModeFront;
+      case CullMode::Back:
+        return MTLCullModeBack;
+    }
   }
 
   bool MetalShaderProgram::createShader(const std::string& source, id<MTLFunction>& function) {

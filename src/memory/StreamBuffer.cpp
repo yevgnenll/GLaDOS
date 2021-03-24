@@ -88,24 +88,18 @@ namespace GLaDOS {
   }
 
   void StreamBuffer::uploadData(StreamBuffer& buffer) {
-    if (size() < buffer.size()) {
-      LOG_ERROR("buffer overflow");
-      return;
-    }
-    std::memcpy(pointer(), buffer.pointer(), size());
+    throwIfOverflow(buffer.size());
+    std::memcpy(pointer(), buffer.pointer(), buffer.size());
   }
 
   void StreamBuffer::uploadData(const Vector<std::byte>& data) {
-    if (size() < data.size()) {
-      LOG_ERROR("buffer overflow");
-      return;
-    }
-    std::memcpy(pointer(), data.data(), size());
+    throwIfOverflow(data.size());
+    std::memcpy(pointer(), data.data(), data.size());
   }
 
-  void StreamBuffer::uploadData(const std::byte* data) {
-    // possible bug: buffer overflow
-    std::memcpy(pointer(), data, size());
+  void StreamBuffer::uploadData(const std::byte* data, const std::size_t size) {
+    throwIfOverflow(size);
+    std::memcpy(pointer(), data, size);
   }
 
   void* StreamBuffer::offsetOf(std::size_t offset) {
@@ -134,6 +128,15 @@ namespace GLaDOS {
 
   bool StreamBuffer::isEmpty() const {
     return mData.empty();
+  }
+
+  void StreamBuffer::throwIfOverflow(std::size_t size) const {
+    if (this->size() < size) {
+      throw std::runtime_error(
+          "Range overflow" + std::to_string(size) + " > "
+                           + std::to_string(this->size())
+          );
+    }
   }
 
   void StreamBuffer::writeBytes(std::byte* bytes, unsigned int count) {

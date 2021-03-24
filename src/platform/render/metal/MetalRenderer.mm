@@ -38,6 +38,20 @@ namespace GLaDOS {
     // If NO, the nextDrawable method waits indefinitely for a drawable to become available.
     mMetalLayer.allowsNextDrawableTimeout = NO;
 
+    LOG_TRACE("MetalRenderer supports MSAA sample count 1: {0}", static_cast<bool>([mMetalDevice supportsTextureSampleCount:1]));
+    LOG_TRACE("MetalRenderer supports MSAA sample count 2: {0}", static_cast<bool>([mMetalDevice supportsTextureSampleCount:2]));
+    LOG_TRACE("MetalRenderer supports MSAA sample count 4: {0}", static_cast<bool>([mMetalDevice supportsTextureSampleCount:4]));
+    LOG_TRACE("MetalRenderer supports MSAA sample count 8: {0}", static_cast<bool>([mMetalDevice supportsTextureSampleCount:8]));
+    LOG_TRACE("MetalRenderer supports argument buffers: {0}", static_cast<bool>([mMetalDevice argumentBuffersSupport]));
+    if ([mMetalDevice respondsToSelector: @selector(supports32BitMSAA)] != 0) {
+      LOG_TRACE("MetalRenderer supports 32 bits floating point MSAA: {0}", static_cast<bool>([mMetalDevice supports32BitMSAA]));
+    }
+    if ([mMetalDevice respondsToSelector: @selector(supportsBCTextureCompression)] != 0) {
+      LOG_TRACE("MetalRenderer supports BC Texture compression format: {0}", static_cast<bool>([mMetalDevice supportsBCTextureCompression]));
+    }
+    LOG_TRACE("Target Apple Silicon: {0}", static_cast<bool>(PLATFORM_APPLE_SILICON));
+    LOG_TRACE("Target Intel CPU: {0}", static_cast<bool>(PLATFORM_INTEL_CPU));
+
     LOG_TRACE("MetalRenderer init success with Graphics Card: {0}", [[mMetalDevice name] UTF8String]);
 
     return true;
@@ -56,7 +70,6 @@ namespace GLaDOS {
 
     [mCommandEncoder setRenderPipelineState:renderable->getPipelineState()];
     [mCommandEncoder setVertexBuffer:renderable->getVertexBuffer() offset:0 atIndex:1];
-    [mCommandEncoder setTriangleFillMode:MetalRenderer::mapFillMode(mFillMode)];
     if (indexBuffer != nullptr) {
       // index primitive draw
       MTLIndexType indexType = MetalRenderer::mapIndexType(mesh->getIndexStride());
@@ -156,6 +169,10 @@ namespace GLaDOS {
     return NEW_T(MetalSamplerState(desc));
   }
 
+  RasterizerState* MetalRenderer::createRasterizerState(const RasterizerDescription& desc) {
+    return NEW_T(MetalRasterizerState(desc));
+  }
+
   Texture2D* MetalRenderer::createTexture2D(const std::string& name, PixelFormat format, const Color& colorKey) {
     MetalTexture2D* texture = NEW_T(MetalTexture2D(name, format));
     texture->setColorKey(colorKey);
@@ -232,15 +249,6 @@ namespace GLaDOS {
     }
 
     return MTLIndexTypeUInt16;
-  }
-
-  MTLTriangleFillMode MetalRenderer::mapFillMode(FillMode mode) {
-    switch (mode) {
-      case FillMode::Fill:
-        return MTLTriangleFillModeFill;
-      case FillMode::Lines:
-        return MTLTriangleFillModeLines;
-    }
   }
 }  // namespace GLaDOS
 

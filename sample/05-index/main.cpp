@@ -35,6 +35,9 @@ public:
     }
     DepthStencilDescription depthStencilDesc{};
     shaderProgram->setDepthStencilState(depthStencilDesc);
+    RasterizerDescription desc;
+    desc.mCullMode = CullMode::None;
+    shaderProgram->setRasterizerState(desc);
 
     Texture2D* quadTexture = Platform::getRenderer()->createTexture2D("container.jpg", PixelFormat::RGB24);
     if (!quadTexture->loadTextureFromFile()) {

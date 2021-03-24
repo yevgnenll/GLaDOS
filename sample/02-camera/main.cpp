@@ -35,6 +35,9 @@ public:
     }
     Material* material = NEW_T(Material);
     material->setShaderProgram(shaderProgram);
+    RasterizerDescription desc;
+    desc.mCullMode = CullMode::None;
+    shaderProgram->setRasterizerState(desc);
 
     rectObject = NEW_T(GameObject("rectObject", this));
     auto* meshRenderer = rectObject->addComponent<MeshRenderer>(mesh, material);

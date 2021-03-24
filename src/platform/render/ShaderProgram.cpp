@@ -5,8 +5,10 @@
 #include "math/Vec2.h"
 #include "math/Vec3.h"
 #include "math/Vec4.h"
+#include "math/Mat4.hpp"
 #include "platform/render/Renderer.h"
 #include "platform/render/Uniform.h"
+#include "platform/render/RenderState.h"
 
 namespace GLaDOS {
   ShaderProgram::ShaderProgram() : Resource{ResourceType::ShaderProgram} {
@@ -16,6 +18,7 @@ namespace GLaDOS {
   ShaderProgram::~ShaderProgram() {
     deallocValueInMap(mUniforms);
     DELETE_T(mDepthStencilState, DepthStencilState);
+    DELETE_T(mRasterizerState, RasterizerState);
   }
 
   void ShaderProgram::setUniform(const std::string& name, int value) {
@@ -190,6 +193,10 @@ namespace GLaDOS {
   }
 
   DepthStencilState* ShaderProgram::depthStencilState() {
+    if (mDepthStencilState == nullptr) {
+      DepthStencilDescription defaultDesc{};
+      setDepthStencilState(defaultDesc);
+    }
     return mDepthStencilState;
   }
 
@@ -198,5 +205,20 @@ namespace GLaDOS {
       DELETE_T(mDepthStencilState, DepthStencilState);
     }
     mDepthStencilState = Platform::getRenderer()->createDepthStencilState(desc);
+  }
+
+  RasterizerState* ShaderProgram::rasterizerState() {
+    if (mRasterizerState == nullptr) {
+      RasterizerDescription defaultDesc{};
+      setRasterizerState(defaultDesc);
+    }
+    return mRasterizerState;
+  }
+
+  void ShaderProgram::setRasterizerState(const RasterizerDescription& desc) {
+    if (mRasterizerState != nullptr) {
+      DELETE_T(mRasterizerState, RasterizerState);
+    }
+    mRasterizerState = Platform::getRenderer()->createRasterizerState(desc);
   }
 }  // namespace GLaDOS

@@ -8,6 +8,7 @@
 #include "platform/render/Renderable.h"
 #include "platform/render/Texture.h"
 #include "platform/render/TextureCube.h"
+#include "platform/render/RenderState.h"
 #include "utils/MeshGenerator.h"
 #include "core/GameObject.hpp"
 #include "core/Scene.h"

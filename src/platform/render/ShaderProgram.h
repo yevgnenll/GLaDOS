@@ -3,15 +3,19 @@
 
 #include <string>
 
-#include "math/Mat4.hpp"
-#include "platform/render/RenderState.h"
 #include "resource/Resource.h"
 #include "utils/Utility.h"
 
 namespace GLaDOS {
+  template <typename T>
+  class Mat4;
   class Uniform;
   class Color;
   class VertexData;
+  class DepthStencilState;
+  class DepthStencilDescription;
+  class RasterizerState;
+  class RasterizerDescription;
   class ShaderProgram : public Resource {
   public:
     ShaderProgram();
@@ -37,6 +41,8 @@ namespace GLaDOS {
     bool isValid() const;
     DepthStencilState* depthStencilState();
     void setDepthStencilState(const DepthStencilDescription& desc);
+    RasterizerState* rasterizerState();
+    void setRasterizerState(const RasterizerDescription& desc);
 
   private:
     virtual bool createShaderProgram(const std::string& vertex, const std::string& fragment, const VertexData* vertexData) = 0;
@@ -46,6 +52,7 @@ namespace GLaDOS {
     std::string mFragmentShaderCode;
     Map<std::string, Uniform*> mUniforms;
     DepthStencilState* mDepthStencilState{nullptr};
+    RasterizerState* mRasterizerState{nullptr};
     bool mIsValid{false};
   };
 }  // namespace GLaDOS

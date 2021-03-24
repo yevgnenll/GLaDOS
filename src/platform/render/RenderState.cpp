@@ -6,4 +6,7 @@ namespace GLaDOS {
 
   SamplerState::SamplerState(const SamplerDescription& desc) : mSamplerDescription{desc} {
   }
+
+  RasterizerState::RasterizerState(const RasterizerDescription& desc) : mRasterizerDescription{desc} {
+  }
 }  // namespace GLaDOS

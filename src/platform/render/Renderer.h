@@ -1,10 +1,8 @@
 #ifndef GLADOS_RENDERER_H
 #define GLADOS_RENDERER_H
 
-#include "memory/StreamBuffer.h"
-#include "utils/Enumeration.h"
-
 namespace GLaDOS {
+  class StreamBuffer;
   class Mesh;
   class Material;
   class GPUBuffer;
@@ -18,6 +16,8 @@ namespace GLaDOS {
   class DepthStencilDescription;
   class SamplerState;
   class SamplerDescription;
+  class RasterizerState;
+  class RasterizerDescription;
   class Texture2D;
   class Texture3D;
   class TextureCube;
@@ -40,6 +40,7 @@ namespace GLaDOS {
     virtual RenderBuffer* createRenderBuffer() = 0;
     virtual DepthStencilState* createDepthStencilState(const DepthStencilDescription& desc) = 0;
     virtual SamplerState* createSamplerState(const SamplerDescription& desc) = 0;
+    virtual RasterizerState* createRasterizerState(const RasterizerDescription& desc) = 0;
     virtual Texture2D* createTexture2D(const std::string& name, PixelFormat format, const Color& colorKey) = 0;
     virtual Texture2D* createTexture2D(const std::string& name, PixelFormat format) = 0;
     virtual Texture2D* createTexture2D(PixelFormat format, StreamBuffer& data, const Color& colorKey) = 0;
@@ -48,12 +49,6 @@ namespace GLaDOS {
     virtual Texture3D* createTexture3D(const std::string& name) = 0;
     virtual TextureCube* createTextureCube(const std::string& name, PixelFormat format) = 0;
     virtual RenderTexture* createRenderTexture(const std::string& name) = 0;
-
-    FillMode getFillMode() const { return mFillMode; }
-    void setFillMode(FillMode mode) { mFillMode = mode; }
-
-  protected:
-    FillMode mFillMode{FillMode::Fill};
   };
 }  // namespace GLaDOS
 

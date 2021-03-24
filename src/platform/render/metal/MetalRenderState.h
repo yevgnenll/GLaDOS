@@ -39,6 +39,12 @@ namespace GLaDOS {
     MTLSamplerDescriptor* mSamplerDescriptor{nil};
     id<MTLSamplerState> mSamplerState{nil};
   };
+
+  class MetalRasterizerState : public RasterizerState {
+  public:
+    MetalRasterizerState(const RasterizerDescription& desc);
+    ~MetalRasterizerState() override = default;
+  };
 }  // namespace GLaDOS
 
 #endif

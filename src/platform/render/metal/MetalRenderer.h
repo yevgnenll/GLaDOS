@@ -32,6 +32,7 @@ namespace GLaDOS {
     RenderBuffer* createRenderBuffer() override;
     DepthStencilState* createDepthStencilState(const DepthStencilDescription& desc) override;
     SamplerState* createSamplerState(const SamplerDescription& desc) override;
+    RasterizerState* createRasterizerState(const RasterizerDescription& desc) override;
     Texture2D* createTexture2D(const std::string& name, PixelFormat format, const Color& colorKey) override;
     Texture2D* createTexture2D(const std::string& name, PixelFormat format) override;
     Texture2D* createTexture2D(PixelFormat format, StreamBuffer& data, const Color& colorKey) override;
@@ -49,7 +50,6 @@ namespace GLaDOS {
   private:
     static MTLPrimitiveType mapPrimitiveType(PrimitiveType type);
     static MTLIndexType mapIndexType(std::size_t size);
-    static MTLTriangleFillMode mapFillMode(FillMode mode);
 
     id<MTLDevice> mMetalDevice{nil};
     id<MTLRenderCommandEncoder> mCommandEncoder{nil};

@@ -36,7 +36,7 @@ namespace GLaDOS {
 
     void uploadData(StreamBuffer& buffer);
     void uploadData(const Vector<std::byte>& data);
-    void uploadData(const std::byte* data);
+    void uploadData(const std::byte* data, const std::size_t size);
 
     void* offsetOf(std::size_t offset);
     void* pointer();
@@ -45,6 +45,9 @@ namespace GLaDOS {
     void resize(std::size_t n);
     void clear();
     bool isEmpty() const;
+
+  protected:
+    void throwIfOverflow(std::size_t size) const;
 
   private:
     void writeBytes(std::byte* bytes, unsigned int count);

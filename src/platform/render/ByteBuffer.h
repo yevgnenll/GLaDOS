@@ -6,7 +6,6 @@
 namespace GLaDOS {
   class ByteBuffer {
   public:
-    ByteBuffer() = default;
     virtual ~ByteBuffer() = default;
 
     std::size_t size() const;
@@ -18,6 +17,8 @@ namespace GLaDOS {
     void uploadData(const std::byte* data);
 
   protected:
+    ByteBuffer() = default;
+
     StreamBuffer mStreamBuffer;
     std::size_t mStride{0};
   };

@@ -16,13 +16,25 @@ namespace GLaDOS {
   template <typename T>
   class ArgumentType : public Argument {
   public:
-    explicit ArgumentType(T const& t) : mData(t){};
+    explicit ArgumentType(T const& t) : mData(t) {}
     void append(std::string& dest) const override {
       dest.append(StringUtils::normalize(mData));
     }
 
   private:
     T const& mData;
+  };
+
+  template <>
+  class ArgumentType<bool> : public Argument {
+  public:
+    explicit ArgumentType(bool const& t) : mData(t) {}
+    void append(std::string& dest) const override {
+      dest.append(mData ? "true" : "false");
+    }
+
+  private:
+    bool const& mData;
   };
 
   class StringFormatter {
@@ -56,23 +68,21 @@ namespace GLaDOS {
     std::string result;
 
     for (std::size_t i = 0; i != format_len; ++i) {
-      switch (fmt[i]) {
-        case '{': {
-          std::size_t firstCurly = fmt.find_first_of('}', i);
-          if (firstCurly >= format_len) {
-            throw std::invalid_argument{"invalid format string"};
-          }
-          std::size_t index = static_cast<size_t>(StringUtils::toLong(fmt.substr(i + 1, firstCurly)));
-          if (index >= Len || index < 0) {
-            throw std::invalid_argument{"Too few arguments"};
-          }
-          arguments[index]->append(result);
-          i += (firstCurly + 1) - (i + 1);
-          break;
+      if (fmt[i] == '{') {
+        std::size_t firstCurly = fmt.find_first_of('}', i);
+        if (firstCurly >= format_len) {
+          throw std::invalid_argument{"invalid format string"};
         }
-        default:
-          result.push_back(fmt[i]);
+        std::size_t index = static_cast<size_t>(StringUtils::toLong(fmt.substr(i + 1, firstCurly)));
+        if (index >= Len || index < 0) {
+          throw std::invalid_argument{"Too few arguments"};
+        }
+        arguments[index]->append(result);
+        i += (firstCurly + 1) - (i + 1);
+        continue;
       }
+
+      result.push_back(fmt[i]);
     }
 
     return result;

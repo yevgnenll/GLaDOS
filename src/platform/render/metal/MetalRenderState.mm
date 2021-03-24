@@ -106,6 +106,9 @@ namespace GLaDOS {
     return mSamplerState;
   }
 
+  MetalRasterizerState::MetalRasterizerState(const RasterizerDescription& desc) : RasterizerState{desc} {
+  }
+
   constexpr MTLSamplerMinMagFilter MetalSamplerState::mapSamplerMinMagFilterFrom(FilterMode mode) {
     switch (mode) {
       case FilterMode::Nearest:

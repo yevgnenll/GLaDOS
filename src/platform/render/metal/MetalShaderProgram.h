@@ -15,6 +15,7 @@
 namespace GLaDOS {
   class MetalRenderable;
   class MetalDepthStencilState;
+  class MetalRasterizerState;
   class MetalShaderProgram : public ShaderProgram {
     friend class MetalRenderer;
 
@@ -26,6 +27,7 @@ namespace GLaDOS {
     void bindUniforms(MetalRenderable* _renderable);
     MTLVertexDescriptor* makeVertexDescriptor(const Vector<VertexFormat*>& vertexFormats);
     id<MTLDepthStencilState> metalDepthStencilState();
+    MetalRasterizerState* metalRasterizerState();
 
   private:
     bool createShaderProgram(const std::string& vertex, const std::string& fragment, const VertexData* vertexData) override;
@@ -40,6 +42,9 @@ namespace GLaDOS {
     static constexpr UniformType mapUniformTypeFrom(MTLDataType dataType);
     static constexpr std::size_t mapUniformTypeSizeForm(UniformType uniformType);
     static constexpr const char* mapAttributeNameFrom(VertexSemantic semantic);
+    static constexpr MTLTriangleFillMode mapFillModeFrom(FillMode mode);
+    static constexpr MTLWinding mapWindingModeFrom(WindingMode mode);
+    static constexpr MTLCullMode mapCullModeFrom(CullMode mode);
     static bool createShader(const std::string& source, id<MTLFunction>& function);
 
     id<MTLFunction> mVertexFunction{nil};

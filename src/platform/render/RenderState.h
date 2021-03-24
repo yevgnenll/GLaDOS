@@ -36,7 +36,6 @@ namespace GLaDOS {
     DepthStencilState(const DepthStencilDescription& desc);
     ~DepthStencilState() override = default;
 
-  protected:
     DepthStencilDescription mDescription;
   };
 
@@ -48,7 +47,6 @@ namespace GLaDOS {
     WrapMode mTWrap{WrapMode::ClampEdge};
     WrapMode mRWrap{WrapMode::ClampEdge};
     uint8_t mMaxAnisotropyLevel{1};
-    real mMipBias{0};
   };
 
   class SamplerState : public RenderState {
@@ -56,8 +54,26 @@ namespace GLaDOS {
     SamplerState(const SamplerDescription& desc);
     ~SamplerState() override = default;
 
-  protected:
     SamplerDescription mSamplerDescription;
+  };
+
+  struct RasterizerDescription {
+    CullMode mCullMode{CullMode::Back};
+    WindingMode mWindingMode{WindingMode::CounterClockWise};
+    FillMode mFillMode{FillMode::Fill};
+    real mDepthBias{0}; // default no bias
+    real mSlopeScaleDepthBias{0}; // default no slope scale bias
+    real mDepthBiasClamp{0}; // default no depth bias clamping
+    bool mIsScissorTestEnable{false};
+    bool mIsMultisampleAntiAlias{false};
+  };
+
+  class RasterizerState : public RenderState {
+  public:
+    RasterizerState(const RasterizerDescription& desc);
+    ~RasterizerState() override = default;
+
+    RasterizerDescription mRasterizerDescription;
   };
 }  // namespace GLaDOS
 
