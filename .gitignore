@@ -2,5 +2,7 @@ cmake-build-debug
 cmake-build-release
 build
 .idea
-src/RootDir.h
-src/Config.h
+src/LibGLaDOS/RootDir.h
+src/LibGLaDOS/Config.h
+compile_commands.json
+.DS_Store

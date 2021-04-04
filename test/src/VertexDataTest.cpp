@@ -30,9 +30,10 @@ void testVertexData(VertexData& vd) {
 
 TEST_CASE("VertexData unit tests", "[VertexData]") {
   SECTION("Simple vertexData serialize & deserialize test") {
-    VertexData vd{VertexFormatBuilder().withPosition().withColor(), vertexCount};
+    VertexData vd{VertexFormatBuilder().withPosition().withColor(), vertexCount, true};
     REQUIRE(vd.count() == vertexCount);
     REQUIRE(vd.stride() == stride * sizeof(float));
+    REQUIRE(vd.size() == vd.count() * vd.stride());
 
     for (std::size_t i = 0; i < vertexCount * stride; i += stride) {
       std::size_t index = i / stride;
@@ -44,20 +45,20 @@ TEST_CASE("VertexData unit tests", "[VertexData]") {
 
   SECTION("Bulk vertex data upload with Vector of bytes test") {
     VertexData vd{VertexFormatBuilder().withPosition().withColor(), vertexCount};
-    Vector<std::byte> data;
+    Vector<std::byte> vertex;
     for (float i : quad) {
       for (std::size_t j = 0; j < sizeof(float); j++) {
         auto* bytes = reinterpret_cast<std::byte*>(&i);
-        data.push_back(bytes[j]);
+        vertex.push_back(bytes[j]);
       }
     }
-    vd.uploadData(data);
+    vd.uploadDataNoCopy(vertex.data());
     testVertexData(vd);
   }
 
   SECTION("Bulk vertex data upload with raw pointer of bytes test") {
     VertexData vd{VertexFormatBuilder().withPosition().withColor(), vertexCount};
-    vd.uploadData(reinterpret_cast<std::byte*>(quad));
+    vd.uploadDataNoCopy(quad);
     testVertexData(vd);
   }
 }

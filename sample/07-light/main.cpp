@@ -4,18 +4,15 @@ using namespace GLaDOS;
 
 class MainScene : public Scene {
 public:
-  MainScene(const std::string& name) : Scene{name} {}
-  ~MainScene() override {}
-
   bool onInit() override {
     Mesh* mesh = MeshGenerator::generateTorusKnot(3, 4, 64, 16, 0.2);
     if (mesh == nullptr) {
-      LOG_ERROR("Mesh initialize failed!");
+      LOG_ERROR("default", "Mesh initialize failed!");
       return false;
     }
-    shaderProgram = Platform::getRenderer()->createShaderProgram("normalVertex.metal", "normalFragment.metal", mesh->getVertexData());
+    shaderProgram = Platform::getRenderer().createShaderProgram("normalVertex.metal", "normalFragment.metal", mesh->getVertexData());
     if (shaderProgram == nullptr) {
-      LOG_ERROR("Shader initialize failed!");
+      LOG_ERROR("default", "Shader initialize failed!");
       return false;
     }
     DepthStencilDescription depthStencilDesc{};
@@ -24,7 +21,7 @@ public:
     Material* material = NEW_T(Material);
     material->setShaderProgram(shaderProgram);
 
-    GameObject* plane = NEW_T(GameObject("plane", this));
+    GameObject* plane = createGameObject("plane");
     planeTransform = plane->transform();
     plane->addComponent<MeshRenderer>(mesh, material);
 
@@ -41,7 +38,7 @@ public:
 
   void onUpdate(real deltaTime) override {
     if (Input::isKeyDown(KeyCode::KEY_ESCAPE)) {
-      Platform::getInstance()->quit();
+      Platform::getInstance().quit();
     }
 
     planeTransform->rotate(Vec3{0, deltaTime * 50, 0});
@@ -85,21 +82,21 @@ private:
 
 bool init() {
   PlatformParams params{1024, 800, "07-light", "GLaDOS", false};
-  if (!Platform::getInstance()->initialize(params)) {
-    LOG_ERROR("Platform initialize failed!");
+  if (!Platform::getInstance().initialize(params)) {
+    LOG_ERROR("default", "Platform initialize failed!");
     return false;
   }
 
-  Platform::getInstance()->setClearColor(Color{0, 0, 0, 1});
+  Platform::getInstance().setClearColor(Color{0, 0, 0, 1});
   return true;
 }
 
 int main(int argc, char** argv) {
   std::atexit(&dumpMemory);
   if (!init()) return -1;
-  SceneManager::getInstance()->setActiveScene(SceneManager::getInstance()->createScene<MainScene>("testScene"));
-  while (Platform::getInstance()->isRunning()) {
-    Platform::getInstance()->update();
+  SceneManager::getInstance().setActiveScene(SceneManager::getInstance().createScene<MainScene>("testScene"));
+  while (Platform::getInstance().isRunning()) {
+    Platform::getInstance().update();
   }
   return 0;
 }

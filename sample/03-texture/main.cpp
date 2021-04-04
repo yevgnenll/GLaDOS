@@ -4,9 +4,6 @@ using namespace GLaDOS;
 
 class MainScene : public Scene {
 public:
-  MainScene(const std::string& name) : Scene{name} {}
-  ~MainScene() override {}
-
   bool onInit() override {
     real quad[] = {
         //Front
@@ -58,23 +55,23 @@ public:
         -1.0,  1.0, -1.0, 1.00, 0.25
     };
     VertexData* vertexData = NEW_T(VertexData(VertexFormatBuilder().withPosition().withTexCoord0(), 36));
-    vertexData->uploadData(reinterpret_cast<std::byte*>(quad));
-    Mesh* mesh = Platform::getRenderer()->createMesh(vertexData, nullptr, PrimitiveType::Triangle, false, false);
+    vertexData->uploadDataNoCopy(quad);
+    Mesh* mesh = Platform::getRenderer().createMesh(vertexData, nullptr, PrimitiveType::Triangle, false, false);
     if (mesh == nullptr) {
-      LOG_ERROR("Mesh initialize failed!");
+      LOG_ERROR("default", "Mesh initialize failed!");
       return false;
     }
-    shaderProgram = Platform::getRenderer()->createShaderProgram("textureVertex.metal", "textureFragment.metal", vertexData);
+    shaderProgram = Platform::getRenderer().createShaderProgram("textureVertex.metal", "textureFragment.metal", vertexData);
     if (shaderProgram == nullptr) {
-      LOG_ERROR("Shader initialize failed!");
+      LOG_ERROR("default", "Shader initialize failed!");
       return false;
     }
     DepthStencilDescription depthStencilDesc{};
     shaderProgram->setDepthStencilState(depthStencilDesc);
 
-    Texture2D* cubeTexture = Platform::getRenderer()->createTexture2D("cube.png", PixelFormat::RGBA32);
+    Texture2D* cubeTexture = Platform::getRenderer().createTexture2D("cube.png", PixelFormat::RGBA32);
     if (!cubeTexture->loadTextureFromFile()) {
-      LOG_ERROR("Failed to load texture!");
+      LOG_ERROR("default", "Failed to load texture!");
       return false;
     }
 
@@ -82,7 +79,7 @@ public:
     material->setShaderProgram(shaderProgram);
     material->setTexture0(cubeTexture);
 
-    GameObject* cube = NEW_T(GameObject("cube", this));
+    GameObject* cube = createGameObject("cube");
     planeTransform = cube->transform();
     planeTransform->setLocalScale({0.5, 0.5, 0.5});
     auto* meshRenderer = cube->addComponent<MeshRenderer>(mesh, material);
@@ -95,7 +92,7 @@ public:
 
   void onUpdate(real deltaTime) override {
     if (Input::isKeyDown(KeyCode::KEY_ESCAPE)) {
-      Platform::getInstance()->quit();
+      Platform::getInstance().quit();
     }
 
     shaderProgram->setUniform("model", planeTransform->localToWorldMatrix());
@@ -120,21 +117,21 @@ private:
 
 bool init() {
   PlatformParams params{1024, 800, "03-texture", "GLaDOS", false};
-  if (!Platform::getInstance()->initialize(params)) {
-    LOG_ERROR("Platform initialize failed!");
+  if (!Platform::getInstance().initialize(params)) {
+    LOG_ERROR("default", "Platform initialize failed!");
     return false;
   }
 
-  Platform::getInstance()->setClearColor(Color{0, 0, 0, 1});
+  Platform::getInstance().setClearColor(Color{0, 0, 0, 1});
   return true;
 }
 
 int main(int argc, char** argv) {
   std::atexit(&dumpMemory);
   if (!init()) return -1;
-  SceneManager::getInstance()->setActiveScene(SceneManager::getInstance()->createScene<MainScene>("testScene"));
-  while (Platform::getInstance()->isRunning()) {
-    Platform::getInstance()->update();
+  SceneManager::getInstance().setActiveScene(SceneManager::getInstance().createScene<MainScene>("testScene"));
+  while (Platform::getInstance().isRunning()) {
+    Platform::getInstance().update();
   }
   return 0;
 }

@@ -52,12 +52,12 @@ using namespace GLaDOS;
 
 int main() {
   PlatformParams params{1024, 800, "hello, world", "GLaDOS", false};
-  if (!Platform::getInstance()->initialize(params)) {
+  if (!Platform::getInstance().initialize(params)) {
     std::cout << "init failed" << std::endl;
     return -1;
   }
-  while (Platform::getInstance()->isRunning()) {
-    Platform::getInstance()->update();
+  while (Platform::getInstance().isRunning()) {
+    Platform::getInstance().update();
   }
   return 0;
 }

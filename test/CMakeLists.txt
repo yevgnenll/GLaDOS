@@ -7,21 +7,21 @@ target_link_libraries(CatchMain PUBLIC Catch)
 
 set(CMAKE_CXX_STANDARD 17)
 set(TEST_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
-set(TEST_EXE_NAME "UnitTest")
+set(TEST_TARGET_NAME "UnitTest")
 
-add_executable(${TEST_EXE_NAME})
+add_executable(${TEST_TARGET_NAME})
 file(GLOB_RECURSE TEST_SOURCE_FILES "${TEST_SOURCE_DIR}/*.cpp")
-target_sources(${TEST_EXE_NAME}
+target_sources(${TEST_TARGET_NAME}
         PRIVATE
         ${TEST_SOURCE_FILES})
-target_link_libraries(${TEST_EXE_NAME}
+target_link_libraries(${TEST_TARGET_NAME}
         PRIVATE
         CatchMain
         ${PROJECT_NAME}
         project_warnings
         project_options)
-target_include_directories(${TEST_EXE_NAME} PRIVATE ${SOURCE_DIR})
+target_include_directories(${TEST_TARGET_NAME} PRIVATE ${LIB_GLADOS_SOURCE_DIR})
 
 include(ParseAndAddCatchTests)
-ParseAndAddCatchTests(${TEST_EXE_NAME})
+ParseAndAddCatchTests(${TEST_TARGET_NAME})
 

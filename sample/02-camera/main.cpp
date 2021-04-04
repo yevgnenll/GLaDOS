@@ -4,13 +4,6 @@ using namespace GLaDOS;
 
 class MainScene : public Scene {
 public:
-  MainScene(const std::string& name) : Scene{name} {
-
-  }
-  ~MainScene() override {
-
-  }
-
   bool onInit() override {
     float quad[] = {
         0.5, -0.5, 0.0,   1.0, 0.0, 0.0, 1.0,
@@ -22,15 +15,15 @@ public:
         -0.5,  0.5, 0.0,  0.0, 0.0, 1.0, 1.0,
     };
     VertexData* vertexData = NEW_T(VertexData(VertexFormatBuilder().withPosition().withColor(), 6));
-    vertexData->uploadData(reinterpret_cast<std::byte*>(quad));
-    Mesh* mesh = Platform::getRenderer()->createMesh(vertexData, nullptr, PrimitiveType::Triangle, false, false);
+    vertexData->uploadDataNoCopy(quad);
+    Mesh* mesh = Platform::getRenderer().createMesh(vertexData, nullptr, PrimitiveType::Triangle, false, false);
     if (mesh == nullptr) {
-      LOG_ERROR("Mesh initialize failed!");
+      LOG_ERROR("default", "Mesh initialize failed!");
       return false;
     }
-    shaderProgram = Platform::getRenderer()->createShaderProgram("basicVertex.metal", "basicFragment.metal", vertexData);
+    shaderProgram = Platform::getRenderer().createShaderProgram("basicVertex.metal", "basicFragment.metal", vertexData);
     if (shaderProgram == nullptr) {
-      LOG_ERROR("Shader initialize failed!");
+      LOG_ERROR("default", "Shader initialize failed!");
       return false;
     }
     Material* material = NEW_T(Material);
@@ -39,7 +32,7 @@ public:
     desc.mCullMode = CullMode::None;
     shaderProgram->setRasterizerState(desc);
 
-    rectObject = NEW_T(GameObject("rectObject", this));
+    rectObject = createGameObject("rectObject");
     auto* meshRenderer = rectObject->addComponent<MeshRenderer>(mesh, material);
 
     camera = getMainCamera();
@@ -55,12 +48,12 @@ public:
 
   void onUpdate(real deltaTime) override {
     if (Input::isKeyDown(KeyCode::KEY_ESCAPE)) {
-      Platform::getInstance()->quit();
+      Platform::getInstance().quit();
     }
 
     rectObject->transform()->rotate(Vec3{0, 0, deltaTime * 50});
 
-    shaderProgram->setUniform("brightness", Math::lerp(0.f, 1.f, Math::pingPong(Timer::getInstance()->elapsedTime() * 0.5f, 1.f)));
+    shaderProgram->setUniform("brightness", Math::lerp(0.f, 1.f, Math::pingPong(Timer::getInstance().elapsedTime() * 0.5f, 1.f)));
     shaderProgram->setUniform("model", rectObject->transform()->localToWorldMatrix());
     shaderProgram->setUniform("view", camera->worldToCameraMatrix());
     shaderProgram->setUniform("projection", camera->projectionMatrix());
@@ -98,24 +91,24 @@ private:
 
 bool init() {
   PlatformParams params{1024, 800, "02-camera", "GLaDOS", false};
-  if (!Platform::getInstance()->initialize(params)) {
-    LOG_ERROR("Platform initialize failed!");
+  if (!Platform::getInstance().initialize(params)) {
+    LOG_ERROR("default", "Platform initialize failed!");
     return false;
   }
 
-  Platform::getInstance()->setClearColor(Color{0, 0, 0, 1});
+  Platform::getInstance().setClearColor(Color{0, 0, 0, 1});
   return true;
 }
 
 int main(int argc, char** argv) {
   std::atexit(&dumpMemory);
   if (!init()) return -1;
-  SceneManager::getInstance()->setActiveScene(SceneManager::getInstance()->createScene<MainScene>("testScene"));
+  SceneManager::getInstance().setActiveScene(SceneManager::getInstance().createScene<MainScene>("testScene"));
   static real limitFPS = 1.0 / 60.0;
   real deltaTime = 0;
-  while (Platform::getInstance()->isRunning()) {
-    Platform::getInstance()->update();
-    deltaTime += Timer::getInstance()->deltaTime() / limitFPS;
+  while (Platform::getInstance().isRunning()) {
+    Platform::getInstance().update();
+    deltaTime += Timer::getInstance().deltaTime() / limitFPS;
     while (deltaTime >= 1.0) {
       // fixedUpdate();
       deltaTime--;

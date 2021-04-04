@@ -4,29 +4,26 @@ using namespace GLaDOS;
 
 class MainScene : public Scene {
 public:
-  MainScene(const std::string& name) : Scene{name} {}
-  ~MainScene() override {}
-
   bool onInit() override {
-    TextureCube* cubemap = Platform::getRenderer()->createTextureCube("test", PixelFormat::RGBA32);
+    TextureCube* cubemap = Platform::getRenderer().createTextureCube("test", PixelFormat::RGBA32);
     Vector<std::string> cubemapImages = { "grid.png", "grid.png", "grid.png", "grid.png", "grid.png", "grid.png" };
     if (!cubemap->loadTextureFromFile(cubemapImages)) {
-      LOG_ERROR("Failed to load texture!");
+      LOG_ERROR("default", "Failed to load texture!");
       return false;
     }
 
-    GameObject* cubemapObject = NEW_T(GameObject("cubemap", this));
+    GameObject* cubemapObject = createGameObject("cubemap");
     CubemapRenderer* cubemapRenderer = cubemapObject->addComponent<CubemapRenderer>();
     cubemapRenderer->setTextureCube(cubemap);
 
     Mesh* mesh = MeshGenerator::generateCube();
     if (mesh == nullptr) {
-      LOG_ERROR("Mesh initialize failed!");
+      LOG_ERROR("default", "Mesh initialize failed!");
       return false;
     }
-    shaderProgram = Platform::getRenderer()->createShaderProgram("environmentVertex.metal", "environmentFragment.metal", mesh->getVertexData());
+    shaderProgram = Platform::getRenderer().createShaderProgram("environmentVertex.metal", "environmentFragment.metal", mesh->getVertexData());
     if (shaderProgram == nullptr) {
-      LOG_ERROR("Shader initialize failed!");
+      LOG_ERROR("default", "Shader initialize failed!");
       return false;
     }
     DepthStencilDescription depthStencilDesc{};
@@ -36,7 +33,7 @@ public:
     material->setShaderProgram(shaderProgram);
     material->setTexture0(cubemap);
 
-    GameObject* plane = NEW_T(GameObject("plane", this));
+    GameObject* plane = createGameObject("plane");
     planeTransform = plane->transform();
     plane->addComponent<MeshRenderer>(mesh, material);
 
@@ -53,7 +50,7 @@ public:
 
   void onUpdate(real deltaTime) override {
     if (Input::isKeyDown(KeyCode::KEY_ESCAPE)) {
-      Platform::getInstance()->quit();
+      Platform::getInstance().quit();
     }
 
     planeTransform->rotate(Vec3{0, deltaTime * 50, 0});
@@ -96,21 +93,21 @@ private:
 
 bool init() {
   PlatformParams params{1024, 800, "08-coordinate", "GLaDOS", false};
-  if (!Platform::getInstance()->initialize(params)) {
-    LOG_ERROR("Platform initialize failed!");
+  if (!Platform::getInstance().initialize(params)) {
+    LOG_ERROR("default", "Platform initialize failed!");
     return false;
   }
 
-  Platform::getInstance()->setClearColor(Color{0, 0, 0, 1});
+  Platform::getInstance().setClearColor(Color{0, 0, 0, 1});
   return true;
 }
 
 int main(int argc, char** argv) {
   std::atexit(&dumpMemory);
   if (!init()) return -1;
-  SceneManager::getInstance()->setActiveScene(SceneManager::getInstance()->createScene<MainScene>("testScene"));
-  while (Platform::getInstance()->isRunning()) {
-    Platform::getInstance()->update();
+  SceneManager::getInstance().setActiveScene(SceneManager::getInstance().createScene<MainScene>("testScene"));
+  while (Platform::getInstance().isRunning()) {
+    Platform::getInstance().update();
   }
   return 0;
 }

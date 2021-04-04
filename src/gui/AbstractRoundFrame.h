@@ -1,7 +1,0 @@
-#ifndef GLADOS_ABSTRACTROUNDFRAME_H
-#define GLADOS_ABSTRACTROUNDFRAME_H
-
-class AbstractRoundFrame {
-};
-
-#endif  //GLADOS_ABSTRACTROUNDFRAME_H

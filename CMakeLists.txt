@@ -21,6 +21,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 else()
   set(MEMORY_DEBUG 0)
 endif()
+set(LIB_GLADOS_SOURCE_DIR "${SOURCE_DIR}/LibGLaDOS")
+set(LIB_GUI_SOURCE_DIR "${SOURCE_DIR}/LibGUI")
 
 # Link this 'library' to set the c++ standard / compile-time options requested
 add_library(project_options INTERFACE)
@@ -54,31 +56,53 @@ if(APPLE)
   find_library(METAL_LIBRARY Metal REQUIRED)
   find_package(Threads)
   set(LINK_LIBRARIES ${COCOA_LIBRARY} ${QUARTZCORE_LIBRARY} ${METAL_LIBRARY})
+  set(INCLUDE_LIBRARIES ${STB_LIB_DIR})
 elseif(UNIX AND NOT APPLE) # LINUX
   find_library(X11_LIBRARY X11 REQUIRED)
   find_package(Threads)
   set(LINK_LIBRARIES ${X11_LIBRARY})
+  set(INCLUDE_LIBRARIES ${STB_LIB_DIR})
 elseif(WIN32)
-  find_package(WindowsSDK REQUIRED)
-  set(LINK_LIBRARIES "")
+  # https://cmake.org/cmake/help/git-stage/policy/CMP0110.html
+  if(POLICY CMP0110)
+    cmake_policy(SET CMP0110 NEW)
+  endif()
+
+  set(LINK_LIBRARIES "d3d12.lib" "dxgi.lib" "d3dcompiler.lib")
+  set(INCLUDE_LIBRARIES ${STB_LIB_DIR} "${VENDOR_DIR}/d3dx12")
 else()
   message(SEND_ERROR "Not supported platform!")
 endif()
 
-file(GLOB_RECURSE SOURCE_FILES
-        "${SOURCE_DIR}/*.h"
-        "${SOURCE_DIR}/*.hpp"
-        "${SOURCE_DIR}/*.cpp"
-        "${SOURCE_DIR}/*.mm")
-add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
+# LibGLaDOS
+file(GLOB_RECURSE LIB_GLADOS_SOURCE_FILES
+        "${LIB_GLADOS_SOURCE_DIR}/*.h"
+        "${LIB_GLADOS_SOURCE_DIR}/*.hpp"
+        "${LIB_GLADOS_SOURCE_DIR}/*.cpp"
+        "${LIB_GLADOS_SOURCE_DIR}/*.mm")
+add_library(${PROJECT_NAME} STATIC ${LIB_GLADOS_SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME}
         PRIVATE
         ${LINK_LIBRARIES}
         project_options
         project_warnings)
-target_include_directories(${PROJECT_NAME} PRIVATE ${SOURCE_DIR} ${STB_LIB_DIR})
-configure_file("${CMAKE_SOURCE_DIR}/cmake/RootDir.h.in" "${SOURCE_DIR}/RootDir.h")
-configure_file("${CMAKE_SOURCE_DIR}/cmake/Config.h.in" "${SOURCE_DIR}/Config.h")
+target_include_directories(${PROJECT_NAME} PRIVATE ${LIB_GLADOS_SOURCE_DIR} ${INCLUDE_LIBRARIES})
+configure_file("${CMAKE_SOURCE_DIR}/cmake/RootDir.h.in" "${LIB_GLADOS_SOURCE_DIR}/RootDir.h")
+configure_file("${CMAKE_SOURCE_DIR}/cmake/Config.h.in" "${LIB_GLADOS_SOURCE_DIR}/Config.h")
+
+# LibGUI
+file(GLOB_RECURSE LIB_GUI_SOURCE_FILES
+        "${LIB_GUI_SOURCE_DIR}/*.h"
+        "${LIB_GUI_SOURCE_DIR}/*.hpp"
+        "${LIB_GUI_SOURCE_DIR}/*.cpp")
+add_library("GUI" STATIC ${LIB_GUI_SOURCE_FILES})
+target_link_libraries("GUI"
+        PRIVATE
+        ${LINK_LIBRARIES}
+        ${PROJECT_NAME}
+        project_options
+        project_warnings)
+target_include_directories("GUI" PRIVATE ${LIB_GLADOS_SOURCE_DIR} ${INCLUDE_LIBRARIES} ${LIB_GUI_SOURCE_DIR})
 
 # Macro to preserve source files hierarchy in the IDE
 if(MSVC_IDE)
@@ -104,9 +128,10 @@ function(make_sample TARGET ENTRYPOINT)
   source_group("" FILES "${SAMPLE_DIR}/${ENTRYPOINT}")
   add_executable(${TARGET} "${SAMPLE_DIR}/${ENTRYPOINT}")
   target_link_libraries(${TARGET} PRIVATE ${PROJECT_NAME})
-  target_include_directories(${TARGET} PRIVATE ${SOURCE_DIR})
+  target_include_directories(${TARGET} PRIVATE ${LIB_GLADOS_SOURCE_DIR})
 endfunction()
 
+make_sample(00-basic "00-basic/main.cpp")
 make_sample(01-setup "01-setup/main.cpp")
 make_sample(02-camera "02-camera/main.cpp")
 make_sample(03-texture "03-texture/main.cpp")

@@ -4,9 +4,6 @@ using namespace GLaDOS;
 
 class MainScene : public Scene {
 public:
-  MainScene(const std::string& name) : Scene{name} {}
-  ~MainScene() override {}
-
   bool onInit() override {
     real vertices[] = {
         // positions         // texture coords
@@ -20,17 +17,17 @@ public:
         1, 2, 3  // second triangle
     };
     VertexData* vertexData = NEW_T(VertexData(VertexFormatBuilder().withPosition().withTexCoord0(), 4));
-    vertexData->uploadData(reinterpret_cast<std::byte*>(vertices));
+    vertexData->uploadDataNoCopy(vertices);
     IndexData* indexData = NEW_T(IndexData(sizeof(uint16_t), 6));
-    indexData->uploadData(reinterpret_cast<std::byte*>(indices));
-    Mesh* mesh = Platform::getRenderer()->createMesh(vertexData, indexData, PrimitiveType::Triangle, false, false);
+    indexData->uploadDataNoCopy(indices);
+    Mesh* mesh = Platform::getRenderer().createMesh(vertexData, indexData, PrimitiveType::Triangle, false, false);
     if (mesh == nullptr) {
-      LOG_ERROR("Mesh initialize failed!");
+      LOG_ERROR("default", "Mesh initialize failed!");
       return false;
     }
-    shaderProgram = Platform::getRenderer()->createShaderProgram("textureVertex.metal", "textureFragment.metal", vertexData);
+    shaderProgram = Platform::getRenderer().createShaderProgram("textureVertex.metal", "textureFragment.metal", vertexData);
     if (shaderProgram == nullptr) {
-      LOG_ERROR("Shader initialize failed!");
+      LOG_ERROR("default", "Shader initialize failed!");
       return false;
     }
     DepthStencilDescription depthStencilDesc{};
@@ -39,9 +36,9 @@ public:
     desc.mCullMode = CullMode::None;
     shaderProgram->setRasterizerState(desc);
 
-    Texture2D* quadTexture = Platform::getRenderer()->createTexture2D("container.jpg", PixelFormat::RGB24);
+    Texture2D* quadTexture = Platform::getRenderer().createTexture2D("container.jpg", PixelFormat::RGB24);
     if (!quadTexture->loadTextureFromFile()) {
-      LOG_ERROR("Failed to load texture!");
+      LOG_ERROR("default", "Failed to load texture!");
       return false;
     }
 
@@ -49,7 +46,7 @@ public:
     material->setShaderProgram(shaderProgram);
     material->setTexture0(quadTexture);
 
-    GameObject* quad = NEW_T(GameObject("quad", this));
+    GameObject* quad = createGameObject("quad");
     planeTransform = quad->transform();
     quad->addComponent<MeshRenderer>(mesh, material);
 
@@ -61,7 +58,7 @@ public:
 
   void onUpdate(real deltaTime) override {
     if (Input::isKeyDown(KeyCode::KEY_ESCAPE)) {
-      Platform::getInstance()->quit();
+      Platform::getInstance().quit();
     }
 
     shaderProgram->setUniform("model", planeTransform->localToWorldMatrix());
@@ -93,21 +90,21 @@ private:
 
 bool init() {
   PlatformParams params{1024, 800, "05-index", "GLaDOS", false};
-  if (!Platform::getInstance()->initialize(params)) {
-    LOG_ERROR("Platform initialize failed!");
+  if (!Platform::getInstance().initialize(params)) {
+    LOG_ERROR("default", "Platform initialize failed!");
     return false;
   }
 
-  Platform::getInstance()->setClearColor(Color{0, 0, 0, 1});
+  Platform::getInstance().setClearColor(Color{0, 0, 0, 1});
   return true;
 }
 
 int main(int argc, char** argv) {
   std::atexit(&dumpMemory);
   if (!init()) return -1;
-  SceneManager::getInstance()->setActiveScene(SceneManager::getInstance()->createScene<MainScene>("testScene"));
-  while (Platform::getInstance()->isRunning()) {
-    Platform::getInstance()->update();
+  SceneManager::getInstance().setActiveScene(SceneManager::getInstance().createScene<MainScene>("testScene"));
+  while (Platform::getInstance().isRunning()) {
+    Platform::getInstance().update();
   }
   return 0;
 }
