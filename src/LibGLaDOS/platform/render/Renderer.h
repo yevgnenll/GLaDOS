@@ -34,8 +34,9 @@ namespace GLaDOS {
     virtual GPUBuffer* createIndexBuffer(BufferUsage usage, void* data, std::size_t size) = 0;
     virtual ShaderProgram* createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath, const VertexData* vertexData) = 0;
     virtual Renderable* createRenderable(Mesh* mesh, Material* material) = 0;
-    virtual Mesh* createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveType primitiveType, bool dynamicVertex, bool dynamicIndex) = 0;
-    virtual Mesh* createMesh(const std::string& meshPath, PrimitiveType primitiveType, bool dynamicVertex, bool dynamicIndex) = 0;
+    virtual Mesh* createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveType primitiveType, BufferUsage vertexUsage, BufferUsage indexUsage) = 0;
+    virtual Mesh* createMesh(VertexData* vertexData, IndexData* indexData) = 0;
+    virtual Mesh* createMesh(const std::string& meshPath, PrimitiveType primitiveType, BufferUsage vertexUsage, BufferUsage indexUsage) = 0;
     virtual FrameBuffer* createFrameBuffer() = 0;
     virtual RenderBuffer* createRenderBuffer() = 0;
     virtual DepthStencilState* createDepthStencilState(const DepthStencilDescription& desc) = 0;

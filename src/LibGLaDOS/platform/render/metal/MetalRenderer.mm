@@ -141,15 +141,23 @@ namespace GLaDOS {
     return renderable;
   }
 
-  Mesh* MetalRenderer::createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveType primitiveType, bool dynamicVertex, bool dynamicIndex) {
-    Mesh* mesh = NEW_T(Mesh(primitiveType, dynamicVertex, dynamicIndex));
+  Mesh* MetalRenderer::createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveType primitiveType, BufferUsage vertexUsage, BufferUsage indexUsage) {
+    Mesh* mesh = NEW_T(Mesh(primitiveType, vertexUsage, indexUsage));
     if (!mesh->build(vertexData, indexData)) {
       return nullptr;
     }
     return mesh;
   }
 
-  Mesh* MetalRenderer::createMesh(const std::string& meshPath, PrimitiveType primitiveType, bool dynamicVertex, bool dynamicIndex) {
+  Mesh* MetalRenderer::createMesh(VertexData* vertexData, IndexData* indexData) {
+    Mesh* mesh = NEW_T(Mesh);
+    if (!mesh->build(vertexData, indexData)) {
+      return nullptr;
+    }
+    return mesh;
+  }
+
+  Mesh* MetalRenderer::createMesh(const std::string& meshPath, PrimitiveType primitiveType, BufferUsage vertexUsage, BufferUsage indexUsage) {
     // TODO
     // const auto& [vertexData, indexData] = MeshLoader::loadFromFile(meshPath);
     // return createMesh(vertexData, indexData, primitiveType, dynamicVertex, dynamicIndex);

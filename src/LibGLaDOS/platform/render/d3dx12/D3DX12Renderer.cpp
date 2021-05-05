@@ -162,11 +162,11 @@ namespace GLaDOS {
     return nullptr;
   }
 
-  Mesh* D3DX12Renderer::createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveType primitiveType, bool dynamicVertex, bool dynamicIndex) {
+  Mesh* D3DX12Renderer::createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveType primitiveType, BufferUsage vertexUsage, BufferUsage indexUsage) {
     return nullptr;
   }
 
-  Mesh* D3DX12Renderer::createMesh(const std::string& meshPath, PrimitiveType primitiveType, bool dynamicVertex, bool dynamicIndex) {
+  Mesh* D3DX12Renderer::createMesh(const std::string& meshPath, PrimitiveType primitiveType, BufferUsage vertexUsage, BufferUsage indexUsage) {
     return nullptr;
   }
 

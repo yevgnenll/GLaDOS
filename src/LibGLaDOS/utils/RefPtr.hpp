@@ -158,6 +158,7 @@ namespace GLaDOS {
 
   template <typename T>
   void RefPtr<T>::reset(T* pointer) {
+    if (pointer == nullptr) return;
     T* oldPointer = mPointer;
     mPointer = pointer;
 
@@ -172,6 +173,7 @@ namespace GLaDOS {
 
   template <typename T>
   void RefPtr<T>::reset(const RefPtr<T>& other) {
+    if (other.mPointer == nullptr) return;
     T* oldPointer = mPointer;
     mPointer = other.mPointer;
 

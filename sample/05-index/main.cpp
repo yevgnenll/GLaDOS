@@ -20,7 +20,7 @@ public:
     vertexData->uploadDataNoCopy(vertices);
     IndexData* indexData = NEW_T(IndexData(sizeof(uint16_t), 6));
     indexData->uploadDataNoCopy(indices);
-    Mesh* mesh = Platform::getRenderer().createMesh(vertexData, indexData, PrimitiveType::Triangle, false, false);
+    Mesh* mesh = Platform::getRenderer().createMesh(vertexData, indexData);
     if (mesh == nullptr) {
       LOG_ERROR("default", "Mesh initialize failed!");
       return false;

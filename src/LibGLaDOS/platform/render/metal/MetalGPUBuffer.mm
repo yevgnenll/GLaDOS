@@ -22,9 +22,42 @@ namespace GLaDOS {
       [mMetalBuffer release];
     }
 
+    std::size_t maxBufferLength = [device maxBufferLength];
+    if (size > maxBufferLength) {
+      LOG_ERROR("default", "Must not exceeded Metal maximum buffer length({0}), but given size {1}", maxBufferLength, size);
+      return false;
+    }
+
     mSize = size;
+
     // https://developer.apple.com/documentation/metal/setting_resource_storage_modes/choosing_a_resource_storage_mode_in_macos?language=objc
-    mMetalBuffer = [device newBufferWithBytes:data length:mSize options:MTLResourceCPUCacheModeDefaultCache];
+    switch (mUsage) {
+      case BufferUsage::Private:
+        mMetalBuffer = [device newBufferWithBytes:data length:mSize options:MTLResourceStorageModePrivate];
+        break;
+      case BufferUsage::Synchronized:
+        break;
+      case BufferUsage::Shared:
+        break;
+    }
+
+
+//    id<MTLBuffer> buffer_with_host_mem = [device newBufferWithBytes:data length:size options:(MTLResourceStorageModeShared | MTLResourceCPUCacheModeWriteCombined)];
+//    id <MTLCommandBuffer> cmd_buffer = [[device newCommandQueue] commandBuffer];
+//    id <MTLBlitCommandEncoder> blit_encoder = [cmd_buffer blitCommandEncoder];
+//    [blit_encoder copyFromBuffer:buffer_with_host_mem
+//                    sourceOffset:0
+//                        toBuffer:mMetalBuffer
+//               destinationOffset:0
+//                            size:size];
+//    [blit_encoder endEncoding];
+//    [cmd_buffer commit];
+//    [cmd_buffer waitUntilCompleted];
+
+//    mMetalBuffer = [device newBufferWithBytes:data length:mSize options:MTLResourceCPUCacheModeDefaultCache];
+//    mMetalBuffer = [device newBufferWithBytesNoCopy:data length:alignment(mSize, _gpu_mem_alignment) options:MTLResourceCPUCacheModeDefaultCache deallocator:^(void* pointer, NSUInteger length) {
+//      align_free(pointer);
+//    }];
     if (mMetalBuffer == nil) {
       LOG_ERROR("default", "Metal buffer initialization failed.");
       return false;

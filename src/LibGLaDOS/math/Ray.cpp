@@ -19,7 +19,7 @@ namespace GLaDOS {
   }
 
   bool Ray::operator==(const Ray& other) {
-    return ((mOrigin == other.mOrigin) && (mDirection == other.mDirection) && mInvDirection == other.mInvDirection);
+    return ((mOrigin == other.mOrigin) && (mDirection == other.mDirection));
   }
 
   bool Ray::operator!=(const Ray& other) {

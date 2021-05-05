@@ -7,8 +7,12 @@
 #include "platform/Platform.h"
 
 namespace GLaDOS {
-  Mesh::Mesh(PrimitiveType primitiveType, bool dynamicVertex, bool dynamicIndex)
-      : Resource{ResourceType::Mesh}, mPrimitiveType{primitiveType}, mIsDynamicVertex{dynamicVertex}, mIsDynamicIndex{dynamicIndex} {
+  Mesh::Mesh() : Resource{ResourceType::Mesh} {
+    setResourceDir(RESOURCE_DIR);
+  }
+
+  Mesh::Mesh(PrimitiveType primitiveType, BufferUsage vertexBufferUsage, BufferUsage indexBufferUsage)
+      : Resource{ResourceType::Mesh}, mPrimitiveType{primitiveType}, mVertexBufferUsage{vertexBufferUsage}, mIndexBufferUsage{indexBufferUsage} {
     setResourceDir(RESOURCE_DIR);
   }
 
@@ -106,12 +110,12 @@ namespace GLaDOS {
     return mIndexData;
   }
 
-  bool Mesh::isDynamicVertex() const {
-    return mIsDynamicVertex;
+  BufferUsage Mesh::getVertexUsage() const {
+    return mVertexBufferUsage;
   }
 
-  bool Mesh::isDynamicIndex() const {
-    return mIsDynamicIndex;
+  BufferUsage Mesh::getIndexUsage() const {
+    return mIndexBufferUsage;
   }
 
   bool Mesh::build(VertexData* vertexData, IndexData* indexData) {
@@ -119,20 +123,18 @@ namespace GLaDOS {
     mIndexData = indexData;
 
     if (mVertexData == nullptr) {
-      LOG_ERROR("default", "Vertex data must not be null.");
+      LOG_ERROR("default", "Mesh should have at least a vertexData.");
       return false;
     }
 
-    BufferUsage vertexUsage = mIsDynamicVertex ? BufferUsage::Dynamic : BufferUsage::Static;
-    mVertexBuffer = Platform::getRenderer().createVertexBuffer(vertexUsage, mVertexData->buffer(), mVertexData->size());
+    mVertexBuffer = Platform::getRenderer().createVertexBuffer(mVertexBufferUsage, mVertexData->buffer(), mVertexData->size());
     if (mVertexBuffer == nullptr) {
       LOG_ERROR("default", "VertexBuffer creation failed.");
       return false;
     }
 
     if (mIndexData != nullptr) {
-      BufferUsage indexUsage = mIsDynamicIndex ? BufferUsage::Dynamic : BufferUsage::Static;
-      mIndexBuffer = Platform::getRenderer().createIndexBuffer(indexUsage, mIndexData->buffer(), mIndexData->size());
+      mIndexBuffer = Platform::getRenderer().createIndexBuffer(mIndexBufferUsage, mIndexData->buffer(), mIndexData->size());
       if (mIndexBuffer == nullptr) {
         LOG_ERROR("default", "IndexBuffer creation failed.");
         return false;

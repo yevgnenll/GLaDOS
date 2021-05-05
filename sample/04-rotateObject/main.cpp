@@ -50,7 +50,7 @@ public:
     };
     VertexData* vertexData = NEW_T(VertexData(VertexFormatBuilder().withPosition().withColor(), 36));
     vertexData->uploadDataNoCopy(quad);
-    Mesh* mesh = Platform::getRenderer().createMesh(vertexData, nullptr, PrimitiveType::Triangle, false, false);
+    Mesh* mesh = Platform::getRenderer().createMesh(vertexData, nullptr);
     if (mesh == nullptr) {
       LOG_ERROR("default", "Mesh initialize failed!");
       return false;

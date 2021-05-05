@@ -167,8 +167,9 @@ namespace GLaDOS {
   };
 
   enum class BufferUsage {
-    Static,
-    Dynamic
+    Private, // Only accessible by the GPU
+    Synchronized, // CPU and GPU maintain their copies of resource, and must be explicitly synchronized
+    Shared // stored in system memory and is accessible to both the CPU and GPU
   };
 
   enum class VertexSemantic {

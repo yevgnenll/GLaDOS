@@ -11,7 +11,8 @@ namespace GLaDOS {
   class IndexData;
   class Mesh : public Resource {
   public:
-    Mesh(PrimitiveType primitiveType, bool dynamicVertex, bool dynamicIndex);
+    Mesh();
+    Mesh(PrimitiveType primitiveType, BufferUsage vertexBufferUsage, BufferUsage indexBufferUsage);
     ~Mesh() override;
 
     PrimitiveType getPrimitiveType() const;
@@ -31,8 +32,8 @@ namespace GLaDOS {
     std::size_t getFaceCount() const;
     VertexData* getVertexData();
     IndexData* getIndexData();
-    bool isDynamicVertex() const;
-    bool isDynamicIndex() const;
+    BufferUsage getVertexUsage() const;
+    BufferUsage getIndexUsage() const;
 
     bool build(VertexData* vertexData, IndexData* indexData);
     void recalculateNormals();
@@ -40,15 +41,15 @@ namespace GLaDOS {
     void recalculateBounds();
 
   private:
-    PrimitiveType mPrimitiveType;
+    PrimitiveType mPrimitiveType{PrimitiveType::Triangle};
     GPUBuffer* mVertexBuffer{nullptr};
     GPUBuffer* mIndexBuffer{nullptr};
     VertexData* mVertexData{nullptr};
     IndexData* mIndexData{nullptr};
     std::size_t mVertexStart{0};
     std::size_t mIndexStart{0};
-    const bool mIsDynamicVertex{false};  // TODO
-    const bool mIsDynamicIndex{false};  // TODO
+    BufferUsage mVertexBufferUsage{BufferUsage::Private};
+    BufferUsage mIndexBufferUsage{BufferUsage::Private};
   };
 }  // namespace GLaDOS
 

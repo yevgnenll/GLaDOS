@@ -48,7 +48,7 @@ namespace GLaDOS {
     vertexData->uploadDataNoCopy(vertices.data());
     IndexData* indexData = NEW_T(IndexData(sizeof(uint32_t), indexCount));
     indexData->uploadDataNoCopy(indices.data());
-    return Platform::getRenderer().createMesh(vertexData, indexData, PrimitiveType::Triangle, false, false);
+    return Platform::getRenderer().createMesh(vertexData, indexData);
   }
 
   Mesh* MeshGenerator::generateCube() {
@@ -96,7 +96,7 @@ namespace GLaDOS {
     vertexData->uploadDataNoCopy(vertices);
     IndexData* indexData = NEW_T(IndexData(sizeof(uint16_t), sizeof(indices) / sizeof(uint16_t)));
     indexData->uploadDataNoCopy(indices);
-    return Platform::getRenderer().createMesh(vertexData, indexData, PrimitiveType::Triangle, false, false);
+    return Platform::getRenderer().createMesh(vertexData, indexData);
   }
 
   Mesh* MeshGenerator::generateIcoSphere(unsigned int subdivisions) {
@@ -160,7 +160,7 @@ namespace GLaDOS {
     vertexData->uploadDataNoCopy(vertices.data());
     IndexData* indexData = NEW_T(IndexData(sizeof(uint32_t), indices.size()));
     indexData->uploadDataNoCopy(indices.data());
-    return Platform::getRenderer().createMesh(vertexData, indexData, PrimitiveType::Triangle, false, false);
+    return Platform::getRenderer().createMesh(vertexData, indexData);
   }
 
   Mesh* MeshGenerator::generateUVSphere() {
@@ -245,7 +245,7 @@ namespace GLaDOS {
     vertexData->uploadDataNoCopy(vertices.data());
     IndexData* indexData = NEW_T(IndexData(sizeof(uint32_t), indices.size()));
     indexData->uploadDataNoCopy(indices.data());
-    return Platform::getRenderer().createMesh(vertexData, indexData, PrimitiveType::TriangleStrip, false, false);
+    return Platform::getRenderer().createMesh(vertexData, indexData);
   }
 
   Mesh* MeshGenerator::generateCone(real radius, real height) {
@@ -281,7 +281,7 @@ namespace GLaDOS {
     //
     //    VertexData* vertexData = NEW_T(VertexData(VertexFormatBuilder().withPosition().withNormal(), vertexCount));
     //    vertexData->uploadDataNoCopy(reinterpret_cast<std::byte*>(vertices.data()));
-    //    Mesh* mesh = Platform::getRenderer().createMesh(vertexData, nullptr, PrimitiveType::Triangle, false, false);
+    //    Mesh* mesh = Platform::getRenderer().createMesh(vertexData, nullptr);
     //    return mesh;
     return nullptr;
   }
@@ -370,7 +370,7 @@ namespace GLaDOS {
     vertexData->uploadDataNoCopy(vertices.data());
     IndexData* indexData = NEW_T(IndexData(sizeof(uint32_t), indexCount));
     indexData->uploadDataNoCopy(indices.data());
-    return Platform::getRenderer().createMesh(vertexData, indexData, PrimitiveType::Triangle, false, false);
+    return Platform::getRenderer().createMesh(vertexData, indexData);
   }
 
 }  // namespace GLaDOS

@@ -5,17 +5,20 @@
 
 namespace GLaDOS {
   class RefCounted {
+    template <typename T>
+    friend class RefPtr;
   public:
     RefCounted() = default;
     explicit constexpr RefCounted(int initialValue);
 
-    int incrementRefOne();
-    int incrementRef(int increment);
-    bool releaseRef();
     bool isRefOne() const;
     bool isRefZero() const;
 
   private:
+    int incrementRefOne();
+    int incrementRef(int increment);
+    bool releaseRef();
+
     std::atomic_int mRefCount{0};
   };
 }

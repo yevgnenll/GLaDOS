@@ -222,6 +222,10 @@ namespace GLaDOS {
     return Math::toDegrees(Math::acos(Math::clamp(Vec3::dot(from, to), static_cast<real>(-1.0), static_cast<real>(1.0))));
   }
 
+  Vec3 Vec3::negate(const Vec3& v) {
+    return Vec3{-v.x, -v.y, -v.z};
+  }
+
   void Vec3::swap(Vec3& first, Vec3& second) {
     using std::swap;
 

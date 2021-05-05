@@ -26,8 +26,9 @@ namespace GLaDOS {
     GPUBuffer* createIndexBuffer(BufferUsage usage, void* data, std::size_t size) override;
     ShaderProgram* createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath, const VertexData* vertexData) override;
     Renderable* createRenderable(Mesh* mesh, Material* material) override;
-    Mesh* createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveType primitiveType, bool dynamicVertex, bool dynamicIndex) override;
-    Mesh* createMesh(const std::string& meshPath, PrimitiveType primitiveType, bool dynamicVertex, bool dynamicIndex) override;
+    Mesh* createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveType primitiveType, BufferUsage vertexUsage, BufferUsage indexUsage) override;
+    Mesh* createMesh(VertexData* vertexData, IndexData* indexData) override;
+    Mesh* createMesh(const std::string& meshPath, PrimitiveType primitiveType, BufferUsage vertexUsage, BufferUsage indexUsage) override;
     FrameBuffer* createFrameBuffer() override;
     RenderBuffer* createRenderBuffer() override;
     DepthStencilState* createDepthStencilState(const DepthStencilDescription& desc) override;

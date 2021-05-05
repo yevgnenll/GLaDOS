@@ -1,5 +1,5 @@
+#include <catch2/catch_all.hpp>
 #include <array>
-#include <catch.hpp>
 
 #include "math/Mat4.hpp"
 
@@ -172,6 +172,5 @@ TEST_CASE("Matrix unit test", "[Matrix]") {
   SECTION("matrix perspective test") {
     Mat4x m1;
     auto m2 = Mat4x::perspective(20_rad, 0.2f, 0.1f, 100.f);
-    printf("asd");
   }
 }

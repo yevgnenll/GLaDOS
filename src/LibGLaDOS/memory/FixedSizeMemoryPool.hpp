@@ -1,15 +1,23 @@
 #ifndef GLADOS_FIXEDSIZEMEMORYPOOL_HPP
 #define GLADOS_FIXEDSIZEMEMORYPOOL_HPP
 
-#include "utils/Singleton.hpp"
-#include "utils/SpinLock.h"
 #include "utils/Utility.h"
 
 namespace GLaDOS {
   template <typename T>
-  class FixedSizeMemoryPool : public Singleton<FixedSizeMemoryPool<T>> {
+  struct AlignedMemBlock {
+    using AlignedSizeType = std::aligned_storage_t<sizeof(T), alignof(T)>;
+    AlignedSizeType value;
+    AlignedMemBlock* next;
+  };
+
+  template <typename T, typename Allocator = STLAllocator<AlignedMemBlock<T>>>
+  class FixedSizeMemoryPool {
   public:
-    FixedSizeMemoryPool() noexcept;
+    using MemBlockType = AlignedMemBlock<T>;
+    static constexpr std::size_t defaultPoolSize = ((1 << 22) / sizeof(T));
+
+    FixedSizeMemoryPool(std::size_t poolSize = defaultPoolSize) noexcept;
     ~FixedSizeMemoryPool() noexcept;
 
     template <typename... Args>
@@ -19,39 +27,50 @@ namespace GLaDOS {
     DISALLOW_COPY_AND_ASSIGN(FixedSizeMemoryPool);
 
   private:
-    void allocateBlock() noexcept;
-
-    struct FixedSizeLinkedList {
-      T value;
-      FixedSizeLinkedList* next;
-    };
-
-    FixedSizeLinkedList* mMemHead;
-    SpinLock mMemAllocSpinLock;
-    Vector<void*> mFixedBlockPointers;
-
-    constexpr static std::size_t fixed_block_size = 1 << 12;  // fixed size page defined to 4KB
+    Allocator* mAllocator{nullptr};
+    MemBlockType* mHead{nullptr};
+    MemBlockType* mData{nullptr};
+    std::size_t mSize;
   };
 
-  template <typename T>
-  FixedSizeMemoryPool<T>::FixedSizeMemoryPool() {
+  template <typename T, typename Allocator>
+  FixedSizeMemoryPool<T, Allocator>::FixedSizeMemoryPool(std::size_t poolSize) noexcept : mSize{poolSize} {
+    mAllocator = NEW_T(Allocator);
+    mData = mAllocator->allocate(mSize);
+    mHead = mData;
+
+    for (std::size_t i = 0; i < mSize; i++) {
+      mData[i].next = std::addressof(mData[i + 1]);
+    }
+    mData[mSize - 1].next = nullptr;
   }
 
-  template <typename T>
-  FixedSizeMemoryPool<T>::~FixedSizeMemoryPool() {
+  template <typename T, typename Allocator>
+  FixedSizeMemoryPool<T, Allocator>::~FixedSizeMemoryPool() noexcept {
+    mAllocator->deallocate(mData, mSize);
+    DELETE_T(mAllocator, Allocator);
+    mHead = nullptr;
+    mData = nullptr;
   }
 
-  template <typename T>
+  template <typename T, typename Allocator>
   template <typename... Args>
-  T* FixedSizeMemoryPool<T>::allocate(Args&&... args) {
+  T* FixedSizeMemoryPool<T, Allocator>::allocate(Args&&... args) {
+    if (mHead == nullptr) {
+      return nullptr;
+    }
+
+    MemBlockType* poolBlock = mHead;
+    mHead = mHead->next;
+    return new (std::addressof(poolBlock->value)) T(std::forward<Args>(args)...);
   }
 
-  template <typename T>
-  void FixedSizeMemoryPool<T>::deallocate(T* ptr) {
-  }
-
-  template <typename T>
-  void FixedSizeMemoryPool<T>::allocateBlock() {
+  template <typename T, typename Allocator>
+  void FixedSizeMemoryPool<T, Allocator>::deallocate(T* ptr) {
+    ptr->~T();
+    MemBlockType* poolBlock = reinterpret_cast<MemBlockType*>(ptr);
+    poolBlock->next = mHead;
+    mHead = poolBlock;
   }
 }  // namespace GLaDOS
 

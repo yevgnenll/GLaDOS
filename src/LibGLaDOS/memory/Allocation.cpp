@@ -9,21 +9,36 @@
 #include "utils/Utility.h"
 
 namespace GLaDOS {
-  void* mmalloc(std::size_t size, const char* file, int line, const char* function) {
+  std::size_t alignment(std::size_t operand, std::size_t alignment) {
+    return (operand + (alignment - 1)) & ~(alignment - 1);
+  }
+
+  void* align_malloc(std::size_t size, std::size_t alignment) {
     void* memory_ptr = nullptr;
 #if defined(MSVC)
-    memory_ptr = _aligned_malloc(size + sizeof(MemBlockDList), _mem_alignment);
-    if (memory_ptr == nullptr) {
-      printf("Allocation Failed");
-      return memory_ptr;
-    }
+    memory_ptr = _aligned_malloc(size, alignment);
 #else
-    int result = posix_memalign(&memory_ptr, _mem_alignment, size + sizeof(MemBlockDList));
-    if (result != 0) {
-      printf("Allocation Failed\n");
+    int result = posix_memalign(&memory_ptr, alignment, size);
+#endif
+    return memory_ptr;
+  }
+
+  void align_free(void* pointer) {
+#if defined(MSVC)
+    _aligned_free(pointer);
+#else
+    free(pointer);
+#endif
+  }
+
+  void* mmalloc(std::size_t size, const char* file, int line, const char* function) {
+    void* memory_ptr = align_malloc(size + sizeof(MemBlockDList), _mem_alignment);
+    if (memory_ptr == nullptr) {
+#ifdef ALLOCATION_DEBUG_PRINT
+      printf("Allocation failed\n");
+#endif
       return memory_ptr;
     }
-#endif
     MemBlockDList* memory_block = CAST(MemBlockDList*, memory_ptr);
     if (memory_block == nullptr) {
       return memory_block;
@@ -44,18 +59,25 @@ namespace GLaDOS {
       _mem_block_head = memory_block;
     }
 
-    printf("Memory allocated: file=%s, line=%d, function=%s, size=%ld\n", memory_block->file, memory_block->line, memory_block->function, memory_block->size);
+#ifdef ALLOCATION_DEBUG_PRINT
+    mprint("allocated", memory_block);
+#endif
 
     return memory_block + 1;
   }
 
   void mfree(void* ptr) {
     if (ptr == nullptr) {
+#ifdef ALLOCATION_DEBUG_PRINT
       printf("Memory free Failed\n");
+#endif
       return;
     }
 
     MemBlockDList* memory_block = CAST(MemBlockDList*, ptr) - 1;
+#ifdef ALLOCATION_DEBUG_PRINT
+    mprint("freed", memory_block);
+#endif
     memory_block->size = ~memory_block->size;
 
     {
@@ -73,11 +95,7 @@ namespace GLaDOS {
       }
     }
 
-#if defined(MSVC)
-    _aligned_free(memory_block);
-#else
-    free(memory_block);
-#endif
+    align_free(memory_block);
   }
 
   void mprint(const char* reason, MemBlockDList* mi) {

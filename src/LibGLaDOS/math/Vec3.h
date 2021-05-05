@@ -116,6 +116,7 @@ namespace GLaDOS {
     static Vec3 projectOnPlane(const Vec3& v, const UVec3& planeNormal);
     static UVec3 normalize(const Vec3& v);
     static Deg angle(const UVec3& from, const UVec3& to);
+    static Vec3 negate(const Vec3& v);
 
     real x{0.0}, y{0.0}, z{0.0};
     static const Vec3 up, down, left, right, forward, backward, one, zero;

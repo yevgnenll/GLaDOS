@@ -21,8 +21,8 @@ namespace GLaDOS {
     void swap(Ray& first, Ray& second);
 
     Vec3 mOrigin;
-    Vec3 mDirection;
-    Vec3 mInvDirection;
+    Vec3 mDirection{1, 0, 0};
+    Vec3 mInvDirection{Vec3::inverse(mDirection)};
   };
 }  // namespace GLaDOS
 
