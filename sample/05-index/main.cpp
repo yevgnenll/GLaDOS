@@ -16,18 +16,16 @@ public:
         0, 1, 3, // first triangle
         1, 2, 3  // second triangle
     };
-    VertexData* vertexData = NEW_T(VertexData(VertexFormatBuilder().withPosition().withTexCoord0(), 4));
+    VertexData* vertexData = NEW_T(VertexData(VertexFormatDescriptor().position().texCoord0(), 4));
     vertexData->uploadDataNoCopy(vertices);
     IndexData* indexData = NEW_T(IndexData(sizeof(uint16_t), 6));
     indexData->uploadDataNoCopy(indices);
     Mesh* mesh = Platform::getRenderer().createMesh(vertexData, indexData);
     if (mesh == nullptr) {
-      LOG_ERROR("default", "Mesh initialize failed!");
       return false;
     }
     shaderProgram = Platform::getRenderer().createShaderProgram("textureVertex.metal", "textureFragment.metal", vertexData);
     if (shaderProgram == nullptr) {
-      LOG_ERROR("default", "Shader initialize failed!");
       return false;
     }
     DepthStencilDescription depthStencilDesc{};
@@ -38,7 +36,6 @@ public:
 
     Texture2D* quadTexture = Platform::getRenderer().createTexture2D("container.jpg", PixelFormat::RGB24);
     if (!quadTexture->loadTextureFromFile()) {
-      LOG_ERROR("default", "Failed to load texture!");
       return false;
     }
 
@@ -91,7 +88,6 @@ private:
 bool init() {
   PlatformParams params{1024, 800, "05-index", "GLaDOS", false};
   if (!Platform::getInstance().initialize(params)) {
-    LOG_ERROR("default", "Platform initialize failed!");
     return false;
   }
 

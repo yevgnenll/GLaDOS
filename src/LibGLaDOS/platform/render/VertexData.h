@@ -9,12 +9,13 @@
 
 namespace GLaDOS {
   class VertexFormat;
+  class VertexFormatHolder;
   class VertexData : public ByteBuffer {
   public:
-    explicit VertexData(const VertexFormatBuilder& vertexFormatBuilder, std::size_t count, bool allocate = false);
+    explicit VertexData(const VertexFormatDescriptor& vertexFormatBuilder, std::size_t count, bool allocate = false);
     ~VertexData() override;
 
-    Vector<VertexFormat*> getVertexFormats() const;
+    VertexFormatHolder* getVertexFormatHolder() const;
 
     Vec3 getPosition(std::size_t index);
     void setPosition(std::size_t index, const Vec3& position);
@@ -41,10 +42,11 @@ namespace GLaDOS {
 
   protected:
     void throwIfOverflow(std::size_t size) const;
+    std::size_t calcOffset(std::size_t index, std::size_t offset) const;
 
   private:
-    VertexFormatBuilder mBuilder;
-    Vector<VertexFormat*> mVertexFormats;
+    VertexFormatDescriptor mVertexFormatDescriptor;
+    VertexFormatHolder* mVertexFormatHolder;
   };
 }  // namespace GLaDOS
 

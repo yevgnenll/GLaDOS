@@ -17,6 +17,7 @@
 
 namespace GLaDOS {
   using Microsoft::WRL::ComPtr;
+  class Logger;
   class GPUBuffer;
   class D3DX12Renderer : public Renderer, public Singleton<D3DX12Renderer> {
   public:
@@ -45,6 +46,7 @@ namespace GLaDOS {
     Texture3D* createTexture3D(const std::string& name) override;
     TextureCube* createTextureCube(const std::string& name, PixelFormat format) override;
     RenderTexture* createRenderTexture(const std::string& name) override;
+    VertexData* createVertexData(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) override;
 
   private:
     static std::string hresultToString(HRESULT hr);
@@ -52,6 +54,7 @@ namespace GLaDOS {
     void PopulateCommandList();
     void WaitForPreviousFrame();
     static constexpr uint32_t frameCount = 2;
+    static Logger* logger;
 
     ComPtr<ID3D12Device> mDevice;
     ComPtr<ID3D12CommandQueue> mCommandQueue;

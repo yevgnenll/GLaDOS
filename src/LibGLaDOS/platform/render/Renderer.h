@@ -22,6 +22,7 @@ namespace GLaDOS {
   class Texture3D;
   class TextureCube;
   class RenderTexture;
+  class VertexFormatDescriptor;
   class Renderer {
   public:
     Renderer() = default;
@@ -50,6 +51,7 @@ namespace GLaDOS {
     virtual Texture3D* createTexture3D(const std::string& name) = 0;
     virtual TextureCube* createTextureCube(const std::string& name, PixelFormat format) = 0;
     virtual RenderTexture* createRenderTexture(const std::string& name) = 0;
+    virtual VertexData* createVertexData(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) = 0;
   };
 }  // namespace GLaDOS
 

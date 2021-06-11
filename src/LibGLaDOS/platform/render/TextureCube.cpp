@@ -5,6 +5,7 @@
 #include <algorithm>
 
 namespace GLaDOS {
+  Logger* TextureCube::logger = LoggerRegistry::getInstance().makeAndGetLogger("TextureCube");
   TextureCube::TextureCube(const std::string& name, PixelFormat format) : Texture{name, format} {
     mDimension = TextureDimension::CubeMapTex;
     mUsage = TextureUsage::ShaderRead;
@@ -15,7 +16,7 @@ namespace GLaDOS {
 
   bool TextureCube::loadTextureFromFile(Vector<std::string>& names) {
     if (names.empty() || names.size() != static_cast<uint32_t>(CubeMapFace::TheNumberOfFace)) {
-      LOG_ERROR("default", "Cubemap can only be created from exactly six images");
+      LOG_ERROR(logger, "Cubemap can only be created from exactly six images");
       return false;
     }
 
@@ -34,11 +35,11 @@ namespace GLaDOS {
       std::string filename{mFileDirectory + name};
       int result = stbi_info(filename.c_str(), &width, &height, &channels);
       if (result == 0) {
-        LOG_ERROR("default", "Failed to get info texture {0}, reason: {1}", filename, stbi_failure_reason());
+        LOG_ERROR(logger, "Failed to get info texture {0}, reason: {1}", filename, stbi_failure_reason());
         return false;
       }
       if (width != height) {
-        LOG_ERROR("default", "Failed to load texture {0}: Cubemap texture must be uniformly-sized.", filename);
+        LOG_ERROR(logger, "Failed to load texture {0}: Cubemap texture must be uniformly-sized.", filename);
         return false;
       }
       int desiredChannel = 0;
@@ -48,7 +49,7 @@ namespace GLaDOS {
       uint8_t* data = stbi_load(filename.c_str(), &width, &height, &channels, desiredChannel);
 
       if (data == nullptr) {
-        LOG_ERROR("default", "Failed to load texture {0}, reason: {1}", filename, stbi_failure_reason());
+        LOG_ERROR(logger, "Failed to load texture {0}, reason: {1}", filename, stbi_failure_reason());
         return false;
       }
 
@@ -65,7 +66,7 @@ namespace GLaDOS {
       return it.width == images[0].width && it.channels == images[0].channels;
     });
     if (!isSame) {
-      LOG_ERROR("default", "All cubemap texture must be uniformly-sized and same channel bits.");
+      LOG_ERROR(logger, "All cubemap texture must be uniformly-sized and same channel bits.");
       for (auto& image : images) {
         stbi_image_free(image.data);
       }
@@ -83,7 +84,7 @@ namespace GLaDOS {
     generateTexture(textureParameter);
 
     for (auto& image : images) {
-      LOG_TRACE("default", "CubeTexture load success: [name={0}, width={1}, height={2}, bpp={3}]", image.name, image.width, image.height, image.channels);
+      LOG_TRACE(logger, "CubeTexture load success: [name={0}, width={1}, height={2}, bpp={3}]", image.name, image.width, image.height, image.channels);
       stbi_image_free(image.data);
     }
 

@@ -10,6 +10,7 @@
 #include "platform/render/metal/MetalFrameBuffer.h"
 
 namespace GLaDOS {
+  Logger* CocoaPlatform::logger = LoggerRegistry::getInstance().makeAndGetLogger("CocoaPlatform");
   NSApplication* CocoaPlatform::applicationInstance = nullptr;
   CocoaPlatform* CocoaPlatform::cocoaPlatformInstance = nullptr;
 
@@ -20,15 +21,15 @@ namespace GLaDOS {
 
   bool CocoaPlatform::initialize(const PlatformParams& params) {
     Platform::getInstance().printLogo();
-    LOG_TRACE("default", "Initialize Cocoa Platform...");
+    LOG_TRACE(logger, "Initialize Cocoa Platform...");
 
     if (params.width <= 0 || params.height <= 0) {
-      LOG_ERROR("default", "Platform width and height should not be less than 0.");
+      LOG_ERROR(logger, "Platform width and height should not be less than 0.");
       return false;
     }
 
     if (!MetalRenderer::getInstance().initialize(params.width, params.height)) {
-      LOG_ERROR("default", "MetalRenderer initialize failed.");
+      LOG_ERROR(logger, "MetalRenderer initialize failed.");
       return false;
     }
 
@@ -73,7 +74,7 @@ namespace GLaDOS {
     viewDidEndLiveResize();  // force invoke resize drawbleSize.
 
     if (CVDisplayLinkCreateWithActiveCGDisplays(&mDisplayLink) != kCVReturnSuccess) {
-      LOG_ERROR("default", "Quartz core display link creation failed.");
+      LOG_ERROR(logger, "Quartz core display link creation failed.");
       return false;
     }
     CVDisplayLinkSetOutputCallback(mDisplayLink, &displayLinkCb, nullptr);
@@ -82,7 +83,7 @@ namespace GLaDOS {
 
     NSOperatingSystemVersion osVer = [[NSProcessInfo processInfo] operatingSystemVersion];
     mCurrentOSVersion = makeOSVersion((uint32_t)osVer.majorVersion, (uint32_t)osVer.minorVersion, (uint32_t)osVer.patchVersion);
-    LOG_TRACE("default", "Current OS version {0}", mCurrentOSVersion);
+    LOG_TRACE(logger, "Current OS version {0}", mCurrentOSVersion);
 
     return true;
   }
@@ -216,17 +217,17 @@ namespace GLaDOS {
 
   void CocoaPlatform::windowDidMiniaturize() {
     // TODO: 윈도우를 최소화 할 때 호출 되는 콜백
-    LOG_TRACE("default", "window miniaturized");
+    LOG_TRACE(logger, "window miniaturized");
   }
 
   void CocoaPlatform::windowDidDeminiaturize() {
     // TODO: 윈도우를 최소화를 되돌릴 때 호출 되는 콜백
-    LOG_TRACE("default", "window deminiaturized");
+    LOG_TRACE(logger, "window deminiaturized");
   }
 
   void CocoaPlatform::windowDidMove() {
     // TODO: 윈도우 이동시 호출 되는 콜백
-    LOG_TRACE("default", "window moved");
+    LOG_TRACE(logger, "window moved");
   }
 
   void CocoaPlatform::windowDidChangeBackingProperties(CGFloat scaleFactor) {
@@ -387,7 +388,7 @@ namespace GLaDOS {
   }
 
   void Platform::registerKeyMap() {
-    LOG_TRACE("default", "Register MacOS key map...");
+    LOG_TRACE(logger, "Register MacOS key map...");
     for (int i = 0; i < static_cast<int>(KeyCode::KEY_MAX); i++) {
       mKeys[i] = false;
       mLocalKeymap[i] = KeyCode::KEY_UNDEFINED;

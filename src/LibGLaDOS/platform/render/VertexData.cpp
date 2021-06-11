@@ -1,10 +1,12 @@
 #include "VertexData.h"
 
+#include "VertexFormat.h"
+
 namespace GLaDOS {
-  VertexData::VertexData(const VertexFormatBuilder& vertexFormatBuilder, std::size_t count, bool allocate) {
-    mVertexFormats = vertexFormatBuilder.build();
-    mBuilder = vertexFormatBuilder;  // should be assigned after build call
-    for (const auto& vertexFormat : mVertexFormats) {
+  VertexData::VertexData(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count, bool allocate) {
+    mVertexFormatHolder = vertexFormatDescriptor.makeVertexFormatHolder();
+    mVertexFormatDescriptor = vertexFormatDescriptor;  // should be assigned after build call
+    for (const auto& vertexFormat : *mVertexFormatHolder) {
       mStride += vertexFormat->size();
     }
 
@@ -16,165 +18,121 @@ namespace GLaDOS {
   }
 
   VertexData::~VertexData() {
-    deallocIterable(mVertexFormats);
+    DELETE_T(mVertexFormatHolder, VertexFormatHolder);
   }
 
-  Vector<VertexFormat*> VertexData::getVertexFormats() const {
-    return mVertexFormats;
+  VertexFormatHolder* VertexData::getVertexFormatHolder() const {
+    return mVertexFormatHolder;
   }
 
   Vec3 VertexData::getPosition(std::size_t index) {
-    assert(mBuilder.mUsePosition);
-    std::size_t offset = index * mStride + mBuilder.mPositionOffset;
-    throwIfOverflow(offset);
-    return *reinterpret_cast<Vec3*>(static_cast<char*>(mBufferData) + offset);
+    assert(mVertexFormatDescriptor.mUsePosition);
+    return *reinterpret_cast<Vec3*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mPositionOffset));
   }
 
   void VertexData::setPosition(std::size_t index, const Vec3& position) {
-    assert(mBuilder.mUsePosition);
-    std::size_t offset = index * mStride + mBuilder.mPositionOffset;
-    throwIfOverflow(offset);
-    *reinterpret_cast<Vec3*>(static_cast<char*>(mBufferData) + offset) = position;
+    assert(mVertexFormatDescriptor.mUsePosition);
+    *reinterpret_cast<Vec3*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mPositionOffset)) = position;
   }
 
   Vec3 VertexData::getNormal(std::size_t index) {
-    assert(mBuilder.mUseNormal);
-    std::size_t offset = index * mStride + mBuilder.mNormalOffset;
-    throwIfOverflow(offset);
-    return *reinterpret_cast<Vec3*>(static_cast<char*>(mBufferData) + offset);
+    assert(mVertexFormatDescriptor.mUseNormal);
+    return *reinterpret_cast<Vec3*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mNormalOffset));
   }
 
   void VertexData::setNormal(std::size_t index, const Vec3& normal) {
-    assert(mBuilder.mUseNormal);
-    std::size_t offset = index * mStride + mBuilder.mNormalOffset;
-    throwIfOverflow(offset);
-    *reinterpret_cast<Vec3*>(static_cast<char*>(mBufferData) + offset) = normal;
+    assert(mVertexFormatDescriptor.mUseNormal);
+    *reinterpret_cast<Vec3*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mNormalOffset)) = normal;
   }
 
   Vec2 VertexData::getTexCoord0(std::size_t index) {
-    assert(mBuilder.mUseTexCoord0);
-    std::size_t offset = index * mStride + mBuilder.mTexCoord0Offset;
-    throwIfOverflow(offset);
-    return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + offset);
+    assert(mVertexFormatDescriptor.mUseTexCoord0);
+    return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord0Offset));
   }
 
   void VertexData::setTexCoord0(std::size_t index, const Vec2& texCoord) {
-    assert(mBuilder.mUseTexCoord0);
-    std::size_t offset = index * mStride + mBuilder.mTexCoord0Offset;
-    throwIfOverflow(offset);
-    *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + offset) = texCoord;
+    assert(mVertexFormatDescriptor.mUseTexCoord0);
+    *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord0Offset)) = texCoord;
   }
 
   Vec2 VertexData::getTexCoord1(std::size_t index) {
-    assert(mBuilder.mUseTexCoord1);
-    std::size_t offset = index * mStride + mBuilder.mTexCoord1Offset;
-    throwIfOverflow(offset);
-    return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + offset);
+    assert(mVertexFormatDescriptor.mUseTexCoord1);
+    return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord1Offset));
   }
 
   void VertexData::setTexCoord1(std::size_t index, const Vec2& texCoord) {
-    assert(mBuilder.mUseTexCoord1);
-    std::size_t offset = index * mStride + mBuilder.mTexCoord1Offset;
-    throwIfOverflow(offset);
-    *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + offset) = texCoord;
+    assert(mVertexFormatDescriptor.mUseTexCoord1);
+    *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord1Offset)) = texCoord;
   }
 
   Vec2 VertexData::getTexCoord2(std::size_t index) {
-    assert(mBuilder.mUseTexCoord2);
-    std::size_t offset = index * mStride + mBuilder.mTexCoord2Offset;
-    throwIfOverflow(offset);
-    return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + offset);
+    assert(mVertexFormatDescriptor.mUseTexCoord2);
+    return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord2Offset));
   }
 
   void VertexData::setTexCoord2(std::size_t index, const Vec2& texCoord) {
-    assert(mBuilder.mUseTexCoord2);
-    std::size_t offset = index * mStride + mBuilder.mTexCoord2Offset;
-    throwIfOverflow(offset);
-    *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + offset) = texCoord;
+    assert(mVertexFormatDescriptor.mUseTexCoord2);
+    *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord2Offset)) = texCoord;
   }
 
   Vec2 VertexData::getTexCoord3(std::size_t index) {
-    assert(mBuilder.mUseTexCoord3);
-    std::size_t offset = index * mStride + mBuilder.mTexCoord3Offset;
-    throwIfOverflow(offset);
-    return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + offset);
+    assert(mVertexFormatDescriptor.mUseTexCoord3);
+    return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord3Offset));
   }
 
   void VertexData::setTexCoord3(std::size_t index, const Vec2& texCoord) {
-    assert(mBuilder.mUseTexCoord3);
-    std::size_t offset = index * mStride + mBuilder.mTexCoord3Offset;
-    throwIfOverflow(offset);
-    *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + offset) = texCoord;
+    assert(mVertexFormatDescriptor.mUseTexCoord3);
+    *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord3Offset)) = texCoord;
   }
 
   Vec2 VertexData::getTexCoord4(std::size_t index) {
-    assert(mBuilder.mUseTexCoord4);
-    std::size_t offset = index * mStride + mBuilder.mTexCoord4Offset;
-    throwIfOverflow(offset);
-    return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + offset);
+    assert(mVertexFormatDescriptor.mUseTexCoord4);
+    return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord4Offset));
   }
 
   void VertexData::setTexCoord4(std::size_t index, const Vec2& texCoord) {
-    assert(mBuilder.mUseTexCoord4);
-    std::size_t offset = index * mStride + mBuilder.mTexCoord4Offset;
-    throwIfOverflow(offset);
-    *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + offset) = texCoord;
+    assert(mVertexFormatDescriptor.mUseTexCoord4);
+    *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord4Offset)) = texCoord;
   }
 
   Vec2 VertexData::getTexCoord5(std::size_t index) {
-    assert(mBuilder.mUseTexCoord5);
-    std::size_t offset = index * mStride + mBuilder.mTexCoord5Offset;
-    throwIfOverflow(offset);
-    return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + offset);
+    assert(mVertexFormatDescriptor.mUseTexCoord5);
+    return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord5Offset));
   }
 
   void VertexData::setTexCoord5(std::size_t index, const Vec2& texCoord) {
-    assert(mBuilder.mUseTexCoord5);
-    std::size_t offset = index * mStride + mBuilder.mTexCoord5Offset;
-    throwIfOverflow(offset);
-    *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + offset) = texCoord;
+    assert(mVertexFormatDescriptor.mUseTexCoord5);
+    *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord5Offset)) = texCoord;
   }
 
   Vec2 VertexData::getTexCoord6(std::size_t index) {
-    assert(mBuilder.mUseTexCoord6);
-    std::size_t offset = index * mStride + mBuilder.mTexCoord6Offset;
-    throwIfOverflow(offset);
-    return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + offset);
+    assert(mVertexFormatDescriptor.mUseTexCoord6);
+    return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord6Offset));
   }
 
   void VertexData::setTexCoord6(std::size_t index, const Vec2& texCoord) {
-    assert(mBuilder.mUseTexCoord6);
-    std::size_t offset = index * mStride + mBuilder.mTexCoord6Offset;
-    throwIfOverflow(offset);
-    *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + offset) = texCoord;
+    assert(mVertexFormatDescriptor.mUseTexCoord6);
+    *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord6Offset)) = texCoord;
   }
 
   Vec2 VertexData::getTexCoord7(std::size_t index) {
-    assert(mBuilder.mUseTexCoord7);
-    std::size_t offset = index * mStride + mBuilder.mTexCoord7Offset;
-    throwIfOverflow(offset);
-    return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + offset);
+    assert(mVertexFormatDescriptor.mUseTexCoord7);
+    return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord7Offset));
   }
 
   void VertexData::setTexCoord7(std::size_t index, const Vec2& texCoord) {
-    assert(mBuilder.mUseTexCoord7);
-    std::size_t offset = index * mStride + mBuilder.mTexCoord7Offset;
-    throwIfOverflow(offset);
-    *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + offset) = texCoord;
+    assert(mVertexFormatDescriptor.mUseTexCoord7);
+    *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord7Offset)) = texCoord;
   }
 
   Color VertexData::getColor(std::size_t index) {
-    assert(mBuilder.mUseColor);
-    std::size_t offset = index * mStride + mBuilder.mColorOffset;
-    throwIfOverflow(offset);
-    return *reinterpret_cast<Color*>(static_cast<char*>(mBufferData) + offset);
+    assert(mVertexFormatDescriptor.mUseColor);
+    return *reinterpret_cast<Color*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mColorOffset));
   }
 
   void VertexData::setColor(std::size_t index, const Color& color) {
-    assert(mBuilder.mUseColor);
-    std::size_t offset = index * mStride + mBuilder.mColorOffset;
-    throwIfOverflow(offset);
-    *reinterpret_cast<Color*>(static_cast<char*>(mBufferData) + offset) = color;
+    assert(mVertexFormatDescriptor.mUseColor);
+    *reinterpret_cast<Color*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mColorOffset)) = color;
   }
 
   void VertexData::throwIfOverflow(std::size_t size) const {
@@ -182,5 +140,11 @@ namespace GLaDOS {
       throw std::runtime_error(
           "Range overflow" + std::to_string(size) + " > " + std::to_string(mSize));
     }
+  }
+
+  std::size_t VertexData::calcOffset(std::size_t index, std::size_t offset) const {
+    std::size_t calculatedOffset = index * mStride + offset;
+    throwIfOverflow(calculatedOffset);
+    return calculatedOffset;
   }
 }  // namespace GLaDOS

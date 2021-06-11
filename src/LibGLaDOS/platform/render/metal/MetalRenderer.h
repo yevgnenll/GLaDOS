@@ -13,6 +13,7 @@
 #include "utils/Singleton.hpp"
 
 namespace GLaDOS {
+  class Logger;
   class GPUBuffer;
   class MetalRenderer : public Renderer, public Singleton<MetalRenderer> {
   public:
@@ -42,6 +43,7 @@ namespace GLaDOS {
     Texture3D* createTexture3D(const std::string& name) override;
     TextureCube* createTextureCube(const std::string& name, PixelFormat format) override;
     RenderTexture* createRenderTexture(const std::string& name) override;
+    VertexData* createVertexData(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) override;
 
     id<MTLDevice> getDevice() const;
     id<MTLRenderCommandEncoder> getCommandEncoder() const;
@@ -51,6 +53,7 @@ namespace GLaDOS {
   private:
     static MTLPrimitiveType mapPrimitiveType(PrimitiveType type);
     static MTLIndexType mapIndexType(std::size_t size);
+    static Logger* logger;
 
     id<MTLDevice> mMetalDevice{nil};
     id<MTLRenderCommandEncoder> mCommandEncoder{nil};

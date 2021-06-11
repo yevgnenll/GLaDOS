@@ -7,6 +7,7 @@
 #include "platform/Platform.h"
 
 namespace GLaDOS {
+  Logger* Texture::logger = LoggerRegistry::getInstance().makeAndGetLogger("Texture");
   Texture::Texture(const std::string& name, PixelFormat format) : Resource{ResourceType::Texture}, mFormat{format} {
     setResourceDir(RESOURCE_DIR);
     setName(name);
@@ -90,7 +91,7 @@ namespace GLaDOS {
       case PixelFormat::sRGBA32:
         return 4;
       default:
-        LOG_WARN("default", "Unknown texture channel number fallback to 0");
+        LOG_WARN(logger, "Unknown texture channel number fallback to 0");
         break;
     }
 

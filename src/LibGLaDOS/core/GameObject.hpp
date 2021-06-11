@@ -11,6 +11,7 @@
 #include "utils/Utility.h"
 
 namespace GLaDOS {
+  class Logger;
   class Scene;
   class Transform;
   class Component;
@@ -49,6 +50,7 @@ namespace GLaDOS {
     Scene* scene();
 
   private:
+    static Logger* logger;
     void update(real deltaTime) override;
     void render() override;
 

@@ -19,7 +19,7 @@ namespace GLaDOS::GUI {
   protected:
     void sizeUpdate(const AbstractView* source, const AbstractView* target, int width, int height) override;
     bool preDraw(AbstractWindow* context) override;
-    Response draw(AbstractWindow *context) override;
+    Response draw(AbstractWindow* context) override;
 
   private:
     void onClose();
@@ -28,6 +28,6 @@ namespace GLaDOS::GUI {
     Label* mText;
     CloseButton* mClose;
   };
-}
+}  // namespace GLaDOS::GUI
 
 #endif  //GLADOS_MESSAGEBOX_H

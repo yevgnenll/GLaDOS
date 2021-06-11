@@ -68,6 +68,19 @@ g++ main.cpp -std=c++1z -Iinclude -Llib -lGLaDOS -lobjc -framework Metal -framew
 ./test
 ```
 
+### clang-format
+
+before run clang-format-all shell script, you should install dependencies
+
+```
+brew install coreutils clang-format
+```
+
+then run it.
+```
+./clang-format-all src
+```
+
 ### License
 
 no license yet.

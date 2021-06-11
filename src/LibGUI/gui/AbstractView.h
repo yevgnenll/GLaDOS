@@ -59,6 +59,6 @@ namespace GLaDOS::GUI {
     Size<int> mSize;
     std::string mName;
   };
-}  // namespace GLaDOS
+}  // namespace GLaDOS::GUI
 
 #endif  //GLADOS_ABSTRACTVIEW_H

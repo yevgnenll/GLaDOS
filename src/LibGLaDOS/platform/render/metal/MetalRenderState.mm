@@ -3,6 +3,7 @@
 #ifdef PLATFORM_MACOS
 
 namespace GLaDOS {
+  Logger* MetalDepthStencilState::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalDepthStencilState");
   MetalDepthStencilState::MetalDepthStencilState(const DepthStencilDescription& desc) : DepthStencilState{desc} {
     mDepthStencilDescriptor = [MTLDepthStencilDescriptor new];
     mDepthStencilDescriptor.depthWriteEnabled = static_cast<BOOL>(desc.mIsDepthWriteEnable);
@@ -48,7 +49,7 @@ namespace GLaDOS {
       case ComparisonFunction::GreaterEqual:
         return MTLCompareFunctionGreaterEqual;
       default:
-        LOG_WARN("default", "Unknown Depth comparison function! fallback to ComparisonFunction::Less");
+        LOG_WARN(logger, "Unknown Depth comparison function! fallback to ComparisonFunction::Less");
         break;
     }
 
@@ -74,13 +75,14 @@ namespace GLaDOS {
       case StencilOperator::Invert:
         return MTLStencilOperationInvert;
       default:
-        LOG_WARN("default", "Unknown Stencil operator! fallback to StencilOperator::Keep");
+        LOG_WARN(logger, "Unknown Stencil operator! fallback to StencilOperator::Keep");
         break;
     }
 
     return MTLStencilOperationKeep;
   }
 
+  Logger* MetalSamplerState::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalSamplerState");
   MetalSamplerState::MetalSamplerState(const SamplerDescription& desc) : SamplerState{desc} {
     mSamplerDescriptor = [MTLSamplerDescriptor new];
     mSamplerDescriptor.minFilter = MetalSamplerState::mapSamplerMinMagFilterFrom(desc.mMinFilter);
@@ -116,7 +118,7 @@ namespace GLaDOS {
       case FilterMode::Bilinear:
         return MTLSamplerMinMagFilterLinear;
       default:
-        LOG_WARN("default", "Not recognized FilterMode in metal renderer fallback to Nearest");
+        LOG_WARN(logger, "Not recognized FilterMode in metal renderer fallback to Nearest");
     }
 
     return MTLSamplerMinMagFilterNearest;
@@ -131,7 +133,7 @@ namespace GLaDOS {
       case FilterMode::Bilinear:
         return MTLSamplerMipFilterLinear;
       default:
-        LOG_WARN("default", "Not recognized FilterMode in metal renderer fallback to Nearest");
+        LOG_WARN(logger, "Not recognized FilterMode in metal renderer fallback to Nearest");
         break;
     }
 
@@ -152,12 +154,7 @@ namespace GLaDOS {
         return MTLSamplerAddressModeMirrorRepeat;
       case WrapMode::MirroredClampEdge:
         return MTLSamplerAddressModeMirrorClampToEdge;
-      default:
-        LOG_WARN("default", "Not recognized WrapMode in metal renderer fallback to Clamp");
-        break;
     }
-
-    return MTLSamplerAddressModeClampToZero;
   }
 }
 

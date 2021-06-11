@@ -6,6 +6,7 @@
 #include "Object.h"
 
 namespace GLaDOS {
+  class Logger;
   class SceneManager;
   class GameObject;
   class Camera;
@@ -44,6 +45,8 @@ namespace GLaDOS {
   private:
     void update(real deltaTime) override;
     void render() override;
+
+    static Logger* logger;
 
     uint32_t mBuildIndex{0};
     Vector<GameObject*> mGameObjects;

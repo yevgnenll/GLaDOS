@@ -21,6 +21,6 @@ namespace GLaDOS::GUI {
     Ignore = 0,
     Finish = (1 << 0)
   };
-}
+}  // namespace GLaDOS::GUI
 
 #endif  //GLADOS_CONSTANT_H

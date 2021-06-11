@@ -5,7 +5,7 @@ using namespace GLaDOS;
 class MainScene : public Scene {
 public:
   bool onInit() override {
-    Platform::getInstance().setClearColor(Color{0, 0, 0, 1});
+    Platform::getInstance().setClearColor({0, 0, 0, 1});
     float quad[] = {
         0.5, -0.5, 0.0,     1.0, 0.0, 0.0, 1.0,
         -0.5, -0.5, 0.0,    0.0, 1.0, 0.0, 1.0,
@@ -15,16 +15,14 @@ public:
         0.5, -0.5, 0.0,     1.0, 0.0, 0.0, 1.0,
         -0.5, 0.5, 0.0,     0.0, 0.0, 1.0, 1.0,
     };
-    VertexData* vertexData = NEW_T(VertexData(VertexFormatBuilder().withPosition().withColor(), 6));
+    VertexData* vertexData = Platform::getRenderer().createVertexData(VertexFormatDescriptor().position().color(), 6);
     vertexData->uploadDataNoCopy(quad);
     Mesh* mesh = Platform::getRenderer().createMesh(vertexData, nullptr);
     if (mesh == nullptr) {
-      LOG_ERROR("default", "Mesh initialize failed!");
       return false;
     }
     shaderProgram = Platform::getRenderer().createShaderProgram("basicVertex.metal", "basicFragment.metal", vertexData);
     if (shaderProgram == nullptr) {
-      LOG_ERROR("default", "Shader initialize failed!");
       return false;
     }
     Material* material = NEW_T(Material);
@@ -64,7 +62,6 @@ private:
 bool init() {
   PlatformParams params{1024, 800, "01-setup", "GLaDOS", false};
   if (!Platform::getInstance().initialize(params)) {
-    LOG_ERROR("default", "Platform initialize failed!");
     return false;
   }
   return true;
@@ -72,7 +69,10 @@ bool init() {
 
 int main(int argc, char** argv) {
   std::atexit(&dumpMemory);
-  if (!init()) return -1;
+  if (!init()) {
+    return -1;
+  }
+
   SceneManager::getInstance().setActiveScene(SceneManager::getInstance().createScene<MainScene>("testScene"));
   while (Platform::getInstance().isRunning()) {
     Platform::getInstance().update();

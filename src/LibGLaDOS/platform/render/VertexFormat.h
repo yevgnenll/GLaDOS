@@ -5,6 +5,7 @@
 #include "utils/Utility.h"
 
 namespace GLaDOS {
+  class Logger;
   class VertexFormat {
   public:
     explicit VertexFormat(VertexSemantic _semantic, VertexAttributeType _attributeType);
@@ -15,29 +16,49 @@ namespace GLaDOS {
     std::size_t sizeAlign4() const;
 
   private:
+    static Logger* logger;
+
     VertexSemantic mSemantic{VertexSemantic::Unknown};
     VertexAttributeType mType{VertexAttributeType::Unknown};
   };
 
-  class VertexFormatBuilder {
+  class VertexFormatHolder {
+  public:
+    typedef Vector<VertexFormat*>::iterator iterator;
+    typedef const Vector<VertexFormat*>::const_iterator const_iterator;
+
+    VertexFormatHolder(Vector<VertexFormat*>& vertexFormats);
+    ~VertexFormatHolder();
+
+    iterator begin();
+    const_iterator begin() const;
+    iterator end();
+    const_iterator end() const;
+    Vector<VertexFormat*> getVertexFormats() const;
+
+  private:
+    Vector<VertexFormat*> mVertexFormats;
+  };
+
+  class VertexFormatDescriptor {
     friend class VertexData;
 
   public:
-    VertexFormatBuilder() = default;
-    ~VertexFormatBuilder() = default;
+    VertexFormatDescriptor() = default;
+    ~VertexFormatDescriptor() = default;
 
-    VertexFormatBuilder withPosition();
-    VertexFormatBuilder withNormal();
-    VertexFormatBuilder withTexCoord0();
-    VertexFormatBuilder withTexCoord1();
-    VertexFormatBuilder withTexCoord2();
-    VertexFormatBuilder withTexCoord3();
-    VertexFormatBuilder withTexCoord4();
-    VertexFormatBuilder withTexCoord5();
-    VertexFormatBuilder withTexCoord6();
-    VertexFormatBuilder withTexCoord7();
-    VertexFormatBuilder withColor();
-    Vector<VertexFormat*> build() const;
+    VertexFormatDescriptor position();
+    VertexFormatDescriptor normal();
+    VertexFormatDescriptor texCoord0();
+    VertexFormatDescriptor texCoord1();
+    VertexFormatDescriptor texCoord2();
+    VertexFormatDescriptor texCoord3();
+    VertexFormatDescriptor texCoord4();
+    VertexFormatDescriptor texCoord5();
+    VertexFormatDescriptor texCoord6();
+    VertexFormatDescriptor texCoord7();
+    VertexFormatDescriptor color();
+    VertexFormatHolder* makeVertexFormatHolder() const;
 
   private:
     static std::size_t sumOfPreviousOffset(const Vector<VertexFormat*>& vertexFormats);

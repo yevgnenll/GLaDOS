@@ -4,6 +4,7 @@
 #include "memory/StreamBuffer.h"
 
 namespace GLaDOS {
+  class Logger;
   class ByteBuffer {
   public:
     virtual ~ByteBuffer();
@@ -22,6 +23,9 @@ namespace GLaDOS {
     std::size_t mSize{0};
     std::size_t mStride{0};
     bool mIsAllocated{false};
+
+  private:
+    static Logger* logger;
   };
 }  // namespace GLaDOS
 

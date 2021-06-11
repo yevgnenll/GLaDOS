@@ -13,6 +13,6 @@ namespace GLaDOS {
     ThreadLocalStore() = delete;
     ~ThreadLocalStore() = delete;
   };
-}
+}  // namespace GLaDOS
 
 #endif  //GLADOS_THREADLOCALSTORAGE_HPP

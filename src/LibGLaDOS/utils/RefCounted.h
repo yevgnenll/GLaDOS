@@ -7,6 +7,7 @@ namespace GLaDOS {
   class RefCounted {
     template <typename T>
     friend class RefPtr;
+
   public:
     RefCounted() = default;
     explicit constexpr RefCounted(int initialValue);
@@ -21,6 +22,6 @@ namespace GLaDOS {
 
     std::atomic_int mRefCount{0};
   };
-}
+}  // namespace GLaDOS
 
 #endif  //GLADOS_REFCOUNTED_H

@@ -11,6 +11,7 @@
 #include "utils/Enumeration.h"
 
 namespace GLaDOS {
+  Logger* MetalShaderProgram::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalShaderProgram");
   MetalShaderProgram::~MetalShaderProgram() {
     if (mIsValid) {
       [mVertexFunction release];
@@ -66,12 +67,12 @@ namespace GLaDOS {
     // [commandEncoder setStencilFrontReferenceValue:1 backReferenceValue:1];
   }
 
-  MTLVertexDescriptor* MetalShaderProgram::makeVertexDescriptor(const Vector<VertexFormat*>& vertexFormats) {
+  MTLVertexDescriptor* MetalShaderProgram::makeVertexDescriptor(VertexFormatHolder* vertexFormatHolder) {
     MTLVertexDescriptor* vertexDescriptor = [[MTLVertexDescriptor new] autorelease];
 
     std::size_t bufferIndex = 1;  // bufferIndex 0번은 유니폼으로 사용됨
     std::size_t offset = 0;
-    for (const auto& format : vertexFormats) {
+    for (const auto& format : *vertexFormatHolder) {
       MTLVertexAttribute* attribute = findVertexAttribute(format->semantic());
       if (attribute != nullptr) {
         std::size_t attributeIndex = attribute.attributeIndex;
@@ -131,13 +132,13 @@ namespace GLaDOS {
 
   bool MetalShaderProgram::makePipelineDescriptor(const VertexData* vertexData) {
     if (!mIsValid) {
-      LOG_ERROR("default", "Invalid Metal shader program");
+      LOG_ERROR(logger, "Invalid Metal shader program");
       return false;
     }
 
     id<MTLDevice> device = MetalRenderer::getInstance().getDevice();
     if (device == nil) {
-      LOG_ERROR("default", "Invalid Metal device state");
+      LOG_ERROR(logger, "Invalid Metal device state");
       return false;
     }
 
@@ -147,14 +148,14 @@ namespace GLaDOS {
 
     MTLRenderPipelineColorAttachmentDescriptor* colorAttachmentDescriptor = mPipelineDescriptor.colorAttachments[0];
     if (colorAttachmentDescriptor == nil) {
-      LOG_ERROR("default", "Invalid ColorAttachment state");
+      LOG_ERROR(logger, "Invalid ColorAttachment state");
       return false;
     }
     colorAttachmentDescriptor.pixelFormat = [MetalRenderer::getInstance().getMetalLayer() pixelFormat];
     mPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatDepth32Float_Stencil8;
     mPipelineDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatDepth32Float_Stencil8;
 
-    MTLVertexDescriptor* vertexDescriptor = makeVertexDescriptor(vertexData->getVertexFormats());
+    MTLVertexDescriptor* vertexDescriptor = makeVertexDescriptor(vertexData->getVertexFormatHolder());
     [mPipelineDescriptor setVertexDescriptor:vertexDescriptor];
 
     NSError* stateError;
@@ -162,7 +163,7 @@ namespace GLaDOS {
     MTLRenderPipelineReflection* pipelineReflection;
     id<MTLRenderPipelineState> pipelineState = [device newRenderPipelineStateWithDescriptor:mPipelineDescriptor options:options reflection:&pipelineReflection error:&stateError];
     if (stateError != nil) {
-      LOG_ERROR("default", "RenderPipelineState build error occurred!: \n{0}", [[stateError description] UTF8String]);
+      LOG_ERROR(logger, "RenderPipelineState build error occurred!: \n{0}", [[stateError description] UTF8String]);
       return false;
     }
 
@@ -177,7 +178,7 @@ namespace GLaDOS {
 
   bool MetalShaderProgram::addShaderArguments(MTLRenderPipelineReflection* pipelineReflection) {
     if (pipelineReflection == nil) {
-      LOG_ERROR("default", "Invalid RenderPipelineReflection state");
+      LOG_ERROR(logger, "Invalid RenderPipelineReflection state");
       return false;
     }
 
@@ -209,7 +210,7 @@ namespace GLaDOS {
             uniform->mOffset = member.offset;
             uniform->resize(uniform->mCount * MetalShaderProgram::mapUniformTypeSizeForm(uniform->mUniformType));
             mUniforms.try_emplace(uniform->mName, uniform);
-            LOG_TRACE("default", "Uniform add -> [{0}]", uniform->toString());
+            LOG_TRACE(logger, "Uniform add -> [{0}]", uniform->toString());
           }
         }
         break;
@@ -222,7 +223,7 @@ namespace GLaDOS {
         uniform->mCount = 1;
         uniform->mOffset = argument.index;
         mUniforms.try_emplace(uniform->mName, uniform);
-        LOG_TRACE("default", "Uniform add -> [{0}]", uniform->toString());
+        LOG_TRACE(logger, "Uniform add -> [{0}]", uniform->toString());
         break;
       }
     }
@@ -248,7 +249,7 @@ namespace GLaDOS {
           fragmentUniformSize += (uniform->mOffset + uniform->size());
           break;
         default:
-          LOG_WARN("default", "Not supported type yet!");
+          LOG_WARN(logger, "Not supported type yet!");
           break;
       }
     }
@@ -318,7 +319,7 @@ namespace GLaDOS {
       case VertexAttributeType::UShort4Norm:
         return MTLVertexFormatUShort4Normalized;
       default:
-        LOG_ERROR("default", "Unknown vertex attribute type");
+        LOG_ERROR(logger, "Unknown vertex attribute type");
         break;
     }
 
@@ -348,7 +349,7 @@ namespace GLaDOS {
       case MTLDataTypeSampler:
         return UniformType::Sampler;
       default:
-        LOG_ERROR("default", "Unknown data type");
+        LOG_ERROR(logger, "Unknown data type");
         break;
     }
 
@@ -378,7 +379,7 @@ namespace GLaDOS {
       case UniformType::Sampler:
         return 4;
       default:
-        LOG_ERROR("default", "Unknown uniform type");
+        LOG_ERROR(logger, "Unknown uniform type");
         break;
     }
 
@@ -414,7 +415,7 @@ namespace GLaDOS {
       case VertexSemantic::BiTangent:
         return "_biTangent";
       default:
-        LOG_WARN("default", "Not supported vertex semantic type");
+        LOG_WARN(logger, "Not supported vertex semantic type");
         break;
     }
 
@@ -453,7 +454,7 @@ namespace GLaDOS {
   bool MetalShaderProgram::createShader(const std::string& source, id<MTLFunction>& function) {
     id<MTLDevice> device = MetalRenderer::getInstance().getDevice();
     if (device == nil) {
-      LOG_ERROR("default", "Invalid Metal device state");
+      LOG_ERROR(logger, "Invalid Metal device state");
       return false;
     }
 
@@ -466,7 +467,7 @@ namespace GLaDOS {
 
     if (compileError != nil) {
       NSString* errorMessage = [NSString stringWithFormat:@"%@", compileError];
-      LOG_ERROR("default", [errorMessage UTF8String]);
+      LOG_ERROR(logger, [errorMessage UTF8String]);
       [library release];
       return false;
     }
@@ -474,7 +475,7 @@ namespace GLaDOS {
     function = [library newFunctionWithName:@"main0"];
     [library release];
     if (function == nil) {
-      LOG_ERROR("default", "Invalid function name main0");
+      LOG_ERROR(logger, "Invalid function name main0");
       return false;
     }
 

@@ -5,8 +5,9 @@
 #include "utils/Utility.h"
 
 namespace GLaDOS {
+  Logger* Renderable::logger = LoggerRegistry::getInstance().makeAndGetLogger("Renderable");
   Renderable::Renderable() {
-    LOG_TRACE("default", "Renderable instance created: {0}", mInstanceId);
+    LOG_TRACE(logger, "Renderable instance created: {0}", mInstanceId);
   }
 
   Renderable::~Renderable() {

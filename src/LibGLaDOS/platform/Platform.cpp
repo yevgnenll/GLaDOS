@@ -4,6 +4,8 @@
 
 #include "OSTypes.h"
 #include "platform/render/FrameBuffer.h"
+#include "utils/LoggerRegistry.h"
+
 #ifdef PLATFORM_WINDOW
 #include <process.h>
 #define WIN32_LEAN_AND_MEAN
@@ -15,6 +17,7 @@
 #endif
 
 namespace GLaDOS {
+  Logger* Platform::logger = LoggerRegistry::getInstance().makeAndGetLogger("Platform");
   void Platform::quit() { mIsRunning = false; }
 
   int Platform::width() const { return mWidth; }

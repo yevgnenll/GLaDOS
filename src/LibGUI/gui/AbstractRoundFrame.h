@@ -7,10 +7,9 @@ namespace GLaDOS::GUI {
   class AbstractWindow;
   class AbstractRoundFrame : public AbstractFrame {
   public:
-
   protected:
     virtual bool preDraw(AbstractWindow* context);
   };
-}
+}  // namespace GLaDOS::GUI
 
 #endif  //GLADOS_ABSTRACTROUNDFRAME_H

@@ -7,6 +7,7 @@
 #include "math/Vec4.h"
 
 namespace GLaDOS {
+  Logger* StreamBuffer::logger = LoggerRegistry::getInstance().makeAndGetLogger("StreamBuffer");
   StreamBuffer::StreamBuffer(std::size_t size, void* data) {
     resize(size);
     std::memcpy(pointer(), data, size);
@@ -132,7 +133,7 @@ namespace GLaDOS {
 
   void StreamBuffer::throwIfOverflow(std::size_t size) const {
     if (this->size() < size) {
-      LOG_ERROR("default", "Range overflow {0} > {1}", size, this->size());
+      LOG_ERROR(logger, "Range overflow {0} > {1}", size, this->size());
       throw std::runtime_error(
           "Range overflow" + std::to_string(size) + " > " + std::to_string(this->size()));
     }
@@ -140,7 +141,7 @@ namespace GLaDOS {
 
   void StreamBuffer::writeBytes(std::byte* bytes, unsigned int count) {
     if (size() < count) {
-      LOG_ERROR("default", "buffer overflow");
+      LOG_ERROR(logger, "buffer overflow");
       return;
     }
 

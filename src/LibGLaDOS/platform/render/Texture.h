@@ -5,9 +5,10 @@
 #include "utils/Utility.h"
 
 namespace GLaDOS {
+  class Logger;
   class Color;
   class SamplerState;
-  class SamplerDescription;
+  struct SamplerDescription;
   class StreamBuffer;
   class Texture : public Resource {
   public:
@@ -44,6 +45,9 @@ namespace GLaDOS {
     TextureDimension mDimension{TextureDimension::Unknown};
     SamplerState* mSamplerState{nullptr};
     Color* mColorKey{nullptr};
+
+  private:
+    static Logger* logger;
   };
 }  // namespace GLaDOS
 

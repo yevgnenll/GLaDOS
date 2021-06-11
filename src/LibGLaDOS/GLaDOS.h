@@ -30,8 +30,10 @@
 #include "platform/render/Uniform.h"
 #include "platform/render/VertexData.h"
 #include "platform/render/VertexFormat.h"
+#include "resource/Sprite.h"
+#include "resource/SpriteSheet.h"
 #include "utils/MeshGenerator.h"
-#include "utils/Utility.h"
 #include "utils/String.hpp"
+#include "utils/Utility.h"
 
 #endif  //GLADOS_GLADOS_H

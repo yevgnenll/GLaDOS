@@ -1,7 +1,9 @@
 #include "String.hpp"
-#include "math/Math.h"
+
 #include <codecvt>
 #include <locale>
+
+#include "math/Math.h"
 
 namespace GLaDOS {
   String::String(const char* chars) {
@@ -88,4 +90,4 @@ namespace GLaDOS {
     }
     return str;
   }
-}
+}  // namespace GLaDOS

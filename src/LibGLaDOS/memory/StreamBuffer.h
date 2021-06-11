@@ -5,6 +5,7 @@
 #include "utils/Utility.h"
 
 namespace GLaDOS {
+  class Logger;
   class Vec2;
   class Vec3;
   class Vec4;
@@ -52,6 +53,7 @@ namespace GLaDOS {
   private:
     void writeBytes(std::byte* bytes, unsigned int count);
 
+    static Logger* logger;
     Vector<std::byte> mData;
   };
 

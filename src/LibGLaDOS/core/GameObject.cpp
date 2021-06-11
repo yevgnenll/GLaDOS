@@ -4,6 +4,7 @@
 #include "core/component/Transform.h"
 
 namespace GLaDOS {
+  Logger* GameObject::logger = LoggerRegistry::getInstance().makeAndGetLogger("GameObject");
   GameObject::GameObject(std::string name, Scene* scene) {
     mName = name;
     mTransform = addComponent<Transform>();
@@ -11,7 +12,7 @@ namespace GLaDOS {
       mScene = scene;
       scene->addGameObject(this);
     }
-    LOG_TRACE("default", "GameObject {0} created in scene {1}.", mName, mScene->getName());
+    LOG_TRACE(logger, "GameObject {0} created in scene {1}.", mName, mScene->getName());
   }
 
   GameObject::GameObject(std::string name, GameObject* parent, Scene* scene) : mParent{parent} {
@@ -22,7 +23,7 @@ namespace GLaDOS {
       mScene = scene;
       scene->addGameObject(this);
     }
-    LOG_TRACE("default", "GameObject {0} created in scene {1}.", mName, mScene->getName());
+    LOG_TRACE(logger, "GameObject {0} created in scene {1}.", mName, mScene->getName());
   }
 
   GameObject::~GameObject() {

@@ -9,6 +9,7 @@
 #include "utils/Utility.h"
 
 namespace GLaDOS {
+  Logger* WindowsPlatform::logger = LoggerRegistry::getInstance().makeAndGetLogger("WindowsPlatform");
   WindowsPlatform* WindowsPlatform::windowsPlatformInstance = nullptr;
 
   WindowsPlatform::~WindowsPlatform() {
@@ -22,16 +23,16 @@ namespace GLaDOS {
 
   bool WindowsPlatform::initialize(const PlatformParams& params) {
     Platform::getInstance().printLogo();
-    LOG_TRACE("default", "Initialize Windows Platform...");
+    LOG_TRACE(logger, "Initialize Windows Platform...");
 
     if (params.width <= 0 || params.height <= 0) {
-      LOG_ERROR("default", "Platform width and height should not be less than 0.");
+      LOG_ERROR(logger, "Platform width and height should not be less than 0.");
       return false;
     }
 
     mhInstance = GetModuleHandle(nullptr);
     if (mhInstance == nullptr) {
-      LOG_ERROR("default", "GetModuleHandle failed.");
+      LOG_ERROR(logger, "GetModuleHandle failed.");
       return false;
     }
 
@@ -61,13 +62,13 @@ namespace GLaDOS {
                      cstrTitleName,
                      nullptr};
     if (!RegisterClassEx(&wc)) {
-      LOG_ERROR("default", "RegisterClassEx failed.");
+      LOG_ERROR(logger, "RegisterClassEx failed.");
       return false;
     }
 
     RECT rt = {0, 0, Platform::getInstance().mWidth, Platform::getInstance().mHeight};
     if (AdjustWindowRectEx(&rt, style, 0, mExStyle) == 0) {
-      LOG_ERROR("default", "AdjustWindowRectEx failed.");
+      LOG_ERROR(logger, "AdjustWindowRectEx failed.");
       return false;
     }
 
@@ -80,7 +81,7 @@ namespace GLaDOS {
     }
 
     if (!D3DX12Renderer::getInstance().initialize(params.width, params.height)) {
-      LOG_ERROR("default", "D3DX12Renderer initialize failed.");
+      LOG_ERROR(logger, "D3DX12Renderer initialize failed.");
       return false;
     }
 
@@ -132,7 +133,7 @@ namespace GLaDOS {
         break;
       case WM_EXITSIZEMOVE:
         // TODO
-        LOG_TRACE("default", "window resize end");
+        LOG_TRACE(logger, "window resize end");
         break;
       case WM_SETFOCUS:
         Platform::getInstance().mIsFocused = true;
@@ -164,7 +165,7 @@ namespace GLaDOS {
   }
 
   void Platform::registerKeyMap() {
-    LOG_TRACE("default", "Register Windows key map...");
+    LOG_TRACE(logger, "Register Windows key map...");
     for (int i = 0; i < static_cast<int>(KeyCode::KEY_MAX); i++) {
       mKeys[i] = false;
       mLocalKeymap[i] = KeyCode::KEY_UNDEFINED;

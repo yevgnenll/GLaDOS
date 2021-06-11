@@ -2,6 +2,7 @@
 #define GLADOS_MESHGENERATOR_H
 
 #include "Utility.h"
+#include "math/Rect.hpp"
 
 namespace GLaDOS {
   class Mesh;
@@ -10,6 +11,7 @@ namespace GLaDOS {
     MeshGenerator() = delete;
     ~MeshGenerator() = delete;
 
+    static Mesh* generateRectangle(Rect<real> textureRect);
     static Mesh* generatePlane(unsigned int dimensions = 50);
     static Mesh* generateCube();
     static Mesh* generateIcoSphere(unsigned int subdivisions = 3);

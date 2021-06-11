@@ -12,6 +12,6 @@ namespace GLaDOS::GUI {
   protected:
     virtual Response draw(AbstractWindow* context) = 0;
   };
-}
+}  // namespace GLaDOS::GUI
 
 #endif  //GLADOS_ABSTRACTDIALOG_H

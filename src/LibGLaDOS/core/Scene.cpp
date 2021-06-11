@@ -4,6 +4,7 @@
 #include "core/component/Camera.h"
 
 namespace GLaDOS {
+  Logger* Scene::logger = LoggerRegistry::getInstance().makeAndGetLogger("Scene");
   Scene::Scene() {
     // Every scene has at least a camera.
     GameObject* cameraObject = createGameObject("MainCamera");
@@ -16,7 +17,7 @@ namespace GLaDOS {
 
   void Scene::addGameObject(GameObject* object) {
     if (object == nullptr) {
-      LOG_ERROR("default", "Null GameObject can not be added to scene.");
+      LOG_ERROR(logger, "Null GameObject can not be added to scene.");
       return;
     }
     object->mScene = this;
@@ -49,7 +50,7 @@ namespace GLaDOS {
     });
 
     if (iter == mGameObjects.end()) {
-      LOG_INFO("No GameObject name: {0}, instanceId: {1} found.", gameObject->getName(), gameObject->getInstanceId());
+      LOG_INFO(logger, "No GameObject name: {0}, instanceId: {1} found.", gameObject->getName(), gameObject->getInstanceId());
       return false;
     }
 
@@ -61,15 +62,12 @@ namespace GLaDOS {
   }
 
   GameObject* Scene::instantiate(GameObject* original) {
-
   }
 
   GameObject* Scene::instantiate(GameObject* original, const Vec3& position) {
-
   }
 
   GameObject* Scene::instantiate(GameObject* original, const Vec3& position, const Quat& rotation) {
-
   }
 
   void Scene::update(real deltaTime) {

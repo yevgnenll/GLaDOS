@@ -167,9 +167,9 @@ namespace GLaDOS {
   };
 
   enum class BufferUsage {
-    Private, // Only accessible by the GPU
-    Synchronized, // CPU and GPU maintain their copies of resource, and must be explicitly synchronized
-    Shared // stored in system memory and is accessible to both the CPU and GPU
+    Private,  // Only accessible by the GPU
+    Synchronized,  // CPU and GPU maintain their copies of resource, and must be explicitly synchronized
+    Shared  // stored in system memory and is accessible to both the CPU and GPU
   };
 
   enum class VertexSemantic {
@@ -244,6 +244,13 @@ namespace GLaDOS {
     True,
     Ignored,
     Error
+  };
+
+  enum class AnimationWrapMode {
+    Once = 0,
+    Loop,
+    ClampForever,
+    PingPong
   };
 
   class UniformType {

@@ -9,6 +9,7 @@
 #include "platform/render/Renderable.h"
 
 namespace GLaDOS {
+  class Logger;
   class MetalTextureBase;
   class Uniform;
   class MetalRenderable : public Renderable {
@@ -25,6 +26,8 @@ namespace GLaDOS {
 
   private:
     static void setTexture(id<MTLRenderCommandEncoder> commandEncoder, MetalTextureBase* texture, Uniform* uniform);
+    static Logger* logger;
+
     MTLVertexDescriptor* mVertexDescriptor{nil};
     id<MTLRenderPipelineState> mPipelineState{nil};
   };

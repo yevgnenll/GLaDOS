@@ -3,6 +3,7 @@
 #ifdef PLATFORM_MACOS
 
 namespace GLaDOS {
+  Logger* MetalFrameBuffer::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalFrameBuffer");
   MetalFrameBuffer::MetalFrameBuffer() {
     id<MTLDevice> device = MetalRenderer::getInstance().getDevice();
     if (nullptr != device) {
@@ -76,7 +77,7 @@ namespace GLaDOS {
         [mDepthStencilTexture release];
       }
       mDepthStencilTexture = [MetalRenderer::getInstance().getDevice() newTextureWithDescriptor:textureDescriptor];
-      LOG_TRACE("default", "Depth stencil texture recreated with size {0}, {1}", drawableSize.width, drawableSize.height);
+      LOG_TRACE(logger, "Depth stencil texture recreated with size {0}, {1}", drawableSize.width, drawableSize.height);
     }
   }
 }

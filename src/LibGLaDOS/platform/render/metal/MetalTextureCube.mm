@@ -5,6 +5,7 @@
 #import "MetalRenderState.h"
 
 namespace GLaDOS {
+  Logger* MetalTextureCube::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalTextureCube");
   MetalTextureCube::MetalTextureCube(const std::string& name, PixelFormat format) : TextureCube{name, format} {
   }
 
@@ -15,12 +16,12 @@ namespace GLaDOS {
   void MetalTextureCube::generateTexture(Vector<uint8_t*> data) {
     id<MTLDevice> device = MetalRenderer::getInstance().getDevice();
     if (device == nil) {
-      LOG_ERROR("default", "Invalid Metal device state, texture creation failed.");
+      LOG_ERROR(logger, "Invalid Metal device state, texture creation failed.");
       return;
     }
 
     if (data.empty() || data.size() != static_cast<uint32_t>(CubeMapFace::TheNumberOfFace)) {
-      LOG_ERROR("default", "Cubemap can only be created from exactly six images");
+      LOG_ERROR(logger, "Cubemap can only be created from exactly six images");
       return;
     }
 
@@ -36,7 +37,7 @@ namespace GLaDOS {
     mTexture = [device newTextureWithDescriptor:mTextureDescriptor];
 
     if (mTexture == nil) {
-      LOG_ERROR("default", "Failed to create Texture: {0}", mName);
+      LOG_ERROR(logger, "Failed to create Texture: {0}", mName);
       return;
     }
 

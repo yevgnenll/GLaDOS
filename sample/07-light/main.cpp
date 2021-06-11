@@ -7,12 +7,10 @@ public:
   bool onInit() override {
     Mesh* mesh = MeshGenerator::generateTorusKnot(3, 4, 64, 16, 0.2);
     if (mesh == nullptr) {
-      LOG_ERROR("default", "Mesh initialize failed!");
       return false;
     }
     shaderProgram = Platform::getRenderer().createShaderProgram("normalVertex.metal", "normalFragment.metal", mesh->getVertexData());
     if (shaderProgram == nullptr) {
-      LOG_ERROR("default", "Shader initialize failed!");
       return false;
     }
     DepthStencilDescription depthStencilDesc{};
@@ -83,7 +81,6 @@ private:
 bool init() {
   PlatformParams params{1024, 800, "07-light", "GLaDOS", false};
   if (!Platform::getInstance().initialize(params)) {
-    LOG_ERROR("default", "Platform initialize failed!");
     return false;
   }
 

@@ -6,6 +6,7 @@
 #include "math/Math.h"
 
 namespace GLaDOS {
+  Logger* MetalTexture2D::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalTexture2D");
   MetalTexture2D::MetalTexture2D(const std::string& name, PixelFormat format) : Texture2D{name, format} {
   }
 
@@ -15,7 +16,7 @@ namespace GLaDOS {
   void MetalTexture2D::generateTexture(uint32_t x, uint32_t y, uint8_t* data) {
     id<MTLDevice> device = MetalRenderer::getInstance().getDevice();
     if (device == nil) {
-      LOG_ERROR("default", "Invalid Metal device state, texture creation failed.");
+      LOG_ERROR(logger, "Invalid Metal device state, texture creation failed.");
       return;
     }
 
@@ -32,7 +33,7 @@ namespace GLaDOS {
     mMipmapCount = static_cast<uint32_t>(mTextureDescriptor.mipmapLevelCount);
 
     if (mTexture == nil) {
-      LOG_ERROR("default", "Failed to create Texture: {0}", mName);
+      LOG_ERROR(logger, "Failed to create Texture: {0}", mName);
       return;
     }
 

@@ -10,6 +10,7 @@
 #include "platform/render/GPUBuffer.h"
 
 namespace GLaDOS {
+  class Logger;
   class MetalGPUBuffer : public GPUBuffer {
   public:
     MetalGPUBuffer(BufferType type, BufferUsage usage);
@@ -19,6 +20,8 @@ namespace GLaDOS {
     id<MTLBuffer> getMetalBuffer() const;
 
   private:
+    static Logger* logger;
+
     id<MTLBuffer> mMetalBuffer{nil};
   };
 }  // namespace GLaDOS

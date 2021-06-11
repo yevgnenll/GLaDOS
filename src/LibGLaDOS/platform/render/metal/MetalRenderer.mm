@@ -11,9 +11,11 @@
 #include "MetalTexture2D.h"
 #include "MetalTextureCube.h"
 #include "platform/render/Mesh.h"
+#include "platform/render/VertexData.h"
 #include "utils/FileSystem.h"
 
 namespace GLaDOS {
+  Logger* MetalRenderer::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalRenderer");
   MetalRenderer::~MetalRenderer() {
     [mMetalDevice release];
     [mMetalLayer release];
@@ -22,13 +24,13 @@ namespace GLaDOS {
   bool MetalRenderer::initialize(int width, int height) {
     mMetalDevice = MTLCreateSystemDefaultDevice();
     if (mMetalDevice == nil) {
-      LOG_ERROR("default", "System does not support metal.");
+      LOG_ERROR(logger, "System does not support metal.");
       return false;
     }
 
     mMetalLayer = [CAMetalLayer layer];
     if (mMetalLayer == nil) {
-      LOG_ERROR("default", "System does not support metal layer.");
+      LOG_ERROR(logger, "System does not support metal layer.");
       return false;
     }
 
@@ -38,24 +40,24 @@ namespace GLaDOS {
     // If NO, the nextDrawable method waits indefinitely for a drawable to become available.
     mMetalLayer.allowsNextDrawableTimeout = NO;
 
-    LOG_TRACE("default", "MetalRenderer supports MSAA sample count 1: {0}", static_cast<bool>([mMetalDevice supportsTextureSampleCount:1]));
-    LOG_TRACE("default", "MetalRenderer supports MSAA sample count 2: {0}", static_cast<bool>([mMetalDevice supportsTextureSampleCount:2]));
-    LOG_TRACE("default", "MetalRenderer supports MSAA sample count 4: {0}", static_cast<bool>([mMetalDevice supportsTextureSampleCount:4]));
-    LOG_TRACE("default", "MetalRenderer supports MSAA sample count 8: {0}", static_cast<bool>([mMetalDevice supportsTextureSampleCount:8]));
-    LOG_TRACE("default", "MetalRenderer supports argument buffers: {0}", static_cast<bool>([mMetalDevice argumentBuffersSupport]));
+    LOG_TRACE(logger, "MetalRenderer supports MSAA sample count 1: {0}", static_cast<bool>([mMetalDevice supportsTextureSampleCount:1]));
+    LOG_TRACE(logger, "MetalRenderer supports MSAA sample count 2: {0}", static_cast<bool>([mMetalDevice supportsTextureSampleCount:2]));
+    LOG_TRACE(logger, "MetalRenderer supports MSAA sample count 4: {0}", static_cast<bool>([mMetalDevice supportsTextureSampleCount:4]));
+    LOG_TRACE(logger, "MetalRenderer supports MSAA sample count 8: {0}", static_cast<bool>([mMetalDevice supportsTextureSampleCount:8]));
+    LOG_TRACE(logger, "MetalRenderer supports argument buffers: {0}", static_cast<bool>([mMetalDevice argumentBuffersSupport]));
     if ([mMetalDevice respondsToSelector:@selector(supports32BitMSAA)] != 0) {
-      LOG_TRACE("default", "MetalRenderer supports 32 bits floating point MSAA: {0}", static_cast<bool>([mMetalDevice supports32BitMSAA]));
+      LOG_TRACE(logger, "MetalRenderer supports 32 bits floating point MSAA: {0}", static_cast<bool>([mMetalDevice supports32BitMSAA]));
     }
     if ([mMetalDevice respondsToSelector:@selector(supportsBCTextureCompression)] != 0) {
-      LOG_TRACE("default", "MetalRenderer supports BC Texture compression format: {0}", static_cast<bool>([mMetalDevice supportsBCTextureCompression]));
+      LOG_TRACE(logger, "MetalRenderer supports BC Texture compression format: {0}", static_cast<bool>([mMetalDevice supportsBCTextureCompression]));
     }
-#if defined(ARCH_INTEL_CPU)
-    LOG_TRACE("default", "Target Intel CPU");
-#elif defined(ARCH_ARM_CPU)
-    LOG_TRACE("default", "Target Apple Silicon");
+#if defined(ARCH_ARM_CPU)
+    LOG_TRACE(logger, "Target Apple Silicon");
+#elif defined(ARCH_INTEL_CPU)
+    LOG_TRACE(logger, "Target Intel CPU");
 #endif
 
-    LOG_TRACE("default", "MetalRenderer init success with Graphics Card: {0}", [[mMetalDevice name] UTF8String]);
+    LOG_TRACE(logger, "MetalRenderer init success with Graphics Card: {0}", [[mMetalDevice name] UTF8String]);
 
     return true;
   }
@@ -113,19 +115,19 @@ namespace GLaDOS {
     FileSystem vertexFile{shaderDirectory + vertexPath, OpenMode::ReadBinary};
     std::string vertexSource;
     if (!vertexFile.readAll(vertexSource)) {
-      LOG_ERROR("default", "Vertex shader {0} is not found.", vertexPath);
+      LOG_ERROR(logger, "Vertex shader {0} is not found.", vertexPath);
       return nullptr;
     }
 
     FileSystem fragmentFile{shaderDirectory + fragmentPath, OpenMode::ReadBinary};
     std::string fragmentSource;
     if (!fragmentFile.readAll(fragmentSource)) {
-      LOG_ERROR("default", "Fragment shader {0} is not found.", fragmentPath);
+      LOG_ERROR(logger, "Fragment shader {0} is not found.", fragmentPath);
       return nullptr;
     }
 
     if (!shaderProgram->createShaderProgram(vertexSource, fragmentSource, vertexData)) {
-      LOG_ERROR("default", "Shader compilation error");
+      LOG_ERROR(logger, "Shader compilation error");
       return nullptr;
     }
 
@@ -216,6 +218,11 @@ namespace GLaDOS {
 
   RenderTexture* MetalRenderer::createRenderTexture(const std::string& name) {
     return nullptr;
+  }
+
+  VertexData* MetalRenderer::createVertexData(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) {
+    VertexData* vertexData = NEW_T(VertexData(vertexFormatDescriptor, count));
+    return vertexData;
   }
 
   id<MTLDevice> MetalRenderer::getDevice() const {

@@ -14,6 +14,7 @@
 #undef min
 
 namespace GLaDOS {
+  class Logger;
   class WindowsPlatform {
     friend class Platform;
 
@@ -34,6 +35,8 @@ namespace GLaDOS {
     static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
     static WindowsPlatform* windowsPlatformInstance;
+
+    static Logger* logger;
 
     HINSTANCE mhInstance;
     HWND mHandle;

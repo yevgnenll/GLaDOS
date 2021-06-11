@@ -8,6 +8,7 @@
 #include <stb_image_resize.h>
 
 namespace GLaDOS {
+  Logger* Texture2D::logger = LoggerRegistry::getInstance().makeAndGetLogger("Texture2D");
   Texture2D::Texture2D(const std::string& name, PixelFormat format) : Texture{name, format} {
     mDimension = TextureDimension::Tex2D;
     mUsage = TextureUsage::ShaderRead;
@@ -23,7 +24,7 @@ namespace GLaDOS {
     const char* filename = (mFileDirectory + mName).c_str();
     int result = stbi_info(filename, &width, &height, &channels);
     if (result == 0) {
-      LOG_ERROR("default", "Failed to load texture {0}, reason: {1}", mName, stbi_failure_reason());
+      LOG_ERROR(logger, "Failed to load texture {0}, reason: {1}", mName, stbi_failure_reason());
       return false;
     }
 
@@ -34,7 +35,7 @@ namespace GLaDOS {
     uint8_t* data = stbi_load(filename, &width, &height, &channels, desiredChannel);
 
     if (data == nullptr) {
-      LOG_ERROR("default", "Failed to load texture {0}, reason: {1}", mName, stbi_failure_reason());
+      LOG_ERROR(logger, "Failed to load texture {0}, reason: {1}", mName, stbi_failure_reason());
       return false;
     }
 
@@ -49,7 +50,7 @@ namespace GLaDOS {
     generateTexture(0, 0, data);
     stbi_image_free(data);
 
-    LOG_TRACE("default", "Texture load success: [name={0}, width={1}, height={2}, bpp={3}, useMipmap={4}, mipmapCount={5}]", mName, mWidth, mHeight, mChannels, mUseMipmap, mMipmapCount);
+    LOG_TRACE(logger, "Texture load success: [name={0}, width={1}, height={2}, bpp={3}, useMipmap={4}, mipmapCount={5}]", mName, mWidth, mHeight, mChannels, mUseMipmap, mMipmapCount);
 
     return true;
   }
@@ -62,7 +63,7 @@ namespace GLaDOS {
                                                 static_cast<int>(buffer.size()), &width, &height, &channels, 0);
 
     if (data == nullptr) {
-      LOG_ERROR("default", "Failed to create texture from memory size {0}", buffer.size());
+      LOG_ERROR(logger, "Failed to create texture from memory size {0}", buffer.size());
       return false;
     }
 
@@ -87,15 +88,15 @@ namespace GLaDOS {
     uint32_t mipWidth = mWidth;
     uint32_t mipHeight = mHeight;
     for (uint32_t level = 1; level <= mMipmapCount; level++) {
-      mipWidth /= 2;
-      mipHeight /= 2;
+      mipWidth = (mipWidth >> 1);
+      mipHeight = (mipHeight >> 1);
       uint8_t* mipData = static_cast<uint8_t*>(MALLOC(mipWidth * mipHeight * mChannels));
       if (stbir_resize_uint8(data, mWidth, mHeight, 0, mipData, mipWidth, mipHeight, 0, mChannels) == 0) {
-        LOG_ERROR("default", "Failed to create mipmap [name={0}, width={1}, height={2}, level={3}, bpp={4}]", mName, mipWidth, mipHeight, level, mChannels);
+        LOG_ERROR(logger, "Failed to create mipmap [name={0}, width={1}, height={2}, level={3}, bpp={4}]", mName, mipWidth, mipHeight, level, mChannels);
         return false;
       }
       replaceRegion(x, y, mipWidth, mipHeight, level, mipData);
-      LOG_TRACE("default", "Mipmap successfully created [name={0}, width={1}, height={2}, level={3}, bpp={4}]", mName, mipWidth, mipHeight, level, mChannels);
+      LOG_TRACE(logger, "Mipmap successfully created [name={0}, width={1}, height={2}, level={3}, bpp={4}]", mName, mipWidth, mipHeight, level, mChannels);
       FREE(mipData);
     }
 

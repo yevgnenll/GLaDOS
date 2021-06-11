@@ -7,6 +7,7 @@
 #include "platform/Platform.h"
 
 namespace GLaDOS {
+  Logger* Mesh::logger = LoggerRegistry::getInstance().makeAndGetLogger("Mesh");
   Mesh::Mesh() : Resource{ResourceType::Mesh} {
     setResourceDir(RESOURCE_DIR);
   }
@@ -39,8 +40,8 @@ namespace GLaDOS {
     return mIndexBuffer;
   }
 
-  Vector<VertexFormat*> Mesh::getVertexFormats() const {
-    return mVertexData->getVertexFormats();
+  VertexFormatHolder* Mesh::getVertexFormatHolder() const {
+    return mVertexData->getVertexFormatHolder();
   }
 
   std::size_t Mesh::getVertexStart() const {
@@ -49,7 +50,7 @@ namespace GLaDOS {
 
   void Mesh::setVertexStart(std::size_t vertexStart) {
     if (vertexStart < 0 || vertexStart > mVertexData->size()) {
-      LOG_ERROR("default", "Mesh vertex start position must be between 0 and {0},", mVertexData->size());
+      LOG_ERROR(logger, "Mesh vertex start position must be between 0 and {0},", mVertexData->size());
     }
     mVertexStart = vertexStart;
   }
@@ -60,7 +61,7 @@ namespace GLaDOS {
 
   void Mesh::setIndexStart(std::size_t indexStart) {
     if (indexStart < 0 || indexStart > mIndexData->size()) {
-      LOG_ERROR("default", "Mesh index start position must be between 0 and {0},", mIndexData->size());
+      LOG_ERROR(logger, "Mesh index start position must be between 0 and {0},", mIndexData->size());
     }
     mIndexStart = indexStart;
   }
@@ -123,20 +124,20 @@ namespace GLaDOS {
     mIndexData = indexData;
 
     if (mVertexData == nullptr) {
-      LOG_ERROR("default", "Mesh should have at least a vertexData.");
+      LOG_ERROR(logger, "Mesh should have at least a vertexData.");
       return false;
     }
 
     mVertexBuffer = Platform::getRenderer().createVertexBuffer(mVertexBufferUsage, mVertexData->buffer(), mVertexData->size());
     if (mVertexBuffer == nullptr) {
-      LOG_ERROR("default", "VertexBuffer creation failed.");
+      LOG_ERROR(logger, "VertexBuffer creation failed.");
       return false;
     }
 
     if (mIndexData != nullptr) {
       mIndexBuffer = Platform::getRenderer().createIndexBuffer(mIndexBufferUsage, mIndexData->buffer(), mIndexData->size());
       if (mIndexBuffer == nullptr) {
-        LOG_ERROR("default", "IndexBuffer creation failed.");
+        LOG_ERROR(logger, "IndexBuffer creation failed.");
         return false;
       }
     }

@@ -1,6 +1,8 @@
 #ifndef GLADOS_SIZE_HPP
 #define GLADOS_SIZE_HPP
 
+#include <utility>
+
 namespace GLaDOS {
   template <typename T>
   class Size {
@@ -58,6 +60,9 @@ namespace GLaDOS {
     swap(first.x, second.x);
     swap(first.y, second.y);
   }
+
+  using Sizei = Size<std::size_t>;
+  using Sizef = Size<float>;
 }  // namespace GLaDOS
 
 #endif  //GLADOS_SIZE_HPP

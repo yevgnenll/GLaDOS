@@ -8,7 +8,6 @@ public:
     TextureCube* cubemap = Platform::getRenderer().createTextureCube("test", PixelFormat::RGBA32);
     Vector<std::string> cubemapImages = { "px.png", "nx.png", "py.png", "ny.png", "pz.png", "nz.png" };
     if (!cubemap->loadTextureFromFile(cubemapImages)) {
-      LOG_ERROR("skybox", "Failed to load texture!");
       return false;
     }
 
@@ -19,12 +18,10 @@ public:
     Mesh* mesh = MeshGenerator::generateTorusKnot(3, 4, 64, 16, 0.2);
 //    Mesh* mesh = MeshGenerator::generateTorusKnot(3, 8, 256, 32, 0.2);
     if (mesh == nullptr) {
-      LOG_ERROR("skybox", "Mesh initialize failed!");
       return false;
     }
     shaderProgram = Platform::getRenderer().createShaderProgram("environmentVertex.metal", "environmentFragment.metal", mesh->getVertexData());
     if (shaderProgram == nullptr) {
-      LOG_ERROR("skybox", "Shader initialize failed!");
       return false;
     }
     DepthStencilDescription depthStencilDesc{};
@@ -108,7 +105,6 @@ private:
 bool init() {
   PlatformParams params{1024, 800, "06-skybox", "GLaDOS", false};
   if (!Platform::getInstance().initialize(params)) {
-    LOG_ERROR("skybox", "Platform initialize failed!");
     return false;
   }
 

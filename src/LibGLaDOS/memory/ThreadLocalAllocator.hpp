@@ -31,6 +31,6 @@ namespace GLaDOS {
   void ThreadLocalAllocator<T, Allocator>::deallocate(T* ptr) {
     AllocatorType::get().deallocate(ptr);
   }
-}
+}  // namespace GLaDOS
 
 #endif  //GLADOS_THREADLOCALALLOCATOR_H

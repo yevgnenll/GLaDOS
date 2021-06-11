@@ -17,17 +17,18 @@
 #include "utils/MeshGenerator.h"
 
 namespace GLaDOS {
+  Logger* CubemapRenderer::logger = LoggerRegistry::getInstance().makeAndGetLogger("CubemapRenderer");
   CubemapRenderer::CubemapRenderer() {
     mName = "CubemapRenderer";
 
     Mesh* mesh = MeshGenerator::generateCube();
     if (mesh == nullptr) {
-      LOG_ERROR("default", "CubemapRenderer initialize failed!");
+      LOG_ERROR(logger, "CubemapRenderer initialize failed!");
       return;
     }
     ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgram("skyboxVertex.metal", "skyboxFragment.metal", mesh->getVertexData());
     if (shaderProgram == nullptr) {
-      LOG_ERROR("default", "CubemapRenderer initialize failed!");
+      LOG_ERROR(logger, "CubemapRenderer initialize failed!");
       return;
     }
     DepthStencilDescription depthStencilDesc{};
@@ -40,7 +41,7 @@ namespace GLaDOS {
 
     Renderable* renderable = Platform::getRenderer().createRenderable(mesh, material);
     if (renderable == nullptr) {
-      LOG_ERROR("default", "CubemapRenderer initialize failed!");
+      LOG_ERROR(logger, "CubemapRenderer initialize failed!");
       return;
     }
     mRenderable = renderable;

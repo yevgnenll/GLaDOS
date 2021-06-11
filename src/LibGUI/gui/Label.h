@@ -4,6 +4,6 @@
 namespace GLaDOS::GUI {
   class Label {
   };
-}
+}  // namespace GLaDOS::GUI
 
 #endif  //GLADOS_LABEL_H

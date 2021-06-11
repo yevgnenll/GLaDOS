@@ -10,6 +10,7 @@
 #include "platform/render/TextureCube.h"
 
 namespace GLaDOS {
+  class Logger;
   class MetalTextureCube : public TextureCube, public MetalTextureBase {
   public:
     MetalTextureCube(const std::string& name, PixelFormat format);
@@ -17,6 +18,9 @@ namespace GLaDOS {
     id<MTLSamplerState> metalSamplerState() override;
     void generateTexture(Vector<uint8_t*> data) override;
     void replaceRegion(uint32_t size, uint32_t slice, uint32_t bytesPerRow, uint32_t bytesPerImage, uint8_t* data) override;
+
+  private:
+    static Logger* logger;
   };
 }  // namespace GLaDOS
 

@@ -4,6 +4,6 @@
 namespace GLaDOS::GUI {
   class Window {
   };
-}
+}  // namespace GLaDOS::GUI
 
 #endif  //GLADOS_WINDOW_H

@@ -10,6 +10,34 @@
 #include "platform/render/VertexFormat.h"
 
 namespace GLaDOS {
+  Mesh* MeshGenerator::generateRectangle(const Rect<real> textureRect) {
+    // Vertex,Texture
+    //	0----------1
+    //	|          |
+    //	3----------2
+    static Vector<real> vertices = {
+        -1, 1, 0,
+        textureRect.left, textureRect.top,
+
+        1, 1, 0,
+        textureRect.right, textureRect.top,
+
+        1, -1, 0,
+        textureRect.right, textureRect.bottom,
+
+        -1, -1, 0,
+        textureRect.left, textureRect.bottom};
+    static Vector<uint16_t> indices = {
+        0, 1, 2,
+        0, 2, 3};
+
+    VertexData* vertexData = NEW_T(VertexData(VertexFormatDescriptor().position().texCoord0(), vertices.size()));
+    vertexData->uploadDataNoCopy(vertices.data());
+    IndexData* indexData = NEW_T(IndexData(sizeof(uint16_t), indices.size()));
+    indexData->uploadDataNoCopy(indices.data());
+    return Platform::getRenderer().createMesh(vertexData, indexData);
+  }
+
   Mesh* MeshGenerator::generatePlane(unsigned int dimensions) {
     std::size_t vertexCount = dimensions * dimensions * 7;
     std::size_t indexCount = (dimensions - 1) * (dimensions - 1) * 2 * 3;
@@ -44,7 +72,7 @@ namespace GLaDOS {
       }
     }
 
-    VertexData* vertexData = NEW_T(VertexData(VertexFormatBuilder().withPosition().withNormal(), vertexCount));
+    VertexData* vertexData = NEW_T(VertexData(VertexFormatDescriptor().position().normal(), vertexCount));
     vertexData->uploadDataNoCopy(vertices.data());
     IndexData* indexData = NEW_T(IndexData(sizeof(uint32_t), indexCount));
     indexData->uploadDataNoCopy(indices.data());
@@ -92,7 +120,7 @@ namespace GLaDOS {
         16, 19, 18, 18, 17, 16,
         20, 23, 22, 22, 21, 20};
 
-    VertexData* vertexData = NEW_T(VertexData(VertexFormatBuilder().withPosition().withNormal(), sizeof(vertices) / 6));
+    VertexData* vertexData = NEW_T(VertexData(VertexFormatDescriptor().position().normal(), sizeof(vertices) / 6));
     vertexData->uploadDataNoCopy(vertices);
     IndexData* indexData = NEW_T(IndexData(sizeof(uint16_t), sizeof(indices) / sizeof(uint16_t)));
     indexData->uploadDataNoCopy(indices);
@@ -156,7 +184,7 @@ namespace GLaDOS {
       indices = indices2;
     }
 
-    VertexData* vertexData = NEW_T(VertexData(VertexFormatBuilder().withPosition().withNormal(), vertices.size() * 6));
+    VertexData* vertexData = NEW_T(VertexData(VertexFormatDescriptor().position().normal(), vertices.size() * 6));
     vertexData->uploadDataNoCopy(vertices.data());
     IndexData* indexData = NEW_T(IndexData(sizeof(uint32_t), indices.size()));
     indexData->uploadDataNoCopy(indices.data());
@@ -241,7 +269,7 @@ namespace GLaDOS {
       }
     }
 
-    VertexData* vertexData = NEW_T(VertexData(VertexFormatBuilder().withPosition().withNormal(), vertexCount));
+    VertexData* vertexData = NEW_T(VertexData(VertexFormatDescriptor().position().normal(), vertexCount));
     vertexData->uploadDataNoCopy(vertices.data());
     IndexData* indexData = NEW_T(IndexData(sizeof(uint32_t), indices.size()));
     indexData->uploadDataNoCopy(indices.data());
@@ -366,7 +394,7 @@ namespace GLaDOS {
       indices.emplace_back(vi + slices + 1);
     }
 
-    VertexData* vertexData = NEW_T(VertexData(VertexFormatBuilder().withPosition().withNormal(), vertexCount));
+    VertexData* vertexData = NEW_T(VertexData(VertexFormatDescriptor().position().normal(), vertexCount));
     vertexData->uploadDataNoCopy(vertices.data());
     IndexData* indexData = NEW_T(IndexData(sizeof(uint32_t), indexCount));
     indexData->uploadDataNoCopy(indices.data());

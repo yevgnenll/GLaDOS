@@ -190,6 +190,18 @@ namespace GLaDOS {
 
   Vec4 Vec4::abs(const Vec4& v) { return Vec4{Math::abs(v.x), Math::abs(v.y), Math::abs(v.z), Math::abs(v.w)}; }
 
+  Vec4 Vec4::sqrt(const Vec4& v) { return Vec4{Math::sqrt(v.x), Math::sqrt(v.y), Math::sqrt(v.z), Math::sqrt(v.w)}; }
+
+  Vec4 Vec4::rsqrt(const Vec4& v) { return Vec4{Math::rsqrt(v.x), Math::rsqrt(v.y), Math::rsqrt(v.z), Math::rsqrt(v.w)}; }
+
+  Vec4 Vec4::min(const Vec4& a, const Vec4& b) {
+    return Vec4{Math::min(a.x, b.x), Math::min(a.y, b.y), Math::min(a.z, b.z), Math::min(a.w, b.w)};
+  }
+
+  Vec4 Vec4::max(const Vec4& a, const Vec4& b) {
+    return Vec4{Math::max(a.x, b.x), Math::max(a.y, b.y), Math::max(a.z, b.z), Math::max(a.w, b.w)};
+  }
+
   UVec4 Vec4::normalize(const Vec4& v) {
     real len = v.length();
     if (Math::zero(len) || Math::equal(len, static_cast<real>(1.0))) {

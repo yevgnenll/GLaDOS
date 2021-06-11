@@ -7,6 +7,7 @@
 #include "utils/Utility.h"
 
 namespace GLaDOS {
+  class Logger;
   template <typename T>
   class Mat4;
   class Uniform;
@@ -16,9 +17,9 @@ namespace GLaDOS {
   class Vec4;
   class VertexData;
   class DepthStencilState;
-  class DepthStencilDescription;
+  struct DepthStencilDescription;
   class RasterizerState;
-  class RasterizerDescription;
+  struct RasterizerDescription;
   class ShaderProgram : public Resource {
   public:
     ShaderProgram();
@@ -49,6 +50,8 @@ namespace GLaDOS {
 
   private:
     virtual bool createShaderProgram(const std::string& vertex, const std::string& fragment, const VertexData* vertexData) = 0;
+
+    static Logger* logger;
 
   protected:
     std::string mVertexShaderCode;

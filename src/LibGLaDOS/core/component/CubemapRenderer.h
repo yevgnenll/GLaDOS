@@ -5,6 +5,7 @@
 #include "utils/Enumeration.h"
 
 namespace GLaDOS {
+  class Logger;
   class TextureCube;
   class CubemapRenderer : public MeshRenderer {
   public:
@@ -16,6 +17,8 @@ namespace GLaDOS {
   private:
     void update(real deltaTime) override;
     void render() override;
+
+    static Logger* logger;
 
     TextureCube* mCubeTexture{nullptr};
   };

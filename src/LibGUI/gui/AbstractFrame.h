@@ -11,6 +11,6 @@ namespace GLaDOS::GUI {
     FrameFlags mFrameFlags;
     ViewBuffer* mViewBuffer;
   };
-}  // namespace GLaDOS
+}  // namespace GLaDOS::GUI
 
 #endif  //GLADOS_ABSTRACTFRAME_H

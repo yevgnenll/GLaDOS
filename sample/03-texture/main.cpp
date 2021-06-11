@@ -54,16 +54,14 @@ public:
         -1.0, -1.0, -1.0, 1.00, 0.50,
         -1.0,  1.0, -1.0, 1.00, 0.25
     };
-    VertexData* vertexData = NEW_T(VertexData(VertexFormatBuilder().withPosition().withTexCoord0(), 36));
+    VertexData* vertexData = NEW_T(VertexData(VertexFormatDescriptor().position().texCoord0(), 36));
     vertexData->uploadDataNoCopy(quad);
     Mesh* mesh = Platform::getRenderer().createMesh(vertexData, nullptr);
     if (mesh == nullptr) {
-      LOG_ERROR("default", "Mesh initialize failed!");
       return false;
     }
     shaderProgram = Platform::getRenderer().createShaderProgram("textureVertex.metal", "textureFragment.metal", vertexData);
     if (shaderProgram == nullptr) {
-      LOG_ERROR("default", "Shader initialize failed!");
       return false;
     }
     DepthStencilDescription depthStencilDesc{};
@@ -71,7 +69,6 @@ public:
 
     Texture2D* cubeTexture = Platform::getRenderer().createTexture2D("cube.png", PixelFormat::RGBA32);
     if (!cubeTexture->loadTextureFromFile()) {
-      LOG_ERROR("default", "Failed to load texture!");
       return false;
     }
 
@@ -118,7 +115,6 @@ private:
 bool init() {
   PlatformParams params{1024, 800, "03-texture", "GLaDOS", false};
   if (!Platform::getInstance().initialize(params)) {
-    LOG_ERROR("default", "Platform initialize failed!");
     return false;
   }
 

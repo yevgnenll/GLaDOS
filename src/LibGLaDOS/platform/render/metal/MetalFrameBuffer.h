@@ -10,6 +10,7 @@
 #include "utils/Semaphore.h"
 
 namespace GLaDOS {
+  class Logger;
   class MetalRenderer;
   class MetalFrameBuffer : public FrameBuffer {
   public:
@@ -21,6 +22,8 @@ namespace GLaDOS {
     void makeDepthStencilTexture() override;
 
   private:
+    static Logger* logger;
+
     id<MTLCommandQueue> mCommandQueue{nil};
     id<MTLCommandBuffer> mCommandBuffer{nil};
     id<MTLRenderCommandEncoder> mCommandEncoder{nil};

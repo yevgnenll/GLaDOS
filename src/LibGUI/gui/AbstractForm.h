@@ -4,6 +4,6 @@
 namespace GLaDOS::GUI {
   class AbstractForm {
   };
-}
+}  // namespace GLaDOS::GUI
 
 #endif  //GLADOS_ABSTRACTFORM_H

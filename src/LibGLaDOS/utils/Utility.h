@@ -9,14 +9,14 @@
 
 namespace GLaDOS {
 
-#define ANSI_COLOR_RED     "\x1b[31;1m"
-#define ANSI_COLOR_GREEN   "\x1b[32;1m"
-#define ANSI_COLOR_BLUE    "\x1b[34;1m"
+#define ANSI_COLOR_RED "\x1b[31;1m"
+#define ANSI_COLOR_GREEN "\x1b[32;1m"
+#define ANSI_COLOR_BLUE "\x1b[34;1m"
 #define ANSI_COLOR_MAGENTA "\x1b[35;1m"
-#define ANSI_COLOR_CYAN    "\x1b[36;1m"
-#define ANSI_COLOR_GREY    "\x1b[30;1m"
-#define ANSI_COLOR_YELLOW  "\x1b[33;1m"
-#define ANSI_COLOR_RESET   "\x1b[0m"
+#define ANSI_COLOR_CYAN "\x1b[36;1m"
+#define ANSI_COLOR_GREY "\x1b[30;1m"
+#define ANSI_COLOR_YELLOW "\x1b[33;1m"
+#define ANSI_COLOR_RESET "\x1b[0m"
 
 #ifndef TEXT
 #define TEXT(str) (u##str)
@@ -46,7 +46,7 @@ namespace GLaDOS {
 #if defined(MSVC)
 #define UNUSED(x) (__pragma(warning(suppress : 4100))(x))
 #elif defined(GCC)
-#define UNUSED(x) __attribute__((__unused__))(x)
+#define UNUSED(x) __attribute__((__unused__)) (x)
 #else
 // fallback
 #define UNUSED(x) ((void)(sizeof(x)))
@@ -54,23 +54,23 @@ namespace GLaDOS {
 #endif
 
 #ifndef LOG_TRACE
-#define LOG_TRACE(category, fmt, ...) GLaDOS::LoggerRegistry::getInstance().getLogger(category)->trace({__FILE__, __LINE__, __FUNCTION__}, fmt, ##__VA_ARGS__)
+#define LOG_TRACE(logger, fmt, ...) logger->trace({__FILE__, __LINE__, __FUNCTION__}, fmt, ##__VA_ARGS__)
 #endif
 
 #ifndef LOG_DEBUG
-#define LOG_DEBUG(category, fmt, ...) GLaDOS::LoggerRegistry::getInstance().getLogger(category)->debug({__FILE__, __LINE__, __FUNCTION__}, fmt, ##__VA_ARGS__)
+#define LOG_DEBUG(logger, fmt, ...) logger->debug({__FILE__, __LINE__, __FUNCTION__}, fmt, ##__VA_ARGS__)
 #endif
 
 #ifndef LOG_INFO
-#define LOG_INFO(category, fmt, ...) GLaDOS::LoggerRegistry::getInstance().getLogger(category)->info({__FILE__, __LINE__, __FUNCTION__}, fmt, ##__VA_ARGS__)
+#define LOG_INFO(logger, fmt, ...) logger->info({__FILE__, __LINE__, __FUNCTION__}, fmt, ##__VA_ARGS__)
 #endif
 
 #ifndef LOG_WARN
-#define LOG_WARN(category, fmt, ...) GLaDOS::LoggerRegistry::getInstance().getLogger(category)->warn({__FILE__, __LINE__, __FUNCTION__}, fmt, ##__VA_ARGS__)
+#define LOG_WARN(logger, fmt, ...) logger->warn({__FILE__, __LINE__, __FUNCTION__}, fmt, ##__VA_ARGS__)
 #endif
 
 #ifndef LOG_ERROR
-#define LOG_ERROR(category, fmt, ...) GLaDOS::LoggerRegistry::getInstance().getLogger(category)->error({__FILE__, __LINE__, __FUNCTION__}, fmt, ##__VA_ARGS__)
+#define LOG_ERROR(logger, fmt, ...) logger->error({__FILE__, __LINE__, __FUNCTION__}, fmt, ##__VA_ARGS__)
 #endif
 
   template <typename T>

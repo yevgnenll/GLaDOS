@@ -17,6 +17,7 @@ namespace GLaDOS {
     WindowStyle windowStyle{EnumConstant::defaultWindowStyle};
   };
 
+  class Logger;
   class Color;
   class Renderer;
   class FrameBuffer;
@@ -69,6 +70,8 @@ namespace GLaDOS {
     void setKeyDown(KeyCode keycode);
     void setKeyUp(KeyCode keycode);
     void printLogo() const;
+
+    static Logger* logger;
 
     int mWidth, mHeight;
     int mLastWidth, mLastHeight;

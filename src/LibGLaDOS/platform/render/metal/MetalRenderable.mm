@@ -12,6 +12,7 @@
 #include "platform/render/Uniform.h"
 
 namespace GLaDOS {
+  Logger* MetalRenderable::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalRenderable");
   MetalRenderable::~MetalRenderable() {
     [mPipelineState release];
   }
@@ -19,20 +20,20 @@ namespace GLaDOS {
   void MetalRenderable::build() {
     id<MTLDevice> device = MetalRenderer::getInstance().getDevice();
     if (device == nil || mMesh == nullptr || mMaterial == nullptr) {
-      LOG_ERROR("default", "Invalid renderable state");
+      LOG_ERROR(logger, "Invalid renderable state");
       return;
     }
 
     MetalShaderProgram* shaderProgram = static_cast<MetalShaderProgram*>(mMaterial->getShaderProgram());  // INTEND: do not use dynamic_cast here
-    if (shaderProgram == nullptr && !shaderProgram->isValid() && mVertexDescriptor != nil) {
-      LOG_ERROR("default", "Invalid shader program state");
+    if (shaderProgram == nullptr || !shaderProgram->isValid() || mVertexDescriptor != nil) {
+      LOG_ERROR(logger, "Invalid shader program state");
       return;
     }
 
-    mVertexDescriptor = shaderProgram->makeVertexDescriptor(mMesh->getVertexFormats());
+    mVertexDescriptor = shaderProgram->makeVertexDescriptor(mMesh->getVertexFormatHolder());
     MTLRenderPipelineDescriptor* pipelineDescriptor = shaderProgram->getPipelineDescriptor();
-    if (pipelineDescriptor == nil && mPipelineState != nil) {
-      LOG_ERROR("default", "Invalid pipeline Descriptor");
+    if (pipelineDescriptor == nil || mPipelineState != nil) {
+      LOG_ERROR(logger, "Invalid pipeline Descriptor");
       return;
     }
 
@@ -40,7 +41,7 @@ namespace GLaDOS {
     [pipelineDescriptor setVertexDescriptor:mVertexDescriptor];
     mPipelineState = [device newRenderPipelineStateWithDescriptor:pipelineDescriptor options:MTLPipelineOptionArgumentInfo reflection:nil error:&error];
     if (mPipelineState == nil || error != nil) {
-      LOG_ERROR("default", "{0}", [[NSString stringWithFormat:@"%@", error] UTF8String]);
+      LOG_ERROR(logger, "{0}", [[NSString stringWithFormat:@"%@", error] UTF8String]);
     }
   }
 

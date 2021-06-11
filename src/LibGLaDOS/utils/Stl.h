@@ -1,15 +1,17 @@
 #ifndef GLADOS_STL_H
 #define GLADOS_STL_H
 
+#include <deque>
 #include <list>
 #include <map>
+#include <queue>
 #include <set>
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
 
-#include "memory/STLAllocator.h"
 #include "String.hpp"
+#include "memory/STLAllocator.h"
 
 namespace GLaDOS {
   // https://stackoverflow.com/questions/18837857/cant-use-enum-class-as-unordered-map-key
@@ -51,6 +53,12 @@ namespace GLaDOS {
 
   template <typename T>
   using Set = std::set<T, std::less<T>, STLAllocator<T>>;
+
+  template <typename T>
+  using Deque = std::deque<T, STLAllocator<T>>;
+
+  template <typename T>
+  using Queue = std::queue<T, Deque<T>>;
 }  // namespace GLaDOS
 
 namespace std {
@@ -65,6 +73,6 @@ namespace std {
       return hashCode;
     }
   };
-}
+}  // namespace std
 
 #endif  //GLADOS_STL_H

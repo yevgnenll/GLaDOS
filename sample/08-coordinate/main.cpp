@@ -8,7 +8,6 @@ public:
     TextureCube* cubemap = Platform::getRenderer().createTextureCube("test", PixelFormat::RGBA32);
     Vector<std::string> cubemapImages = { "grid.png", "grid.png", "grid.png", "grid.png", "grid.png", "grid.png" };
     if (!cubemap->loadTextureFromFile(cubemapImages)) {
-      LOG_ERROR("default", "Failed to load texture!");
       return false;
     }
 
@@ -18,12 +17,10 @@ public:
 
     Mesh* mesh = MeshGenerator::generateCube();
     if (mesh == nullptr) {
-      LOG_ERROR("default", "Mesh initialize failed!");
       return false;
     }
     shaderProgram = Platform::getRenderer().createShaderProgram("environmentVertex.metal", "environmentFragment.metal", mesh->getVertexData());
     if (shaderProgram == nullptr) {
-      LOG_ERROR("default", "Shader initialize failed!");
       return false;
     }
     DepthStencilDescription depthStencilDesc{};
@@ -94,7 +91,6 @@ private:
 bool init() {
   PlatformParams params{1024, 800, "08-coordinate", "GLaDOS", false};
   if (!Platform::getInstance().initialize(params)) {
-    LOG_ERROR("default", "Platform initialize failed!");
     return false;
   }
 

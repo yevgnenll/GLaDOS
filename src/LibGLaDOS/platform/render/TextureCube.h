@@ -4,6 +4,7 @@
 #include "Texture.h"
 
 namespace GLaDOS {
+  class Logger;
   class TextureCube : public Texture {
   public:
     TextureCube(const std::string& name, PixelFormat format);
@@ -13,6 +14,9 @@ namespace GLaDOS {
     bool loadTextureFromBuffer(const Vector<std::reference_wrapper<StreamBuffer>>& buffer) override;
     virtual void generateTexture(Vector<uint8_t*> data) = 0;
     virtual void replaceRegion(uint32_t size, uint32_t slice, uint32_t bytesPerRow, uint32_t bytesPerImage, uint8_t* data) = 0;
+
+  private:
+    static Logger* logger;
   };
 }  // namespace GLaDOS
 

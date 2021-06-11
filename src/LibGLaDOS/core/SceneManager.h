@@ -6,6 +6,7 @@
 #include "utils/Utility.h"
 
 namespace GLaDOS {
+  class Logger;
   class Scene;
   class SceneManager : public Singleton<SceneManager> {
   public:
@@ -27,6 +28,8 @@ namespace GLaDOS {
     void render();
 
   private:
+    static Logger* logger;
+
     UnorderedMap<uint32_t, Scene*> mScenes;
     Scene* mCurrentScene{nullptr};
     uint32_t mLastSceneCount{0};
@@ -35,7 +38,7 @@ namespace GLaDOS {
   template <typename T>
   Scene* SceneManager::createScene(const std::string& name) {
     if (sceneByName(name) != nullptr) {
-      LOG_ERROR("default", "Already exist scene name");
+      LOG_ERROR(logger, "Already exist scene name");
       return nullptr;
     }
 
@@ -46,10 +49,10 @@ namespace GLaDOS {
     new (scene) T{};
     scene->mBuildIndex = mLastSceneCount;
     scene->mName = name;
-    LOG_TRACE("default", "Scene {0} created with buildIndex {1}.", scene->mName, scene->mBuildIndex);
+    LOG_TRACE(logger, "Scene {0} created with buildIndex {1}.", scene->mName, scene->mBuildIndex);
 
     if (!scene->onInit()) {
-      LOG_TRACE("default", "Failed to onInit in scene {0}", scene->getName());
+      LOG_TRACE(logger, "Failed to onInit in scene {0}", scene->getName());
       FREE(scene);
       return nullptr;
     }

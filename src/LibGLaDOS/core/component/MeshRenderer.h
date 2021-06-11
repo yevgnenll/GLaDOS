@@ -4,6 +4,7 @@
 #include "core/Component.h"
 
 namespace GLaDOS {
+  class Logger;
   class Mesh;
   class Material;
   class Renderable;
@@ -16,6 +17,8 @@ namespace GLaDOS {
     void setRenderable(Renderable* renderable);
 
   private:
+    static Logger* logger;
+
     void update(real deltaTime) override;
     void render() override;
 

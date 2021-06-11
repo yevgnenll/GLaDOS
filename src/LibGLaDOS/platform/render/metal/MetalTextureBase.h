@@ -8,6 +8,7 @@
 #include "MetalRenderer.h"
 
 namespace GLaDOS {
+  class Logger;
   class MetalTextureBase {
   public:
     MetalTextureBase() = default;
@@ -24,6 +25,9 @@ namespace GLaDOS {
 
     MTLTextureDescriptor* mTextureDescriptor{nil};
     id<MTLTexture> mTexture{nil};
+
+  private:
+    static Logger* logger;
   };
 }  // namespace GLaDOS
 

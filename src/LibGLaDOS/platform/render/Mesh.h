@@ -6,9 +6,11 @@
 #include "utils/Enumeration.h"
 
 namespace GLaDOS {
+  class Logger;
   class VertexFormat;
   class VertexData;
   class IndexData;
+  class VertexFormatHolder;
   class Mesh : public Resource {
   public:
     Mesh();
@@ -19,7 +21,7 @@ namespace GLaDOS {
     void setPrimitiveType(PrimitiveType primitiveType);
     GPUBuffer* getVertexBuffer() const;
     GPUBuffer* getIndexBuffer() const;
-    Vector<VertexFormat*> getVertexFormats() const;
+    VertexFormatHolder* getVertexFormatHolder() const;
     std::size_t getVertexStart() const;
     void setVertexStart(std::size_t vertexStart);
     std::size_t getIndexStart() const;
@@ -41,6 +43,8 @@ namespace GLaDOS {
     void recalculateBounds();
 
   private:
+    static Logger* logger;
+
     PrimitiveType mPrimitiveType{PrimitiveType::Triangle};
     GPUBuffer* mVertexBuffer{nullptr};
     GPUBuffer* mIndexBuffer{nullptr};

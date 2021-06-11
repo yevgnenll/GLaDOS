@@ -13,9 +13,11 @@
 #include "platform/render/VertexFormat.h"
 
 namespace GLaDOS {
+  class Logger;
   class MetalRenderable;
   class MetalDepthStencilState;
   class MetalRasterizerState;
+  class VertexFormatHolder;
   class MetalShaderProgram : public ShaderProgram {
     friend class MetalRenderer;
 
@@ -25,7 +27,7 @@ namespace GLaDOS {
 
     MTLRenderPipelineDescriptor* getPipelineDescriptor() const;
     void bindUniforms(MetalRenderable* _renderable);
-    MTLVertexDescriptor* makeVertexDescriptor(const Vector<VertexFormat*>& vertexFormats);
+    MTLVertexDescriptor* makeVertexDescriptor(VertexFormatHolder* vertexFormatHolder);
     id<MTLDepthStencilState> metalDepthStencilState();
     MetalRasterizerState* metalRasterizerState();
 
@@ -46,6 +48,7 @@ namespace GLaDOS {
     static constexpr MTLWinding mapWindingModeFrom(WindingMode mode);
     static constexpr MTLCullMode mapCullModeFrom(CullMode mode);
     static bool createShader(const std::string& source, id<MTLFunction>& function);
+    static Logger* logger;
 
     id<MTLFunction> mVertexFunction{nil};
     id<MTLFunction> mFragmentFunction{nil};

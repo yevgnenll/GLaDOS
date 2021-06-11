@@ -3,6 +3,7 @@
 #include <cstring>
 
 namespace GLaDOS {
+  Logger* ByteBuffer::logger = LoggerRegistry::getInstance().makeAndGetLogger("ByteBuffer");
   ByteBuffer::~ByteBuffer() {
     if (mIsAllocated) {
       FREE(mBufferData);
@@ -34,7 +35,7 @@ namespace GLaDOS {
       mBufferData = MALLOC(mSize);
       mIsAllocated = true;
     } else {
-      LOG_ERROR("default", "ByteBuffer size is 0.");
+      LOG_ERROR(logger, "ByteBuffer size is 0.");
     }
   }
 

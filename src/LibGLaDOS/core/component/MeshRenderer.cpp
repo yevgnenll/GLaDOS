@@ -5,13 +5,14 @@
 #include "platform/render/Renderer.h"
 
 namespace GLaDOS {
+  Logger* MeshRenderer::logger = LoggerRegistry::getInstance().makeAndGetLogger("MeshRenderer");
   MeshRenderer::MeshRenderer() : Component{"MeshRenderer"} {
   }
 
   MeshRenderer::MeshRenderer(Mesh* mesh, Material* material) : Component{"MeshRenderer"} {
     Renderable* renderable = Platform::getRenderer().createRenderable(mesh, material);
     if (renderable == nullptr) {
-      LOG_ERROR("default", "MeshRenderer initialize failed!");
+      LOG_ERROR(logger, "MeshRenderer initialize failed!");
     }
     mRenderable = renderable;
   }

@@ -16,7 +16,8 @@ namespace GLaDOS {
 
     Logger* getLogger(const std::string& name);
     Logger* getDefaultLogger();
-    void registerNewLogger(Logger* logger);
+    Logger* makeAndGetLogger(const std::string& name);
+    bool registerNewLogger(Logger* logger);
 
   private:
     std::mutex mRegistryMutex;

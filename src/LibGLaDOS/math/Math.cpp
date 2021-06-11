@@ -142,6 +142,22 @@ namespace GLaDOS {
 
   real Math::sqrt(real a) { return std::sqrt(a); }
 
+  real Math::rsqrt(real a) {
+    // https://www.youtube.com/watch?v=p8u_k2LIZyo
+    long i;
+    real x2;
+    real y;
+    const real threehalfs = 1.5F;
+
+    x2 = a * 0.5F;
+    y = a;
+    i = *(long*)&y;
+    i = 0x5f3759df - (i >> 1);
+    y = *(real*)&i;
+    y = y * (threehalfs - (x2 * y * y));
+    return y;
+  }
+
   real Math::pow(real a, real exp) {
     return std::pow(a, exp);
   }

@@ -23,4 +23,4 @@ namespace GLaDOS {
   bool RefCounted::isRefZero() const {
     return mRefCount.load(std::memory_order_acquire) == 0;
   }
-}
+}  // namespace GLaDOS

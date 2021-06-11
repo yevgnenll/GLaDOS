@@ -4,6 +4,6 @@
 namespace GLaDOS::GUI {
   class ViewBuffer {
   };
-}
+}  // namespace GLaDOS::GUI
 
 #endif  //GLADOS_VIEWBUFFER_H

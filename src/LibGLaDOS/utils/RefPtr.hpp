@@ -1,8 +1,8 @@
 #ifndef GLADOS_REFPTR_HPP
 #define GLADOS_REFPTR_HPP
 
-#include "memory/Allocation.h"
 #include "RefCounted.h"
+#include "memory/Allocation.h"
 
 namespace GLaDOS {
   // Reference-counting shared smart pointer for RefCounted class.
@@ -220,6 +220,6 @@ namespace GLaDOS {
     T* const pointer = const_cast<T*>(other.get());
     return RefPtr<T>(pointer);
   }
-}
+}  // namespace GLaDOS
 
 #endif  //GLADOS_REFPTR_HPP

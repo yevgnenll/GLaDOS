@@ -3,6 +3,7 @@
 #include "Scene.h"
 
 namespace GLaDOS {
+  Logger* SceneManager::logger = LoggerRegistry::getInstance().makeAndGetLogger("SceneManager");
   SceneManager::~SceneManager() {
     mCurrentScene = nullptr;
     deallocValueInMap(mScenes);
@@ -36,11 +37,11 @@ namespace GLaDOS {
     }
 
     if (scene->onStart()) {
-      LOG_TRACE("default", "Scene {0} activated.", scene->getName());
+      LOG_TRACE(logger, "Scene {0} activated.", scene->getName());
       mCurrentScene = scene;
       return true;
     }
-    LOG_TRACE("default", "Scene {0} failed to onStart()", scene->getName());
+    LOG_TRACE(logger, "Scene {0} failed to onStart()", scene->getName());
 
     return false;
   }

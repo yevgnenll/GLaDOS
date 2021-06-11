@@ -3,6 +3,7 @@
 #include "utils/Utility.h"
 
 namespace GLaDOS {
+  Logger* VertexFormat::logger = LoggerRegistry::getInstance().makeAndGetLogger("VertexFormat");
   VertexFormat::VertexFormat(VertexSemantic _semantic, VertexAttributeType _attributeType) : mSemantic{_semantic}, mType{_attributeType} {
   }
 
@@ -74,7 +75,7 @@ namespace GLaDOS {
       case VertexAttributeType::UShort4Norm:
         return 4 * sizeof(uint16_t);
       default:
-        LOG_ERROR("default", "Unknown vertex attribute type");
+        LOG_ERROR(logger, "Unknown vertex attribute type");
         break;
     }
 
@@ -86,65 +87,96 @@ namespace GLaDOS {
   }
 
   //////////////////////////////////////////////////////////////
-  //// VertexFormatBuilder definition
+  //// VertexFormatHolder definition
   //////////////////////////////////////////////////////////////
 
-  VertexFormatBuilder VertexFormatBuilder::withPosition() {
+  VertexFormatHolder::VertexFormatHolder(Vector<VertexFormat*>& vertexFormats) : mVertexFormats{vertexFormats} {
+  }
+
+  VertexFormatHolder::~VertexFormatHolder() {
+    deallocIterable(mVertexFormats);
+  }
+
+  VertexFormatHolder::iterator VertexFormatHolder::begin() {
+    return mVertexFormats.begin();
+  }
+
+  VertexFormatHolder::const_iterator VertexFormatHolder::begin() const {
+    return mVertexFormats.cbegin();
+  }
+
+  VertexFormatHolder::iterator VertexFormatHolder::end() {
+    return mVertexFormats.end();
+  }
+
+  VertexFormatHolder::const_iterator VertexFormatHolder::end() const {
+    return mVertexFormats.cend();
+  }
+
+  Vector<VertexFormat*> VertexFormatHolder::getVertexFormats() const {
+    return mVertexFormats;
+  }
+
+  //////////////////////////////////////////////////////////////
+  //// VertexFormatDescriptor definition
+  //////////////////////////////////////////////////////////////
+
+  VertexFormatDescriptor VertexFormatDescriptor::position() {
     mUsePosition = true;
     return *this;
   }
 
-  VertexFormatBuilder VertexFormatBuilder::withNormal() {
+  VertexFormatDescriptor VertexFormatDescriptor::normal() {
     mUseNormal = true;
     return *this;
   }
 
-  VertexFormatBuilder VertexFormatBuilder::withTexCoord0() {
+  VertexFormatDescriptor VertexFormatDescriptor::texCoord0() {
     mUseTexCoord0 = true;
     return *this;
   }
 
-  VertexFormatBuilder VertexFormatBuilder::withTexCoord1() {
+  VertexFormatDescriptor VertexFormatDescriptor::texCoord1() {
     mUseTexCoord1 = true;
     return *this;
   }
 
-  VertexFormatBuilder VertexFormatBuilder::withTexCoord2() {
+  VertexFormatDescriptor VertexFormatDescriptor::texCoord2() {
     mUseTexCoord2 = true;
     return *this;
   }
 
-  VertexFormatBuilder VertexFormatBuilder::withTexCoord3() {
+  VertexFormatDescriptor VertexFormatDescriptor::texCoord3() {
     mUseTexCoord3 = true;
     return *this;
   }
 
-  VertexFormatBuilder VertexFormatBuilder::withTexCoord4() {
+  VertexFormatDescriptor VertexFormatDescriptor::texCoord4() {
     mUseTexCoord4 = true;
     return *this;
   }
 
-  VertexFormatBuilder VertexFormatBuilder::withTexCoord5() {
+  VertexFormatDescriptor VertexFormatDescriptor::texCoord5() {
     mUseTexCoord5 = true;
     return *this;
   }
 
-  VertexFormatBuilder VertexFormatBuilder::withTexCoord6() {
+  VertexFormatDescriptor VertexFormatDescriptor::texCoord6() {
     mUseTexCoord6 = true;
     return *this;
   }
 
-  VertexFormatBuilder VertexFormatBuilder::withTexCoord7() {
+  VertexFormatDescriptor VertexFormatDescriptor::texCoord7() {
     mUseTexCoord7 = true;
     return *this;
   }
 
-  VertexFormatBuilder VertexFormatBuilder::withColor() {
+  VertexFormatDescriptor VertexFormatDescriptor::color() {
     mUseColor = true;
     return *this;
   }
 
-  Vector<VertexFormat*> VertexFormatBuilder::build() const {
+  VertexFormatHolder* VertexFormatDescriptor::makeVertexFormatHolder() const {
     Vector<VertexFormat*> vertexFormats;
 
     if (mUsePosition) {
@@ -153,59 +185,59 @@ namespace GLaDOS {
     }
 
     if (mUseNormal) {
-      mNormalOffset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+      mNormalOffset = VertexFormatDescriptor::sumOfPreviousOffset(vertexFormats);
       vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::Normal, VertexAttributeType::Float3)));
     }
 
     if (mUseTexCoord0) {
-      mTexCoord0Offset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+      mTexCoord0Offset = VertexFormatDescriptor::sumOfPreviousOffset(vertexFormats);
       vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::TexCoord0, VertexAttributeType::Float2)));
     }
 
     if (mUseTexCoord1) {
-      mTexCoord1Offset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+      mTexCoord1Offset = VertexFormatDescriptor::sumOfPreviousOffset(vertexFormats);
       vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::TexCoord1, VertexAttributeType::Float2)));
     }
 
     if (mUseTexCoord2) {
-      mTexCoord2Offset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+      mTexCoord2Offset = VertexFormatDescriptor::sumOfPreviousOffset(vertexFormats);
       vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::TexCoord2, VertexAttributeType::Float2)));
     }
 
     if (mUseTexCoord3) {
-      mTexCoord3Offset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+      mTexCoord3Offset = VertexFormatDescriptor::sumOfPreviousOffset(vertexFormats);
       vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::TexCoord3, VertexAttributeType::Float2)));
     }
 
     if (mUseTexCoord4) {
-      mTexCoord4Offset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+      mTexCoord4Offset = VertexFormatDescriptor::sumOfPreviousOffset(vertexFormats);
       vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::TexCoord4, VertexAttributeType::Float2)));
     }
 
     if (mUseTexCoord5) {
-      mTexCoord5Offset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+      mTexCoord5Offset = VertexFormatDescriptor::sumOfPreviousOffset(vertexFormats);
       vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::TexCoord5, VertexAttributeType::Float2)));
     }
 
     if (mUseTexCoord6) {
-      mTexCoord6Offset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+      mTexCoord6Offset = VertexFormatDescriptor::sumOfPreviousOffset(vertexFormats);
       vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::TexCoord6, VertexAttributeType::Float2)));
     }
 
     if (mUseTexCoord7) {
-      mTexCoord7Offset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+      mTexCoord7Offset = VertexFormatDescriptor::sumOfPreviousOffset(vertexFormats);
       vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::TexCoord7, VertexAttributeType::Float2)));
     }
 
     if (mUseColor) {
-      mColorOffset = VertexFormatBuilder::sumOfPreviousOffset(vertexFormats);
+      mColorOffset = VertexFormatDescriptor::sumOfPreviousOffset(vertexFormats);
       vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::Color, VertexAttributeType::Float4)));
     }
 
-    return vertexFormats;
+    return NEW_T(VertexFormatHolder{vertexFormats});
   }
 
-  std::size_t VertexFormatBuilder::sumOfPreviousOffset(const Vector<VertexFormat*>& vertexFormats) {
+  std::size_t VertexFormatDescriptor::sumOfPreviousOffset(const Vector<VertexFormat*>& vertexFormats) {
     std::size_t sum = 0;
     for (const auto& vertexFormat : vertexFormats) {
       sum += vertexFormat->size();

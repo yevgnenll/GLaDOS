@@ -66,6 +66,7 @@ namespace GLaDOS {
     static real log2(real a);
     static real exp(real a);
     static real sqrt(real a);
+    static real rsqrt(real a);
     static real pow(real a, real exp);
     static bool isPowerOfTwo(uint32_t a);
 

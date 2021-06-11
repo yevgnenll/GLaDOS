@@ -14,16 +14,14 @@ public:
         0.5, -0.5, 0.0,   1.0, 0.0, 0.0, 1.0,
         -0.5,  0.5, 0.0,  0.0, 0.0, 1.0, 1.0,
     };
-    VertexData* vertexData = NEW_T(VertexData(VertexFormatBuilder().withPosition().withColor(), 6));
+    VertexData* vertexData = NEW_T(VertexData(VertexFormatDescriptor().position().color(), 6));
     vertexData->uploadDataNoCopy(quad);
     Mesh* mesh = Platform::getRenderer().createMesh(vertexData, nullptr);
     if (mesh == nullptr) {
-      LOG_ERROR("default", "Mesh initialize failed!");
       return false;
     }
     shaderProgram = Platform::getRenderer().createShaderProgram("basicVertex.metal", "basicFragment.metal", vertexData);
     if (shaderProgram == nullptr) {
-      LOG_ERROR("default", "Shader initialize failed!");
       return false;
     }
     Material* material = NEW_T(Material);
@@ -92,7 +90,6 @@ private:
 bool init() {
   PlatformParams params{1024, 800, "02-camera", "GLaDOS", false};
   if (!Platform::getInstance().initialize(params)) {
-    LOG_ERROR("default", "Platform initialize failed!");
     return false;
   }
 

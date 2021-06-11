@@ -4,6 +4,7 @@
 #include "utils/UniqueId.h"
 
 namespace GLaDOS {
+  class Logger;
   class Material;
   class Mesh;
   class Renderable : public UniqueId {
@@ -23,6 +24,9 @@ namespace GLaDOS {
   protected:
     Mesh* mMesh{nullptr};
     Material* mMaterial{nullptr};
+
+  private:
+    static Logger* logger;
   };
 }  // namespace GLaDOS
 

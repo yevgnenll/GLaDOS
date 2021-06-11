@@ -16,6 +16,7 @@
 @end
 
 namespace GLaDOS {
+  class Logger;
   class Platform;
   class CocoaPlatform {
     friend class Platform;
@@ -72,6 +73,7 @@ namespace GLaDOS {
     void initCursorMode(bool isShowCursor);
     static OSVersion makeOSVersion(uint32_t major, uint32_t minor, uint32_t patch);
 
+    static Logger* logger;
     static NSApplication* applicationInstance;
     static CocoaPlatform* cocoaPlatformInstance;
 

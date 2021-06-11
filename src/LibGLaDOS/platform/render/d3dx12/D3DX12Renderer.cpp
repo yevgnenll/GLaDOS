@@ -5,6 +5,7 @@
 #include "platform/windows/WindowsPlatform.h"
 
 namespace GLaDOS {
+  Logger* D3DX12Renderer::logger = LoggerRegistry::getInstance().makeAndGetLogger("D3DX12Renderer");
   D3DX12Renderer::~D3DX12Renderer() {
     // Ensure that the GPU is no longer referencing resources that are about to be
     // cleaned up by the destructor.
@@ -18,7 +19,7 @@ namespace GLaDOS {
     UINT dxgiFactoryFlags = 0;
     HRESULT hresult = CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory));
     if (FAILED(hresult)) {
-      LOG_ERROR("default", "{0}", hresultToString(hresult));
+      LOG_ERROR(logger, "{0}", hresultToString(hresult));
       return false;
     }
     ComPtr<IDXGIAdapter1> hardwareAdapter;
@@ -27,7 +28,7 @@ namespace GLaDOS {
     // create device
     hresult = D3D12CreateDevice(hardwareAdapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&mDevice));
     if (FAILED(hresult)) {
-      LOG_ERROR("default", "{0}", hresultToString(hresult));
+      LOG_ERROR(logger, "{0}", hresultToString(hresult));
       return false;
     }
 
@@ -37,7 +38,7 @@ namespace GLaDOS {
     queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
     hresult = mDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&mCommandQueue));
     if (FAILED(hresult)) {
-      LOG_ERROR("default", "{0}", hresultToString(hresult));
+      LOG_ERROR(logger, "{0}", hresultToString(hresult));
       return false;
     }
 
@@ -54,13 +55,13 @@ namespace GLaDOS {
     ComPtr<IDXGISwapChain1> swapChain;
     hresult = factory->CreateSwapChainForHwnd(mCommandQueue.Get(), WindowsPlatform::getWindowHandle(), &swapChainDesc, nullptr, nullptr, &swapChain);
     if (FAILED(hresult)) {
-      LOG_ERROR("default", "{0}", hresultToString(hresult));
+      LOG_ERROR(logger, "{0}", hresultToString(hresult));
       return false;
     }
 
     hresult = factory->MakeWindowAssociation(WindowsPlatform::getWindowHandle(), DXGI_MWA_NO_PRINT_SCREEN);  // Prevent DXGI from responding to a print-screen key.
     if (FAILED(hresult)) {
-      LOG_ERROR("default", "{0}", hresultToString(hresult));
+      LOG_ERROR(logger, "{0}", hresultToString(hresult));
       return false;
     }
 
@@ -74,7 +75,7 @@ namespace GLaDOS {
     heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     hresult = mDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&mRenderTargetDescHeap));
     if (FAILED(hresult)) {
-      LOG_ERROR("default", "{0}", hresultToString(hresult));
+      LOG_ERROR(logger, "{0}", hresultToString(hresult));
       return false;
     }
     mRenderTargetDescSize = mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
@@ -84,7 +85,7 @@ namespace GLaDOS {
     for (uint32_t n = 0; n < frameCount; n++) {
       hresult = mSwapChain->GetBuffer(n, IID_PPV_ARGS(&mRenderTargets[n]));
       if (FAILED(hresult)) {
-        LOG_ERROR("default", "{0}", hresultToString(hresult));
+        LOG_ERROR(logger, "{0}", hresultToString(hresult));
         return false;
       }
       mDevice->CreateRenderTargetView(mRenderTargets[n].Get(), nullptr, cpuDescHandle);
@@ -94,38 +95,38 @@ namespace GLaDOS {
     // create command list
     hresult = mDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&mCommandAllocator));
     if (FAILED(hresult)) {
-      LOG_ERROR("default", "{0}", hresultToString(hresult));
+      LOG_ERROR(logger, "{0}", hresultToString(hresult));
       return false;
     }
 
     hresult = mDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, mCommandAllocator.Get(), nullptr, IID_PPV_ARGS(&mCommandList));
     if (FAILED(hresult)) {
-      LOG_ERROR("default", "{0}", hresultToString(hresult));
+      LOG_ERROR(logger, "{0}", hresultToString(hresult));
       return false;
     }
 
     hresult = mCommandList->Close();
     if (FAILED(hresult)) {
-      LOG_ERROR("default", "{0}", hresultToString(hresult));
+      LOG_ERROR(logger, "{0}", hresultToString(hresult));
       return false;
     }
 
     // create synchronization object
     hresult = mDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence));
     if (FAILED(hresult)) {
-      LOG_ERROR("default", "{0}", hresultToString(hresult));
+      LOG_ERROR(logger, "{0}", hresultToString(hresult));
       return false;
     }
     mFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
     if (mFenceEvent == nullptr) {
       hresult = HRESULT_FROM_WIN32(GetLastError());
       if (FAILED(hresult)) {
-        LOG_ERROR("default", "{0}", hresultToString(hresult));
+        LOG_ERROR(logger, "{0}", hresultToString(hresult));
         return false;
       }
     }
 
-    LOG_TRACE("default", "D3DX12Renderer init success");
+    LOG_TRACE(logger, "D3DX12Renderer init success");
 
     return true;
   }
@@ -222,6 +223,10 @@ namespace GLaDOS {
     return nullptr;
   }
 
+  VertexData* D3DX12Renderer::createVertexData(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) {
+    return nullptr;
+  }
+
   std::string D3DX12Renderer::hresultToString(HRESULT hr) {
     char s_str[64] = {};
     sprintf_s(s_str, "HRESULT of 0x%08X", static_cast<UINT>(hr));
@@ -312,7 +317,7 @@ namespace GLaDOS {
     const uint64_t fence = mFenceValue;
     HRESULT hresult = mCommandQueue->Signal(mFence.Get(), fence);
     if (FAILED(hresult)) {
-      LOG_ERROR("default", "{0}", hresultToString(hresult));
+      LOG_ERROR(logger, "{0}", hresultToString(hresult));
       return;
     }
     mFenceValue++;
@@ -321,7 +326,7 @@ namespace GLaDOS {
     if (mFence->GetCompletedValue() < fence) {
       hresult = mFence->SetEventOnCompletion(fence, mFenceEvent);
       if (FAILED(hresult)) {
-        LOG_ERROR("default", "{0}", hresultToString(hresult));
+        LOG_ERROR(logger, "{0}", hresultToString(hresult));
         return;
       }
       WaitForSingleObject(mFenceEvent, INFINITE);

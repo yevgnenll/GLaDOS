@@ -5,6 +5,7 @@
 #include "utils/Enumeration.h"
 
 namespace GLaDOS {
+  Logger* MetalTextureBase::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalTextureBase");
   MetalTextureBase::~MetalTextureBase() {
     deallocate();
   }
@@ -56,7 +57,7 @@ namespace GLaDOS {
       case PixelFormat::Depth32Stencil8:
         return MTLPixelFormatDepth32Float_Stencil8;
       default:
-        LOG_ERROR("default", "Invalid Texture format.");
+        LOG_ERROR(logger, "Invalid Texture format.");
         break;
     }
 

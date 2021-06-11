@@ -3,6 +3,7 @@
 
 #include <string>
 #include <string_view>
+
 #include "memory/STLAllocator.h"
 
 namespace GLaDOS {
@@ -55,6 +56,6 @@ namespace GLaDOS {
 
     return false;
   }
-}
+}  // namespace GLaDOS
 
 #endif  //GLADOS_STRING_HPP
