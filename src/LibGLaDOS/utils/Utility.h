@@ -26,20 +26,31 @@ namespace GLaDOS {
 #define CAST(type, x) (static_cast<type>(x))
 #endif
 
+#if defined(MSVC)
+#define FORCE_INLINE __forceinline
+#else
+#define FORCE_INLINE inline __attribute__((always_inline))
+#endif
+
+#ifndef GASSERT
+#include <cassert>
+#define GASSERT(_EXPR) assert(_EXPR)
+#endif
+
 /*
 * If you declare a copy constructor (even if you define it as deleted in the declaration),
 * no move constructor will be declared implicitly. Cf. C++11 12.8/9:
 */
 #ifndef DISALLOW_COPY_AND_ASSIGN
 #define DISALLOW_COPY_AND_ASSIGN(c) \
-  c(const c&) = delete; \
-  c& operator=(const c&) = delete
+    c(const c&) = delete; \
+    c& operator=(const c&) = delete
 #endif
 
 #ifndef DISALLOW_MOVE_AND_ASSIGN
 #define DISALLOW_MOVE_AND_ASSIGN(c) \
-  c(c&&) = delete; \
-  c& operator=(c&&) = delete
+    c(c&&) = delete; \
+    c& operator=(c&&) = delete
 #endif
 
 #ifndef UNUSED
@@ -73,46 +84,46 @@ namespace GLaDOS {
 #define LOG_ERROR(logger, fmt, ...) logger->error({__FILE__, __LINE__, __FUNCTION__}, fmt, ##__VA_ARGS__)
 #endif
 
-  template <typename T>
-  struct is_real
-      : std::integral_constant<
-            bool,
-            std::is_same<float, typename std::remove_cv<T>::type>::value ||
-                std::is_same<double, typename std::remove_cv<T>::type>::value> {};
+    template <typename T>
+    struct is_real
+        : std::integral_constant<
+              bool,
+              std::is_same<float, typename std::remove_cv<T>::type>::value ||
+                  std::is_same<double, typename std::remove_cv<T>::type>::value> {};
 
-  template <typename T>
-  inline constexpr bool is_real_v = is_real<T>::value;
+    template <typename T>
+    inline constexpr bool is_real_v = is_real<T>::value;
 
-  template <typename T>
-  static constexpr void deallocIterable(Vector<T*>& iterable) {
-    for (auto& i : iterable) {
-      DELETE_T(i, T);
+    template <typename T>
+    static constexpr void deallocIterable(Vector<T*>& iterable) {
+        for (auto& i : iterable) {
+            DELETE_T(i, T);
+        }
+        iterable.clear();
     }
-    iterable.clear();
-  }
 
-  template <typename K, typename V>
-  static constexpr void deallocValueInMap(Map<K, V*>& iterable) {
-    for (auto& [k, v] : iterable) {
-      DELETE_T(v, V);
+    template <typename K, typename V>
+    static constexpr void deallocValueInMap(Map<K, V*>& iterable) {
+        for (auto& [k, v] : iterable) {
+            DELETE_T(v, V);
+        }
+        iterable.clear();
     }
-    iterable.clear();
-  }
 
-  template <typename K, typename V>
-  static constexpr void deallocValueInMap(UnorderedMap<K, V*>& iterable) {
-    for (auto& [k, v] : iterable) {
-      DELETE_T(v, V);
+    template <typename K, typename V>
+    static constexpr void deallocValueInMap(UnorderedMap<K, V*>& iterable) {
+        for (auto& [k, v] : iterable) {
+            DELETE_T(v, V);
+        }
+        iterable.clear();
     }
-    iterable.clear();
-  }
 
-  template <typename T>
-  static constexpr T align2(T x) { return (x + 1) >> 1 << 1; }
-  template <typename T>
-  static constexpr T align4(T x) { return (x + 3) >> 2 << 2; }
-  template <typename T>
-  static constexpr T align8(T x) { return (x + 7) >> 3 << 3; }
+    template <typename T>
+    static constexpr T align2(T x) { return (x + 1) >> 1 << 1; }
+    template <typename T>
+    static constexpr T align4(T x) { return (x + 3) >> 2 << 2; }
+    template <typename T>
+    static constexpr T align8(T x) { return (x + 7) >> 3 << 3; }
 }  // namespace GLaDOS
 
 #endif

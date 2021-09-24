@@ -12,81 +12,81 @@
 #include "utils/MeshGenerator.h"
 
 namespace GLaDOS {
-  Logger* SpriteRenderer::logger = LoggerRegistry::getInstance().makeAndGetLogger("SpriteRenderer");
-  SpriteRenderer::SpriteRenderer() {
-    mName = "SpriteRenderer";
-  }
-
-  SpriteRenderer::SpriteRenderer(Sprite* sprite) : mSprite{sprite} {
-    mName = "SpriteRenderer";
-    setSprite(sprite);
-  }
-
-  SpriteRenderer::~SpriteRenderer() {
-    DELETE_T(mSprite, Sprite);
-  }
-
-  void SpriteRenderer::setSprite(Sprite* sprite) {
-    mSprite = sprite;
-
-    Mesh* mesh = MeshGenerator::generateRectangle(mSprite->getTextureCoords());
-    if (mesh == nullptr) {
-      LOG_ERROR(logger, "SpriteRenderer initialize failed!");
-      return;
-    }
-    ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgram("spriteVertex.metal", "spriteFragment.metal", mesh->getVertexData());
-    if (shaderProgram == nullptr) {
-      LOG_ERROR(logger, "SpriteRenderer initialize failed!");
-      return;
+    Logger* SpriteRenderer::logger = LoggerRegistry::getInstance().makeAndGetLogger("SpriteRenderer");
+    SpriteRenderer::SpriteRenderer() {
+        mName = "SpriteRenderer";
     }
 
-    Material* material = NEW_T(Material);
-    material->setShaderProgram(shaderProgram);
-
-    Renderable* renderable = Platform::getRenderer().createRenderable(mesh, material);
-    if (renderable == nullptr) {
-      LOG_ERROR(logger, "CubemapRenderer initialize failed!");
-      return;
+    SpriteRenderer::SpriteRenderer(Sprite* sprite) : mSprite{sprite} {
+        mName = "SpriteRenderer";
+        setSprite(sprite);
     }
-    mRenderable = renderable;
-  }
 
-  void SpriteRenderer::setColor(const Color& color) {
-    mColor = color;
-  }
+    SpriteRenderer::~SpriteRenderer() {
+        DELETE_T(mSprite, Sprite);
+    }
 
-  void SpriteRenderer::setFlipX(bool flipX) {
-    mFlipX = flipX;
-  }
+    void SpriteRenderer::setSprite(Sprite* sprite) {
+        mSprite = sprite;
 
-  void SpriteRenderer::setFlipY(bool flipY) {
-    mFlipY = flipY;
-  }
+        Mesh* mesh = MeshGenerator::generateRectangle(mSprite->getTextureCoords());
+        if (mesh == nullptr) {
+            LOG_ERROR(logger, "SpriteRenderer initialize failed!");
+            return;
+        }
+        ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgram("spriteVertex.metal", "spriteFragment.metal", mesh->getVertexData());
+        if (shaderProgram == nullptr) {
+            LOG_ERROR(logger, "SpriteRenderer initialize failed!");
+            return;
+        }
 
-  Sprite* SpriteRenderer::getSprite() const {
-    return mSprite;
-  }
+        Material* material = NEW_T(Material);
+        material->setShaderProgram(shaderProgram);
 
-  Color SpriteRenderer::getColor() const {
-    return mColor;
-  }
+        Renderable* renderable = Platform::getRenderer().createRenderable(mesh, material);
+        if (renderable == nullptr) {
+            LOG_ERROR(logger, "CubemapRenderer initialize failed!");
+            return;
+        }
+        mRenderable = renderable;
+    }
 
-  bool SpriteRenderer::getFlipX() const {
-    return mFlipX;
-  }
+    void SpriteRenderer::setColor(const Color& color) {
+        mColor = color;
+    }
 
-  bool SpriteRenderer::getFlipY() const {
-    return mFlipY;
-  }
+    void SpriteRenderer::setFlipX(bool flipX) {
+        mFlipX = flipX;
+    }
 
-  void SpriteRenderer::update(real deltaTime) {
-    ShaderProgram* shaderProgram = mRenderable->getMaterial()->getShaderProgram();
-    shaderProgram->setUniform("flipX", mFlipX);
-    shaderProgram->setUniform("flipY", mFlipY);
-    shaderProgram->setUniform("color", mColor);
-  }
+    void SpriteRenderer::setFlipY(bool flipY) {
+        mFlipY = flipY;
+    }
 
-  void SpriteRenderer::render() {
-    Platform::getRenderer().render(mRenderable);
-  }
+    Sprite* SpriteRenderer::getSprite() const {
+        return mSprite;
+    }
+
+    Color SpriteRenderer::getColor() const {
+        return mColor;
+    }
+
+    bool SpriteRenderer::getFlipX() const {
+        return mFlipX;
+    }
+
+    bool SpriteRenderer::getFlipY() const {
+        return mFlipY;
+    }
+
+    void SpriteRenderer::update(real deltaTime) {
+        ShaderProgram* shaderProgram = mRenderable->getMaterial()->getShaderProgram();
+        shaderProgram->setUniform("flipX", mFlipX);
+        shaderProgram->setUniform("flipY", mFlipY);
+        shaderProgram->setUniform("color", mColor);
+    }
+
+    void SpriteRenderer::render() {
+        Platform::getRenderer().render(mRenderable);
+    }
 }  // namespace GLaDOS

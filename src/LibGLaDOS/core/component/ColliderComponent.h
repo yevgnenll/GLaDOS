@@ -2,8 +2,8 @@
 #define GLADOS_COLLIDERCOMPONENT_H
 
 namespace GLaDOS {
-  class ColliderComponent {
-  };
+    class ColliderComponent {
+    };
 }  // namespace GLaDOS
 
 #endif  //GLADOS_COLLIDERCOMPONENT_H

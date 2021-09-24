@@ -8,13 +8,13 @@
 #include "platform/render/RenderTexture.h"
 
 namespace GLaDOS {
-  class MetalRenderTexture : public RenderTexture {
-  public:
-    MetalRenderTexture(PixelFormat format);
-    ~MetalRenderTexture() override;
+    class MetalRenderTexture : public RenderTexture {
+      public:
+        MetalRenderTexture(PixelFormat format);
+        ~MetalRenderTexture() override;
 
-  private:
-  };
+      private:
+    };
 }  // namespace GLaDOS
 
 #endif  //GLADOS_METALRENDERTEXTURE_H

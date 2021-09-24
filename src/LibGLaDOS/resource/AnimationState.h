@@ -2,8 +2,8 @@
 #define GLADOS_ANIMATIONSTATE_H
 
 namespace GLaDOS {
-  class AnimationState {
-  };
+    class AnimationState {
+    };
 }  // namespace GLaDOS
 
 #endif  //GLADOS_ANIMATIONSTATE_H

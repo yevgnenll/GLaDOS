@@ -2,8 +2,8 @@
 #define GLADOS_BOUNDS_H
 
 namespace GLaDOS {
-  class Bounds {
-  };
+    class Bounds {
+    };
 }  // namespace GLaDOS
 
 #endif  //GLADOS_BOUNDS_H

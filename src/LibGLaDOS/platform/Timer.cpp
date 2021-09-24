@@ -1,55 +1,56 @@
 #include "Timer.h"
 
 namespace GLaDOS {
-  Timer::Timer() {
-    reset();
-  }
-
-  void Timer::update() {
-    mCurrentTime = now();
-
-    mUnscaledDeltaTime = static_cast<real>(getInterval(mStart, mCurrentTime) * 0.001);
-    mDeltaTime = mUnscaledDeltaTime * mTimeScale;
-
-    mUnscaledTime += mUnscaledDeltaTime;
-    mTime += mDeltaTime;
-
-    mFixedDeltaTime = mUnscaledFixedDeltaTime * mTimeScale;
-
-    mStart = mCurrentTime;
-    mFrameCounter++;
-    mAccumulator += mUnscaledDeltaTime;  // accumulate
-    if (mAccumulator > real(1.0)) {  // elapsed after 1 sec
-      mFrameRate = mFrameCounter;
-      mFrameCounter = 0;
-      mAccumulator = 0.0;
+    Timer::Timer() {
+        setDestructionPhase(3);
+        reset();
     }
-  }
 
-  void Timer::reset() {
-    mStart = now();
-    mTimeScale = 1.0;
-  }
+    void Timer::update() {
+        mCurrentTime = now();
 
-  real Timer::deltaTime() { return mDeltaTime; }
+        mUnscaledDeltaTime = static_cast<real>(getInterval(mStart, mCurrentTime) * 0.001);
+        mDeltaTime = mUnscaledDeltaTime * mTimeScale;
 
-  real Timer::deltaTimeUnscaled() { return mUnscaledDeltaTime; }
+        mUnscaledTime += mUnscaledDeltaTime;
+        mTime += mDeltaTime;
 
-  real Timer::elapsedTime() { return mTime; }
+        mFixedDeltaTime = mUnscaledFixedDeltaTime * mTimeScale;
 
-  real Timer::elapsedTimeUnscaled() { return mUnscaledTime; }
+        mStart = mCurrentTime;
+        mFrameCounter++;
+        mAccumulator += mUnscaledDeltaTime;  // accumulate
+        if (mAccumulator > real(1.0)) {  // elapsed after 1 sec
+            mFrameRate = mFrameCounter;
+            mFrameCounter = 0;
+            mAccumulator = 0.0;
+        }
+    }
 
-  real Timer::fixedDeltaTime() { return mFixedDeltaTime; }
+    void Timer::reset() {
+        mStart = now();
+        mTimeScale = 1.0;
+    }
 
-  real Timer::fixedDeltaTimeUnscaled() { return mUnscaledFixedDeltaTime; }
+    real Timer::deltaTime() { return mDeltaTime; }
 
-  int Timer::fps() { return mFrameRate; }
+    real Timer::deltaTimeUnscaled() { return mUnscaledDeltaTime; }
 
-  void Timer::setTimeScale(real value) { mTimeScale = value; }
+    real Timer::elapsedTime() { return mTime; }
 
-  HighResolutionTimePoint Timer::now() { return HighResolutionClock::now(); }
+    real Timer::elapsedTimeUnscaled() { return mUnscaledTime; }
 
-  real Timer::getInterval(HighResolutionTimePoint start, HighResolutionTimePoint end) {
-    return std::chrono::duration_cast<millisecond>(end - start).count();
-  }
+    real Timer::fixedDeltaTime() { return mFixedDeltaTime; }
+
+    real Timer::fixedDeltaTimeUnscaled() { return mUnscaledFixedDeltaTime; }
+
+    int Timer::fps() { return mFrameRate; }
+
+    void Timer::setTimeScale(real value) { mTimeScale = value; }
+
+    HighResolutionTimePoint Timer::now() { return HighResolutionClock::now(); }
+
+    real Timer::getInterval(HighResolutionTimePoint start, HighResolutionTimePoint end) {
+        return std::chrono::duration_cast<millisecond>(end - start).count();
+    }
 }  // namespace GLaDOS

@@ -2,8 +2,8 @@
 #define GLADOS_FONTRENDERER_H
 
 namespace GLaDOS {
-  class FontRenderer {
-  };
+    class FontRenderer {
+    };
 }  // namespace GLaDOS
 
 #endif  //GLADOS_FONTRENDERER_H

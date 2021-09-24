@@ -14,33 +14,33 @@
 #undef min
 
 namespace GLaDOS {
-  class Logger;
-  class WindowsPlatform {
-    friend class Platform;
+    class Logger;
+    class WindowsPlatform {
+        friend class Platform;
 
-  public:
-    WindowsPlatform() = default;
-    ~WindowsPlatform();
-    WindowsPlatform(const WindowsPlatform&) = delete;
-    WindowsPlatform& operator=(const WindowsPlatform&) = delete;
+      public:
+        WindowsPlatform() = default;
+        ~WindowsPlatform();
+        WindowsPlatform(const WindowsPlatform&) = delete;
+        WindowsPlatform& operator=(const WindowsPlatform&) = delete;
 
-    bool initialize(const PlatformParams& params);
+        bool initialize(const PlatformParams& params);
 
-    static DWORD makeWindowStyle(WindowStyle windowStyle);
-    static std::pair<int, int> centerOfScreen();
-    static std::pair<int, int> getScreenSize();
-    static HWND getWindowHandle();
+        static DWORD makeWindowStyle(WindowStyle windowStyle);
+        static std::pair<int, int> centerOfScreen();
+        static std::pair<int, int> getScreenSize();
+        static HWND getWindowHandle();
 
-  private:
-    static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+      private:
+        static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
-    static WindowsPlatform* windowsPlatformInstance;
+        static WindowsPlatform* windowsPlatformInstance;
 
-    static Logger* logger;
+        static Logger* logger;
 
-    HINSTANCE mhInstance;
-    HWND mHandle;
-  };
+        HINSTANCE mhInstance;
+        HWND mHandle;
+    };
 }  // namespace GLaDOS
 
 #endif

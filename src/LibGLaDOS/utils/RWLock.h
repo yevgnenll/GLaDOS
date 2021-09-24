@@ -2,14 +2,14 @@
 #define GLADOS_RWLOCK_H
 
 namespace GLaDOS {
-  // TODO
-  class RWLock {
-  public:
-    RWLock();
-    ~RWLock();
+    // TODO
+    class RWLock {
+      public:
+        RWLock();
+        ~RWLock();
 
-  private:
-  };
+      private:
+    };
 }  // namespace GLaDOS
 
 #endif  //GLADOS_RWLOCK_H

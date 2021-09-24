@@ -2,8 +2,8 @@
 #define GLADOS_PLANE_H
 
 namespace GLaDOS {
-  class Plane {
-  };
+    class Plane {
+    };
 }  // namespace GLaDOS
 
 #endif  //GLADOS_PLANE_H

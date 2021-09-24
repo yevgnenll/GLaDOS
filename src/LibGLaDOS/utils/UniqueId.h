@@ -4,18 +4,18 @@
 #include <atomic>
 
 namespace GLaDOS {
-  class UniqueId {
-  public:
-    UniqueId() : mInstanceId(++globalIdGenerator) {}
+    class UniqueId {
+      public:
+        UniqueId() : mInstanceId(++globalIdGenerator) {}
 
-    int getInstanceId() const { return mInstanceId; }
+        int getInstanceId() const { return mInstanceId; }
 
-  private:
-    static std::atomic_int globalIdGenerator;
+      private:
+        static std::atomic_int globalIdGenerator;
 
-  protected:
-    int mInstanceId;
-  };
+      protected:
+        int mInstanceId;
+    };
 }  // namespace GLaDOS
 
 #endif  //GLADOS_UNIQUEID_H

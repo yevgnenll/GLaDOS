@@ -4,24 +4,24 @@
 #include <atomic>
 
 namespace GLaDOS {
-  class RefCounted {
-    template <typename T>
-    friend class RefPtr;
+    class RefCounted {
+        template <typename T>
+        friend class RefPtr;
 
-  public:
-    RefCounted() = default;
-    explicit constexpr RefCounted(int initialValue);
+      public:
+        RefCounted() = default;
+        explicit constexpr RefCounted(int initialValue);
 
-    bool isRefOne() const;
-    bool isRefZero() const;
+        bool isRefOne() const;
+        bool isRefZero() const;
 
-  private:
-    int incrementRefOne();
-    int incrementRef(int increment);
-    bool releaseRef();
+      private:
+        int incrementRefOne();
+        int incrementRef(int increment);
+        bool releaseRef();
 
-    std::atomic_int mRefCount{0};
-  };
+        std::atomic_int mRefCount{0};
+    };
 }  // namespace GLaDOS
 
 #endif  //GLADOS_REFCOUNTED_H

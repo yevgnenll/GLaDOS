@@ -3,97 +3,100 @@
 using namespace GLaDOS;
 
 class MainScene : public Scene {
-public:
-  bool onInit() override {
-    Mesh* mesh = MeshGenerator::generateTorusKnot(3, 4, 64, 16, 0.2);
-    if (mesh == nullptr) {
-      return false;
-    }
-    shaderProgram = Platform::getRenderer().createShaderProgram("normalVertex.metal", "normalFragment.metal", mesh->getVertexData());
-    if (shaderProgram == nullptr) {
-      return false;
-    }
-    DepthStencilDescription depthStencilDesc{};
-    shaderProgram->setDepthStencilState(depthStencilDesc);
+  public:
+    bool onInit() override {
+        Mesh* mesh = MeshGenerator::generateTorusKnot(3, 8, 256, 32, 0.2);
+        if (mesh == nullptr) {
+            return false;
+        }
+        shaderProgram = Platform::getRenderer().createShaderProgram("normalVertex.metal", "normalFragment.metal", mesh->getVertexData());
+        if (shaderProgram == nullptr) {
+            return false;
+        }
+        shaderProgram->setDepthStencilState(DepthStencilDescription{});
 
-    Material* material = NEW_T(Material);
-    material->setShaderProgram(shaderProgram);
+        Material* material = NEW_T(Material{shaderProgram});
 
-    GameObject* plane = createGameObject("plane");
-    planeTransform = plane->transform();
-    plane->addComponent<MeshRenderer>(mesh, material);
+        GameObject* knot = createGameObject("knot");
+        knotTransform = knot->transform();
+        knot->addComponent<MeshRenderer>(mesh, material);
 
-    camera = getMainCamera();
-    cameraTransform = camera->gameObject()->transform();
-    cameraTransform->setLocalPosition({0, 0, 5});
+        camera = getMainCamera();
+        cameraTransform = camera->gameObject()->transform();
+        cameraTransform->setLocalPosition({0, 0, 5});
 
-    Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
-    Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
-    Input::addAxis("Vertical", NEW_T(InputHandler(KeyCode::KEY_W, KeyCode::KEY_S, 0.1)));
+        Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
+        Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
+        Input::addAxis("Vertical", NEW_T(InputHandler(KeyCode::KEY_W, KeyCode::KEY_S, 0.1)));
 
-    return true;
-  }
-
-  void onUpdate(real deltaTime) override {
-    if (Input::isKeyDown(KeyCode::KEY_ESCAPE)) {
-      Platform::getInstance().quit();
+        return true;
     }
 
-    planeTransform->rotate(Vec3{0, deltaTime * 50, 0});
+    void onUpdate(real deltaTime) override {
+        if (Input::isKeyDown(KeyCode::KEY_ESCAPE)) {
+            Platform::getInstance().quit();
+        }
 
-    shaderProgram->setUniform("invModelView", Mat4x::inverse(planeTransform->localToWorldMatrix() * camera->worldToCameraMatrix()));
-    shaderProgram->setUniform("viewPos", cameraTransform->localPosition());
-    shaderProgram->setUniform("model", planeTransform->localToWorldMatrix());
-    shaderProgram->setUniform("view", camera->worldToCameraMatrix());
-    shaderProgram->setUniform("projection", camera->projectionMatrix());
+        knotTransform->rotate(Vec3{0, deltaTime * 50, 0});
 
-    // camera translation
-    Vec3 right = cameraTransform->right();
-    right *= Input::getAxis("Horizontal") * sensitivity * deltaTime;
-    cameraTransform->translate(right);
+        shaderProgram->setUniform("invModelView", Mat4x::inverse(knotTransform->localToWorldMatrix() * camera->worldToCameraMatrix()));
+        shaderProgram->setUniform("viewPos", cameraTransform->localPosition());
+        shaderProgram->setUniform("model", knotTransform->localToWorldMatrix());
+        shaderProgram->setUniform("view", camera->worldToCameraMatrix());
+        shaderProgram->setUniform("projection", camera->projectionMatrix());
 
-    Vec3 up = cameraTransform->up();
-    up *= Input::getAxis("Forward") * sensitivity * deltaTime;
-    cameraTransform->translate(up);
+        // camera translation
+        Vec3 right = cameraTransform->right();
+        right *= Input::getAxis("Horizontal") * sensitivity * deltaTime;
+        cameraTransform->translate(right);
 
-    Vec3 forward = cameraTransform->forward();
-    forward *= Input::getAxis("Vertical") * sensitivity * deltaTime;
-    cameraTransform->translate(forward);
+        Vec3 up = cameraTransform->up();
+        up *= Input::getAxis("Forward") * sensitivity * deltaTime;
+        cameraTransform->translate(up);
 
-    // camera rotation
-    if (Input::isMousePress(MouseButton::MOUSE_RIGHT)) {
-      Vec3 mouseDelta = Input::mouseDeltaPosition();
-      real rotationX = mouseDelta.y * sensitivity * deltaTime;
-      real rotationY = mouseDelta.x * sensitivity * deltaTime;
-      cameraTransform->rotate(cameraTransform->right(), Math::toRadians(rotationX));
-      cameraTransform->rotate(UVec3::up, Math::toRadians(-rotationY));
+        Vec3 forward = cameraTransform->forward();
+        forward *= Input::getAxis("Vertical") * sensitivity * deltaTime;
+        cameraTransform->translate(forward);
+
+        // camera rotation
+        if (Input::isMousePress(MouseButton::MOUSE_RIGHT)) {
+            Vec3 mouseDelta = Input::mouseDeltaPosition();
+            real rotationX = mouseDelta.y * sensitivity * deltaTime;
+            real rotationY = mouseDelta.x * sensitivity * deltaTime;
+            cameraTransform->rotate(cameraTransform->right(), Math::toRadians(rotationX));
+            cameraTransform->rotate(UVec3::up, Math::toRadians(-rotationY));
+        }
     }
-  }
 
-private:
-  real sensitivity = 15;
-  ShaderProgram* shaderProgram = nullptr;
-  Camera* camera = nullptr;
-  Transform* planeTransform = nullptr;
-  Transform* cameraTransform = nullptr;
+  private:
+    real sensitivity = 15;
+    ShaderProgram* shaderProgram = nullptr;
+    Camera* camera = nullptr;
+    Transform* knotTransform = nullptr;
+    Transform* cameraTransform = nullptr;
 };
 
 bool init() {
-  PlatformParams params{1024, 800, "07-light", "GLaDOS", false};
-  if (!Platform::getInstance().initialize(params)) {
-    return false;
-  }
+    PlatformParams params{1024, 800, "07-light", "GLaDOS", false};
+    if (!Platform::getInstance().initialize(params)) {
+        return false;
+    }
 
-  Platform::getInstance().setClearColor(Color{0, 0, 0, 1});
-  return true;
+    Platform::getInstance().setClearColor(Color{0, 0, 0, 1});
+    return true;
 }
 
 int main(int argc, char** argv) {
-  std::atexit(&dumpMemory);
-  if (!init()) return -1;
-  SceneManager::getInstance().setActiveScene(SceneManager::getInstance().createScene<MainScene>("testScene"));
-  while (Platform::getInstance().isRunning()) {
-    Platform::getInstance().update();
-  }
-  return 0;
+    if (!init()) {
+        return -1;
+    }
+
+    SceneManager::getInstance().setActiveScene(SceneManager::getInstance().createScene<MainScene>("testScene"));
+    while (Platform::getInstance().isRunning()) {
+        Platform::getInstance().update();
+    }
+
+    DestructionManager::getInstance().destroyObjects();
+    dumpMemory();
+    return 0;
 }

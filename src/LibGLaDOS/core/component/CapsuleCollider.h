@@ -2,8 +2,8 @@
 #define GLADOS_CAPSULECOLLIDER_H
 
 namespace GLaDOS {
-  class CapsuleCollider {
-  };
+    class CapsuleCollider {
+    };
 }  // namespace GLaDOS
 
 #endif  //GLADOS_CAPSULECOLLIDER_H

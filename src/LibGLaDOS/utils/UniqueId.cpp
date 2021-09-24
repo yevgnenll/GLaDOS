@@ -1,5 +1,5 @@
 #include "UniqueId.h"
 
 namespace GLaDOS {
-  std::atomic_int UniqueId::globalIdGenerator;
+    std::atomic_int UniqueId::globalIdGenerator;
 }

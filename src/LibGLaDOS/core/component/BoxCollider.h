@@ -2,8 +2,8 @@
 #define GLADOS_BOXCOLLIDER_H
 
 namespace GLaDOS {
-  class BoxCollider {
-  };
+    class BoxCollider {
+    };
 }  // namespace GLaDOS
 
 #endif  //GLADOS_BOXCOLLIDER_H

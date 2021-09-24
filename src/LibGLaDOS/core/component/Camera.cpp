@@ -7,95 +7,95 @@
 #include "platform/Platform.h"
 
 namespace GLaDOS {
-  Camera::Camera() : Component{"Camera"} {
-  }
-
-  Camera::Camera(const Vec3& pos) : Component{"Camera"} {
-    mGameObject->transform()->setLocalPosition(pos);
-  }
-
-  Mat4<real> Camera::projectionMatrix() const {
-    if (mIsOrthographic) {
-      return Mat4<real>::orthogonal(-10.f, 10.f, -10.f, 10.f, mNearClipPlane, mFarClipPlane);
+    Camera::Camera() : Component{"Camera"} {
     }
-    return Mat4<real>::perspective(Math::toRadians(fieldOfView()), aspectRatio(), mNearClipPlane, mFarClipPlane);
-  }
 
-  Mat4<real> Camera::worldToCameraMatrix() const {
-    Transform* transform = mGameObject->transform();
-    return Mat4<real>::lookAt(transform->localPosition(), transform->localPosition() + transform->forward(), transform->up());
-  }
+    Camera::Camera(const Vec3& pos) : Component{"Camera"} {
+        mGameObject->transform()->setLocalPosition(pos);
+    }
 
-  Mat4<real> Camera::cameraToWorldMatrix() const {
-    return Mat4<real>::inverse(worldToCameraMatrix());
-  }
+    Mat4<real> Camera::projectionMatrix() const {
+        if (mIsOrthographic) {
+            return Mat4<real>::orthogonal(-10.f, 10.f, -10.f, 10.f, mNearClipPlane, mFarClipPlane);
+        }
+        return Mat4<real>::perspective(Math::toRadians(fieldOfView()), aspectRatio(), mNearClipPlane, mFarClipPlane);
+    }
 
-  Ray Camera::screenPointToRay(const Vec3& pos) {
-    return {mGameObject->transform()->localPosition(), screenToWorldPoint(Vec2{pos})};
-  }
+    Mat4<real> Camera::worldToCameraMatrix() const {
+        Transform* transform = mGameObject->transform();
+        return Mat4<real>::lookAt(transform->localPosition(), transform->localPosition() + transform->forward(), transform->up());
+    }
 
-  Vec3 Camera::screenToWorldPoint(const Vec2& pos) {
-    Rect<uint32_t> viewport = viewportRect();
-    Vec4 clipCoords;
-    clipCoords.x = (2.f * (pos.x - viewport.left)) / viewport.right - 1.f;
-    clipCoords.y = (2.f * (viewport.bottom - pos.y - (1 - viewport.top))) / viewport.bottom - 1.f;
-    clipCoords.z = -1.f;  // forward
-    clipCoords.w = 1.f;
+    Mat4<real> Camera::cameraToWorldMatrix() const {
+        return Mat4<real>::inverse(worldToCameraMatrix());
+    }
 
-    Vec4 eyeCoords = Mat4<real>::inverse(projectionMatrix()) * clipCoords;
-    eyeCoords.z = -1.f;  // forward
-    eyeCoords.w = 0.f;
+    Ray Camera::screenPointToRay(const Vec3& pos) {
+        return {mGameObject->transform()->localPosition(), screenToWorldPoint(Vec2{pos})};
+    }
 
-    // NOTE: not cameraToWorldMatrix()
-    Vec4 worldCoords = mGameObject->transform()->localToWorldMatrix() * eyeCoords;
+    Vec3 Camera::screenToWorldPoint(const Vec2& pos) {
+        Rect<uint32_t> viewport = viewportRect();
+        Vec4 clipCoords;
+        clipCoords.x = (2.f * (pos.x - viewport.left)) / viewport.right - 1.f;
+        clipCoords.y = (2.f * (viewport.bottom - pos.y - (1 - viewport.top))) / viewport.bottom - 1.f;
+        clipCoords.z = -1.f;  // forward
+        clipCoords.w = 1.f;
 
-    return Vec3{worldCoords.x, worldCoords.y, worldCoords.z}.makeNormalize();
-  }
+        Vec4 eyeCoords = Mat4<real>::inverse(projectionMatrix()) * clipCoords;
+        eyeCoords.z = -1.f;  // forward
+        eyeCoords.w = 0.f;
 
-  Vec2 Camera::worldToScreenPoint(const Vec3& pos) {
-    // TODO
-    return Vec2{};
-  }
+        // NOTE: not cameraToWorldMatrix()
+        Vec4 worldCoords = mGameObject->transform()->localToWorldMatrix() * eyeCoords;
 
-  void Camera::setOrthographic(bool orthographic) {
-    mIsOrthographic = orthographic;
-  }
+        return Vec3{worldCoords.x, worldCoords.y, worldCoords.z}.makeNormalize();
+    }
 
-  real Camera::fieldOfView() const {
-    return mFieldOfView;
-  }
+    Vec2 Camera::worldToScreenPoint(const Vec3& pos) {
+        // TODO
+        return Vec2{};
+    }
 
-  real Camera::nearClipPlane() const {
-    return mNearClipPlane;
-  }
+    void Camera::setOrthographic(bool orthographic) {
+        mIsOrthographic = orthographic;
+    }
 
-  real Camera::farClipPlane() const {
-    return mFarClipPlane;
-  }
+    real Camera::fieldOfView() const {
+        return mFieldOfView;
+    }
 
-  real Camera::aspectRatio() const {
-    return static_cast<real>(Platform::getInstance().width()) / static_cast<real>(Platform::getInstance().height());
-  }
+    real Camera::nearClipPlane() const {
+        return mNearClipPlane;
+    }
 
-  Rect<uint32_t> Camera::viewportRect() const {
-    return mViewportRect;  // TODO: Graphics::getViewport()
-  }
+    real Camera::farClipPlane() const {
+        return mFarClipPlane;
+    }
 
-  void Camera::setFieldOfView(real fov) {
-    mFieldOfView = fov;
-  }
+    real Camera::aspectRatio() const {
+        return static_cast<real>(Platform::getInstance().width()) / static_cast<real>(Platform::getInstance().height());
+    }
 
-  void Camera::setNearClipPlane(real near) {
-    mNearClipPlane = near;
-  }
+    Rect<uint32_t> Camera::viewportRect() const {
+        return mViewportRect;  // TODO: Graphics::getViewport()
+    }
 
-  void Camera::setFarClipPlane(real far) {
-    mFarClipPlane = far;
-  }
+    void Camera::setFieldOfView(real fov) {
+        mFieldOfView = fov;
+    }
 
-  void Camera::update(real deltaTime) {
-  }
+    void Camera::setNearClipPlane(real near) {
+        mNearClipPlane = near;
+    }
 
-  void Camera::render() {
-  }
+    void Camera::setFarClipPlane(real far) {
+        mFarClipPlane = far;
+    }
+
+    void Camera::update(real deltaTime) {
+    }
+
+    void Camera::render() {
+    }
 }  // namespace GLaDOS

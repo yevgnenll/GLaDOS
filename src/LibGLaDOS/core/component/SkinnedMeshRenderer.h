@@ -2,8 +2,8 @@
 #define GLADOS_SKINNEDMESHRENDERER_H
 
 namespace GLaDOS {
-  class SkinnedMeshRenderer {
-  };
+    class SkinnedMeshRenderer {
+    };
 }  // namespace GLaDOS
 
 #endif  //GLADOS_SKINNEDMESHRENDERER_H

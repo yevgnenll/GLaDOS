@@ -1,9 +1,9 @@
 #include "RenderTexture.h"
 
 namespace GLaDOS {
-  RenderTexture::RenderTexture(PixelFormat format) : Texture{"", format} {
-  }
+    RenderTexture::RenderTexture(PixelFormat format) : Texture{"", format} {
+    }
 
-  RenderTexture::~RenderTexture() {
-  }
+    RenderTexture::~RenderTexture() {
+    }
 }  // namespace GLaDOS

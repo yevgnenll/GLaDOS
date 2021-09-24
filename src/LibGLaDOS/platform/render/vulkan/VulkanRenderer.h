@@ -6,8 +6,8 @@
 #ifdef PLATFORM_LINUX
 
 namespace GLaDOS {
-  class VulkanRenderer {
-  };
+    class VulkanRenderer {
+    };
 }  // namespace GLaDOS
 
 #endif

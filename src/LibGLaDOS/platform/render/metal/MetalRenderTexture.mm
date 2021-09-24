@@ -3,11 +3,11 @@
 #ifdef PLATFORM_MACOS
 
 namespace GLaDOS {
-  MetalRenderTexture::MetalRenderTexture(PixelFormat format) : RenderTexture{format} {
-  }
+    MetalRenderTexture::MetalRenderTexture(PixelFormat format) : RenderTexture{format} {
+    }
 
-  MetalRenderTexture::~MetalRenderTexture() {
-  }
+    MetalRenderTexture::~MetalRenderTexture() {
+    }
 }
 
 #endif

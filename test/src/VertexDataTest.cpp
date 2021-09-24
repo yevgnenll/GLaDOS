@@ -52,13 +52,13 @@ TEST_CASE("VertexData unit tests", "[VertexData]") {
         vertex.push_back(bytes[j]);
       }
     }
-    vd.uploadDataNoCopy(vertex.data());
+    vd.setBufferData(vertex.data());
     testVertexData(vd);
   }
 
   SECTION("Bulk vertex data upload with raw pointer of bytes test") {
     VertexData vd{VertexFormatDescriptor().position().color(), vertexCount};
-    vd.uploadDataNoCopy(quad);
+    vd.setBufferData(quad);
     testVertexData(vd);
   }
 }

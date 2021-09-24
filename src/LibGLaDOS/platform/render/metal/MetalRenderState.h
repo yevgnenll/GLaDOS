@@ -9,47 +9,47 @@
 #include "platform/render/RenderState.h"
 
 namespace GLaDOS {
-  class Logger;
-  class MetalDepthStencilState : public DepthStencilState {
-  public:
-    MetalDepthStencilState(const DepthStencilDescription& desc);
-    ~MetalDepthStencilState() override;
+    class Logger;
+    class MetalDepthStencilState : public DepthStencilState {
+      public:
+        MetalDepthStencilState(const DepthStencilDescription& desc);
+        ~MetalDepthStencilState() override;
 
-    id<MTLDepthStencilState> getMetalDepthStencilState();
+        id<MTLDepthStencilState> getMetalDepthStencilState();
 
-  private:
-    static constexpr MTLCompareFunction mapComparisonFunctionFrom(ComparisonFunction func);
-    static constexpr MTLStencilOperation mapStencilOperatorFrom(StencilOperator op);
+      private:
+        static constexpr MTLCompareFunction mapComparisonFunctionFrom(ComparisonFunction func);
+        static constexpr MTLStencilOperation mapStencilOperatorFrom(StencilOperator op);
 
-    static Logger* logger;
+        static Logger* logger;
 
-    MTLDepthStencilDescriptor* mDepthStencilDescriptor{nil};
-    id<MTLDepthStencilState> mDepthStencilState{nil};
-  };
+        MTLDepthStencilDescriptor* mDepthStencilDescriptor{nil};
+        id<MTLDepthStencilState> mDepthStencilState{nil};
+    };
 
-  class MetalSamplerState : public SamplerState {
-  public:
-    MetalSamplerState(const SamplerDescription& desc);
-    ~MetalSamplerState() override;
+    class MetalSamplerState : public SamplerState {
+      public:
+        MetalSamplerState(const SamplerDescription& desc);
+        ~MetalSamplerState() override;
 
-    id<MTLSamplerState> getMetalSamplerState();
+        id<MTLSamplerState> getMetalSamplerState();
 
-  private:
-    static constexpr MTLSamplerMinMagFilter mapSamplerMinMagFilterFrom(FilterMode mode);
-    static constexpr MTLSamplerMipFilter mapSamplerMipFilterFrom(FilterMode mode);
-    static constexpr MTLSamplerAddressMode mapSamplerAddressModeFrom(WrapMode mode);
+      private:
+        static constexpr MTLSamplerMinMagFilter mapSamplerMinMagFilterFrom(FilterMode mode);
+        static constexpr MTLSamplerMipFilter mapSamplerMipFilterFrom(FilterMode mode);
+        static constexpr MTLSamplerAddressMode mapSamplerAddressModeFrom(WrapMode mode);
 
-    static Logger* logger;
+        static Logger* logger;
 
-    MTLSamplerDescriptor* mSamplerDescriptor{nil};
-    id<MTLSamplerState> mSamplerState{nil};
-  };
+        MTLSamplerDescriptor* mSamplerDescriptor{nil};
+        id<MTLSamplerState> mSamplerState{nil};
+    };
 
-  class MetalRasterizerState : public RasterizerState {
-  public:
-    MetalRasterizerState(const RasterizerDescription& desc);
-    ~MetalRasterizerState() override = default;
-  };
+    class MetalRasterizerState : public RasterizerState {
+      public:
+        MetalRasterizerState(const RasterizerDescription& desc);
+        ~MetalRasterizerState() override = default;
+    };
 }  // namespace GLaDOS
 
 #endif

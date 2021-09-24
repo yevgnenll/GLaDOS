@@ -10,27 +10,27 @@
 #include "utils/Semaphore.h"
 
 namespace GLaDOS {
-  class Logger;
-  class MetalRenderer;
-  class MetalFrameBuffer : public FrameBuffer {
-  public:
-    MetalFrameBuffer();
-    ~MetalFrameBuffer() override;
+    class Logger;
+    class MetalRenderer;
+    class MetalFrameBuffer : public FrameBuffer {
+      public:
+        MetalFrameBuffer();
+        ~MetalFrameBuffer() override;
 
-    void begin() override;
-    void end() override;
-    void makeDepthStencilTexture() override;
+        void begin() override;
+        void end() override;
+        void makeDepthStencilTexture() override;
 
-  private:
-    static Logger* logger;
+      private:
+        static Logger* logger;
 
-    id<MTLCommandQueue> mCommandQueue{nil};
-    id<MTLCommandBuffer> mCommandBuffer{nil};
-    id<MTLRenderCommandEncoder> mCommandEncoder{nil};
-    id<CAMetalDrawable> mNextDrawable{nil};
-    id<MTLTexture> mDepthStencilTexture{nil};
-    Semaphore mSemaphore{1};
-  };
+        id<MTLCommandQueue> mCommandQueue{nil};
+        id<MTLCommandBuffer> mCommandBuffer{nil};
+        id<MTLRenderCommandEncoder> mCommandEncoder{nil};
+        id<CAMetalDrawable> mNextDrawable{nil};
+        id<MTLTexture> mDepthStencilTexture{nil};
+        Semaphore mSemaphore{1};
+    };
 }  // namespace GLaDOS
 
 #endif

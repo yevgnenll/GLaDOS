@@ -4,15 +4,15 @@
 #include "FrameBuffer.h"
 
 namespace GLaDOS {
-  class RenderBuffer : public FrameBuffer {
-  public:
-    RenderBuffer() = default;
-    ~RenderBuffer() override = default;
+    class RenderBuffer : public FrameBuffer {
+      public:
+        RenderBuffer() = default;
+        ~RenderBuffer() override = default;
 
-    void begin() override;
-    void end() override;
-    void makeDepthStencilTexture() override;
-  };
+        void begin() override;
+        void end() override;
+        void makeDepthStencilTexture() override;
+    };
 }  // namespace GLaDOS
 
 #endif  //GLADOS_RENDERBUFFER_H

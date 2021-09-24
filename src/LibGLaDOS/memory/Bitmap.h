@@ -2,8 +2,8 @@
 #define GLADOS_BITMAP_H
 
 namespace GLaDOS {
-  class Bitmap {
-  };
+    class Bitmap {
+    };
 }  // namespace GLaDOS
 
 #endif  //GLADOS_BITMAP_H

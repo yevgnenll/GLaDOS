@@ -8,27 +8,27 @@
 #include "MetalRenderer.h"
 
 namespace GLaDOS {
-  class Logger;
-  class MetalTextureBase {
-  public:
-    MetalTextureBase() = default;
-    virtual ~MetalTextureBase();
+    class Logger;
+    class MetalTextureBase {
+      public:
+        MetalTextureBase() = default;
+        virtual ~MetalTextureBase();
 
-    id<MTLTexture> texture();
-    virtual id<MTLSamplerState> metalSamplerState() = 0;
+        id<MTLTexture> texture();
+        virtual id<MTLSamplerState> metalSamplerState() = 0;
 
-    static MTLPixelFormat mapMetalPixelFormatFrom(PixelFormat format);
-    static MTLTextureUsage mapMetalTextureUsageFrom(TextureUsage usage);
+        static MTLPixelFormat mapMetalPixelFormatFrom(PixelFormat format);
+        static MTLTextureUsage mapMetalTextureUsageFrom(TextureUsage usage);
 
-  protected:
-    void deallocate();
+      protected:
+        void release();
 
-    MTLTextureDescriptor* mTextureDescriptor{nil};
-    id<MTLTexture> mTexture{nil};
+        MTLTextureDescriptor* mTextureDescriptor{nil};
+        id<MTLTexture> mTexture{nil};
 
-  private:
-    static Logger* logger;
-  };
+      private:
+        static Logger* logger;
+    };
 }  // namespace GLaDOS
 
 #endif

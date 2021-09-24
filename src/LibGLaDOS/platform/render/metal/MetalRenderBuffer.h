@@ -8,14 +8,14 @@
 #include "platform/render/RenderBuffer.h"
 
 namespace GLaDOS {
-  class MetalRenderBuffer : public RenderBuffer {
-  public:
-    MetalRenderBuffer() = default;
-    ~MetalRenderBuffer() override = default;
+    class MetalRenderBuffer : public RenderBuffer {
+      public:
+        MetalRenderBuffer() = default;
+        ~MetalRenderBuffer() override = default;
 
-    void begin() override;
-    void end() override;
-  };
+        void begin() override;
+        void end() override;
+    };
 }  // namespace GLaDOS
 
 #endif

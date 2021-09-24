@@ -4,16 +4,16 @@
 #include "Texture.h"
 
 namespace GLaDOS {
-  class RenderTexture : public Texture {
-  public:
-    RenderTexture(PixelFormat format);
-    ~RenderTexture() override;
+    class RenderTexture : public Texture {
+      public:
+        RenderTexture(PixelFormat format);
+        ~RenderTexture() override;
 
-    bool loadTextureFromFile() override { return false; }
-    bool loadTextureFromBuffer(StreamBuffer& buffer) override { return false; }
+        bool loadTextureFromFile() override { return false; }
+        bool loadTextureFromBuffer(StreamBuffer& buffer) override { return false; }
 
-  private:
-  };
+      private:
+    };
 }  // namespace GLaDOS
 
 #endif  //GLADOS_RENDERTEXTURE_H

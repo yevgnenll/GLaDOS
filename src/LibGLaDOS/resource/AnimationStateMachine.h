@@ -2,9 +2,9 @@
 #define GLADOS_ANIMATIONSTATEMACHINE_H
 
 namespace GLaDOS {
-  class AnimationStateMachine {
-  public:
-  };
+    class AnimationStateMachine {
+      public:
+    };
 }  // namespace GLaDOS
 
 #endif  //GLADOS_ANIMATIONSTATEMACHINE_H

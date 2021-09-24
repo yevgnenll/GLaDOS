@@ -61,7 +61,7 @@ TEST_CASE("SIMD unit test", "[SIMD]") {
     SIMDVec4 c = SIMD_rcp(a);
     float result[4] = { 0.f, };
     SIMD_store(result, c);
-    float testSuite[4] = { 0.999755859f, 0.49987793f, 0.333251953f, 0.249938965f };
+    float testSuite[4] = { 0.998046875f, 0.499023438f, 0.333007813f, 0.249511719f };
     for (int i = 0; i < 4; i++) {
       REQUIRE(Math::equal(result[i], testSuite[i]));
     }
@@ -81,7 +81,7 @@ TEST_CASE("SIMD unit test", "[SIMD]") {
     SIMDVec4 c = SIMD_rsqrt(a);
     float result[4] = { 0.f, };
     SIMD_store(result, c);
-    float testSuite[4] = { 0.999755859f, 0.70690918f, 0.577270508f, 0.49987793f };
+    float testSuite[4] = { 0.998046875f, 0.705078125f, 0.576171875f, 0.499023438f };
     for (int i = 0; i < 4; i++) {
       REQUIRE(Math::equal(result[i], testSuite[i]));
     }

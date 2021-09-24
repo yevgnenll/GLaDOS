@@ -2,8 +2,8 @@
 #define GLADOS_ANIMATIONFRAME_H
 
 namespace GLaDOS {
-  class AnimationFrame {
-  };
+    class AnimationFrame {
+    };
 }  // namespace GLaDOS
 
 #endif  //GLADOS_ANIMATIONFRAME_H

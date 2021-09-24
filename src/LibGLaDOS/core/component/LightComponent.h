@@ -2,8 +2,8 @@
 #define GLADOS_LIGHTCOMPONENT_H
 
 namespace GLaDOS {
-  class LightComponent {
-  };
+    class LightComponent {
+    };
 }  // namespace GLaDOS
 
 #endif  //GLADOS_LIGHTCOMPONENT_H

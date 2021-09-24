@@ -8,22 +8,22 @@
 #include "Stl.h"
 
 namespace GLaDOS {
-  class Logger;
-  class LoggerRegistry : public Singleton<LoggerRegistry> {
-  public:
-    LoggerRegistry();
-    ~LoggerRegistry() override;
+    class Logger;
+    class LoggerRegistry : public Singleton<LoggerRegistry> {
+      public:
+        LoggerRegistry();
+        ~LoggerRegistry() override;
 
-    Logger* getLogger(const std::string& name);
-    Logger* getDefaultLogger();
-    Logger* makeAndGetLogger(const std::string& name);
-    bool registerNewLogger(Logger* logger);
+        Logger* getLogger(const std::string& name);
+        Logger* getDefaultLogger();
+        Logger* makeAndGetLogger(const std::string& name);
+        bool registerNewLogger(Logger* logger);
 
-  private:
-    std::mutex mRegistryMutex;
-    UnorderedMap<std::string, Logger*> mLoggers;
-    Logger* mDefaultLogger;
-  };
+      private:
+        std::mutex mRegistryMutex;
+        UnorderedMap<std::string, Logger*> mLoggers;
+        Logger* mDefaultLogger;
+    };
 }  // namespace GLaDOS
 
 #endif  //GLADOS_LOGGERREGISTRY_H

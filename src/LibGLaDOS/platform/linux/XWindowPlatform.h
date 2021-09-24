@@ -6,8 +6,8 @@
 #ifdef PLATFORM_LINUX
 
 namespace GLaDOS {
-  class XWindowPlatform {
-  };
+    class XWindowPlatform {
+    };
 }  // namespace GLaDOS
 
 #endif

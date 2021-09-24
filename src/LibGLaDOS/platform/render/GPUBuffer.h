@@ -5,19 +5,19 @@
 #include "utils/Enumeration.h"
 
 namespace GLaDOS {
-  class GPUBuffer {
-  public:
-    GPUBuffer(BufferType type, BufferUsage usage);
-    virtual ~GPUBuffer() = default;
+    class GPUBuffer {
+      public:
+        GPUBuffer(BufferType type, BufferUsage usage);
+        virtual ~GPUBuffer() = default;
 
-    std::size_t getSize() const;
-    virtual bool uploadDataNoCopy(void* data, std::size_t size) = 0;
+        std::size_t getSize() const;
+        virtual bool uploadData(void* data, std::size_t size) = 0;
 
-  protected:
-    BufferType mType;
-    BufferUsage mUsage;
-    std::size_t mSize{0};
-  };
+      protected:
+        BufferType mType;
+        BufferUsage mUsage;
+        std::size_t mSize{0};
+    };
 }  // namespace GLaDOS
 
 #endif

@@ -35,5 +35,6 @@
 #include "utils/MeshGenerator.h"
 #include "utils/String.hpp"
 #include "utils/Utility.h"
+#include "utils/DestructionManager.h"
 
 #endif  //GLADOS_GLADOS_H
