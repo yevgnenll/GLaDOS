@@ -33,7 +33,7 @@ namespace GLaDOS {
         mVertexDescriptor = shaderProgram->makeVertexDescriptor(mMesh->getVertexFormatHolder());
         MTLRenderPipelineDescriptor* pipelineDescriptor = shaderProgram->getPipelineDescriptor();
         if (pipelineDescriptor == nil || mPipelineState != nil) {
-            LOG_ERROR(logger, "Invalid pipeline Descriptor");
+            LOG_ERROR(logger, "Invalid pipeline descriptor");
             return;
         }
 
@@ -61,6 +61,11 @@ namespace GLaDOS {
             }
 
             Texture* texture = mMaterial->getTextureFromIndex(uniform->mOffset);
+            if (texture == nullptr) {
+                LOG_ERROR(logger, "texture [offset({0})] in {1} should not be null", uniform->mOffset, uniform->mShaderType.toString());
+                continue;
+            }
+
             switch (texture->getDimension()) {
                 case TextureDimension::Tex2D: {
                     MetalTexture2D* texture2D = static_cast<MetalTexture2D*>(mMaterial->getTextureFromIndex(uniform->mOffset));

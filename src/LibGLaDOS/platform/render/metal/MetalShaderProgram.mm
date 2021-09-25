@@ -27,8 +27,17 @@ namespace GLaDOS {
     void MetalShaderProgram::bindUniforms(MetalRenderable* _renderable) {
         // copy uniform buffer data
         for (const auto& [key, uniform] : mUniforms) {
+            if (uniform->isTextureType()) {
+                continue;
+            }
+
             void* data = uniform->pointer();
-            if ((data != nullptr) && uniform->isUniformType()) {
+            if (data == nullptr) {
+                LOG_ERROR(logger, "Uniform [offset({0})] in {1} should not be null", uniform->mOffset, uniform->mShaderType.toString());
+                continue;
+            }
+
+            if (uniform->isUniformType()) {
                 StreamBuffer* buffer = nullptr;
                 if (uniform->mShaderType == ShaderType::VertexShader) {
                     buffer = &mVertexUniformBuffer;

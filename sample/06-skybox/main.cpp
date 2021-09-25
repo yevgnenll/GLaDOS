@@ -57,7 +57,6 @@ class MainScene : public Scene {
         shaderProgram->setUniform("modelViewProj", knotTransform->localToWorldMatrix() * camera->worldToCameraMatrix() * camera->projectionMatrix());
         shaderProgram->setUniform("normal", Mat4x::transpose(knotTransform->worldToLocalMatrix()));
         shaderProgram->setUniform("cameraPos", cameraTransform->position());
-        shaderProgram->setUniform("isWireFrameMode", rasterizerDesc.mFillMode == FillMode::Lines);
 
         // camera translation
         Vec3 right = cameraTransform->right();

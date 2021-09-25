@@ -1,12 +1,14 @@
 #include "SpriteSheet.h"
 
+#include <utility>
+
 #include "Sprite.h"
 #include "math/Rect.hpp"
 #include "platform/render/Texture2D.h"
 
 namespace GLaDOS {
     SpriteSheet::SpriteSheet(Texture2D* texture, Sizei spriteSize, std::size_t numSprites, Sizei spacing)
-        : mTexture{texture}, mSpriteSize{spriteSize}, mSpriteSpacing{spacing}, mSpriteCount{numSprites} {
+        : mTexture{texture}, mSpriteSize{std::move(spriteSize)}, mSpriteSpacing{std::move(spacing)}, mSpriteCount{numSprites} {
         createSpriteSheet();
     }
 
@@ -16,25 +18,30 @@ namespace GLaDOS {
 
     void SpriteSheet::createSpriteSheet() {
         /* SpriteSheet
-     *  0 -> 1 -> 2 -> 3
-     *  4 -> 5 -> 6 -> 7
-     *  top-left is 0, bottom-right is end
-     */
+         *  0 -> 1 -> 2 -> 3
+         *  4 -> 5 -> 6 -> 7
+         *  top-left is 0, bottom-right is end
+        */
         std::size_t currentX = 0;
         std::size_t currentY = mTexture->getHeight() - mSpriteSize.y;
+        std::size_t stepX = mSpriteSize.x + mSpriteSpacing.x;
+        std::size_t stepY = mSpriteSize.y + mSpriteSpacing.y;
+        real sizeX = 1 / CAST(real, mTexture->getWidth());
+        real sizeY = 1 / CAST(real, mTexture->getHeight());
         for (std::size_t i = 0; i < mSpriteCount; i++) {
-            Rect<float> rect{
-                (currentX + mSpriteSize.x) / CAST(float, mTexture->getWidth()),
-                currentX / CAST(float, mTexture->getWidth()),
-                (currentY + mSpriteSize.y) / CAST(float, mTexture->getHeight()),
-                currentY / CAST(float, mTexture->getHeight())};
+            Rect<real> rect{
+                (currentX + mSpriteSize.x) * sizeX,
+                currentX * sizeX,
+                (currentY + mSpriteSize.y) * sizeY,
+                currentY * sizeY
+            };
 
-            mSprites.emplace_back(NEW_T(Sprite(mTexture, rect)));
+            mSprites.emplace_back(NEW_T(Sprite(mTexture, std::move(rect))));
 
-            currentX += mSpriteSize.x + mSpriteSpacing.x;
+            currentX += stepX;
             if (currentX >= mTexture->getWidth()) {
                 currentX = 0;
-                currentY -= mSpriteSize.y + mSpriteSpacing.y;
+                currentY -= stepY;
             }
         }
     }

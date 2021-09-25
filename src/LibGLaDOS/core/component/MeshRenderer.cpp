@@ -3,6 +3,9 @@
 #include "platform/Platform.h"
 #include "platform/render/Renderable.h"
 #include "platform/render/Renderer.h"
+#include "platform/render/Material.h"
+#include "platform/render/ShaderProgram.h"
+#include "platform/render/RenderState.h"
 
 namespace GLaDOS {
     Logger* MeshRenderer::logger = LoggerRegistry::getInstance().makeAndGetLogger("MeshRenderer");
@@ -26,6 +29,9 @@ namespace GLaDOS {
     }
 
     void MeshRenderer::update(real deltaTime) {
+        ShaderProgram* shaderProgram = mRenderable->getMaterial()->getShaderProgram();
+        FillMode fillMode = mRenderable->getMaterial()->getShaderProgram()->rasterizerState()->mRasterizerDescription.mFillMode;
+        shaderProgram->setUniform("isWireFrameMode", fillMode == FillMode::Lines);
     }
 
     void MeshRenderer::render() {

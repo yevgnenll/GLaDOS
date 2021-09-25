@@ -99,6 +99,7 @@ namespace GLaDOS {
     GPUBuffer* MetalRenderer::createVertexBuffer(BufferUsage usage, void* data, std::size_t size) {
         GPUBuffer* vertexBuffer = NEW_T(MetalGPUBuffer(BufferType::VertexBuffer, usage));
         if (!vertexBuffer->uploadData(data, size)) {
+            LOG_ERROR(logger, "Failed to create vertex buffer");
             return nullptr;
         }
 
@@ -108,6 +109,7 @@ namespace GLaDOS {
     GPUBuffer* MetalRenderer::createIndexBuffer(BufferUsage usage, void* data, std::size_t size) {
         GPUBuffer* indexBuffer = NEW_T(MetalGPUBuffer(BufferType::IndexBuffer, usage));
         if (!indexBuffer->uploadData(data, size)) {
+            LOG_ERROR(logger, "Failed to create index buffer");
             return nullptr;
         }
 
@@ -152,6 +154,7 @@ namespace GLaDOS {
     Mesh* MetalRenderer::createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveType primitiveType, BufferUsage vertexUsage, BufferUsage indexUsage) {
         Mesh* mesh = NEW_T(Mesh(primitiveType, vertexUsage, indexUsage));
         if (!mesh->build(vertexData, indexData)) {
+            LOG_ERROR(logger, "Failed to build mesh");
             return nullptr;
         }
         return mesh;
@@ -160,6 +163,7 @@ namespace GLaDOS {
     Mesh* MetalRenderer::createMesh(VertexData* vertexData, IndexData* indexData) {
         Mesh* mesh = NEW_T(Mesh);
         if (!mesh->build(vertexData, indexData)) {
+            LOG_ERROR(logger, "Failed to build mesh");
             return nullptr;
         }
         return mesh;

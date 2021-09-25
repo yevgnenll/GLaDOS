@@ -9,6 +9,7 @@
 #include "core/component/Camera.h"
 #include "core/component/CubemapRenderer.h"
 #include "core/component/MeshRenderer.h"
+#include "core/component/SpriteRenderer.h"
 #include "core/component/Transform.h"
 #include "math/Color.h"
 #include "platform/Input.h"

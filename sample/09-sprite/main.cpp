@@ -14,7 +14,12 @@ class MainScene : public Scene {
             return false;
         }
 
-        SpriteSheet spriteSheet{texture, Sizei{16, 16}, 26};
+        Sprite* sprite = NEW_T(Sprite(texture));
+
+        GameObject* mario = createGameObject("mario");
+        mario->addComponent<SpriteRenderer>(sprite);
+
+//        SpriteSheet spriteSheet{texture, Sizei{16, 16}, 26};
 
         return true;
     }

@@ -8,6 +8,7 @@
 #include "platform/render/Renderer.h"
 #include "platform/render/ShaderProgram.h"
 #include "platform/render/VertexData.h"
+#include "platform/render/Texture2D.h"
 #include "resource/Sprite.h"
 #include "utils/MeshGenerator.h"
 
@@ -19,15 +20,6 @@ namespace GLaDOS {
 
     SpriteRenderer::SpriteRenderer(Sprite* sprite) : mSprite{sprite} {
         mName = "SpriteRenderer";
-        setSprite(sprite);
-    }
-
-    SpriteRenderer::~SpriteRenderer() {
-        DELETE_T(mSprite, Sprite);
-    }
-
-    void SpriteRenderer::setSprite(Sprite* sprite) {
-        mSprite = sprite;
 
         Mesh* mesh = MeshGenerator::generateRectangle(mSprite->getTextureCoords());
         if (mesh == nullptr) {
@@ -42,17 +34,30 @@ namespace GLaDOS {
 
         Material* material = NEW_T(Material);
         material->setShaderProgram(shaderProgram);
+        material->setTexture0(mSprite->getTexture());
 
         Renderable* renderable = Platform::getRenderer().createRenderable(mesh, material);
         if (renderable == nullptr) {
-            LOG_ERROR(logger, "CubemapRenderer initialize failed!");
+            LOG_ERROR(logger, "SpriteRenderer initialize failed!");
             return;
         }
         mRenderable = renderable;
     }
 
+    SpriteRenderer::~SpriteRenderer() {
+        DELETE_T(mSprite, Sprite);
+    }
+
+    void SpriteRenderer::setSprite(Sprite* sprite) {
+        mSprite = sprite;
+    }
+
     void SpriteRenderer::setColor(const Color& color) {
         mColor = color;
+    }
+
+    void SpriteRenderer::setColorKey(const Color& colorKey) {
+        mColorKey = colorKey;
     }
 
     void SpriteRenderer::setFlipX(bool flipX) {
@@ -63,12 +68,20 @@ namespace GLaDOS {
         mFlipY = flipY;
     }
 
+    void SpriteRenderer::setUseColorKey(bool useColorKey) {
+        mUseColorKey = useColorKey;
+    }
+
     Sprite* SpriteRenderer::getSprite() const {
         return mSprite;
     }
 
     Color SpriteRenderer::getColor() const {
         return mColor;
+    }
+
+    Color SpriteRenderer::getColorKey() const {
+        return mColorKey;
     }
 
     bool SpriteRenderer::getFlipX() const {
@@ -79,11 +92,17 @@ namespace GLaDOS {
         return mFlipY;
     }
 
+    bool SpriteRenderer::isUseColorKey() const {
+        return mUseColorKey;
+    }
+
     void SpriteRenderer::update(real deltaTime) {
         ShaderProgram* shaderProgram = mRenderable->getMaterial()->getShaderProgram();
         shaderProgram->setUniform("flipX", mFlipX);
         shaderProgram->setUniform("flipY", mFlipY);
         shaderProgram->setUniform("color", mColor);
+        shaderProgram->setUniform("colorKey", mColorKey);
+        shaderProgram->setUniform("useColorKey", mUseColorKey);
     }
 
     void SpriteRenderer::render() {

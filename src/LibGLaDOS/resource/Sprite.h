@@ -8,17 +8,18 @@ namespace GLaDOS {
     class Texture2D;
     class Sprite {
       public:
-        Sprite(Texture2D* texture);
+        explicit Sprite(Texture2D* texture);
         Sprite(Texture2D* texture, Rect<float> textureCoords);
         ~Sprite() = default;
 
+        Texture2D* getTexture() const;
         Rect<float> getTextureCoords() const;
         Vec2 getPivot() const;
 
       private:
         Texture2D* mTexture;
         Rect<float> mTextureCoords;
-        Vec2 mPivot;  // TODO
+        Vec2 mPivot;
     };
 }  // namespace GLaDOS
 

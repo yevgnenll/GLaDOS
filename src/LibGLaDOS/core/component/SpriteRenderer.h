@@ -9,18 +9,22 @@ namespace GLaDOS {
     class SpriteRenderer : public MeshRenderer {
       public:
         SpriteRenderer();
-        SpriteRenderer(Sprite* sprite);
+        explicit SpriteRenderer(Sprite* sprite);
         ~SpriteRenderer() override;
 
         void setSprite(Sprite* sprite);
         void setColor(const Color& color);
+        void setColorKey(const Color& colorKey);
         void setFlipX(bool flipX);
         void setFlipY(bool flipY);
+        void setUseColorKey(bool useColorKey);
 
         Sprite* getSprite() const;
         Color getColor() const;
+        Color getColorKey() const;
         bool getFlipX() const;
         bool getFlipY() const;
+        bool isUseColorKey() const;
 
       protected:
         void update(real deltaTime) override;
@@ -31,8 +35,10 @@ namespace GLaDOS {
 
         Sprite* mSprite{nullptr};
         Color mColor;
+        Color mColorKey;
         bool mFlipX{false};
         bool mFlipY{false};
+        bool mUseColorKey{false};
     };
 }  // namespace GLaDOS
 
