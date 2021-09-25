@@ -21,8 +21,8 @@ namespace GLaDOS {
         int width;
         int height;
         int channels;
-        const char* filename = (mFileDirectory + mName).c_str();
-        int result = stbi_info(filename, &width, &height, &channels);
+        std::string filename = mFileDirectory + mName;
+        int result = stbi_info(filename.c_str(), &width, &height, &channels);
         if (result == 0) {
             LOG_ERROR(logger, "Failed to load texture {0}, reason: {1}", mName, stbi_failure_reason());
             return false;
@@ -32,7 +32,7 @@ namespace GLaDOS {
         if (channels == 3) {  // metal does not support RGB format use RGBA format instead
             desiredChannel = 4;
         }
-        uint8_t* data = stbi_load(filename, &width, &height, &channels, desiredChannel);
+        uint8_t* data = stbi_load(filename.c_str(), &width, &height, &channels, desiredChannel);
 
         if (data == nullptr) {
             LOG_ERROR(logger, "Failed to load texture {0}, reason: {1}", mName, stbi_failure_reason());
