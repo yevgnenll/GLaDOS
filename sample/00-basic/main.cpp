@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
         LOG_WARN(logger, "test123123");
         LOG_ERROR(logger, "test123123");
         String str = TEXT("한국어 지원 합니다.");
-        printf("Test: %s\n", String::toUTF8(str.toStringView()).c_str());
+        LOG_TRACE(logger, String::toUTF8(str).c_str());
 
         while (Platform::getInstance().isRunning()) {
             Platform::getInstance().update();

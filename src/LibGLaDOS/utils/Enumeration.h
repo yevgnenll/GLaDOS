@@ -254,6 +254,11 @@ namespace GLaDOS {
         PingPong
     };
 
+    enum class AnimationBlendMode {
+        Blend = 0,
+        Additive
+    };
+
     enum class JsonNodeType {
         Null = 0,
         Boolean,
