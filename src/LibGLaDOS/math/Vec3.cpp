@@ -226,6 +226,12 @@ namespace GLaDOS {
         return Vec3{-v.x, -v.y, -v.z};
     }
 
+    real Vec3::angleBetween(const Vec3& a, const Vec3& b) {
+        real lengthInv = 1 / (a.length() * b.length());
+        real dot = Vec3::dot(a, b);
+        return Math::acos(dot * lengthInv);
+    }
+
     void Vec3::swap(Vec3& first, Vec3& second) {
         using std::swap;
 

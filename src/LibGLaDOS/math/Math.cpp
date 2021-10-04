@@ -143,6 +143,10 @@ namespace GLaDOS {
     real Math::sqrt(real a) { return std::sqrt(a); }
 
     real Math::rsqrt(real a) {
+        return 1 / sqrt(a);
+    }
+
+    real Math::rsqrtEst(real a) {
         // https://www.youtube.com/watch?v=p8u_k2LIZyo
         long i;
         real x2;
