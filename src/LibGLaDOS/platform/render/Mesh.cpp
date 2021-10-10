@@ -18,10 +18,10 @@ namespace GLaDOS {
     }
 
     Mesh::~Mesh() {
-        DELETE_T(mVertexBuffer, GPUBuffer);
-        DELETE_T(mIndexBuffer, GPUBuffer);
-        DELETE_T(mVertexData, VertexData);
-        DELETE_T(mIndexData, IndexData);
+        DELETE_T(mVertexBufferGPU, GPUBuffer);
+        DELETE_T(mIndexBufferGPU, GPUBuffer);
+        DELETE_T(mVertexBufferCPU, VertexData);
+        DELETE_T(mIndexBufferCPU, IndexData);
     }
 
     PrimitiveTopology Mesh::getPrimitiveType() const {
@@ -33,62 +33,62 @@ namespace GLaDOS {
     }
 
     GPUBuffer* Mesh::getVertexBuffer() const {
-        return mVertexBuffer;
+        return mVertexBufferGPU;
     }
 
     GPUBuffer* Mesh::getIndexBuffer() const {
-        return mIndexBuffer;
+        return mIndexBufferGPU;
     }
 
     VertexFormatHolder* Mesh::getVertexFormatHolder() const {
-        return mVertexData->getVertexFormatHolder();
+        return mVertexBufferCPU->getVertexFormatHolder();
     }
 
     std::size_t Mesh::getVertexStart() const {
-        return mVertexStart;
+        return mVertexStartLocation;
     }
 
     void Mesh::setVertexStart(std::size_t vertexStart) {
-        if (vertexStart < 0 || vertexStart > mVertexData->size()) {
-            LOG_ERROR(logger, "Mesh vertex start position must be between 0 and {0},", mVertexData->size());
+        if (vertexStart < 0 || vertexStart > mVertexBufferCPU->size()) {
+            LOG_ERROR(logger, "Mesh vertex start position must be between 0 and {0},", mVertexBufferCPU->size());
         }
-        mVertexStart = vertexStart;
+        mVertexStartLocation = vertexStart;
     }
 
     std::size_t Mesh::getIndexStart() const {
-        return mIndexStart;
+        return mIndexStartLocation;
     }
 
     void Mesh::setIndexStart(std::size_t indexStart) {
-        if (indexStart < 0 || indexStart > mIndexData->size()) {
-            LOG_ERROR(logger, "Mesh index start position must be between 0 and {0},", mIndexData->size());
+        if (indexStart < 0 || indexStart > mIndexBufferCPU->size()) {
+            LOG_ERROR(logger, "Mesh index start position must be between 0 and {0},", mIndexBufferCPU->size());
         }
-        mIndexStart = indexStart;
+        mIndexStartLocation = indexStart;
     }
 
     std::size_t Mesh::getVertexCount() const {
-        return mVertexData->count();
+        return mVertexBufferCPU->count();
     }
 
     std::size_t Mesh::getVertexStride() const {
-        return mVertexData->stride();
+        return mVertexBufferCPU->stride();
     }
 
     std::size_t Mesh::getIndexCount() const {
-        return mIndexData == nullptr ? 0 : mIndexData->count();
+        return mIndexBufferCPU == nullptr ? 0 : mIndexBufferCPU->count();
     }
 
     std::size_t Mesh::getIndexStride() const {
-        return mIndexData == nullptr ? 0 : mIndexData->stride();
+        return mIndexBufferCPU == nullptr ? 0 : mIndexBufferCPU->stride();
     }
 
     std::size_t Mesh::getMemoryUsageInBytes() const {
-        std::size_t vertexSize = mVertexData->size();
-        return mIndexData == nullptr ? vertexSize : vertexSize + mIndexData->size();
+        std::size_t vertexSize = mVertexBufferCPU->size();
+        return mIndexBufferCPU == nullptr ? vertexSize : vertexSize + mIndexBufferCPU->size();
     }
 
     std::size_t Mesh::getFaceCount() const {
-        std::size_t count = mIndexData == nullptr ? (mVertexData->count() - mVertexStart) : (mIndexData->count() - mIndexStart);
+        std::size_t count = mIndexBufferCPU == nullptr ? (mVertexBufferCPU->count() - mVertexStartLocation) : (mIndexBufferCPU->count() - mIndexStartLocation);
         switch (mPrimitiveTopology) {
             case PrimitiveTopology::Point:
                 return count;
@@ -104,11 +104,11 @@ namespace GLaDOS {
     }
 
     VertexData* Mesh::getVertexData() {
-        return mVertexData;
+        return mVertexBufferCPU;
     }
 
     IndexData* Mesh::getIndexData() {
-        return mIndexData;
+        return mIndexBufferCPU;
     }
 
     GPUBufferUsage Mesh::getVertexUsage() const {
@@ -120,23 +120,23 @@ namespace GLaDOS {
     }
 
     bool Mesh::build(VertexData* vertexData, IndexData* indexData) {
-        mVertexData = vertexData;
-        mIndexData = indexData;
+        mVertexBufferCPU = vertexData;
+        mIndexBufferCPU = indexData;
 
-        if (mVertexData == nullptr) {
+        if (mVertexBufferCPU == nullptr) {
             LOG_ERROR(logger, "Mesh should have at least a vertexData.");
             return false;
         }
 
-        mVertexBuffer = Platform::getRenderer().createVertexBuffer(mVertexBufferUsage, mVertexData->buffer(), mVertexData->size());
-        if (mVertexBuffer == nullptr) {
+        mVertexBufferGPU = Platform::getRenderer().createVertexBuffer(mVertexBufferUsage, mVertexBufferCPU->buffer(), mVertexBufferCPU->size());
+        if (mVertexBufferGPU == nullptr) {
             LOG_ERROR(logger, "VertexBuffer creation failed.");
             return false;
         }
 
-        if (mIndexData != nullptr) {
-            mIndexBuffer = Platform::getRenderer().createIndexBuffer(mIndexBufferUsage, mIndexData->buffer(), mIndexData->size());
-            if (mIndexBuffer == nullptr) {
+        if (mIndexBufferCPU != nullptr) {
+            mIndexBufferGPU = Platform::getRenderer().createIndexBuffer(mIndexBufferUsage, mIndexBufferCPU->buffer(), mIndexBufferCPU->size());
+            if (mIndexBufferGPU == nullptr) {
                 LOG_ERROR(logger, "IndexBuffer creation failed.");
                 return false;
             }

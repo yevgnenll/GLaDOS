@@ -46,12 +46,12 @@ namespace GLaDOS {
         static Logger* logger;
 
         PrimitiveTopology mPrimitiveTopology{PrimitiveTopology::Triangle};
-        GPUBuffer* mVertexBuffer{nullptr};
-        GPUBuffer* mIndexBuffer{nullptr};
-        VertexData* mVertexData{nullptr};
-        IndexData* mIndexData{nullptr};
-        std::size_t mVertexStart{0};
-        std::size_t mIndexStart{0};
+        GPUBuffer* mVertexBufferGPU{nullptr};
+        GPUBuffer* mIndexBufferGPU{nullptr};
+        VertexData* mVertexBufferCPU{nullptr};
+        IndexData* mIndexBufferCPU{nullptr};
+        std::size_t mVertexStartLocation{0};
+        std::size_t mIndexStartLocation{0};
         GPUBufferUsage mVertexBufferUsage{GPUBufferUsage::Private};
         GPUBufferUsage mIndexBufferUsage{GPUBufferUsage::Private};
     };
