@@ -8,9 +8,9 @@
 
 namespace GLaDOS {
     Logger* Blob::logger = LoggerRegistry::getInstance().makeAndGetLogger("Blob");
-    Blob::Blob(std::size_t size, void* data) {
+    Blob::Blob(const std::byte* data, std::size_t size) {
         resize(size);
-        std::memcpy(pointer(), data, size);
+        copyFrom(data, size);
     }
 
     Blob& Blob::operator<<(int8_t i) {
@@ -88,17 +88,17 @@ namespace GLaDOS {
         return *this;
     }
 
-    void Blob::uploadData(Blob& buffer) {
+    void Blob::copyFrom(Blob& buffer) {
         throwIfOverflow(buffer.size());
         std::memcpy(pointer(), buffer.pointer(), buffer.size());
     }
 
-    void Blob::uploadData(const Vector<std::byte>& data) {
+    void Blob::copyFrom(const Vector<std::byte>& data) {
         throwIfOverflow(data.size());
         std::memcpy(pointer(), data.data(), data.size());
     }
 
-    void Blob::uploadData(const std::byte* data, const std::size_t size) {
+    void Blob::copyFrom(const std::byte* data, size_t size) {
         throwIfOverflow(size);
         std::memcpy(pointer(), data, size);
     }

@@ -14,7 +14,7 @@ namespace GLaDOS {
     class Blob {
       public:
         Blob() = default;
-        Blob(std::size_t size, void* data);
+        Blob(const std::byte* data, std::size_t size);
         virtual ~Blob() = default;
 
         Blob& operator<<(int8_t i);
@@ -35,9 +35,10 @@ namespace GLaDOS {
         template <typename T>
         Blob& operator<<(const Mat4<T>& i);
 
-        void uploadData(Blob& buffer);
-        void uploadData(const Vector<std::byte>& data);
-        void uploadData(const std::byte* data, std::size_t size);
+        // NOTE: copyFrom 함수 호출전에 항상 resize로 버퍼를 확보해야함
+        void copyFrom(Blob& buffer);
+        void copyFrom(const Vector<std::byte>& data);
+        void copyFrom(const std::byte* data, std::size_t size);
 
         void* offsetOf(std::size_t offset);
         void* pointer();
