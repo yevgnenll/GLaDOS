@@ -1,4 +1,4 @@
-#include "StreamBuffer.h"
+#include "Blob.h"
 
 #include "math/Color.h"
 #include "math/Quat.h"
@@ -7,131 +7,131 @@
 #include "math/Vec4.h"
 
 namespace GLaDOS {
-    Logger* StreamBuffer::logger = LoggerRegistry::getInstance().makeAndGetLogger("StreamBuffer");
-    StreamBuffer::StreamBuffer(std::size_t size, void* data) {
+    Logger* Blob::logger = LoggerRegistry::getInstance().makeAndGetLogger("Blob");
+    Blob::Blob(std::size_t size, void* data) {
         resize(size);
         std::memcpy(pointer(), data, size);
     }
 
-    StreamBuffer& StreamBuffer::operator<<(int8_t i) {
+    Blob& Blob::operator<<(int8_t i) {
         writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
         return *this;
     }
 
-    StreamBuffer& StreamBuffer::operator<<(int16_t i) {
+    Blob& Blob::operator<<(int16_t i) {
         writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
         return *this;
     }
 
-    StreamBuffer& StreamBuffer::operator<<(int32_t i) {
+    Blob& Blob::operator<<(int32_t i) {
         writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
         return *this;
     }
 
-    StreamBuffer& StreamBuffer::operator<<(int64_t i) {
+    Blob& Blob::operator<<(int64_t i) {
         writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
         return *this;
     }
 
-    StreamBuffer& StreamBuffer::operator<<(uint8_t i) {
+    Blob& Blob::operator<<(uint8_t i) {
         writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
         return *this;
     }
 
-    StreamBuffer& StreamBuffer::operator<<(uint16_t i) {
+    Blob& Blob::operator<<(uint16_t i) {
         writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
         return *this;
     }
 
-    StreamBuffer& StreamBuffer::operator<<(uint32_t i) {
+    Blob& Blob::operator<<(uint32_t i) {
         writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
         return *this;
     }
 
-    StreamBuffer& StreamBuffer::operator<<(uint64_t i) {
+    Blob& Blob::operator<<(uint64_t i) {
         writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
         return *this;
     }
 
-    StreamBuffer& StreamBuffer::operator<<(float i) {
+    Blob& Blob::operator<<(float i) {
         writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
         return *this;
     }
 
-    StreamBuffer& StreamBuffer::operator<<(double i) {
+    Blob& Blob::operator<<(double i) {
         writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
         return *this;
     }
 
-    StreamBuffer& StreamBuffer::operator<<(const Vec2& i) {
+    Blob& Blob::operator<<(const Vec2& i) {
         writeBytes(reinterpret_cast<std::byte*>(const_cast<real*>(&i[0])), sizeof(i));
         return *this;
     }
 
-    StreamBuffer& StreamBuffer::operator<<(const Vec3& i) {
+    Blob& Blob::operator<<(const Vec3& i) {
         writeBytes(reinterpret_cast<std::byte*>(const_cast<real*>(&i[0])), sizeof(i));
         return *this;
     }
 
-    StreamBuffer& StreamBuffer::operator<<(const Vec4& i) {
+    Blob& Blob::operator<<(const Vec4& i) {
         writeBytes(reinterpret_cast<std::byte*>(const_cast<real*>(&i[0])), sizeof(i));
         return *this;
     }
 
-    StreamBuffer& StreamBuffer::operator<<(const Quat& i) {
+    Blob& Blob::operator<<(const Quat& i) {
         writeBytes(reinterpret_cast<std::byte*>(const_cast<real*>(&i[0])), sizeof(i));
         return *this;
     }
 
-    StreamBuffer& StreamBuffer::operator<<(const Color& i) {
+    Blob& Blob::operator<<(const Color& i) {
         writeBytes(reinterpret_cast<std::byte*>(const_cast<real*>(&i[0])), sizeof(i));
         return *this;
     }
 
-    void StreamBuffer::uploadData(StreamBuffer& buffer) {
+    void Blob::uploadData(Blob& buffer) {
         throwIfOverflow(buffer.size());
         std::memcpy(pointer(), buffer.pointer(), buffer.size());
     }
 
-    void StreamBuffer::uploadData(const Vector<std::byte>& data) {
+    void Blob::uploadData(const Vector<std::byte>& data) {
         throwIfOverflow(data.size());
         std::memcpy(pointer(), data.data(), data.size());
     }
 
-    void StreamBuffer::uploadData(const std::byte* data, const std::size_t size) {
+    void Blob::uploadData(const std::byte* data, const std::size_t size) {
         throwIfOverflow(size);
         std::memcpy(pointer(), data, size);
     }
 
-    void* StreamBuffer::offsetOf(std::size_t offset) {
+    void* Blob::offsetOf(std::size_t offset) {
         return CAST(std::byte*, pointer()) + offset;
     }
 
-    void* StreamBuffer::pointer() {
+    void* Blob::pointer() {
         return &mData[0];
     }
 
-    void const* StreamBuffer::constPointer() const {
+    void const* Blob::constPointer() const {
         return &mData.front();
     }
 
-    std::size_t StreamBuffer::size() const {
+    std::size_t Blob::size() const {
         return mData.size();
     }
 
-    void StreamBuffer::resize(std::size_t n) {
+    void Blob::resize(std::size_t n) {
         mData.resize(n);
     }
 
-    void StreamBuffer::clear() {
+    void Blob::clear() {
         mData.clear();
     }
 
-    bool StreamBuffer::isEmpty() const {
+    bool Blob::isEmpty() const {
         return mData.empty();
     }
 
-    void StreamBuffer::throwIfOverflow(std::size_t size) const {
+    void Blob::throwIfOverflow(std::size_t size) const {
         if (this->size() < size) {
             LOG_ERROR(logger, "Range overflow {0} > {1}", size, this->size());
             throw std::runtime_error(
@@ -139,7 +139,7 @@ namespace GLaDOS {
         }
     }
 
-    void StreamBuffer::writeBytes(std::byte* bytes, unsigned int count) {
+    void Blob::writeBytes(std::byte* bytes, unsigned int count) {
         if (size() < count) {
             LOG_ERROR(logger, "buffer overflow");
             return;

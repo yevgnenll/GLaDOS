@@ -147,11 +147,11 @@ namespace GLaDOS {
         WaitForPreviousFrame();
     }
 
-    GPUBuffer* D3DX12Renderer::createVertexBuffer(GPUBufferUsage usage, StreamBuffer& buffer) {
+    GPUBuffer* D3DX12Renderer::createVertexBuffer(GPUBufferUsage usage, Blob& buffer) {
         return nullptr;
     }
 
-    GPUBuffer* D3DX12Renderer::createIndexBuffer(GPUBufferUsage usage, StreamBuffer& buffer) {
+    GPUBuffer* D3DX12Renderer::createIndexBuffer(GPUBufferUsage usage, Blob& buffer) {
         return nullptr;
     }
 
@@ -199,11 +199,11 @@ namespace GLaDOS {
         return nullptr;
     }
 
-    Texture2D* D3DX12Renderer::createTexture2D(PixelFormat format, StreamBuffer& data, const Color& colorKey) {
+    Texture2D* D3DX12Renderer::createTexture2D(PixelFormat format, Blob& data, const Color& colorKey) {
         return nullptr;
     }
 
-    Texture2D* D3DX12Renderer::createTexture2D(PixelFormat format, StreamBuffer& data) {
+    Texture2D* D3DX12Renderer::createTexture2D(PixelFormat format, Blob& data) {
         return nullptr;
     }
 

@@ -11,7 +11,7 @@ namespace GLaDOS {
         ~Texture2D() override;
 
         bool loadTextureFromFile() override;
-        bool loadTextureFromBuffer(StreamBuffer& buffer) override;
+        bool loadTextureFromBuffer(Blob& buffer) override;
         virtual void generateTexture(uint32_t x, uint32_t y, uint8_t* data) = 0;
         virtual void replaceRegion(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint32_t level, uint8_t* data) = 0;
 

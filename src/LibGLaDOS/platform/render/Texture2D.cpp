@@ -1,6 +1,6 @@
 #include "Texture2D.h"
 
-#include "memory/StreamBuffer.h"
+#include "memory/Blob.h"
 #include "utils/Utility.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -55,7 +55,7 @@ namespace GLaDOS {
         return true;
     }
 
-    bool Texture2D::loadTextureFromBuffer(StreamBuffer& buffer) {
+    bool Texture2D::loadTextureFromBuffer(Blob& buffer) {
         int width;
         int height;
         int channels;

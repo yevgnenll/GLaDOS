@@ -38,7 +38,7 @@ namespace GLaDOS {
             }
 
             if (uniform->isUniformType()) {
-                StreamBuffer* buffer = nullptr;
+                Blob* buffer = nullptr;
                 if (uniform->mShaderType == ShaderType::VertexShader) {
                     buffer = &mVertexUniformBuffer;
                 } else if (uniform->mShaderType == ShaderType::FragmentShader) {

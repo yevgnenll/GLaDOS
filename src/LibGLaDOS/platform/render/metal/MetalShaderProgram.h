@@ -8,7 +8,7 @@
 #include <string>
 
 #include "MetalRenderer.h"
-#include "memory/StreamBuffer.h"
+#include "memory/Blob.h"
 #include "platform/render/ShaderProgram.h"
 #include "platform/render/VertexFormat.h"
 
@@ -53,8 +53,8 @@ namespace GLaDOS {
         id<MTLFunction> mVertexFunction{nil};
         id<MTLFunction> mFragmentFunction{nil};
         MTLRenderPipelineDescriptor* mPipelineDescriptor{nil};
-        StreamBuffer mVertexUniformBuffer;
-        StreamBuffer mFragmentUniformBuffer;
+        Blob mVertexUniformBuffer;
+        Blob mFragmentUniformBuffer;
     };
 }  // namespace GLaDOS
 

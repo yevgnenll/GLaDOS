@@ -12,7 +12,7 @@ namespace GLaDOS {
         return true;
     }
 
-    bool Texture3D::loadTextureFromBuffer(StreamBuffer& buffer) {
+    bool Texture3D::loadTextureFromBuffer(Blob& buffer) {
         return true;
     }
 }  // namespace GLaDOS

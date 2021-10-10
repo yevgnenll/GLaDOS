@@ -10,7 +10,7 @@ namespace GLaDOS {
         ~RenderTexture() override;
 
         bool loadTextureFromFile() override { return false; }
-        bool loadTextureFromBuffer(StreamBuffer& buffer) override { return false; }
+        bool loadTextureFromBuffer(Blob& buffer) override { return false; }
 
       private:
     };

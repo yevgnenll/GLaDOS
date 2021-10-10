@@ -91,7 +91,7 @@ namespace GLaDOS {
         return true;
     }
 
-    bool TextureCube::loadTextureFromBuffer(const Vector<std::reference_wrapper<StreamBuffer>>& buffer) {
+    bool TextureCube::loadTextureFromBuffer(const Vector<std::reference_wrapper<Blob>>& buffer) {
         return true;
     }
 }  // namespace GLaDOS

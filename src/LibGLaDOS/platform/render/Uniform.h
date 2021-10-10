@@ -3,10 +3,10 @@
 
 #include <string>
 
-#include "memory/StreamBuffer.h"
+#include "memory/Blob.h"
 
 namespace GLaDOS {
-    class Uniform : public StreamBuffer {
+    class Uniform : public Blob {
       public:
         Uniform() = default;
         ~Uniform() override = default;

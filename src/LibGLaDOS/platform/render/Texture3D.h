@@ -10,7 +10,7 @@ namespace GLaDOS {
         ~Texture3D() override;
 
         bool loadTextureFromFile() override;
-        bool loadTextureFromBuffer(StreamBuffer& buffer) override;
+        bool loadTextureFromBuffer(Blob& buffer) override;
 
       private:
         uint32_t mDepth{0};

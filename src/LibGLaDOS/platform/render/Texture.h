@@ -9,7 +9,7 @@ namespace GLaDOS {
     class Color;
     class SamplerState;
     struct SamplerDescription;
-    class StreamBuffer;
+    class Blob;
     class Texture : public Resource {
       public:
         Texture(const std::string& name, PixelFormat format);
@@ -28,9 +28,9 @@ namespace GLaDOS {
         TextureDimension getDimension() const;
 
         virtual bool loadTextureFromFile() { return false; };
-        virtual bool loadTextureFromBuffer(StreamBuffer& buffer) { return false; };
+        virtual bool loadTextureFromBuffer(Blob& buffer) { return false; };
         virtual bool loadTextureFromFile(Vector<std::string>& names) { return false; };
-        virtual bool loadTextureFromBuffer(const Vector<std::reference_wrapper<StreamBuffer>>& buffer) { return false; };
+        virtual bool loadTextureFromBuffer(const Vector<std::reference_wrapper<Blob>>& buffer) { return false; };
 
       protected:
         static int mapChannelNumberFrom(PixelFormat format);

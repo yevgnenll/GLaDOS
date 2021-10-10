@@ -1,7 +1,7 @@
 #ifndef GLADOS_UPLOADBUFFER_H
 #define GLADOS_UPLOADBUFFER_H
 
-#include "memory/StreamBuffer.h"
+#include "memory/Blob.h"
 
 namespace GLaDOS {
     class Logger;

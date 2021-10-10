@@ -1,11 +1,11 @@
 #include <catch2/catch_all.hpp>
 
-#include "memory/StreamBuffer.h"
+#include "memory/Blob.h"
 
 using namespace GLaDOS;
 
-TEST_CASE("StreamBuffer unit tests", "[StreamBuffer]") {
-  StreamBuffer sb;
+TEST_CASE("Blob unit tests", "[Blob]") {
+    Blob sb;
 
   SECTION("write unsigned 32bits int") {
     sb.resize(sizeof(uint32_t));

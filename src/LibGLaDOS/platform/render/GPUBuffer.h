@@ -1,7 +1,7 @@
 #ifndef GLADOS_GPUBUFFER_H
 #define GLADOS_GPUBUFFER_H
 
-#include "memory/StreamBuffer.h"
+#include "memory/Blob.h"
 #include "utils/Enumeration.h"
 
 namespace GLaDOS {

@@ -1,7 +1,7 @@
 #ifndef GLADOS_MESSAGE_H
 #define GLADOS_MESSAGE_H
 
-#include "memory/StreamBuffer.h"
+#include "memory/Blob.h"
 #include "utils/Enumeration.h"
 
 namespace GLaDOS {
@@ -18,7 +18,7 @@ namespace GLaDOS {
 
       private:
         MessageType mType{MessageType::Undefined};
-        StreamBuffer mData;
+        Blob mData;
     };
 }  // namespace GLaDOS
 

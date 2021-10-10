@@ -11,7 +11,7 @@
 #include <dxgi1_6.h>
 #include <wrl.h>  // to use ComPtr
 
-#include "memory/StreamBuffer.h"
+#include "memory/Blob.h"
 #include "platform/render/Renderer.h"
 #include "utils/Singleton.hpp"
 
@@ -27,8 +27,8 @@ namespace GLaDOS {
         bool initialize(int width, int height) override;
         void render(Renderable* _renderable) override;
 
-        GPUBuffer* createVertexBuffer(GPUBufferUsage usage, StreamBuffer& buffer) override;
-        GPUBuffer* createIndexBuffer(GPUBufferUsage usage, StreamBuffer& buffer) override;
+        GPUBuffer* createVertexBuffer(GPUBufferUsage usage, Blob& buffer) override;
+        GPUBuffer* createIndexBuffer(GPUBufferUsage usage, Blob& buffer) override;
         ShaderProgram* createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath, const VertexData* vertexData) override;
         Renderable* createRenderable(Mesh* mesh, Material* material) override;
         Mesh* createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveTopology primitiveType, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) override;
@@ -40,8 +40,8 @@ namespace GLaDOS {
         RasterizerState* createRasterizerState(const RasterizerDescription& desc) override;
         Texture2D* createTexture2D(const std::string& name, PixelFormat format, const Color& colorKey) override;
         Texture2D* createTexture2D(const std::string& name, PixelFormat format) override;
-        Texture2D* createTexture2D(PixelFormat format, StreamBuffer& data, const Color& colorKey) override;
-        Texture2D* createTexture2D(PixelFormat format, StreamBuffer& data) override;
+        Texture2D* createTexture2D(PixelFormat format, Blob& data, const Color& colorKey) override;
+        Texture2D* createTexture2D(PixelFormat format, Blob& data) override;
         Texture2D* createTexture2D(uint32_t width, uint32_t height, PixelFormat format, unsigned char* data) override;
         Texture3D* createTexture3D(const std::string& name) override;
         TextureCube* createTextureCube(const std::string& name, PixelFormat format) override;
