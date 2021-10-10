@@ -133,7 +133,7 @@ namespace GLaDOS {
         Hidden
     };
 
-    enum class PrimitiveType {
+    enum class PrimitiveTopology {
         Point = 0,
         Line,
         LineStrip,
@@ -160,14 +160,14 @@ namespace GLaDOS {
         Font
     };
 
-    enum class BufferType {
+    enum class GPUBufferType {
         VertexBuffer,
         IndexBuffer,
         UniformBuffer
     };
 
     // TODO
-    enum class BufferUsage {
+    enum class GPUBufferUsage {
         Private,  // Only accessible by the GPU
         Synchronized,  // CPU and GPU maintain their copies of resource, and must be explicitly synchronized
         Shared  // stored in system memory and is accessible to both the CPU and GPU

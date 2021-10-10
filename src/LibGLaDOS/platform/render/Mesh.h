@@ -14,11 +14,11 @@ namespace GLaDOS {
     class Mesh : public Resource {
       public:
         Mesh();
-        Mesh(PrimitiveType primitiveType, BufferUsage vertexBufferUsage, BufferUsage indexBufferUsage);
+        Mesh(PrimitiveTopology primitiveType, GPUBufferUsage vertexBufferUsage, GPUBufferUsage indexBufferUsage);
         ~Mesh() override;
 
-        PrimitiveType getPrimitiveType() const;
-        void setPrimitiveType(PrimitiveType primitiveType);
+        PrimitiveTopology getPrimitiveType() const;
+        void setPrimitiveType(PrimitiveTopology primitiveType);
         GPUBuffer* getVertexBuffer() const;
         GPUBuffer* getIndexBuffer() const;
         VertexFormatHolder* getVertexFormatHolder() const;
@@ -34,8 +34,8 @@ namespace GLaDOS {
         std::size_t getFaceCount() const;
         VertexData* getVertexData();
         IndexData* getIndexData();
-        BufferUsage getVertexUsage() const;
-        BufferUsage getIndexUsage() const;
+        GPUBufferUsage getVertexUsage() const;
+        GPUBufferUsage getIndexUsage() const;
 
         bool build(VertexData* vertexData, IndexData* indexData);
         void recalculateNormals();
@@ -45,15 +45,15 @@ namespace GLaDOS {
       private:
         static Logger* logger;
 
-        PrimitiveType mPrimitiveType{PrimitiveType::Triangle};
+        PrimitiveTopology mPrimitiveTopology{PrimitiveTopology::Triangle};
         GPUBuffer* mVertexBuffer{nullptr};
         GPUBuffer* mIndexBuffer{nullptr};
         VertexData* mVertexData{nullptr};
         IndexData* mIndexData{nullptr};
         std::size_t mVertexStart{0};
         std::size_t mIndexStart{0};
-        BufferUsage mVertexBufferUsage{BufferUsage::Private};
-        BufferUsage mIndexBufferUsage{BufferUsage::Private};
+        GPUBufferUsage mVertexBufferUsage{GPUBufferUsage::Private};
+        GPUBufferUsage mIndexBufferUsage{GPUBufferUsage::Private};
     };
 }  // namespace GLaDOS
 

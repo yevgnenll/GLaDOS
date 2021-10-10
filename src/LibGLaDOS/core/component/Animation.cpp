@@ -3,7 +3,7 @@
 #include "core/AnimationClip.h"
 
 namespace GLaDOS {
-    Logger* StreamBuffer::logger = LoggerRegistry::getInstance().makeAndGetLogger("Animation");
+    Logger* Animation::logger = LoggerRegistry::getInstance().makeAndGetLogger("Animation");
 
     Animation::Animation() : Component{"Animation"} {
 

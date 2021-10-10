@@ -48,7 +48,7 @@ namespace GLaDOS {
         swapChainDesc.Width = width;
         swapChainDesc.Height = height;
         swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        swapChainDesc.GPUBufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
         swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
         swapChainDesc.SampleDesc.Count = 1;
 
@@ -147,11 +147,11 @@ namespace GLaDOS {
         WaitForPreviousFrame();
     }
 
-    GPUBuffer* D3DX12Renderer::createVertexBuffer(BufferUsage usage, StreamBuffer& buffer) {
+    GPUBuffer* D3DX12Renderer::createVertexBuffer(GPUBufferUsage usage, StreamBuffer& buffer) {
         return nullptr;
     }
 
-    GPUBuffer* D3DX12Renderer::createIndexBuffer(BufferUsage usage, StreamBuffer& buffer) {
+    GPUBuffer* D3DX12Renderer::createIndexBuffer(GPUBufferUsage usage, StreamBuffer& buffer) {
         return nullptr;
     }
 
@@ -163,11 +163,11 @@ namespace GLaDOS {
         return nullptr;
     }
 
-    Mesh* D3DX12Renderer::createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveType primitiveType, BufferUsage vertexUsage, BufferUsage indexUsage) {
+    Mesh* D3DX12Renderer::createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveTopology primitiveType, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) {
         return nullptr;
     }
 
-    Mesh* D3DX12Renderer::createMesh(const std::string& meshPath, PrimitiveType primitiveType, BufferUsage vertexUsage, BufferUsage indexUsage) {
+    Mesh* D3DX12Renderer::createMesh(const std::string& meshPath, PrimitiveTopology primitiveType, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) {
         return nullptr;
     }
 

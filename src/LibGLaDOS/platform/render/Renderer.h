@@ -31,13 +31,13 @@ namespace GLaDOS {
         virtual bool initialize(int width, int height) = 0;
         virtual void render(Renderable* _renderable) = 0;
 
-        virtual GPUBuffer* createVertexBuffer(BufferUsage usage, void* data, std::size_t size) = 0;
-        virtual GPUBuffer* createIndexBuffer(BufferUsage usage, void* data, std::size_t size) = 0;
+        virtual GPUBuffer* createVertexBuffer(GPUBufferUsage usage, void* data, std::size_t size) = 0;
+        virtual GPUBuffer* createIndexBuffer(GPUBufferUsage usage, void* data, std::size_t size) = 0;
         virtual ShaderProgram* createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath, const VertexData* vertexData) = 0;
         virtual Renderable* createRenderable(Mesh* mesh, Material* material) = 0;
-        virtual Mesh* createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveType primitiveType, BufferUsage vertexUsage, BufferUsage indexUsage) = 0;
+        virtual Mesh* createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveTopology primitiveType, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) = 0;
         virtual Mesh* createMesh(VertexData* vertexData, IndexData* indexData) = 0;
-        virtual Mesh* createMesh(const std::string& meshPath, PrimitiveType primitiveType, BufferUsage vertexUsage, BufferUsage indexUsage) = 0;
+        virtual Mesh* createMesh(const std::string& meshPath, PrimitiveTopology primitiveType, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) = 0;
         virtual FrameBuffer* createFrameBuffer() = 0;
         virtual RenderBuffer* createRenderBuffer() = 0;
         virtual DepthStencilState* createDepthStencilState(const DepthStencilDescription& desc) = 0;

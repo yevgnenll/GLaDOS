@@ -6,7 +6,7 @@
 
 namespace GLaDOS {
     Logger* MetalGPUBuffer::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalGPUBuffer");
-    MetalGPUBuffer::MetalGPUBuffer(BufferType type, BufferUsage usage) : GPUBuffer{type, usage} {}
+    MetalGPUBuffer::MetalGPUBuffer(GPUBufferType type, GPUBufferUsage usage) : GPUBuffer{type, usage} {}
 
     MetalGPUBuffer::~MetalGPUBuffer() {
         release();

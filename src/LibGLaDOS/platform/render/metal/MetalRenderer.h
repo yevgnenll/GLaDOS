@@ -23,13 +23,13 @@ namespace GLaDOS {
         bool initialize(int width, int height) override;
         void render(Renderable* _renderable) override;
 
-        GPUBuffer* createVertexBuffer(BufferUsage usage, void* data, std::size_t size) override;
-        GPUBuffer* createIndexBuffer(BufferUsage usage, void* data, std::size_t size) override;
+        GPUBuffer* createVertexBuffer(GPUBufferUsage usage, void* data, std::size_t size) override;
+        GPUBuffer* createIndexBuffer(GPUBufferUsage usage, void* data, std::size_t size) override;
         ShaderProgram* createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath, const VertexData* vertexData) override;
         Renderable* createRenderable(Mesh* mesh, Material* material) override;
-        Mesh* createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveType primitiveType, BufferUsage vertexUsage, BufferUsage indexUsage) override;
+        Mesh* createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveTopology primitiveType, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) override;
         Mesh* createMesh(VertexData* vertexData, IndexData* indexData) override;
-        Mesh* createMesh(const std::string& meshPath, PrimitiveType primitiveType, BufferUsage vertexUsage, BufferUsage indexUsage) override;
+        Mesh* createMesh(const std::string& meshPath, PrimitiveTopology primitiveType, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) override;
         FrameBuffer* createFrameBuffer() override;
         RenderBuffer* createRenderBuffer() override;
         DepthStencilState* createDepthStencilState(const DepthStencilDescription& desc) override;
@@ -51,7 +51,7 @@ namespace GLaDOS {
         CAMetalLayer* getMetalLayer() const;
 
       private:
-        static MTLPrimitiveType mapPrimitiveType(PrimitiveType type);
+        static MTLPrimitiveType mapPrimitiveType(PrimitiveTopology type);
         static MTLIndexType mapIndexType(std::size_t size);
         static Logger* logger;
 

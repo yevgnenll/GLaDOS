@@ -96,8 +96,8 @@ namespace GLaDOS {
         [mCommandEncoder drawPrimitives:primitiveType vertexStart:start vertexCount:count];
     }
 
-    GPUBuffer* MetalRenderer::createVertexBuffer(BufferUsage usage, void* data, std::size_t size) {
-        GPUBuffer* vertexBuffer = NEW_T(MetalGPUBuffer(BufferType::VertexBuffer, usage));
+    GPUBuffer* MetalRenderer::createVertexBuffer(GPUBufferUsage usage, void* data, std::size_t size) {
+        GPUBuffer* vertexBuffer = NEW_T(MetalGPUBuffer(GPUBufferType::VertexBuffer, usage));
         if (!vertexBuffer->uploadData(data, size)) {
             LOG_ERROR(logger, "Failed to create vertex buffer");
             return nullptr;
@@ -106,8 +106,8 @@ namespace GLaDOS {
         return vertexBuffer;
     }
 
-    GPUBuffer* MetalRenderer::createIndexBuffer(BufferUsage usage, void* data, std::size_t size) {
-        GPUBuffer* indexBuffer = NEW_T(MetalGPUBuffer(BufferType::IndexBuffer, usage));
+    GPUBuffer* MetalRenderer::createIndexBuffer(GPUBufferUsage usage, void* data, std::size_t size) {
+        GPUBuffer* indexBuffer = NEW_T(MetalGPUBuffer(GPUBufferType::IndexBuffer, usage));
         if (!indexBuffer->uploadData(data, size)) {
             LOG_ERROR(logger, "Failed to create index buffer");
             return nullptr;
@@ -151,7 +151,7 @@ namespace GLaDOS {
         return renderable;
     }
 
-    Mesh* MetalRenderer::createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveType primitiveType, BufferUsage vertexUsage, BufferUsage indexUsage) {
+    Mesh* MetalRenderer::createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveTopology primitiveType, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) {
         Mesh* mesh = NEW_T(Mesh(primitiveType, vertexUsage, indexUsage));
         if (!mesh->build(vertexData, indexData)) {
             LOG_ERROR(logger, "Failed to build mesh");
@@ -169,7 +169,7 @@ namespace GLaDOS {
         return mesh;
     }
 
-    Mesh* MetalRenderer::createMesh(const std::string& meshPath, PrimitiveType primitiveType, BufferUsage vertexUsage, BufferUsage indexUsage) {
+    Mesh* MetalRenderer::createMesh(const std::string& meshPath, PrimitiveTopology primitiveType, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) {
         // TODO
         // const auto& [vertexData, indexData] = MeshLoader::loadFromFile(meshPath);
         // return createMesh(vertexData, indexData, primitiveType, dynamicVertex, dynamicIndex);
@@ -261,17 +261,17 @@ namespace GLaDOS {
         return mMetalLayer;
     }
 
-    MTLPrimitiveType MetalRenderer::mapPrimitiveType(PrimitiveType type) {
+    MTLPrimitiveType MetalRenderer::mapPrimitiveType(PrimitiveTopology type) {
         switch (type) {
-            case PrimitiveType::Point:
+            case PrimitiveTopology::Point:
                 return MTLPrimitiveTypePoint;
-            case PrimitiveType::Line:
+            case PrimitiveTopology::Line:
                 return MTLPrimitiveTypeLine;
-            case PrimitiveType::LineStrip:
+            case PrimitiveTopology::LineStrip:
                 return MTLPrimitiveTypeLineStrip;
-            case PrimitiveType::Triangle:
+            case PrimitiveTopology::Triangle:
                 return MTLPrimitiveTypeTriangle;
-            case PrimitiveType::TriangleStrip:
+            case PrimitiveTopology::TriangleStrip:
                 return MTLPrimitiveTypeTriangleStrip;
         }
     }

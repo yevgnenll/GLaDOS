@@ -7,15 +7,15 @@
 namespace GLaDOS {
     class GPUBuffer {
       public:
-        GPUBuffer(BufferType type, BufferUsage usage);
+        GPUBuffer(GPUBufferType type, GPUBufferUsage usage);
         virtual ~GPUBuffer() = default;
 
         std::size_t getSize() const;
         virtual bool uploadData(void* data, std::size_t size) = 0;
 
       protected:
-        BufferType mType;
-        BufferUsage mUsage;
+        GPUBufferType mType;
+        GPUBufferUsage mUsage;
         std::size_t mSize{0};
     };
 }  // namespace GLaDOS

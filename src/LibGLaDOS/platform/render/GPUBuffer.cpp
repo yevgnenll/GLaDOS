@@ -1,7 +1,7 @@
 #include "GPUBuffer.h"
 
 namespace GLaDOS {
-    GPUBuffer::GPUBuffer(BufferType type, BufferUsage usage)
+    GPUBuffer::GPUBuffer(GPUBufferType type, GPUBufferUsage usage)
         : mType{type}, mUsage{usage} {
     }
 

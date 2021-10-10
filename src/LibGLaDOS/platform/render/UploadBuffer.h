@@ -1,13 +1,13 @@
-#ifndef GLADOS_BYTEBUFFER_H
-#define GLADOS_BYTEBUFFER_H
+#ifndef GLADOS_UPLOADBUFFER_H
+#define GLADOS_UPLOADBUFFER_H
 
 #include "memory/StreamBuffer.h"
 
 namespace GLaDOS {
     class Logger;
-    class ByteBuffer {
+    class UploadBuffer {
       public:
-        virtual ~ByteBuffer();
+        virtual ~UploadBuffer();
 
         std::size_t size() const;
         std::size_t count() const;
@@ -16,10 +16,10 @@ namespace GLaDOS {
         void setBufferData(void* data);
 
       protected:
-        ByteBuffer() = default;
+        UploadBuffer() = default;
         void allocate();
 
-        void* mBufferData;
+        void* mBufferData{nullptr};
         std::size_t mSize{0};
         std::size_t mStride{0};
         bool mIsAllocated{false};
@@ -29,4 +29,4 @@ namespace GLaDOS {
     };
 }  // namespace GLaDOS
 
-#endif  //GLADOS_BYTEBUFFER_H
+#endif  // GLADOS_UPLOADBUFFER_H

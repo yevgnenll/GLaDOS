@@ -12,8 +12,8 @@ namespace GLaDOS {
         setResourceDir(RESOURCE_DIR);
     }
 
-    Mesh::Mesh(PrimitiveType primitiveType, BufferUsage vertexBufferUsage, BufferUsage indexBufferUsage)
-        : Resource{ResourceType::Mesh}, mPrimitiveType{primitiveType}, mVertexBufferUsage{vertexBufferUsage}, mIndexBufferUsage{indexBufferUsage} {
+    Mesh::Mesh(PrimitiveTopology primitiveType, GPUBufferUsage vertexBufferUsage, GPUBufferUsage indexBufferUsage)
+        : Resource{ResourceType::Mesh}, mPrimitiveTopology{primitiveType}, mVertexBufferUsage{vertexBufferUsage}, mIndexBufferUsage{indexBufferUsage} {
         setResourceDir(RESOURCE_DIR);
     }
 
@@ -24,12 +24,12 @@ namespace GLaDOS {
         DELETE_T(mIndexData, IndexData);
     }
 
-    PrimitiveType Mesh::getPrimitiveType() const {
-        return mPrimitiveType;
+    PrimitiveTopology Mesh::getPrimitiveType() const {
+        return mPrimitiveTopology;
     }
 
-    void Mesh::setPrimitiveType(PrimitiveType primitiveType) {
-        mPrimitiveType = primitiveType;
+    void Mesh::setPrimitiveType(PrimitiveTopology primitiveType) {
+        mPrimitiveTopology = primitiveType;
     }
 
     GPUBuffer* Mesh::getVertexBuffer() const {
@@ -89,16 +89,16 @@ namespace GLaDOS {
 
     std::size_t Mesh::getFaceCount() const {
         std::size_t count = mIndexData == nullptr ? (mVertexData->count() - mVertexStart) : (mIndexData->count() - mIndexStart);
-        switch (mPrimitiveType) {
-            case PrimitiveType::Point:
+        switch (mPrimitiveTopology) {
+            case PrimitiveTopology::Point:
                 return count;
-            case PrimitiveType::Line:
+            case PrimitiveTopology::Line:
                 return count / 2;
-            case PrimitiveType::LineStrip:
+            case PrimitiveTopology::LineStrip:
                 return count - 1;
-            case PrimitiveType::Triangle:
+            case PrimitiveTopology::Triangle:
                 return count / 3;
-            case PrimitiveType::TriangleStrip:
+            case PrimitiveTopology::TriangleStrip:
                 return count - 2;
         }
     }
@@ -111,11 +111,11 @@ namespace GLaDOS {
         return mIndexData;
     }
 
-    BufferUsage Mesh::getVertexUsage() const {
+    GPUBufferUsage Mesh::getVertexUsage() const {
         return mVertexBufferUsage;
     }
 
-    BufferUsage Mesh::getIndexUsage() const {
+    GPUBufferUsage Mesh::getIndexUsage() const {
         return mIndexBufferUsage;
     }
 

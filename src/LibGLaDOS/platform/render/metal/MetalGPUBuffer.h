@@ -13,7 +13,7 @@ namespace GLaDOS {
     class Logger;
     class MetalGPUBuffer : public GPUBuffer {
       public:
-        MetalGPUBuffer(BufferType type, BufferUsage usage);
+        MetalGPUBuffer(GPUBufferType type, GPUBufferUsage usage);
         ~MetalGPUBuffer() override;
 
         bool uploadData(void* data, std::size_t size) override;

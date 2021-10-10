@@ -27,12 +27,12 @@ namespace GLaDOS {
         bool initialize(int width, int height) override;
         void render(Renderable* _renderable) override;
 
-        GPUBuffer* createVertexBuffer(BufferUsage usage, StreamBuffer& buffer) override;
-        GPUBuffer* createIndexBuffer(BufferUsage usage, StreamBuffer& buffer) override;
+        GPUBuffer* createVertexBuffer(GPUBufferUsage usage, StreamBuffer& buffer) override;
+        GPUBuffer* createIndexBuffer(GPUBufferUsage usage, StreamBuffer& buffer) override;
         ShaderProgram* createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath, const VertexData* vertexData) override;
         Renderable* createRenderable(Mesh* mesh, Material* material) override;
-        Mesh* createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveType primitiveType, BufferUsage vertexUsage, BufferUsage indexUsage) override;
-        Mesh* createMesh(const std::string& meshPath, PrimitiveType primitiveType, BufferUsage vertexUsage, BufferUsage indexUsage) override;
+        Mesh* createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveTopology primitiveType, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) override;
+        Mesh* createMesh(const std::string& meshPath, PrimitiveTopology primitiveType, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) override;
         FrameBuffer* createFrameBuffer() override;
         RenderBuffer* createRenderBuffer() override;
         DepthStencilState* createDepthStencilState(const DepthStencilDescription& desc) override;

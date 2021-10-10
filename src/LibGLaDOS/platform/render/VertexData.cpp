@@ -5,7 +5,7 @@
 namespace GLaDOS {
     VertexData::VertexData(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count, bool allocate) {
         mVertexFormatHolder = vertexFormatDescriptor.makeVertexFormatHolder();
-        mVertexFormatDescriptor = vertexFormatDescriptor;  // should be assigned after build call
+        mVertexFormatDescriptor = vertexFormatDescriptor;  // should be assigned after makeVertexFormatHolder() call
         for (const auto& vertexFormat : *mVertexFormatHolder) {
             mStride += vertexFormat->size();
         }
