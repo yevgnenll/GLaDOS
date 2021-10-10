@@ -15,7 +15,7 @@ namespace GLaDOS {
     class Vec2;
     class Vec3;
     class Vec4;
-    class VertexData;
+    class VertexBuffer;
     class DepthStencilState;
     struct DepthStencilDescription;
     class RasterizerState;
@@ -49,7 +49,7 @@ namespace GLaDOS {
         void setRasterizerState(const RasterizerDescription& desc);
 
       private:
-        virtual bool createShaderProgram(const std::string& vertex, const std::string& fragment, const VertexData* vertexData) = 0;
+        virtual bool createShaderProgram(const std::string& vertex, const std::string& fragment, const VertexBuffer* vertexBuffer) = 0;
 
         static Logger* logger;
 

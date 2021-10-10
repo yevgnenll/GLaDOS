@@ -11,9 +11,9 @@
 #include "MetalTexture2D.h"
 #include "MetalTextureCube.h"
 #include "platform/render/Mesh.h"
-#include "platform/render/VertexData.h"
-#include "utils/FileSystem.h"
+#include "platform/render/VertexBuffer.h"
 #include "resource/ResourceManager.h"
+#include "utils/FileSystem.h"
 
 namespace GLaDOS {
     Logger* MetalRenderer::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalRenderer");
@@ -76,7 +76,7 @@ namespace GLaDOS {
         renderable->bindParams();
 
         Mesh* mesh = renderable->getMesh();
-        GPUBuffer* indexBuffer = mesh->getIndexBuffer();
+        GPUBuffer* indexBuffer = mesh->getGPUIndexBuffer();
         MTLPrimitiveType primitiveType = MetalRenderer::mapPrimitiveType(mesh->getPrimitiveType());
 
         [mCommandEncoder setRenderPipelineState:renderable->getPipelineState()];
@@ -96,7 +96,7 @@ namespace GLaDOS {
         [mCommandEncoder drawPrimitives:primitiveType vertexStart:start vertexCount:count];
     }
 
-    GPUBuffer* MetalRenderer::createVertexBuffer(GPUBufferUsage usage, void* data, std::size_t size) {
+    GPUBuffer* MetalRenderer::createGPUVertexBuffer(GPUBufferUsage usage, void* data, std::size_t size) {
         GPUBuffer* vertexBuffer = NEW_T(MetalGPUBuffer(GPUBufferType::VertexBuffer, usage));
         if (!vertexBuffer->uploadData(data, size)) {
             LOG_ERROR(logger, "Failed to create vertex buffer");
@@ -106,7 +106,7 @@ namespace GLaDOS {
         return vertexBuffer;
     }
 
-    GPUBuffer* MetalRenderer::createIndexBuffer(GPUBufferUsage usage, void* data, std::size_t size) {
+    GPUBuffer* MetalRenderer::createGPUIndexBuffer(GPUBufferUsage usage, void* data, std::size_t size) {
         GPUBuffer* indexBuffer = NEW_T(MetalGPUBuffer(GPUBufferType::IndexBuffer, usage));
         if (!indexBuffer->uploadData(data, size)) {
             LOG_ERROR(logger, "Failed to create index buffer");
@@ -116,7 +116,7 @@ namespace GLaDOS {
         return indexBuffer;
     }
 
-    ShaderProgram* MetalRenderer::createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath, const VertexData* vertexData) {
+    ShaderProgram* MetalRenderer::createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath, const VertexBuffer* vertexBuffer) {
         MetalShaderProgram* shaderProgram = NEW_T(MetalShaderProgram);
         std::string shaderDirectory = shaderProgram->directory();
 
@@ -134,7 +134,7 @@ namespace GLaDOS {
             return nullptr;
         }
 
-        if (!shaderProgram->createShaderProgram(vertexSource, fragmentSource, vertexData)) {
+        if (!shaderProgram->createShaderProgram(vertexSource, fragmentSource, vertexBuffer)) {
             LOG_ERROR(logger, "Shader compilation error");
             return nullptr;
         }
@@ -151,28 +151,28 @@ namespace GLaDOS {
         return renderable;
     }
 
-    Mesh* MetalRenderer::createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveTopology primitiveType, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) {
-        Mesh* mesh = NEW_T(Mesh(primitiveType, vertexUsage, indexUsage));
-        if (!mesh->build(vertexData, indexData)) {
+    Mesh* MetalRenderer::createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) {
+        Mesh* mesh = NEW_T(Mesh(primitiveTopology, vertexUsage, indexUsage));
+        if (!mesh->build(vertexBuffer, indexBuffer)) {
             LOG_ERROR(logger, "Failed to build mesh");
             return nullptr;
         }
         return mesh;
     }
 
-    Mesh* MetalRenderer::createMesh(VertexData* vertexData, IndexData* indexData) {
+    Mesh* MetalRenderer::createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer) {
         Mesh* mesh = NEW_T(Mesh);
-        if (!mesh->build(vertexData, indexData)) {
+        if (!mesh->build(vertexBuffer, indexBuffer)) {
             LOG_ERROR(logger, "Failed to build mesh");
             return nullptr;
         }
         return mesh;
     }
 
-    Mesh* MetalRenderer::createMesh(const std::string& meshPath, PrimitiveTopology primitiveType, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) {
+    Mesh* MetalRenderer::createMesh(const std::string& meshPath, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) {
         // TODO
-        // const auto& [vertexData, indexData] = MeshLoader::loadFromFile(meshPath);
-        // return createMesh(vertexData, indexData, primitiveType, dynamicVertex, dynamicIndex);
+        // const auto& [vertexBuffer, indexBuffer] = MeshLoader::loadFromFile(meshPath);
+        // return createMesh(vertexBuffer, indexBuffer, primitiveTopology, dynamicVertex, dynamicIndex);
         return nullptr;
     }
 
@@ -240,9 +240,8 @@ namespace GLaDOS {
         return nullptr;
     }
 
-    VertexData* MetalRenderer::createVertexData(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) {
-        VertexData* vertexData = NEW_T(VertexData(vertexFormatDescriptor, count));
-        return vertexData;
+    VertexBuffer* MetalRenderer::createVertexBuffer(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) {
+        return NEW_T(VertexBuffer(vertexFormatDescriptor, count));
     }
 
     id<MTLDevice> MetalRenderer::getDevice() const {

@@ -147,15 +147,15 @@ namespace GLaDOS {
         WaitForPreviousFrame();
     }
 
-    GPUBuffer* D3DX12Renderer::createVertexBuffer(GPUBufferUsage usage, Blob& buffer) {
+    GPUBuffer* D3DX12Renderer::createGPUVertexBuffer(GPUBufferUsage usage, void* data, std::size_t size) {
         return nullptr;
     }
 
-    GPUBuffer* D3DX12Renderer::createIndexBuffer(GPUBufferUsage usage, Blob& buffer) {
+    GPUBuffer* D3DX12Renderer::createGPUIndexBuffer(GPUBufferUsage usage, void* data, std::size_t size) {
         return nullptr;
     }
 
-    ShaderProgram* D3DX12Renderer::createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath, const VertexData* vertexData) {
+    ShaderProgram* D3DX12Renderer::createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath, const VertexBuffer* vertexBuffer) {
         return nullptr;
     }
 
@@ -163,11 +163,15 @@ namespace GLaDOS {
         return nullptr;
     }
 
-    Mesh* D3DX12Renderer::createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveTopology primitiveType, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) {
+    Mesh* D3DX12Renderer::createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) {
         return nullptr;
     }
 
-    Mesh* D3DX12Renderer::createMesh(const std::string& meshPath, PrimitiveTopology primitiveType, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) {
+    Mesh* D3DX12Renderer::createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer) {
+        return nullptr;
+    }
+
+    Mesh* D3DX12Renderer::createMesh(const std::string& meshPath, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) {
         return nullptr;
     }
 
@@ -223,7 +227,7 @@ namespace GLaDOS {
         return nullptr;
     }
 
-    VertexData* D3DX12Renderer::createVertexData(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) {
+    VertexBuffer* D3DX12Renderer::createVertexBuffer(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) {
         return nullptr;
     }
 

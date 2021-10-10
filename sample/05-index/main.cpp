@@ -18,9 +18,9 @@ class MainScene : public Scene {
             1, 2, 3  // second triangle
         };
         // clang-format on
-        VertexData* vertexData = NEW_T(VertexData(VertexFormatDescriptor().position().texCoord0(), 4));
+        VertexBuffer* vertexData = NEW_T(VertexBuffer(VertexFormatDescriptor().position().texCoord0(), 4));
         vertexData->setBufferData(vertices);
-        IndexData* indexData = NEW_T(IndexData(sizeof(uint16_t), 6));
+        IndexBuffer* indexData = NEW_T(IndexBuffer(sizeof(uint16_t), 6));
         indexData->setBufferData(indices);
         Mesh* mesh = Platform::getRenderer().createMesh(vertexData, indexData);
         if (mesh == nullptr) {

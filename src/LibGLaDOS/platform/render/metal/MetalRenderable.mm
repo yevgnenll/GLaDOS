@@ -106,7 +106,7 @@ namespace GLaDOS {
     }
 
     id<MTLBuffer> MetalRenderable::getVertexBuffer() const {
-        auto* buffer = static_cast<MetalGPUBuffer*>(mMesh->getVertexBuffer());  // INTEND: do not use dynamic_cast here
+        auto* buffer = static_cast<MetalGPUBuffer*>(mMesh->getGPUVertexBuffer());  // INTEND: do not use dynamic_cast here
         if (buffer == nullptr) {
             return nullptr;
         }
@@ -114,7 +114,7 @@ namespace GLaDOS {
     }
 
     id<MTLBuffer> MetalRenderable::getIndexBuffer() const {
-        auto* buffer = static_cast<MetalGPUBuffer*>(mMesh->getIndexBuffer());  // INTEND: do not use dynamic_cast here
+        auto* buffer = static_cast<MetalGPUBuffer*>(mMesh->getGPUIndexBuffer());  // INTEND: do not use dynamic_cast here
         if (buffer == nullptr) {
             return nullptr;
         }

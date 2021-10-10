@@ -2,11 +2,11 @@
 
 #include "math/Math.h"
 #include "platform/Platform.h"
-#include "platform/render/IndexData.h"
+#include "platform/render/IndexBuffer.h"
 #include "platform/render/Material.h"
 #include "platform/render/Mesh.h"
 #include "platform/render/Renderer.h"
-#include "platform/render/VertexData.h"
+#include "platform/render/VertexBuffer.h"
 #include "platform/render/VertexFormat.h"
 
 namespace GLaDOS {
@@ -31,11 +31,11 @@ namespace GLaDOS {
             0, 1, 2,
             0, 2, 3};
 
-        VertexData* vertexData = NEW_T(VertexData(VertexFormatDescriptor().position().texCoord0(), vertices.size()));
-        vertexData->setBufferData(vertices.data());
-        IndexData* indexData = NEW_T(IndexData(sizeof(uint16_t), indices.size()));
-        indexData->setBufferData(indices.data());
-        return Platform::getRenderer().createMesh(vertexData, indexData);
+        VertexBuffer* vertexBuffer = NEW_T(VertexBuffer(VertexFormatDescriptor().position().texCoord0(), vertices.size()));
+        vertexBuffer->setBufferData(vertices.data());
+        IndexBuffer* indexBuffer = NEW_T(IndexBuffer(sizeof(uint16_t), indices.size()));
+        indexBuffer->setBufferData(indices.data());
+        return Platform::getRenderer().createMesh(vertexBuffer, indexBuffer);
     }
 
     Mesh* MeshGenerator::generatePlane(unsigned int dimensions) {
@@ -72,11 +72,11 @@ namespace GLaDOS {
             }
         }
 
-        VertexData* vertexData = NEW_T(VertexData(VertexFormatDescriptor().position().normal(), vertexCount));
-        vertexData->setBufferData(vertices.data());
-        IndexData* indexData = NEW_T(IndexData(sizeof(uint32_t), indexCount));
-        indexData->setBufferData(indices.data());
-        return Platform::getRenderer().createMesh(vertexData, indexData);
+        VertexBuffer* vertexBuffer = NEW_T(VertexBuffer(VertexFormatDescriptor().position().normal(), vertexCount));
+        vertexBuffer->setBufferData(vertices.data());
+        IndexBuffer* indexBuffer = NEW_T(IndexBuffer(sizeof(uint32_t), indexCount));
+        indexBuffer->setBufferData(indices.data());
+        return Platform::getRenderer().createMesh(vertexBuffer, indexBuffer);
     }
 
     Mesh* MeshGenerator::generateCube() {
@@ -120,11 +120,11 @@ namespace GLaDOS {
             16, 19, 18, 18, 17, 16,
             20, 23, 22, 22, 21, 20};
 
-        VertexData* vertexData = NEW_T(VertexData(VertexFormatDescriptor().position().normal(), sizeof(vertices) / 6));
-        vertexData->setBufferData(vertices);
-        IndexData* indexData = NEW_T(IndexData(sizeof(uint16_t), sizeof(indices) / sizeof(uint16_t)));
-        indexData->setBufferData(indices);
-        return Platform::getRenderer().createMesh(vertexData, indexData);
+        VertexBuffer* vertexBuffer = NEW_T(VertexBuffer(VertexFormatDescriptor().position().normal(), sizeof(vertices) / 6));
+        vertexBuffer->setBufferData(vertices);
+        IndexBuffer* indexBuffer = NEW_T(IndexBuffer(sizeof(uint16_t), sizeof(indices) / sizeof(uint16_t)));
+        indexBuffer->setBufferData(indices);
+        return Platform::getRenderer().createMesh(vertexBuffer, indexBuffer);
     }
 
     Mesh* MeshGenerator::generateIcoSphere(unsigned int subdivisions) {
@@ -184,11 +184,11 @@ namespace GLaDOS {
             indices = indices2;
         }
 
-        VertexData* vertexData = NEW_T(VertexData(VertexFormatDescriptor().position().normal(), vertices.size() * 6));
-        vertexData->setBufferData(vertices.data());
-        IndexData* indexData = NEW_T(IndexData(sizeof(uint32_t), indices.size()));
-        indexData->setBufferData(indices.data());
-        return Platform::getRenderer().createMesh(vertexData, indexData);
+        VertexBuffer* vertexBuffer = NEW_T(VertexBuffer(VertexFormatDescriptor().position().normal(), vertices.size() * 6));
+        vertexBuffer->setBufferData(vertices.data());
+        IndexBuffer* indexBuffer = NEW_T(IndexBuffer(sizeof(uint32_t), indices.size()));
+        indexBuffer->setBufferData(indices.data());
+        return Platform::getRenderer().createMesh(vertexBuffer, indexBuffer);
     }
 
     Mesh* MeshGenerator::generateUVSphere() {
@@ -269,11 +269,11 @@ namespace GLaDOS {
             }
         }
 
-        VertexData* vertexData = NEW_T(VertexData(VertexFormatDescriptor().position().normal(), vertexCount));
-        vertexData->setBufferData(vertices.data());
-        IndexData* indexData = NEW_T(IndexData(sizeof(uint32_t), indices.size()));
-        indexData->setBufferData(indices.data());
-        return Platform::getRenderer().createMesh(vertexData, indexData);
+        VertexBuffer* vertexBuffer = NEW_T(VertexBuffer(VertexFormatDescriptor().position().normal(), vertexCount));
+        vertexBuffer->setBufferData(vertices.data());
+        IndexBuffer* indexBuffer = NEW_T(IndexBuffer(sizeof(uint32_t), indices.size()));
+        indexBuffer->setBufferData(indices.data());
+        return Platform::getRenderer().createMesh(vertexBuffer, indexBuffer);
     }
 
     Mesh* MeshGenerator::generateCone(real radius, real height) {
@@ -307,9 +307,9 @@ namespace GLaDOS {
         //      phi += dPhi;
         //    }
         //
-        //    VertexData* vertexData = NEW_T(VertexData(VertexFormatBuilder().withPosition().withNormal(), vertexCount));
-        //    vertexData->setBufferData(reinterpret_cast<std::byte*>(vertices.data()));
-        //    Mesh* mesh = Platform::getRenderer().createMesh(vertexData, nullptr);
+        //    VertexBuffer* vertexBuffer = NEW_T(VertexBuffer(VertexFormatBuilder().withPosition().withNormal(), vertexCount));
+        //    vertexBuffer->setBufferData(reinterpret_cast<std::byte*>(vertices.data()));
+        //    Mesh* mesh = Platform::getRenderer().createMesh(vertexBuffer, nullptr);
         //    return mesh;
         return nullptr;
     }
@@ -394,11 +394,11 @@ namespace GLaDOS {
             indices.emplace_back(vi + slices + 1);
         }
 
-        VertexData* vertexData = NEW_T(VertexData(VertexFormatDescriptor().position().normal(), vertexCount));
-        vertexData->setBufferData(vertices.data());
-        IndexData* indexData = NEW_T(IndexData(sizeof(uint32_t), indexCount));
-        indexData->setBufferData(indices.data());
-        return Platform::getRenderer().createMesh(vertexData, indexData);
+        VertexBuffer* vertexBuffer = NEW_T(VertexBuffer(VertexFormatDescriptor().position().normal(), vertexCount));
+        vertexBuffer->setBufferData(vertices.data());
+        IndexBuffer* indexBuffer = NEW_T(IndexBuffer(sizeof(uint32_t), indexCount));
+        indexBuffer->setBufferData(indices.data());
+        return Platform::getRenderer().createMesh(vertexBuffer, indexBuffer);
     }
 
 }  // namespace GLaDOS

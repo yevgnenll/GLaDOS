@@ -7,7 +7,7 @@
 #include "MetalRenderable.h"
 #include "platform/apple/CocoaPlatform.h"
 #include "platform/render/Uniform.h"
-#include "platform/render/VertexData.h"
+#include "platform/render/VertexBuffer.h"
 #include "utils/Enumeration.h"
 
 namespace GLaDOS {
@@ -108,12 +108,12 @@ namespace GLaDOS {
         return static_cast<MetalRasterizerState*>(rasterizerState());
     }
 
-    bool MetalShaderProgram::createShaderProgram(const std::string& vertex, const std::string& fragment, const VertexData* vertexData) {
+    bool MetalShaderProgram::createShaderProgram(const std::string& vertex, const std::string& fragment, const VertexBuffer* vertexBuffer) {
         bool isVsValid = MetalShaderProgram::createShader(vertex, mVertexFunction);
         bool isFsValid = MetalShaderProgram::createShader(fragment, mFragmentFunction);
         mIsValid = isVsValid && isFsValid;
 
-        if (!makePipelineDescriptor(vertexData)) {
+        if (!makePipelineDescriptor(vertexBuffer)) {
             mIsValid = false;
             return mIsValid;
         }
@@ -139,7 +139,7 @@ namespace GLaDOS {
         return nullptr;
     }
 
-    bool MetalShaderProgram::makePipelineDescriptor(const VertexData* vertexData) {
+    bool MetalShaderProgram::makePipelineDescriptor(const VertexBuffer* vertexBuffer) {
         if (!mIsValid) {
             LOG_ERROR(logger, "Invalid Metal shader program");
             return false;
@@ -164,7 +164,7 @@ namespace GLaDOS {
         mPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatDepth32Float_Stencil8;
         mPipelineDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatDepth32Float_Stencil8;
 
-        MTLVertexDescriptor* vertexDescriptor = makeVertexDescriptor(vertexData->getVertexFormatHolder());
+        MTLVertexDescriptor* vertexDescriptor = makeVertexDescriptor(vertexBuffer->getVertexFormatHolder());
         [mPipelineDescriptor setVertexDescriptor:vertexDescriptor];
 
         NSError* stateError;

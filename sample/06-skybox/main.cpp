@@ -19,7 +19,7 @@ class MainScene : public Scene {
         if (mesh == nullptr) {
             return false;
         }
-        shaderProgram = Platform::getRenderer().createShaderProgram("environmentVertex.metal", "environmentFragment.metal", mesh->getVertexData());
+        shaderProgram = Platform::getRenderer().createShaderProgram("environmentVertex.metal", "environmentFragment.metal", mesh->getCPUVertexBuffer());
         if (shaderProgram == nullptr) {
             return false;
         }

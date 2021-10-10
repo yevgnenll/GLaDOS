@@ -41,7 +41,7 @@ namespace GLaDOS {
     };
 
     class VertexFormatDescriptor {
-        friend class VertexData;
+        friend class VertexBuffer;
 
       public:
         VertexFormatDescriptor() = default;

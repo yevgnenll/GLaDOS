@@ -23,13 +23,13 @@ namespace GLaDOS {
         bool initialize(int width, int height) override;
         void render(Renderable* _renderable) override;
 
-        GPUBuffer* createVertexBuffer(GPUBufferUsage usage, void* data, std::size_t size) override;
-        GPUBuffer* createIndexBuffer(GPUBufferUsage usage, void* data, std::size_t size) override;
-        ShaderProgram* createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath, const VertexData* vertexData) override;
+        GPUBuffer* createGPUVertexBuffer(GPUBufferUsage usage, void* data, std::size_t size) override;
+        GPUBuffer* createGPUIndexBuffer(GPUBufferUsage usage, void* data, std::size_t size) override;
+        ShaderProgram* createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath, const VertexBuffer* vertexBuffer) override;
         Renderable* createRenderable(Mesh* mesh, Material* material) override;
-        Mesh* createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveTopology primitiveType, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) override;
-        Mesh* createMesh(VertexData* vertexData, IndexData* indexData) override;
-        Mesh* createMesh(const std::string& meshPath, PrimitiveTopology primitiveType, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) override;
+        Mesh* createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) override;
+        Mesh* createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer) override;
+        Mesh* createMesh(const std::string& meshPath, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) override;
         FrameBuffer* createFrameBuffer() override;
         RenderBuffer* createRenderBuffer() override;
         DepthStencilState* createDepthStencilState(const DepthStencilDescription& desc) override;
@@ -43,7 +43,7 @@ namespace GLaDOS {
         Texture3D* createTexture3D(const std::string& name) override;
         TextureCube* createTextureCube(const std::string& name, PixelFormat format) override;
         RenderTexture* createRenderTexture(const std::string& name) override;
-        VertexData* createVertexData(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) override;
+        VertexBuffer* createVertexBuffer(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) override;
 
         id<MTLDevice> getDevice() const;
         id<MTLRenderCommandEncoder> getCommandEncoder() const;

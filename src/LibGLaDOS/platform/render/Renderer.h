@@ -10,8 +10,8 @@ namespace GLaDOS {
     class ShaderProgram;
     class FrameBuffer;
     class RenderBuffer;
-    class VertexData;
-    class IndexData;
+    class VertexBuffer;
+    class IndexBuffer;
     class DepthStencilState;
     struct DepthStencilDescription;
     class SamplerState;
@@ -31,13 +31,13 @@ namespace GLaDOS {
         virtual bool initialize(int width, int height) = 0;
         virtual void render(Renderable* _renderable) = 0;
 
-        virtual GPUBuffer* createVertexBuffer(GPUBufferUsage usage, void* data, std::size_t size) = 0;
-        virtual GPUBuffer* createIndexBuffer(GPUBufferUsage usage, void* data, std::size_t size) = 0;
-        virtual ShaderProgram* createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath, const VertexData* vertexData) = 0;
+        virtual GPUBuffer* createGPUVertexBuffer(GPUBufferUsage usage, void* data, std::size_t size) = 0;
+        virtual GPUBuffer* createGPUIndexBuffer(GPUBufferUsage usage, void* data, std::size_t size) = 0;
+        virtual ShaderProgram* createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath, const VertexBuffer* vertexBuffer) = 0;
         virtual Renderable* createRenderable(Mesh* mesh, Material* material) = 0;
-        virtual Mesh* createMesh(VertexData* vertexData, IndexData* indexData, PrimitiveTopology primitiveType, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) = 0;
-        virtual Mesh* createMesh(VertexData* vertexData, IndexData* indexData) = 0;
-        virtual Mesh* createMesh(const std::string& meshPath, PrimitiveTopology primitiveType, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) = 0;
+        virtual Mesh* createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) = 0;
+        virtual Mesh* createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer) = 0;
+        virtual Mesh* createMesh(const std::string& meshPath, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) = 0;
         virtual FrameBuffer* createFrameBuffer() = 0;
         virtual RenderBuffer* createRenderBuffer() = 0;
         virtual DepthStencilState* createDepthStencilState(const DepthStencilDescription& desc) = 0;
@@ -51,7 +51,7 @@ namespace GLaDOS {
         virtual Texture3D* createTexture3D(const std::string& name) = 0;
         virtual TextureCube* createTextureCube(const std::string& name, PixelFormat format) = 0;
         virtual RenderTexture* createRenderTexture(const std::string& name) = 0;
-        virtual VertexData* createVertexData(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) = 0;
+        virtual VertexBuffer* createVertexBuffer(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) = 0;
     };
 }  // namespace GLaDOS
 

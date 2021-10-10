@@ -1,7 +1,7 @@
-#include "IndexData.h"
+#include "IndexBuffer.h"
 
 namespace GLaDOS {
-    IndexData::IndexData(std::size_t stride, std::size_t count, bool allocate) {
+    IndexBuffer::IndexBuffer(std::size_t stride, std::size_t count, bool allocate) {
         mStride = stride;
         mSize = count * mStride;
         if (allocate) {

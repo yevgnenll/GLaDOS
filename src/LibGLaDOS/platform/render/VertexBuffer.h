@@ -1,5 +1,5 @@
-#ifndef GLADOS_VERTEXDATA_H
-#define GLADOS_VERTEXDATA_H
+#ifndef GLADOS_VERTEXBUFFER_H
+#define GLADOS_VERTEXBUFFER_H
 
 #include "UploadBuffer.h"
 #include "VertexFormat.h"
@@ -10,10 +10,10 @@
 namespace GLaDOS {
     class VertexFormat;
     class VertexFormatHolder;
-    class VertexData : public UploadBuffer {
+    class VertexBuffer : public UploadBuffer {
       public:
-        explicit VertexData(const VertexFormatDescriptor& vertexFormatBuilder, std::size_t count, bool allocate = false);
-        ~VertexData() override;
+        explicit VertexBuffer(const VertexFormatDescriptor& vertexFormatBuilder, std::size_t count, bool allocate = false);
+        ~VertexBuffer() override;
 
         VertexFormatHolder* getVertexFormatHolder() const;
 
@@ -50,4 +50,4 @@ namespace GLaDOS {
     };
 }  // namespace GLaDOS
 
-#endif  //GLADOS_VERTEXDATA_H
+#endif  // GLADOS_VERTEXBUFFER_H

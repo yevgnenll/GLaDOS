@@ -1,14 +1,14 @@
 #include "SpriteRenderer.h"
 
 #include "platform/Platform.h"
-#include "platform/render/IndexData.h"
+#include "platform/render/IndexBuffer.h"
 #include "platform/render/Material.h"
 #include "platform/render/Mesh.h"
 #include "platform/render/Renderable.h"
 #include "platform/render/Renderer.h"
 #include "platform/render/ShaderProgram.h"
-#include "platform/render/VertexData.h"
 #include "platform/render/Texture2D.h"
+#include "platform/render/VertexBuffer.h"
 #include "resource/Sprite.h"
 #include "utils/MeshGenerator.h"
 
@@ -26,7 +26,7 @@ namespace GLaDOS {
             LOG_ERROR(logger, "SpriteRenderer initialize failed!");
             return;
         }
-        ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgram("spriteVertex.metal", "spriteFragment.metal", mesh->getVertexData());
+        ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgram("spriteVertex.metal", "spriteFragment.metal", mesh->getCPUVertexBuffer());
         if (shaderProgram == nullptr) {
             LOG_ERROR(logger, "SpriteRenderer initialize failed!");
             return;

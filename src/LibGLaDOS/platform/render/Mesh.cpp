@@ -1,9 +1,9 @@
 #include "Mesh.h"
 
-#include "IndexData.h"
+#include "IndexBuffer.h"
 #include "Renderer.h"
 #include "RootDir.h"
-#include "VertexData.h"
+#include "VertexBuffer.h"
 #include "platform/Platform.h"
 
 namespace GLaDOS {
@@ -20,8 +20,8 @@ namespace GLaDOS {
     Mesh::~Mesh() {
         DELETE_T(mVertexBufferGPU, GPUBuffer);
         DELETE_T(mIndexBufferGPU, GPUBuffer);
-        DELETE_T(mVertexBufferCPU, VertexData);
-        DELETE_T(mIndexBufferCPU, IndexData);
+        DELETE_T(mVertexBufferCPU, VertexBuffer);
+        DELETE_T(mIndexBufferCPU, IndexBuffer);
     }
 
     PrimitiveTopology Mesh::getPrimitiveType() const {
@@ -32,11 +32,11 @@ namespace GLaDOS {
         mPrimitiveTopology = primitiveType;
     }
 
-    GPUBuffer* Mesh::getVertexBuffer() const {
+    GPUBuffer* Mesh::getGPUVertexBuffer() const {
         return mVertexBufferGPU;
     }
 
-    GPUBuffer* Mesh::getIndexBuffer() const {
+    GPUBuffer* Mesh::getGPUIndexBuffer() const {
         return mIndexBufferGPU;
     }
 
@@ -103,11 +103,11 @@ namespace GLaDOS {
         }
     }
 
-    VertexData* Mesh::getVertexData() {
+    VertexBuffer* Mesh::getCPUVertexBuffer() {
         return mVertexBufferCPU;
     }
 
-    IndexData* Mesh::getIndexData() {
+    IndexBuffer* Mesh::getCPUIndexBuffer() {
         return mIndexBufferCPU;
     }
 
@@ -119,23 +119,23 @@ namespace GLaDOS {
         return mIndexBufferUsage;
     }
 
-    bool Mesh::build(VertexData* vertexData, IndexData* indexData) {
-        mVertexBufferCPU = vertexData;
-        mIndexBufferCPU = indexData;
+    bool Mesh::build(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer) {
+        mVertexBufferCPU = vertexBuffer;
+        mIndexBufferCPU = indexBuffer;
 
         if (mVertexBufferCPU == nullptr) {
-            LOG_ERROR(logger, "Mesh should have at least a vertexData.");
+            LOG_ERROR(logger, "Mesh should have at least a vertexBuffer.");
             return false;
         }
 
-        mVertexBufferGPU = Platform::getRenderer().createVertexBuffer(mVertexBufferUsage, mVertexBufferCPU->buffer(), mVertexBufferCPU->size());
+        mVertexBufferGPU = Platform::getRenderer().createGPUVertexBuffer(mVertexBufferUsage, mVertexBufferCPU->buffer(), mVertexBufferCPU->size());
         if (mVertexBufferGPU == nullptr) {
             LOG_ERROR(logger, "VertexBuffer creation failed.");
             return false;
         }
 
         if (mIndexBufferCPU != nullptr) {
-            mIndexBufferGPU = Platform::getRenderer().createIndexBuffer(mIndexBufferUsage, mIndexBufferCPU->buffer(), mIndexBufferCPU->size());
+            mIndexBufferGPU = Platform::getRenderer().createGPUIndexBuffer(mIndexBufferUsage, mIndexBufferCPU->buffer(), mIndexBufferCPU->size());
             if (mIndexBufferGPU == nullptr) {
                 LOG_ERROR(logger, "IndexBuffer creation failed.");
                 return false;

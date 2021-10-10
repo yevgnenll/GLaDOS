@@ -4,7 +4,7 @@
 #include "core/GameObject.hpp"
 #include "core/Scene.h"
 #include "platform/Platform.h"
-#include "platform/render/IndexData.h"
+#include "platform/render/IndexBuffer.h"
 #include "platform/render/Material.h"
 #include "platform/render/Mesh.h"
 #include "platform/render/RenderState.h"
@@ -12,7 +12,7 @@
 #include "platform/render/Renderer.h"
 #include "platform/render/ShaderProgram.h"
 #include "platform/render/TextureCube.h"
-#include "platform/render/VertexData.h"
+#include "platform/render/VertexBuffer.h"
 #include "utils/MeshGenerator.h"
 
 namespace GLaDOS {
@@ -25,7 +25,7 @@ namespace GLaDOS {
             LOG_ERROR(logger, "CubemapRenderer initialize failed!");
             return;
         }
-        ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgram("skyboxVertex.metal", "skyboxFragment.metal", mesh->getVertexData());
+        ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgram("skyboxVertex.metal", "skyboxFragment.metal", mesh->getCPUVertexBuffer());
         if (shaderProgram == nullptr) {
             LOG_ERROR(logger, "CubemapRenderer initialize failed!");
             return;

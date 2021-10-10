@@ -17,7 +17,7 @@ class MainScene : public Scene {
             -0.5, 0.5, 0.0,     0.0, 0.0, 1.0, 1.0,
         };
         // clang-format on
-        VertexData* vertexData = Platform::getRenderer().createVertexData(VertexFormatDescriptor().position().color(), 6);
+        VertexBuffer* vertexData = Platform::getRenderer().createVertexBuffer(VertexFormatDescriptor().position().color(), 6);
         vertexData->setBufferData(quad);
         Mesh* mesh = Platform::getRenderer().createMesh(vertexData, nullptr);
         if (mesh == nullptr) {
