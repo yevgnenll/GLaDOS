@@ -62,12 +62,18 @@ namespace GLaDOS {
     }
 
     GameObject* Scene::instantiate(GameObject* original) {
+        // TODO
+        return nullptr;
     }
 
     GameObject* Scene::instantiate(GameObject* original, const Vec3& position) {
+        // TODO
+        return nullptr;
     }
 
     GameObject* Scene::instantiate(GameObject* original, const Vec3& position, const Quat& rotation) {
+        // TODO
+        return nullptr;
     }
 
     void Scene::update(real deltaTime) {
