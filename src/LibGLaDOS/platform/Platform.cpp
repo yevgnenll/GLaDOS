@@ -8,9 +8,7 @@
 
 #ifdef PLATFORM_WINDOW
 #include <process.h>
-#define NOMINMAX
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
+#include "platform/windows/WindowsPlatform.h"
 #else
 #include <sys/syscall.h>
 #include <unistd.h>

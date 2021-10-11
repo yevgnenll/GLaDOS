@@ -6,7 +6,6 @@
 #include "platform/Input.h"
 #include "platform/Timer.h"
 #include "platform/render/d3dx12/D3DX12Renderer.h"
-#include "utils/Utility.h"
 
 namespace GLaDOS {
     Logger* WindowsPlatform::logger = LoggerRegistry::getInstance().makeAndGetLogger("WindowsPlatform");
@@ -239,7 +238,7 @@ namespace GLaDOS {
     void Platform::fullScreen(bool isFullScreen) {
     }
 
-    Renderer* Platform::getRenderer() {
+    Renderer& Platform::getRenderer() {
         return D3DX12Renderer::getInstance();
     }
 }  // namespace GLaDOS

@@ -86,6 +86,7 @@ elseif(WIN32)
     cmake_policy(SET CMP0110 NEW)
   endif()
 
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
   set(LINK_LIBRARIES "d3d12.lib" "dxgi.lib" "d3dcompiler.lib")
   set(INCLUDE_LIBRARIES ${STB_LIB_DIR} "${VENDOR_DIR}/d3dx12")
 else()

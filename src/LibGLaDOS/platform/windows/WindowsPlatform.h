@@ -6,12 +6,10 @@
 #ifdef PLATFORM_WINDOW
 
 #include "platform/Platform.h"
+// https://stackoverflow.com/questions/11544073/how-do-i-deal-with-the-max-macro-in-windows-h-colliding-with-max-in-std
+#define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-
-// https://stackoverflow.com/questions/11544073/how-do-i-deal-with-the-max-macro-in-windows-h-colliding-with-max-in-std
-#undef max
-#undef min
 
 namespace GLaDOS {
     class Logger;
