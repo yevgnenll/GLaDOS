@@ -146,8 +146,6 @@ namespace GLaDOS {
         static Vec4 abs(const Vec4& v);
         static Vec4 sqrt(const Vec4& v);
         static Vec4 rsqrt(const Vec4& v);
-        static Vec4 min(const Vec4& a, const Vec4& b);
-        static Vec4 max(const Vec4& a, const Vec4& b);
         static UVec4 normalize(const Vec4& v);
         static Deg angle(const UVec4& from, const UVec4& to);
 

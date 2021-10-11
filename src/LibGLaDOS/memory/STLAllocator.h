@@ -39,7 +39,7 @@ namespace GLaDOS {
 
     template <typename T>
     typename STLAllocator<T>::size_type STLAllocator<T>::max_size() const {
-        return std::numeric_limits<size_type>::max() / sizeof(value_type);
+        return (std::numeric_limits<size_type>::max)() / sizeof(value_type);
     }
 
     template <typename T>
