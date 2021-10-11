@@ -9,6 +9,7 @@
 #endif
 #define PLATFORM_WINDOW
 #define PATH_SEPARATOR "/\\"
+#define _CRT_SECURE_NO_WARNINGS
 #elif defined(__linux__)
 #define PLATFORM_LINUX
 #define PATH_SEPARATOR "/"

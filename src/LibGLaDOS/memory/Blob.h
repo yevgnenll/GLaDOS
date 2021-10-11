@@ -1,4 +1,4 @@
-#ifndef GLADOS_BLOB_H
+﻿#ifndef GLADOS_BLOB_H
 #define GLADOS_BLOB_H
 
 #include "math/Mat4.hpp"

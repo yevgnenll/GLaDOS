@@ -101,6 +101,7 @@ namespace GLaDOS {
             case PrimitiveTopology::TriangleStrip:
                 return count - 2;
         }
+        return 0;
     }
 
     VertexBuffer* Mesh::getCPUVertexBuffer() {

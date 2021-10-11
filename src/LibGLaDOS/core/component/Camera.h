@@ -36,9 +36,9 @@ namespace GLaDOS {
         void render() override;
 
       private:
-        real mFieldOfView{60.0};
-        real mNearClipPlane{0.1};
-        real mFarClipPlane{1000.0};
+        real mFieldOfView{real(60.0)};
+        real mNearClipPlane{real(0.1)};
+        real mFarClipPlane{real(1000.0)};
         bool mIsOrthographic{false};
         Rect<uint32_t> mViewportRect;
     };

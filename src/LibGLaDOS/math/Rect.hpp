@@ -1,4 +1,4 @@
-#ifndef GLADOS_RECT_HPP
+﻿#ifndef GLADOS_RECT_HPP
 #define GLADOS_RECT_HPP
 
 #include "Math.h"

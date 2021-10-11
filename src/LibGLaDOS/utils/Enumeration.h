@@ -1,4 +1,4 @@
-#ifndef GLADOS_ENUMERATION_H
+﻿#ifndef GLADOS_ENUMERATION_H
 #define GLADOS_ENUMERATION_H
 
 #include <chrono>

@@ -97,7 +97,7 @@ file(GLOB_RECURSE LIB_GLADOS_SOURCE_FILES
         "${LIB_GLADOS_SOURCE_DIR}/*.h"
         "${LIB_GLADOS_SOURCE_DIR}/*.hpp"
         "${LIB_GLADOS_SOURCE_DIR}/*.cpp"
-        "${LIB_GLADOS_SOURCE_DIR}/*.mm")
+        "$<$<BOOL:${APPLE}>:${LIB_GLADOS_SOURCE_DIR}/*.mm>")
 add_library(${PROJECT_NAME} STATIC ${LIB_GLADOS_SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME}
         PRIVATE
