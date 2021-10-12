@@ -18,7 +18,7 @@ namespace GLaDOS {
 #define ANSI_COLOR_GREY "\033[30m"
 #define ANSI_COLOR_YELLOW "\033[33m"
 #define ANSI_COLOR_RESET "\033[0m"
-#elif
+#else
 #define ANSI_COLOR_RED "\x1b[31;1m"
 #define ANSI_COLOR_GREEN "\x1b[32;1m"
 #define ANSI_COLOR_BLUE "\x1b[34;1m"
