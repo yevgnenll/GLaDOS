@@ -3,6 +3,7 @@
 #ifdef PLATFORM_WINDOW
 
 #include "platform/windows/WindowsPlatform.h"
+#include "platform/render/VertexBuffer.h"
 
 namespace GLaDOS {
     Logger* D3DX12Renderer::logger = LoggerRegistry::getInstance().makeAndGetLogger("D3DX12Renderer");
@@ -141,6 +142,7 @@ namespace GLaDOS {
         // Present the frame.
         HRESULT hresult = mSwapChain->Present(1, 0);
         if (FAILED(hresult)) {
+            LOG_ERROR(logger, "{0}", hresultToString(hresult));
             return;
         }
 
@@ -228,12 +230,12 @@ namespace GLaDOS {
     }
 
     VertexBuffer* D3DX12Renderer::createVertexBuffer(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) {
-        return nullptr;
+        return NEW_T(VertexBuffer(vertexFormatDescriptor, count));
     }
 
-    std::string D3DX12Renderer::hresultToString(HRESULT hr) {
+    std::string D3DX12Renderer::hresultToString(HRESULT hresult) {
         char s_str[64] = {};
-        sprintf_s(s_str, "HRESULT of 0x%08X", static_cast<UINT>(hr));
+        sprintf_s(s_str, "HRESULT of 0x%08X", static_cast<UINT>(hresult));
         return std::string(s_str);
     }
 
@@ -298,7 +300,7 @@ namespace GLaDOS {
         CD3DX12_CPU_DESCRIPTOR_HANDLE renderTargetHandle(mRenderTargetDescHeap->GetCPUDescriptorHandleForHeapStart(), mFrameIndex, mRenderTargetDescSize);
 
         // Record commands.
-        const float clearColor[] = {0.0f, 1.0f, 1.0f, 1.0f};
+        const float clearColor[] = {1.0f, 0.0f, 0.0f, 1.0f};
         mCommandList->ClearRenderTargetView(renderTargetHandle, clearColor, 0, nullptr);
 
         // Indicate that the back buffer will now be used to present.

@@ -50,7 +50,7 @@ namespace GLaDOS {
         VertexBuffer* createVertexBuffer(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) override;
 
       private:
-        static std::string hresultToString(HRESULT hr);
+        static std::string hresultToString(HRESULT hresult);
         static void getHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter, bool preferHighPerfAdapter = false);
         void PopulateCommandList();
         void WaitForPreviousFrame();
