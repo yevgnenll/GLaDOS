@@ -15,25 +15,41 @@ namespace GLaDOS {
     }
 
     bool D3DX12Renderer::initialize(int width, int height) {
-        // https://github.com/microsoft/DirectX-Graphics-Samples/tree/master/Samples/Desktop/D3D12HelloWorld
-        ComPtr<IDXGIFactory4> factory;
         UINT dxgiFactoryFlags = 0;
+
+#if defined(_DEBUG)
+        // Enable the debug layer (requires the Graphics Tools "optional feature").
+        // NOTE: Enabling the debug layer after device creation will invalidate the active device.
+        {
+            ComPtr<ID3D12Debug> debugController;
+            if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
+                debugController->EnableDebugLayer();
+
+                // Enable additional debug layers.
+                dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+            }
+        }
+#endif
+
+        ComPtr<IDXGIFactory4> factory;
         HRESULT hresult = CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory));
         if (FAILED(hresult)) {
             LOG_ERROR(logger, "{0}", hresultToString(hresult));
             return false;
         }
+
+        // 하드웨어 그래픽 카드 조사
         ComPtr<IDXGIAdapter1> hardwareAdapter;
         getHardwareAdapter(factory.Get(), &hardwareAdapter);
 
-        // create device
+        // 장치 생성
         hresult = D3D12CreateDevice(hardwareAdapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&mDevice));
         if (FAILED(hresult)) {
             LOG_ERROR(logger, "{0}", hresultToString(hresult));
             return false;
         }
 
-        // create the command queue
+        // 명령 대기열 생성
         D3D12_COMMAND_QUEUE_DESC queueDesc{};
         queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
         queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
@@ -43,18 +59,46 @@ namespace GLaDOS {
             return false;
         }
 
-        // create swap chain
+        // 명령 할당자 생성
+        hresult = mDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&mCommandAllocator));
+        if (FAILED(hresult)) {
+            LOG_ERROR(logger, "{0}", hresultToString(hresult));
+            return false;
+        }
+
+        // 명령 목록 생성
+        hresult = mDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, mCommandAllocator.Get(), nullptr, IID_PPV_ARGS(&mCommandList));
+        if (FAILED(hresult)) {
+            LOG_ERROR(logger, "{0}", hresultToString(hresult));
+            return false;
+        }
+
+        // 처음 시작할때는 닫힌 상태로 시작함. 이후 Reset()이 호출되면서 시작하게 되는데, 그러려면 먼저 닫혀있어야함.
+        hresult = mCommandList->Close();
+        if (FAILED(hresult)) {
+            LOG_ERROR(logger, "{0}", hresultToString(hresult));
+            return false;
+        }
+
+        // 교환 사슬 서술과 생성
         DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
-        swapChainDesc.BufferCount = frameCount;
+        swapChainDesc.BufferCount = renderTargetCount;
         swapChainDesc.Width = width;
         swapChainDesc.Height = height;
         swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
         swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
         swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+        swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
+        swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
+        swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
         swapChainDesc.SampleDesc.Count = 1;
+        swapChainDesc.SampleDesc.Quality = 0;
+
+        DXGI_SWAP_CHAIN_FULLSCREEN_DESC swapChainFSDesc = {};
+        swapChainFSDesc.Windowed = TRUE;
 
         ComPtr<IDXGISwapChain1> swapChain;
-        hresult = factory->CreateSwapChainForHwnd(mCommandQueue.Get(), WindowsPlatform::getWindowHandle(), &swapChainDesc, nullptr, nullptr, &swapChain);
+        hresult = factory->CreateSwapChainForHwnd(mCommandQueue.Get(), WindowsPlatform::getWindowHandle(), &swapChainDesc, &swapChainFSDesc, nullptr, &swapChain);
         if (FAILED(hresult)) {
             LOG_ERROR(logger, "{0}", hresultToString(hresult));
             return false;
@@ -67,52 +111,81 @@ namespace GLaDOS {
         }
 
         swapChain.As(&mSwapChain);
-        mFrameIndex = mSwapChain->GetCurrentBackBufferIndex();
+        // 초기 후면 버퍼 인덱스 지정
+        mCurrBackBuffer = mSwapChain->GetCurrentBackBufferIndex();
 
-        // create descriptor heaps
-        D3D12_DESCRIPTOR_HEAP_DESC heapDesc{};
-        heapDesc.NumDescriptors = frameCount;
-        heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;  // The descriptor heap for the render-target view.
-        heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-        hresult = mDevice->CreateDescriptorHeap(&heapDesc, IID_PPV_ARGS(&mRenderTargetDescHeap));
+        // 서술자 힙 생성
+        // 서술자 힙은 서술자 종류마다 따로 만들어야함: swapChainBufferCount * RTV + DSV
+        D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc{};
+        rtvHeapDesc.NumDescriptors = renderTargetCount;
+        rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;  // The descriptor heap for the render-target view.
+        rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+        rtvHeapDesc.NodeMask = 0;
+        hresult = mDevice->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&mRenderTargetDescHeap));
         if (FAILED(hresult)) {
             LOG_ERROR(logger, "{0}", hresultToString(hresult));
             return false;
         }
-        mRenderTargetDescSize = mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
 
-        // create render target resources
-        CD3DX12_CPU_DESCRIPTOR_HANDLE cpuDescHandle{mRenderTargetDescHeap->GetCPUDescriptorHandleForHeapStart()};
-        for (uint32_t n = 0; n < frameCount; n++) {
-            hresult = mSwapChain->GetBuffer(n, IID_PPV_ARGS(&mRenderTargets[n]));
+        D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc{};
+        dsvHeapDesc.NumDescriptors = 1;
+        dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+        dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+        dsvHeapDesc.NodeMask = 0;
+        hresult = mDevice->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&mDepthStencilDescHeap));
+        if (FAILED(hresult)) {
+            LOG_ERROR(logger, "{0}", hresultToString(hresult));
+            return false;
+        }
+
+        mRenderTargetDescSize = mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+        mDepthStencilDescSize = mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
+        mConstantBufferShaderResourceDescSize = mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+        // 랜더 대상 뷰(RTV) 생성
+        CD3DX12_CPU_DESCRIPTOR_HANDLE renderTargetHeapHandle{mRenderTargetDescHeap->GetCPUDescriptorHandleForHeapStart()};
+        for (uint32_t i = 0; i < renderTargetCount; i++) {
+            hresult = mSwapChain->GetBuffer(i, IID_PPV_ARGS(&mRenderTargets[i]));
             if (FAILED(hresult)) {
                 LOG_ERROR(logger, "{0}", hresultToString(hresult));
                 return false;
             }
-            mDevice->CreateRenderTargetView(mRenderTargets[n].Get(), nullptr, cpuDescHandle);
-            cpuDescHandle.Offset(1, mRenderTargetDescSize);
+            mDevice->CreateRenderTargetView(mRenderTargets[i].Get(), nullptr, renderTargetHeapHandle);
+            renderTargetHeapHandle.Offset(1, mRenderTargetDescSize);
         }
 
-        // create command list
-        hresult = mDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&mCommandAllocator));
+        // 깊이 스텐실 버퍼와 뷰 생성
+        D3D12_RESOURCE_DESC depthStencilDesc;
+        depthStencilDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+        depthStencilDesc.Alignment = 0;
+        depthStencilDesc.Width = width;
+        depthStencilDesc.Height = height;
+        depthStencilDesc.DepthOrArraySize = 1;
+        depthStencilDesc.MipLevels = 1;
+        depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        depthStencilDesc.SampleDesc.Count = 1;
+        depthStencilDesc.SampleDesc.Quality = 0;
+        depthStencilDesc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+        depthStencilDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+
+        D3D12_CLEAR_VALUE optClear;
+        optClear.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        optClear.DepthStencil.Depth = 1.0F;
+        optClear.DepthStencil.Stencil = 0;
+
+        CD3DX12_HEAP_PROPERTIES heapProperties{D3D12_HEAP_TYPE_DEFAULT};
+        hresult = mDevice->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &depthStencilDesc, D3D12_RESOURCE_STATE_COMMON, &optClear, IID_PPV_ARGS(&mDepthStencil));
         if (FAILED(hresult)) {
             LOG_ERROR(logger, "{0}", hresultToString(hresult));
             return false;
         }
+        CD3DX12_CPU_DESCRIPTOR_HANDLE depthStencilHeapHandle{mDepthStencilDescHeap->GetCPUDescriptorHandleForHeapStart()};
+        mDevice->CreateDepthStencilView(mDepthStencil.Get(), nullptr, depthStencilHeapHandle);
+        // 자원을 초기 상태에서 깊이 버퍼로 사용할 수 있는 상태로 전이한다.
+        CD3DX12_RESOURCE_BARRIER transition = CD3DX12_RESOURCE_BARRIER::Transition(mDepthStencil.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+        mCommandList->ResourceBarrier(1, &transition);
 
-        hresult = mDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, mCommandAllocator.Get(), nullptr, IID_PPV_ARGS(&mCommandList));
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", hresultToString(hresult));
-            return false;
-        }
-
-        hresult = mCommandList->Close();
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", hresultToString(hresult));
-            return false;
-        }
-
-        // create synchronization object
+        // 동기화 객체인 장벽 생성
         hresult = mDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence));
         if (FAILED(hresult)) {
             LOG_ERROR(logger, "{0}", hresultToString(hresult));
@@ -127,6 +200,19 @@ namespace GLaDOS {
             }
         }
 
+        // 뷰포트 설정
+        mScreenViewport.TopLeftX = 0.F;
+        mScreenViewport.TopLeftY = 0.F;
+        mScreenViewport.Width = static_cast<float>(width);
+        mScreenViewport.Height = static_cast<float>(height);
+        mScreenViewport.MinDepth = 0.F;
+        mScreenViewport.MaxDepth = 1.F;
+        mCommandList->RSSetViewports(1, &mScreenViewport);
+
+        // 가위 직사각형 설정
+        mScissorRect = { 0, 0, width, height };
+        mCommandList->RSSetScissorRects(1, &mScissorRect);
+
         LOG_TRACE(logger, "D3DX12Renderer init success");
 
         return true;
@@ -135,12 +221,12 @@ namespace GLaDOS {
     void D3DX12Renderer::render(Renderable* _renderable) {
         PopulateCommandList();
 
-        // Execute the command list.
+        // 명령 실행을 위해 명령 목록을 명령 대기열에 추가
         ID3D12CommandList* ppCommandLists[] = {mCommandList.Get()};
         mCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
-        // Present the frame.
-        HRESULT hresult = mSwapChain->Present(1, 0);
+        // 후면 버퍼와 전면 버퍼를 교환한다.
+        HRESULT hresult = mSwapChain->Present(0, 0);
         if (FAILED(hresult)) {
             LOG_ERROR(logger, "{0}", hresultToString(hresult));
             return;
@@ -275,38 +361,43 @@ namespace GLaDOS {
     }
 
     void D3DX12Renderer::PopulateCommandList() {
-        // Command list allocators can only be reset when the associated
-        // command lists have finished execution on the GPU; apps should use
-        // fences to determine GPU execution progress.
+        // 명령 기록에 관련된 메모리의 재활용을 위해 명령 할당자를 재설정한다.
         HRESULT hresult = mCommandAllocator->Reset();
         if (FAILED(hresult)) {
             return;
         }
 
-        // However, when ExecuteCommandList() is called on a particular command
-        // list, that command list can then be reset at any time and must be before
-        // re-recording.
+        // 명령 목록을 재설정하면 메모리가 재활용된다.
         hresult = mCommandList->Reset(mCommandAllocator.Get(), mPipelineState.Get());
         if (FAILED(hresult)) {
             return;
         }
 
-        // Indicate that the back buffer will be used as a render target.
-        auto b = CD3DX12_RESOURCE_BARRIER::Transition(mRenderTargets[mFrameIndex].Get(),
+        // 후면 버퍼가 렌더 타겟으로 사용될 상태로의 전이를 통지한다.
+        CD3DX12_RESOURCE_BARRIER transition = CD3DX12_RESOURCE_BARRIER::Transition(mRenderTargets[mCurrBackBuffer].Get(),
                                                       D3D12_RESOURCE_STATE_PRESENT,
                                                       D3D12_RESOURCE_STATE_RENDER_TARGET);
-        mCommandList->ResourceBarrier(1, &b);
+        mCommandList->ResourceBarrier(1, &transition);
 
-        CD3DX12_CPU_DESCRIPTOR_HANDLE renderTargetHandle(mRenderTargetDescHeap->GetCPUDescriptorHandleForHeapStart(), mFrameIndex, mRenderTargetDescSize);
+        // 뷰포트와 가위 직사각형을 설정한다.
+        mCommandList->RSSetViewports(1, &mScreenViewport);
+        mCommandList->RSSetScissorRects(1, &mScissorRect);
 
-        // Record commands.
+        // 후면 버퍼와 깊이 버퍼를 지운다.
         const float clearColor[] = {1.0f, 0.0f, 0.0f, 1.0f};
+        CD3DX12_CPU_DESCRIPTOR_HANDLE renderTargetHandle(mRenderTargetDescHeap->GetCPUDescriptorHandleForHeapStart(), mCurrBackBuffer, mRenderTargetDescSize);
+        CD3DX12_CPU_DESCRIPTOR_HANDLE depthStencilHeapHandle{mDepthStencilDescHeap->GetCPUDescriptorHandleForHeapStart()};
         mCommandList->ClearRenderTargetView(renderTargetHandle, clearColor, 0, nullptr);
+        mCommandList->ClearDepthStencilView(depthStencilHeapHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.F, 0, 0, nullptr);
 
-        // Indicate that the back buffer will now be used to present.
-        auto b2 = CD3DX12_RESOURCE_BARRIER::Transition(mRenderTargets[mFrameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-        mCommandList->ResourceBarrier(1, &b2);
+        // 렌더링 결과가 기록될 렌더 대상 버퍼들을 지정한다.
+        mCommandList->OMSetRenderTargets(1, &renderTargetHandle, true, &depthStencilHeapHandle);
 
+        // 후면 버퍼가 보여질 준비로 상태 전이됬음을 통지한다.
+        CD3DX12_RESOURCE_BARRIER transition2 = CD3DX12_RESOURCE_BARRIER::Transition(mRenderTargets[mCurrBackBuffer].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+        mCommandList->ResourceBarrier(1, &transition2);
+
+        // 명령들의 기록을 마침
         hresult = mCommandList->Close();
         if (FAILED(hresult)) {
             return;
@@ -314,12 +405,8 @@ namespace GLaDOS {
     }
 
     void D3DX12Renderer::WaitForPreviousFrame() {
-        // WAITING FOR THE FRAME TO COMPLETE BEFORE CONTINUING IS NOT BEST PRACTICE.
-        // This is code implemented as such for simplicity. The D3D12HelloFrameBuffering
-        // sample illustrates how to use fences for efficient resource usage and to
-        // maximize GPU utilization.
-
-        // Signal and increment the fence value.
+        // 명령 대기열을 flush 한다.
+        // 현재 펜스까지 명령들을 표시하도록 펜스값을 전진시킨다.
         const uint64_t fence = mFenceValue;
         HRESULT hresult = mCommandQueue->Signal(mFence.Get(), fence);
         if (FAILED(hresult)) {
@@ -328,8 +415,9 @@ namespace GLaDOS {
         }
         mFenceValue++;
 
-        // Wait until the previous frame is finished.
+        // GPU가 이 펜스지점까지 명령들을 완료할때 까지 "기다"린다.
         if (mFence->GetCompletedValue() < fence) {
+            // GPU가 현재 펜스 지점에 도달했으면 이벤트를 발동한다.
             hresult = mFence->SetEventOnCompletion(fence, mFenceEvent);
             if (FAILED(hresult)) {
                 LOG_ERROR(logger, "{0}", hresultToString(hresult));
@@ -338,7 +426,8 @@ namespace GLaDOS {
             WaitForSingleObject(mFenceEvent, INFINITE);
         }
 
-        mFrameIndex = mSwapChain->GetCurrentBackBufferIndex();
+        // 후면 버퍼 인덱스를 갱신한다.
+        mCurrBackBuffer = mSwapChain->GetCurrentBackBufferIndex();
     }
 }  // namespace GLaDOS
 

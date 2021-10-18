@@ -54,21 +54,28 @@ namespace GLaDOS {
         static void getHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter, bool preferHighPerfAdapter = false);
         void PopulateCommandList();
         void WaitForPreviousFrame();
-        static constexpr uint32_t frameCount = 2;
+
+        static constexpr uint32_t renderTargetCount = 2;
         static Logger* logger;
 
         ComPtr<ID3D12Device> mDevice;
         ComPtr<ID3D12CommandQueue> mCommandQueue;
         ComPtr<IDXGISwapChain3> mSwapChain;
         ComPtr<ID3D12DescriptorHeap> mRenderTargetDescHeap;
+        ComPtr<ID3D12DescriptorHeap> mDepthStencilDescHeap;
         uint32_t mRenderTargetDescSize{0};
-        ComPtr<ID3D12Resource> mRenderTargets[frameCount];
+        uint32_t mDepthStencilDescSize{0};
+        uint32_t mConstantBufferShaderResourceDescSize{0};
+        ComPtr<ID3D12Resource> mRenderTargets[renderTargetCount];
+        ComPtr<ID3D12Resource> mDepthStencil;
         ComPtr<ID3D12CommandAllocator> mCommandAllocator;
         ComPtr<ID3D12GraphicsCommandList> mCommandList;
         ComPtr<ID3D12PipelineState> mPipelineState;
+        D3D12_VIEWPORT mScreenViewport;
+        D3D12_RECT mScissorRect;
 
         // Synchronization objects.
-        uint32_t mFrameIndex{0};
+        int mCurrBackBuffer{0};
         HANDLE mFenceEvent{nullptr};
         ComPtr<ID3D12Fence> mFence;
         uint64_t mFenceValue{1};
