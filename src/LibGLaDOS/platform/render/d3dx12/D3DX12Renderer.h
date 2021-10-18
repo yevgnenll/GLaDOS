@@ -21,7 +21,7 @@ namespace GLaDOS {
     class GPUBuffer;
     class D3DX12Renderer : public Renderer, public Singleton<D3DX12Renderer> {
       public:
-        D3DX12Renderer() = default;
+        D3DX12Renderer();
         ~D3DX12Renderer() override;
 
         bool initialize(int width, int height) override;

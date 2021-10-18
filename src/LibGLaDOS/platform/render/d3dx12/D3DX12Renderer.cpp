@@ -7,6 +7,11 @@
 
 namespace GLaDOS {
     Logger* D3DX12Renderer::logger = LoggerRegistry::getInstance().makeAndGetLogger("D3DX12Renderer");
+
+    D3DX12Renderer::D3DX12Renderer() {
+        setDestructionPhase(2);
+    }
+
     D3DX12Renderer::~D3DX12Renderer() {
         // Ensure that the GPU is no longer referencing resources that are about to be
         // cleaned up by the destructor.
@@ -219,6 +224,10 @@ namespace GLaDOS {
     }
 
     void D3DX12Renderer::render(Renderable* _renderable) {
+        if (_renderable == nullptr) {
+            return;
+        }
+
         PopulateCommandList();
 
         // 명령 실행을 위해 명령 목록을 명령 대기열에 추가
