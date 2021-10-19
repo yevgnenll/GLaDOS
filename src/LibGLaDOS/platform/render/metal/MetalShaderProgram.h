@@ -38,7 +38,6 @@ namespace GLaDOS {
         bool makePipelineDescriptor(const VertexBuffer* vertexBuffer);
         bool addShaderArguments(MTLRenderPipelineReflection* pipelineReflection);
         void addUniform(MTLArgument* argument, ShaderType type);
-        void reserveUniformMemory();
 
         static constexpr MTLVertexFormat mapVertexFormatFrom(VertexAttributeType type);
         static constexpr UniformType mapUniformTypeFrom(MTLDataType dataType);
@@ -53,8 +52,6 @@ namespace GLaDOS {
         id<MTLFunction> mVertexFunction{nil};
         id<MTLFunction> mFragmentFunction{nil};
         MTLRenderPipelineDescriptor* mPipelineDescriptor{nil};
-        Blob mVertexUniformBuffer;
-        Blob mFragmentUniformBuffer;
     };
 }  // namespace GLaDOS
 

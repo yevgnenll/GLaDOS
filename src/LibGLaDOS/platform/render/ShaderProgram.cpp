@@ -1,14 +1,10 @@
-#include "ShaderProgram.h"
+﻿#include "ShaderProgram.h"
 
 #include "RenderState.h"
 #include "Renderer.h"
 #include "RootDir.h"
 #include "Uniform.h"
 #include "math/Color.h"
-#include "math/Mat4.hpp"
-#include "math/Vec2.h"
-#include "math/Vec3.h"
-#include "math/Vec4.h"
 #include "platform/Platform.h"
 
 namespace GLaDOS {
@@ -222,5 +218,34 @@ namespace GLaDOS {
             DELETE_T(mRasterizerState, RasterizerState);
         }
         mRasterizerState = Platform::getRenderer().createRasterizerState(desc);
+    }
+
+    void ShaderProgram::reserveUniformMemory() {
+        // 모든 유니폼객체에 대해 개별버퍼를 생성하지 않고 Blob으로 셰이더에 전달하기 위해 메모리 배열을 위한 공간을 만든다.
+        mVertexUniformBuffer.clear();
+        mFragmentUniformBuffer.clear();
+
+        std::size_t vertexUniformSize = 0;
+        std::size_t fragmentUniformSize = 0;
+        for (const auto& [key, uniform] : mUniforms) {
+            if (!uniform->isUniformType()) {
+                continue;
+            }
+
+            switch (uniform->mShaderType) {
+                case ShaderType::VertexShader:
+                    vertexUniformSize += (uniform->mOffset + uniform->size());
+                    break;
+                case ShaderType::FragmentShader:
+                    fragmentUniformSize += (uniform->mOffset + uniform->size());
+                    break;
+                default:
+                    LOG_WARN(logger, "Not supported type yet!");
+                    break;
+            }
+        }
+
+        mVertexUniformBuffer.resize(vertexUniformSize);
+        mFragmentUniformBuffer.resize(fragmentUniformSize);
     }
 }  // namespace GLaDOS

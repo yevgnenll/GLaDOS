@@ -66,6 +66,7 @@ namespace GLaDOS {
         ComPtr<IDXGISwapChain3> mSwapChain;
         ComPtr<ID3D12DescriptorHeap> mRenderTargetDescHeap;
         ComPtr<ID3D12DescriptorHeap> mDepthStencilDescHeap;
+        ComPtr<ID3D12DescriptorHeap> mConstantBufferDescHeap;
         uint32_t mRenderTargetDescSize{0};
         uint32_t mDepthStencilDescSize{0};
         uint32_t mConstantBufferShaderResourceDescSize{0};

@@ -115,7 +115,6 @@ namespace GLaDOS {
 
         if (!makePipelineDescriptor(vertexBuffer)) {
             mIsValid = false;
-            return mIsValid;
         }
 
         mVertexShaderCode = vertex;
@@ -236,35 +235,6 @@ namespace GLaDOS {
                 break;
             }
         }
-    }
-
-    void MetalShaderProgram::reserveUniformMemory() {
-        // 모든 유니폼객체에 대해 MTLBuffer를 생성하지 않고 바이트 스트림으로 셰이더에 전달하기 위해 메모리 배열을 위한 공간을 만든다.
-        mVertexUniformBuffer.clear();
-        mFragmentUniformBuffer.clear();
-
-        std::size_t vertexUniformSize = 0;
-        std::size_t fragmentUniformSize = 0;
-        for (const auto& [key, uniform] : mUniforms) {
-            if (!uniform->isUniformType()) {
-                continue;
-            }
-
-            switch (uniform->mShaderType) {
-                case ShaderType::VertexShader:
-                    vertexUniformSize += (uniform->mOffset + uniform->size());
-                    break;
-                case ShaderType::FragmentShader:
-                    fragmentUniformSize += (uniform->mOffset + uniform->size());
-                    break;
-                default:
-                    LOG_WARN(logger, "Not supported type yet!");
-                    break;
-            }
-        }
-
-        mVertexUniformBuffer.resize(vertexUniformSize);
-        mFragmentUniformBuffer.resize(fragmentUniformSize);
     }
 
     constexpr MTLVertexFormat MetalShaderProgram::mapVertexFormatFrom(VertexAttributeType type) {

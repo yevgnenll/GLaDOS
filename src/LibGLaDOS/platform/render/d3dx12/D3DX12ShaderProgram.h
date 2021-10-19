@@ -7,6 +7,7 @@
 
 #include "platform/render/ShaderProgram.h"
 #include "platform/render/d3dx12/D3DX12Renderer.h"
+#include "utils/Stl.h"
 
 namespace GLaDOS {
     class Logger;
@@ -17,11 +18,19 @@ namespace GLaDOS {
 
       private:
         bool createShaderProgram(const std::string& vertex, const std::string& fragment, const VertexBuffer* vertexBuffer) override;
-        static bool createShader(const std::string& source, ComPtr<ID3DBlob> function);
+        bool makePipelineDescriptor(const VertexBuffer* vertexBuffer);
+        bool addShaderArguments(const ComPtr<ID3D12ShaderReflection>& vertexShaderReflection, const ComPtr<ID3D12ShaderReflection>& fragmentShaderReflection);
+        void addUniform(ID3D12ShaderReflectionConstantBuffer* constantBuffer, ShaderType type);
+        bool createRootSignature(const ComPtr<ID3D12ShaderReflection>& shaderReflection, D3D12_SHADER_DESC shaderDesc);
+        bool createInputLayout(const VertexBuffer* vertexBuffer);
+
+        static bool createShader(const std::string& source, const std::string& target, ComPtr<ID3DBlob> function);
         static Logger* logger;
 
         ComPtr<ID3DBlob> mVertexFunction;
         ComPtr<ID3DBlob> mFragmentFunction;
+        ComPtr<ID3D12RootSignature> mRootSignature;
+        Vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
     };
 }
 

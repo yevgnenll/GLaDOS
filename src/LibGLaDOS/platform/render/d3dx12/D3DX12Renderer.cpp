@@ -144,6 +144,17 @@ namespace GLaDOS {
             return false;
         }
 
+        D3D12_DESCRIPTOR_HEAP_DESC cbvHeapDesc{};
+        cbvHeapDesc.NumDescriptors = 10000; // TODO: 매직 넘버, 얼마나 랜더링할지 모르기 때문에 넉넉하게 잡아둠.
+        cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        cbvHeapDesc.NodeMask = 0;
+        hresult = mDevice->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&mConstantBufferDescHeap));
+        if (FAILED(hresult)) {
+            LOG_ERROR(logger, "{0}", hresultToString(hresult));
+            return false;
+        }
+
         mRenderTargetDescSize = mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
         mDepthStencilDescSize = mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
         mConstantBufferShaderResourceDescSize = mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);

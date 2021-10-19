@@ -5,6 +5,7 @@
 
 #include "resource/Resource.h"
 #include "utils/Utility.h"
+#include "memory/Blob.h"
 
 namespace GLaDOS {
     class Logger;
@@ -54,12 +55,16 @@ namespace GLaDOS {
         static Logger* logger;
 
       protected:
+        void reserveUniformMemory();
+
         std::string mVertexShaderCode;
         std::string mFragmentShaderCode;
         Map<std::string, Uniform*> mUniforms;
         DepthStencilState* mDepthStencilState{nullptr};
         RasterizerState* mRasterizerState{nullptr};
         bool mIsValid{false};
+        Blob mVertexUniformBuffer;
+        Blob mFragmentUniformBuffer;
     };
 }  // namespace GLaDOS
 
