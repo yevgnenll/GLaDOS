@@ -4,6 +4,7 @@
 
 #include "platform/windows/WindowsPlatform.h"
 #include "platform/render/VertexBuffer.h"
+#include "platform/render/d3dx12/D3DX12GPUBuffer.h"
 
 namespace GLaDOS {
     Logger* D3DX12Renderer::logger = LoggerRegistry::getInstance().makeAndGetLogger("D3DX12Renderer");
@@ -245,11 +246,23 @@ namespace GLaDOS {
     }
 
     GPUBuffer* D3DX12Renderer::createGPUVertexBuffer(GPUBufferUsage usage, void* data, std::size_t size) {
-        return nullptr;
+        GPUBuffer* vertexBuffer = NEW_T(D3DX12GPUBuffer(GPUBufferType::VertexBuffer, usage));
+        if (!vertexBuffer->uploadData(data, size)) {
+            LOG_ERROR(logger, "Failed to create vertex buffer");
+            return nullptr;
+        }
+
+        return vertexBuffer;
     }
 
     GPUBuffer* D3DX12Renderer::createGPUIndexBuffer(GPUBufferUsage usage, void* data, std::size_t size) {
-        return nullptr;
+        GPUBuffer* indexBuffer = NEW_T(D3DX12GPUBuffer(GPUBufferType::IndexBuffer, usage));
+        if (!indexBuffer->uploadData(data, size)) {
+            LOG_ERROR(logger, "Failed to create index buffer");
+            return nullptr;
+        }
+
+        return indexBuffer;
     }
 
     ShaderProgram* D3DX12Renderer::createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath, const VertexBuffer* vertexBuffer) {
@@ -326,6 +339,14 @@ namespace GLaDOS {
 
     VertexBuffer* D3DX12Renderer::createVertexBuffer(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) {
         return NEW_T(VertexBuffer(vertexFormatDescriptor, count));
+    }
+
+    ComPtr<ID3D12Device> D3DX12Renderer::getDevice() const {
+        return mDevice;
+    }
+
+    ComPtr<ID3D12GraphicsCommandList> D3DX12Renderer::getCommandList() const {
+        return mCommandList;
     }
 
     std::string D3DX12Renderer::hresultToString(HRESULT hresult) {

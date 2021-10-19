@@ -3,6 +3,6 @@ struct VertexOut {
     float4 _color : COLOR;
 };
 
-float4 PS(VertexOut pin) : SV_Target {
+float4 main0(VertexOut pin) : SV_Target {
     return pin.Color;
 }

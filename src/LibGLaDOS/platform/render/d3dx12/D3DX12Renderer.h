@@ -49,9 +49,12 @@ namespace GLaDOS {
         RenderTexture* createRenderTexture(const std::string& name) override;
         VertexBuffer* createVertexBuffer(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) override;
 
-      private:
+        ComPtr<ID3D12Device> getDevice() const;
+        ComPtr<ID3D12GraphicsCommandList> getCommandList() const;
         static std::string hresultToString(HRESULT hresult);
         static void getHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter, bool preferHighPerfAdapter = false);
+
+      private:
         void PopulateCommandList();
         void WaitForPreviousFrame();
 
