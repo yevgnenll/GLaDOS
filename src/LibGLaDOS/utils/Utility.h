@@ -29,8 +29,8 @@ namespace GLaDOS {
 #define ANSI_COLOR_RESET "\x1b[0m"
 #endif
 
-#ifndef TEXT
-#define TEXT(str) (u##str)
+#ifndef GTEXT
+#define GTEXT(str) (u##str)
 #endif
 
 #ifndef CAST

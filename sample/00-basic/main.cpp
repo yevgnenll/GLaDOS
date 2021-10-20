@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
         LOG_INFO(logger, "test123123");
         LOG_WARN(logger, "test123123");
         LOG_ERROR(logger, "test123123");
-        String str = TEXT("한국어 지원 합니다.");
+        String str = GTEXT("한국어 지원 합니다.");
         LOG_TRACE(logger, String::toUTF8(str).c_str());
 
         while (Platform::getInstance().isRunning()) {

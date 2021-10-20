@@ -10,21 +10,21 @@ TEST_CASE("String unit tests", "[String]") {
 
     String str = "hello";
     REQUIRE(str.length() == 5);
-    String str2 = TEXT("日本語");
+    String str2 = GTEXT("日本語");
     REQUIRE(str2.length() == 3);
     String str3{"world", 2};
     REQUIRE(str3.length() == 2);
-    String str4{TEXT("한국어"), 2};
+    String str4{GTEXT("한국어"), 2};
     REQUIRE(str4.length() == 2);
     String str5{str4};
     REQUIRE(str5.length() == 2);
     String str6{"hello"sv};
     REQUIRE(str6.length() == 5);
-    String str7{TEXT("다국어"sv)};
+    String str7{GTEXT("다국어"sv)};
     REQUIRE(str7.length() == 3);
-    REQUIRE(str7[0] == TEXT('다'));
-    REQUIRE(str7[1] == TEXT('국'));
-    REQUIRE(str7[2] == TEXT('어'));
+    REQUIRE(str7[0] == GTEXT('다'));
+    REQUIRE(str7[1] == GTEXT('국'));
+    REQUIRE(str7[2] == GTEXT('어'));
   }
 
   SECTION("UTF-16 decode valid sequences") {

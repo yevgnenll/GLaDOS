@@ -1,9 +1,12 @@
-#include "D3DX12ShaderProgram.h"
+﻿#include "D3DX12ShaderProgram.h"
 
 #ifdef PLATFORM_WINDOW
 
 #include "platform/render/Uniform.h"
 #include "math/Math.h"
+
+#undef max
+#undef min
 
 namespace GLaDOS {
     D3DX12ShaderProgram::~D3DX12ShaderProgram() {
@@ -286,7 +289,7 @@ namespace GLaDOS {
         }
 
         if(errorMessage != nullptr) {
-            LOG_ERROR(logger, "{0}", (char*)errorMessage->GetBufferPointer());
+            LOG_ERROR(logger, "{0}", StringUtils::normalize(static_cast<const char*>(errorMessage->GetBufferPointer())));
             return false;
         }
 
@@ -301,6 +304,10 @@ namespace GLaDOS {
     }
 
     bool D3DX12ShaderProgram::createInputLayout(const VertexBuffer* vertexBuffer) {
+        mInputLayout = {
+            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+            { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+        };
         return true;
     }
 
