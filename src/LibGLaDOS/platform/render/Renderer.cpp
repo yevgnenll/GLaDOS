@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "platform/render/Mesh.h"
+#include "platform/render/VertexBuffer.h"
 
 namespace GLaDOS {
     Logger* Renderer::logger = LoggerRegistry::getInstance().makeAndGetLogger("Renderer");
@@ -27,5 +28,9 @@ namespace GLaDOS {
         // const auto& [vertexBuffer, indexBuffer] = MeshLoader::loadFromFile(meshPath);
         // return createMesh(vertexBuffer, indexBuffer, primitiveTopology, dynamicVertex, dynamicIndex);
         return nullptr;
+    }
+
+    VertexBuffer* Renderer::createVertexBuffer(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) {
+        return NEW_T(VertexBuffer(vertexFormatDescriptor, count));
     }
 }

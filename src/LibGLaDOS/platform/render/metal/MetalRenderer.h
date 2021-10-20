@@ -41,7 +41,6 @@ namespace GLaDOS {
         Texture3D* createTexture3D(const std::string& name) override;
         TextureCube* createTextureCube(const std::string& name, PixelFormat format) override;
         RenderTexture* createRenderTexture(const std::string& name) override;
-        VertexBuffer* createVertexBuffer(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) override;
 
         id<MTLDevice> getDevice() const;
         id<MTLRenderCommandEncoder> getCommandEncoder() const;

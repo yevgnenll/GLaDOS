@@ -225,10 +225,6 @@ namespace GLaDOS {
         return nullptr;
     }
 
-    VertexBuffer* MetalRenderer::createVertexBuffer(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) {
-        return NEW_T(VertexBuffer(vertexFormatDescriptor, count));
-    }
-
     id<MTLDevice> MetalRenderer::getDevice() const {
         return mMetalDevice;
     }

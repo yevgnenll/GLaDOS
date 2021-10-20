@@ -370,10 +370,6 @@ namespace GLaDOS {
         return nullptr;
     }
 
-    VertexBuffer* D3DX12Renderer::createVertexBuffer(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) {
-        return NEW_T(VertexBuffer(vertexFormatDescriptor, count));
-    }
-
     ComPtr<ID3D12Device> D3DX12Renderer::getDevice() const {
         return mDevice;
     }

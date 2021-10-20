@@ -54,11 +54,11 @@ namespace GLaDOS {
         virtual Texture3D* createTexture3D(const std::string& name) = 0;
         virtual TextureCube* createTextureCube(const std::string& name, PixelFormat format) = 0;
         virtual RenderTexture* createRenderTexture(const std::string& name) = 0;
-        virtual VertexBuffer* createVertexBuffer(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) = 0;
 
         Mesh* createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage);
         Mesh* createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer);
         Mesh* createMesh(const std::string& meshPath, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage);
+        VertexBuffer* createVertexBuffer(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count);
 
       private:
         static Logger* logger;
