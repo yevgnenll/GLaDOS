@@ -14,6 +14,14 @@ namespace GLaDOS {
 
     }
 
+    ComPtr<ID3D12RootSignature> D3DX12ShaderProgram::getRootSignature() const {
+        return mRootSignature;
+    }
+
+    ComPtr<ID3D12PipelineState> D3DX12ShaderProgram::getPipelineState() const {
+        return mPipelineState;
+    }
+
     bool D3DX12ShaderProgram::createShaderProgram(const std::string& vertex, const std::string& fragment, const VertexBuffer* vertexBuffer) {
         bool isVsValid = D3DX12ShaderProgram::createShader(vertex, "vs_5_0", mVertexFunction);
         bool isFsValid = D3DX12ShaderProgram::createShader(fragment, "ps_5_0", mFragmentFunction);
@@ -89,7 +97,6 @@ namespace GLaDOS {
         pipelineDescriptor.SampleDesc.Quality = 0;
         pipelineDescriptor.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
-        ComPtr<ID3D12PipelineState> mPipelineState;
         hresult = device->CreateGraphicsPipelineState(&pipelineDescriptor, IID_PPV_ARGS(&mPipelineState));
         if (FAILED(hresult)) {
             LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));

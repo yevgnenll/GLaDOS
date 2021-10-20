@@ -236,9 +236,9 @@ namespace GLaDOS {
     }
 
     void D3DX12Renderer::render(Renderable* _renderable) {
-        if (_renderable == nullptr) {
-            return;
-        }
+//        if (_renderable == nullptr) {
+//            return;
+//        }
 
         PopulateCommandList();
 
@@ -414,15 +414,15 @@ namespace GLaDOS {
             return;
         }
 
+        // 뷰포트와 가위 직사각형을 설정한다.
+        mCommandList->RSSetViewports(1, &mScreenViewport);
+        mCommandList->RSSetScissorRects(1, &mScissorRect);
+
         // 후면 버퍼가 렌더 타겟으로 사용될 상태로의 전이를 통지한다.
         CD3DX12_RESOURCE_BARRIER transition = CD3DX12_RESOURCE_BARRIER::Transition(mRenderTargets[mCurrBackBuffer].Get(),
                                                       D3D12_RESOURCE_STATE_PRESENT,
                                                       D3D12_RESOURCE_STATE_RENDER_TARGET);
         mCommandList->ResourceBarrier(1, &transition);
-
-        // 뷰포트와 가위 직사각형을 설정한다.
-        mCommandList->RSSetViewports(1, &mScreenViewport);
-        mCommandList->RSSetScissorRects(1, &mScissorRect);
 
         // 후면 버퍼와 깊이 버퍼를 지운다.
         const float clearColor[] = {1.0f, 0.0f, 0.0f, 1.0f};
@@ -433,6 +433,12 @@ namespace GLaDOS {
 
         // 렌더링 결과가 기록될 렌더 대상 버퍼들을 지정한다.
         mCommandList->OMSetRenderTargets(1, &renderTargetHandle, true, &depthStencilHeapHandle);
+
+        // 실제 랜더링을 수행한다.
+        ID3D12DescriptorHeap* descriptorHeaps[] = { mConstantBufferDescHeap.Get() };
+        mCommandList->SetDescriptorHeaps(_countof(descriptorHeaps), descriptorHeaps);
+
+
 
         // 후면 버퍼가 보여질 준비로 상태 전이됬음을 통지한다.
         CD3DX12_RESOURCE_BARRIER transition2 = CD3DX12_RESOURCE_BARRIER::Transition(mRenderTargets[mCurrBackBuffer].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
