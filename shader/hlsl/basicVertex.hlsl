@@ -15,8 +15,8 @@ cbuffer VertexUniforms : register(b0) {
 };
 
 VertexOut main0(VertexIn verts) {
-    VertexOut out;
-    out._position = mul(mul(mul(float4(verts._position, 1.0f), model), view), projection);
-    out._color = verts._color;
-    return out;
+    VertexOut vout;
+    vout._position = mul(mul(mul(float4(verts._position, 1.0f), model), view), projection);
+    vout._color = verts._color;
+    return vout;
 }

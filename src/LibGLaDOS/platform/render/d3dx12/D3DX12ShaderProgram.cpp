@@ -324,13 +324,12 @@ namespace GLaDOS {
         ComPtr<ID3DBlob> errors;
         HRESULT hresult = D3DCompile(source.c_str(), source.size(), nullptr, nullptr,D3D_COMPILE_STANDARD_FILE_INCLUDE,
                                      "main0", target.c_str(), compileFlags, 0, function.GetAddressOf(), errors.GetAddressOf());
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
-            return false;
-        }
-
         if (errors != nullptr) {
             LOG_ERROR(logger, static_cast<char*>(errors->GetBufferPointer()));
+        }
+
+        if (FAILED(hresult)) {
+            LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
             return false;
         }
 
