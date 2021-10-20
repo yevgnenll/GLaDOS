@@ -87,7 +87,7 @@ elseif(WIN32)
   endif()
 
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-  set(LINK_LIBRARIES "d3d12.lib" "dxgi.lib" "d3dcompiler.lib")
+  set(LINK_LIBRARIES "d3d12.lib" "dxgi.lib" "d3dcompiler.lib" "dxguid.lib")
   set(INCLUDE_LIBRARIES ${STB_LIB_DIR} "${VENDOR_DIR}/d3dx12")
 else()
   message(SEND_ERROR "Not supported platform!")
