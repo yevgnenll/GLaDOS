@@ -27,7 +27,7 @@ namespace GLaDOS {
         bool isFsValid = D3DX12ShaderProgram::createShader(fragment, "ps_5_0", mFragmentFunction);
         mIsValid = isVsValid && isFsValid;
 
-        if (!makePipelineDescriptor(vertexBuffer)) {
+        if (!makePipelineDescriptor()) {
             mIsValid = false;
         }
 
@@ -37,7 +37,7 @@ namespace GLaDOS {
         return mIsValid;
     }
 
-    bool D3DX12ShaderProgram::makePipelineDescriptor(const VertexBuffer* vertexBuffer) {
+    bool D3DX12ShaderProgram::makePipelineDescriptor() {
         if (!mIsValid) {
             LOG_ERROR(logger, "Invalid DirectX12 shader program");
             return false;
@@ -69,23 +69,17 @@ namespace GLaDOS {
             return false;
         }
 
-        createInputLayout(vertexBuffer);
+        createInputLayout(vertexShaderReflection);
 
         // 루트 서명의 유효성은 파이프라인 상태 객체를 생성할 때 검증된다.
         D3D12_GRAPHICS_PIPELINE_STATE_DESC pipelineDescriptor;
         ZeroMemory(&pipelineDescriptor, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
         pipelineDescriptor.InputLayout = { mInputLayout.data(), (UINT)mInputLayout.size() };
         pipelineDescriptor.pRootSignature = mRootSignature.Get();
-        pipelineDescriptor.VS =
-            {
-                reinterpret_cast<BYTE*>(mVertexFunction->GetBufferPointer()),
-                mVertexFunction->GetBufferSize()
-            };
-        pipelineDescriptor.PS =
-            {
-                reinterpret_cast<BYTE*>(mFragmentFunction->GetBufferPointer()),
-                mFragmentFunction->GetBufferSize()
-            };
+        pipelineDescriptor.VS.pShaderBytecode = reinterpret_cast<BYTE*>(mVertexFunction->GetBufferPointer());
+        pipelineDescriptor.VS.BytecodeLength = mVertexFunction->GetBufferSize();
+        pipelineDescriptor.PS.pShaderBytecode = reinterpret_cast<BYTE*>(mFragmentFunction->GetBufferPointer());
+        pipelineDescriptor.PS.BytecodeLength = mFragmentFunction->GetBufferSize();
         pipelineDescriptor.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
         pipelineDescriptor.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
         pipelineDescriptor.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
@@ -243,17 +237,17 @@ namespace GLaDOS {
                 case D3D_SIT_CBUFFER:
                     numConstantBuffer++;
                     minConstantBufferBindPoint = Math::min(minConstantBufferBindPoint, inputBindDesc.BindPoint);
-                    LOG_TRACE(logger, "RootSignature cbuffer [{0}] name: {1}, registerPoint: b{2}", i, inputBindDesc.Name, inputBindDesc.BindPoint);
+                    LOG_TRACE(logger, "RootSignature add -> cbuffer [{0}] Name: {1}, BindPoint: b{2}", i, inputBindDesc.Name, inputBindDesc.BindPoint);
                     break;
                 case D3D_SIT_TBUFFER:
                     numTextureBuffer++;
                     minTextureBufferBindPoint = Math::min(minTextureBufferBindPoint, inputBindDesc.BindPoint);
-                    LOG_TRACE(logger, "RootSignature tbuffer [{0}] name: {1}, registerPoint: t{2}", i, inputBindDesc.Name, inputBindDesc.BindPoint);
+                    LOG_TRACE(logger, "RootSignature add -> tbuffer [{0}] Name: {1}, BindPoint: t{2}", i, inputBindDesc.Name, inputBindDesc.BindPoint);
                     break;
                 case D3D_SIT_SAMPLER:
                     numSampler++;
                     minSamplerBindPoint = Math::min(minSamplerBindPoint, inputBindDesc.BindPoint);
-                    LOG_TRACE(logger, "RootSignature sampler [{0}] name: {1}, registerPoint: s{2}", i, inputBindDesc.Name, inputBindDesc.BindPoint);
+                    LOG_TRACE(logger, "RootSignature add -> sampler [{0}] Name: {1}, BindPoint: s{2}", i, inputBindDesc.Name, inputBindDesc.BindPoint);
                     break;
                 default:
                     LOG_WARN(logger, "Not supported Resource binding type.");
@@ -309,11 +303,97 @@ namespace GLaDOS {
         return true;
     }
 
-    void D3DX12ShaderProgram::createInputLayout(const VertexBuffer* vertexBuffer) {
-        mInputLayout = {
-            { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-            { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
-        };
+    void D3DX12ShaderProgram::createInputLayout(const ComPtr<ID3D12ShaderReflection>& shaderReflection) {
+        D3D12_SHADER_DESC shaderDesc;
+        HRESULT hresult = shaderReflection->GetDesc(&shaderDesc);
+        if (FAILED(hresult)) {
+            LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
+            return;
+        }
+
+        for (unsigned int i = 0; i < shaderDesc.InputParameters; ++i) {
+            D3D12_SIGNATURE_PARAMETER_DESC paramDesc;
+            hresult = shaderReflection->GetInputParameterDesc(i, &paramDesc);
+            if (FAILED(hresult)) {
+                LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
+                return;
+            }
+
+            D3D12_INPUT_ELEMENT_DESC inputElementDesc;
+            inputElementDesc.SemanticName = paramDesc.SemanticName;
+            inputElementDesc.SemanticIndex = paramDesc.SemanticIndex;
+
+            if (paramDesc.Mask == 1) {
+                switch (paramDesc.ComponentType) {
+                    case D3D_REGISTER_COMPONENT_UINT32:
+                        inputElementDesc.Format = DXGI_FORMAT_R32_UINT;
+                        break;
+                    case D3D_REGISTER_COMPONENT_SINT32:
+                        inputElementDesc.Format = DXGI_FORMAT_R32_SINT;
+                        break;
+                    case D3D_REGISTER_COMPONENT_FLOAT32:
+                        inputElementDesc.Format = DXGI_FORMAT_R32_FLOAT;
+                        break;
+                    default:
+                        LOG_ERROR(logger, "Not supported component type.");
+                        break;
+                }
+            } else if (paramDesc.Mask <= 3) {
+                switch (paramDesc.ComponentType) {
+                    case D3D_REGISTER_COMPONENT_UINT32:
+                        inputElementDesc.Format = DXGI_FORMAT_R32G32_UINT;
+                        break;
+                    case D3D_REGISTER_COMPONENT_SINT32:
+                        inputElementDesc.Format = DXGI_FORMAT_R32G32_SINT;
+                        break;
+                    case D3D_REGISTER_COMPONENT_FLOAT32:
+                        inputElementDesc.Format = DXGI_FORMAT_R32G32_FLOAT;
+                        break;
+                    default:
+                        LOG_ERROR(logger, "Not supported component type.");
+                        break;
+                }
+            } else if (paramDesc.Mask <= 7) {
+                switch (paramDesc.ComponentType) {
+                    case D3D_REGISTER_COMPONENT_UINT32:
+                        inputElementDesc.Format = DXGI_FORMAT_R32G32B32_UINT;
+                        break;
+                    case D3D_REGISTER_COMPONENT_SINT32:
+                        inputElementDesc.Format = DXGI_FORMAT_R32G32B32_SINT;
+                        break;
+                    case D3D_REGISTER_COMPONENT_FLOAT32:
+                        inputElementDesc.Format = DXGI_FORMAT_R32G32B32_FLOAT;
+                        break;
+                    default:
+                        LOG_ERROR(logger, "Not supported component type.");
+                        break;
+                }
+            } else if (paramDesc.Mask <= 15) {
+                switch (paramDesc.ComponentType) {
+                    case D3D_REGISTER_COMPONENT_UINT32:
+                        inputElementDesc.Format = DXGI_FORMAT_R32G32B32A32_UINT;
+                        break;
+                    case D3D_REGISTER_COMPONENT_SINT32:
+                        inputElementDesc.Format = DXGI_FORMAT_R32G32B32A32_SINT;
+                        break;
+                    case D3D_REGISTER_COMPONENT_FLOAT32:
+                        inputElementDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+                        break;
+                    default:
+                        LOG_ERROR(logger, "Not supported component type.");
+                        break;
+                }
+            }
+
+            inputElementDesc.InputSlot = 0;
+            inputElementDesc.AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+            inputElementDesc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+            inputElementDesc.InstanceDataStepRate = 0;
+
+            LOG_TRACE(logger, "InputLayout add -> SemanticName: {0}, SemanticIndex: {1}", inputElementDesc.SemanticName, inputElementDesc.SemanticIndex);
+
+            mInputLayout.emplace_back(inputElementDesc);
+        }
     }
 
     bool D3DX12ShaderProgram::createShader(const std::string& source, const std::string& target, ComPtr<ID3DBlob>& function) {
