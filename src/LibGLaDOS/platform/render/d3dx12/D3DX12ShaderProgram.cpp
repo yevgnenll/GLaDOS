@@ -282,7 +282,7 @@ namespace GLaDOS {
         CD3DX12_ROOT_PARAMETER slotRootParameter[1];
         slotRootParameter[0].InitAsDescriptorTable(numDescRange, descRange, D3D12_SHADER_VISIBILITY_ALL);
 
-        CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(2, slotRootParameter, 0, nullptr,
+        CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc(_countof(slotRootParameter), slotRootParameter, 0, nullptr,
                                                 D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
         ComPtr<ID3DBlob> blobWithRootSignature;
@@ -316,7 +316,7 @@ namespace GLaDOS {
         };
     }
 
-    bool D3DX12ShaderProgram::createShader(const std::string& source, const std::string& target, ComPtr<ID3DBlob> function) {
+    bool D3DX12ShaderProgram::createShader(const std::string& source, const std::string& target, ComPtr<ID3DBlob>& function) {
         UINT compileFlags = 0;
 #if defined(_DEBUG)
         compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
