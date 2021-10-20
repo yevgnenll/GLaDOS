@@ -177,50 +177,50 @@ namespace GLaDOS {
                 return;
             }
 
-            ID3D12ShaderReflectionType* variableType = variable->GetType();
-            if (variableType == nullptr) {
-                LOG_ERROR(logger, "DirectX12 Reflection error: variable type should not be nullptr.");
-                return;
-            }
+            addUniformByType(variable->GetType(), variableDesc, type);
+        }
+    }
 
-            D3D12_SHADER_TYPE_DESC variableTypeDesc;
-            hresult = variableType->GetDesc(&variableTypeDesc);
-            if (FAILED(hresult)) {
-                LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
-                return;
-            }
+    void D3DX12ShaderProgram::addUniformByType(ID3D12ShaderReflectionType* variableType, D3D12_SHADER_VARIABLE_DESC variableDesc, ShaderType type) {
+        if (variableType == nullptr) {
+            LOG_ERROR(logger, "DirectX12 Reflection error: variable type should not be nullptr.");
+            return;
+        }
 
-            switch (variableTypeDesc.Class) {
-                // TODO
-                case D3D_SVC_STRUCT: {
+        D3D12_SHADER_TYPE_DESC variableTypeDesc;
+        HRESULT hresult = variableType->GetDesc(&variableTypeDesc);
+        if (FAILED(hresult)) {
+            LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
+            return;
+        }
+
+        switch (variableTypeDesc.Class) {
+//            case D3D_SVC_STRUCT:
+//                for (unsigned int j = 0; j < variableTypeDesc.Members; j++) {
+//                    addUniformByType(variableType->GetMemberTypeByIndex(j), variableDesc, type); // TODO: variableDesc 가 다른 offset, size를 보고 있음
+//                }
+//                break;
+            case D3D_SVC_SCALAR:
+            case D3D_SVC_VECTOR:
+            case D3D_SVC_MATRIX_ROWS:  // row-major matrix
+            case D3D_SVC_MATRIX_COLUMNS: {  // column-major matrix
+                auto finder = mUniforms.find(variableDesc.Name);
+                if (finder == mUniforms.end()) {
                     Uniform* uniform = NEW_T(Uniform);
                     uniform->mShaderType = type;
-                    //                    uniform->mUniformType = MetalShaderProgram::mapUniformTypeFrom(member.dataType);
-                    uniform->mName = variableTypeDesc.Name;
-                    //                    uniform->mCount = member.arrayType != nullptr ? member.arrayType.arrayLength : 1;
-                    //                    uniform->mOffset = member.offset;
-                    //                    uniform->resize(uniform->mCount * MetalShaderProgram::mapUniformTypeSizeForm(uniform->mUniformType));
+                    uniform->mUniformType = D3DX12ShaderProgram::mapUniformTypeFrom(variableTypeDesc.Type, variableTypeDesc.Class, variableTypeDesc.Rows, variableTypeDesc.Columns);
+                    uniform->mName = variableDesc.Name;
+                    uniform->mCount = variableTypeDesc.Elements != 0 ? variableTypeDesc.Elements : 1;
+                    uniform->mOffset = variableDesc.StartOffset;
+                    uniform->resize(uniform->mCount * variableDesc.Size);
                     mUniforms.try_emplace(uniform->mName, uniform);
                     LOG_TRACE(logger, "Uniform add -> [{0}]", uniform->toString());
-                    break;
                 }
-                case D3D_SVC_SCALAR:
-                    break;
-                case D3D_SVC_VECTOR:
-                    break;
-                case D3D_SVC_MATRIX_ROWS:
-                    break;
-                case D3D_SVC_MATRIX_COLUMNS:
-                    break;
-                case D3D_SVC_OBJECT:
-                    break;
-                case D3D_SVC_INTERFACE_CLASS:
-                    break;
-                case D3D_SVC_INTERFACE_POINTER:
-                    break;
-                case D3D_SVC_FORCE_DWORD:
-                    break;
+                break;
             }
+            default:
+                LOG_WARN(logger, "Not supported Shader variable type: {0}", variableTypeDesc.Name);
+                break;
         }
     }
 
@@ -270,7 +270,7 @@ namespace GLaDOS {
         }
 
         if (numTextureBuffer != 0) {
-            descRange[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, numTextureBuffer, minTextureBufferBindPoint);
+            descRange[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, numTextureBuffer, minTextureBufferBindPoint);
             numDescRange++;
         }
 
@@ -334,6 +334,58 @@ namespace GLaDOS {
         }
 
         return true;
+    }
+
+    constexpr UniformType D3DX12ShaderProgram::mapUniformTypeFrom(D3D_SHADER_VARIABLE_TYPE dataType, D3D_SHADER_VARIABLE_CLASS dataClass, uint32_t rows, uint32_t columns) {
+        switch (dataType) {
+            case D3D_SVT_BOOL:
+                return UniformType::Bool;
+            case D3D_SVT_INT:
+                return UniformType::Int;
+            case D3D_SVT_UINT:
+                return UniformType::UInt;
+            case D3D_SVT_FLOAT: {
+                switch (dataClass) {
+                    case D3D_SVC_VECTOR:
+                        switch (columns) {
+                            case 2:
+                                return UniformType::Vec2;
+                            case 3:
+                                return UniformType::Vec3;
+                            default:
+                                return UniformType::Vec4;
+                        }
+                    case D3D_SVC_MATRIX_ROWS:
+                    case D3D_SVC_MATRIX_COLUMNS:
+                        if (rows != columns) {
+                            LOG_ERROR(logger, "Only support square matrix. rows:{0}, columns:{1}", columns, rows);
+                            return UniformType::Unknown;
+                        }
+
+                        switch (rows) {
+                            case 1:
+                                return UniformType::Float;
+                            case 2:
+                                return UniformType::Mat2;
+                            case 3:
+                                return UniformType::Mat3;
+                            default:
+                                return UniformType::Mat4;
+                        }
+                    default:
+                        return UniformType::Float;
+                }
+            }
+            case D3D_SVT_TEXTURE:
+                return UniformType::Texture;
+            case D3D_SVT_SAMPLER:
+                return UniformType::Sampler;
+            default:
+                LOG_ERROR(logger, "Unknown data type");
+                break;
+        }
+
+        return UniformType::Unknown;
     }
 }
 

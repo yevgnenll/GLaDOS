@@ -10,14 +10,14 @@
 namespace GLaDOS {
 
 #ifdef PLATFORM_WINDOW
-#define ANSI_COLOR_RED "\033[31m"
-#define ANSI_COLOR_GREEN "\033[32m"
-#define ANSI_COLOR_BLUE "\033[34m"
-#define ANSI_COLOR_MAGENTA "\033[35m"
-#define ANSI_COLOR_CYAN "\033[36m"
-#define ANSI_COLOR_GREY "\033[30m"
-#define ANSI_COLOR_YELLOW "\033[33m"
-#define ANSI_COLOR_RESET "\033[0m"
+#define ANSI_COLOR_RED ""
+#define ANSI_COLOR_GREEN ""
+#define ANSI_COLOR_BLUE ""
+#define ANSI_COLOR_MAGENTA ""
+#define ANSI_COLOR_CYAN ""
+#define ANSI_COLOR_GREY ""
+#define ANSI_COLOR_YELLOW ""
+#define ANSI_COLOR_RESET ""
 #else
 #define ANSI_COLOR_RED "\x1b[31;1m"
 #define ANSI_COLOR_GREEN "\x1b[32;1m"

@@ -290,6 +290,8 @@ namespace GLaDOS {
             Vec2,
             Vec3,
             Vec4,
+            Mat2,
+            Mat3,
             Mat4,
             Texture,
             Sampler,
@@ -317,6 +319,10 @@ namespace GLaDOS {
                     return "Vec3";
                 case Vec4:
                     return "Vec4";
+                case Mat2:
+                    return "Mat2";
+                case Mat3:
+                    return "Mat3";
                 case Mat4:
                     return "Mat4";
                 case Texture:

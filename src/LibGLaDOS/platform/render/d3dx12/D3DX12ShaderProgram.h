@@ -26,10 +26,12 @@ namespace GLaDOS {
         bool makePipelineDescriptor(const VertexBuffer* vertexBuffer);
         bool addShaderArguments(const ComPtr<ID3D12ShaderReflection>& vertexShaderReflection, const ComPtr<ID3D12ShaderReflection>& fragmentShaderReflection);
         void addUniform(ID3D12ShaderReflectionConstantBuffer* constantBuffer, ShaderType type);
+        void addUniformByType(ID3D12ShaderReflectionType* variableType, D3D12_SHADER_VARIABLE_DESC variableDesc, ShaderType type);
         bool createRootSignature(const ComPtr<ID3D12ShaderReflection>& shaderReflection, D3D12_SHADER_DESC shaderDesc);
         void createInputLayout(const VertexBuffer* vertexBuffer);
 
         static bool createShader(const std::string& source, const std::string& target, ComPtr<ID3DBlob>& function);
+        static constexpr UniformType mapUniformTypeFrom(D3D_SHADER_VARIABLE_TYPE dataType, D3D_SHADER_VARIABLE_CLASS dataClass, uint32_t rows, uint32_t columns);
         static Logger* logger;
 
         ComPtr<ID3DBlob> mVertexFunction;
