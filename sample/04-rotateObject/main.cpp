@@ -56,7 +56,7 @@ class MainScene : public Scene {
         if (mesh == nullptr) {
             return false;
         }
-        shaderProgram = Platform::getRenderer().createShaderProgramFromFile("basicVertex", "basicFragment", vertexData);
+        shaderProgram = Platform::getRenderer().createShaderProgramFromFile("basicVertex", "basicFragment");
         if (shaderProgram == nullptr) {
             return false;
         }

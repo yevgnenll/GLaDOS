@@ -10,19 +10,12 @@
 
 namespace GLaDOS {
     Logger* D3DX12ShaderProgram::logger = LoggerRegistry::getInstance().makeAndGetLogger("D3DX12ShaderProgram");
-    D3DX12ShaderProgram::~D3DX12ShaderProgram() {
-
-    }
 
     ComPtr<ID3D12RootSignature> D3DX12ShaderProgram::getRootSignature() const {
         return mRootSignature;
     }
 
-    ComPtr<ID3D12PipelineState> D3DX12ShaderProgram::getPipelineState() const {
-        return mPipelineState;
-    }
-
-    bool D3DX12ShaderProgram::createShaderProgram(const std::string& vertex, const std::string& fragment, const VertexBuffer* vertexBuffer) {
+    bool D3DX12ShaderProgram::createShaderProgram(const std::string& vertex, const std::string& fragment) {
         bool isVsValid = D3DX12ShaderProgram::createShader(vertex, "vs_5_0", mVertexFunction);
         bool isFsValid = D3DX12ShaderProgram::createShader(fragment, "ps_5_0", mFragmentFunction);
         mIsValid = isVsValid && isFsValid;
@@ -72,26 +65,26 @@ namespace GLaDOS {
         createInputLayout(vertexShaderReflection);
 
         // 루트 서명의 유효성은 파이프라인 상태 객체를 생성할 때 검증된다.
-        D3D12_GRAPHICS_PIPELINE_STATE_DESC pipelineDescriptor;
-        ZeroMemory(&pipelineDescriptor, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
-        pipelineDescriptor.InputLayout = { mInputLayout.data(), (UINT)mInputLayout.size() };
-        pipelineDescriptor.pRootSignature = mRootSignature.Get();
-        pipelineDescriptor.VS.pShaderBytecode = reinterpret_cast<BYTE*>(mVertexFunction->GetBufferPointer());
-        pipelineDescriptor.VS.BytecodeLength = mVertexFunction->GetBufferSize();
-        pipelineDescriptor.PS.pShaderBytecode = reinterpret_cast<BYTE*>(mFragmentFunction->GetBufferPointer());
-        pipelineDescriptor.PS.BytecodeLength = mFragmentFunction->GetBufferSize();
-        pipelineDescriptor.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
-        pipelineDescriptor.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-        pipelineDescriptor.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
-        pipelineDescriptor.SampleMask = UINT_MAX;
-        pipelineDescriptor.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-        pipelineDescriptor.NumRenderTargets = 1;
-        pipelineDescriptor.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-        pipelineDescriptor.SampleDesc.Count = 1;
-        pipelineDescriptor.SampleDesc.Quality = 0;
-        pipelineDescriptor.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+        ZeroMemory(&mPipelineDescriptor, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
+        mPipelineDescriptor.InputLayout = { mInputLayout.data(), (UINT)mInputLayout.size() };
+        mPipelineDescriptor.pRootSignature = mRootSignature.Get();
+        mPipelineDescriptor.VS.pShaderBytecode = reinterpret_cast<BYTE*>(mVertexFunction->GetBufferPointer());
+        mPipelineDescriptor.VS.BytecodeLength = mVertexFunction->GetBufferSize();
+        mPipelineDescriptor.PS.pShaderBytecode = reinterpret_cast<BYTE*>(mFragmentFunction->GetBufferPointer());
+        mPipelineDescriptor.PS.BytecodeLength = mFragmentFunction->GetBufferSize();
+        mPipelineDescriptor.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+        mPipelineDescriptor.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+        mPipelineDescriptor.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+        mPipelineDescriptor.SampleMask = UINT_MAX;
+        mPipelineDescriptor.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+        mPipelineDescriptor.NumRenderTargets = 1;
+        mPipelineDescriptor.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+        mPipelineDescriptor.SampleDesc.Count = 1;
+        mPipelineDescriptor.SampleDesc.Quality = 0;
+        mPipelineDescriptor.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
-        hresult = device->CreateGraphicsPipelineState(&pipelineDescriptor, IID_PPV_ARGS(&mPipelineState));
+        ComPtr<ID3D12PipelineState> mPipelineState;
+        hresult = device->CreateGraphicsPipelineState(&mPipelineDescriptor, IID_PPV_ARGS(&mPipelineState));
         if (FAILED(hresult)) {
             LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
             return false;

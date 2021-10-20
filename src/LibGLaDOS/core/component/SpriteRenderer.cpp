@@ -26,7 +26,7 @@ namespace GLaDOS {
             LOG_ERROR(logger, "SpriteRenderer initialize failed!");
             return;
         }
-        ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgramFromFile("spriteVertex", "spriteFragment", mesh->getCPUVertexBuffer());
+        ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgramFromFile("spriteVertex", "spriteFragment");
         if (shaderProgram == nullptr) {
             LOG_ERROR(logger, "SpriteRenderer initialize failed!");
             return;

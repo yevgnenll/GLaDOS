@@ -25,7 +25,7 @@ namespace GLaDOS {
             LOG_ERROR(logger, "CubemapRenderer initialize failed!");
             return;
         }
-        ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgramFromFile("skyboxVertex", "skyboxFragment", mesh->getCPUVertexBuffer());
+        ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgramFromFile("skyboxVertex", "skyboxFragment");
         if (shaderProgram == nullptr) {
             LOG_ERROR(logger, "CubemapRenderer initialize failed!");
             return;

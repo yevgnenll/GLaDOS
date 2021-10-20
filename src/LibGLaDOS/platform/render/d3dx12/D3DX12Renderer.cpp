@@ -278,9 +278,9 @@ namespace GLaDOS {
         return indexBuffer;
     }
 
-    ShaderProgram* D3DX12Renderer::createShaderProgram(const std::string& vertexSource, const std::string& fragmentSource, const VertexBuffer* vertexBuffer) {
+    ShaderProgram* D3DX12Renderer::createShaderProgram(const std::string& vertexSource, const std::string& fragmentSource) {
         D3DX12ShaderProgram* shaderProgram = NEW_T(D3DX12ShaderProgram);
-        if (!shaderProgram->createShaderProgram(vertexSource, fragmentSource, vertexBuffer)) {
+        if (!shaderProgram->createShaderProgram(vertexSource, fragmentSource)) {
             LOG_ERROR(logger, "Shader compilation error");
             return nullptr;
         }
@@ -288,7 +288,7 @@ namespace GLaDOS {
         return shaderProgram;
     }
 
-    ShaderProgram* D3DX12Renderer::createShaderProgramFromFile(const std::string& vertexName, const std::string& fragmentName, const VertexBuffer* vertexBuffer) {
+    ShaderProgram* D3DX12Renderer::createShaderProgramFromFile(const std::string& vertexName, const std::string& fragmentName) {
         D3DX12ShaderProgram* shaderProgram = NEW_T(D3DX12ShaderProgram);
         std::string shaderDirectory = shaderProgram->directory();
 
@@ -306,7 +306,7 @@ namespace GLaDOS {
             return nullptr;
         }
 
-        if (!shaderProgram->createShaderProgram(vertexSource, fragmentSource, vertexBuffer)) {
+        if (!shaderProgram->createShaderProgram(vertexSource, fragmentSource)) {
             LOG_ERROR(logger, "Shader compilation error");
             return nullptr;
         }

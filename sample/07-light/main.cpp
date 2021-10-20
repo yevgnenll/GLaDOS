@@ -9,7 +9,7 @@ class MainScene : public Scene {
         if (mesh == nullptr) {
             return false;
         }
-        shaderProgram = Platform::getRenderer().createShaderProgramFromFile("normalVertex", "normalFragment", mesh->getCPUVertexBuffer());
+        shaderProgram = Platform::getRenderer().createShaderProgramFromFile("normalVertex", "normalFragment");
         if (shaderProgram == nullptr) {
             return false;
         }

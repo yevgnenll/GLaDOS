@@ -62,7 +62,7 @@ class MainScene : public Scene {
         if (mesh == nullptr) {
             return false;
         }
-        shaderProgram = Platform::getRenderer().createShaderProgramFromFile("textureVertex", "textureFragment", vertexData);
+        shaderProgram = Platform::getRenderer().createShaderProgramFromFile("textureVertex", "textureFragment");
         if (shaderProgram == nullptr) {
             return false;
         }

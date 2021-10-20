@@ -32,10 +32,10 @@ namespace GLaDOS {
         MetalRasterizerState* metalRasterizerState();
 
       private:
-        bool createShaderProgram(const std::string& vertex, const std::string& fragment, const VertexBuffer* vertexBuffer) override;
+        bool createShaderProgram(const std::string& vertex, const std::string& fragment) override;
 
         MTLVertexAttribute* findVertexAttribute(VertexSemantic semantic);
-        bool makePipelineDescriptor(const VertexBuffer* vertexBuffer);
+        bool makePipelineDescriptor();
         bool addShaderArguments(MTLRenderPipelineReflection* pipelineReflection);
         void addUniform(MTLArgument* argument, ShaderType type);
 

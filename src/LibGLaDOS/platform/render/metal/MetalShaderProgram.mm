@@ -108,12 +108,12 @@ namespace GLaDOS {
         return static_cast<MetalRasterizerState*>(rasterizerState());
     }
 
-    bool MetalShaderProgram::createShaderProgram(const std::string& vertex, const std::string& fragment, const VertexBuffer* vertexBuffer) {
+    bool MetalShaderProgram::createShaderProgram(const std::string& vertex, const std::string& fragment) {
         bool isVsValid = MetalShaderProgram::createShader(vertex, mVertexFunction);
         bool isFsValid = MetalShaderProgram::createShader(fragment, mFragmentFunction);
         mIsValid = isVsValid && isFsValid;
 
-        if (!makePipelineDescriptor(vertexBuffer)) {
+        if (!makePipelineDescriptor()) {
             mIsValid = false;
         }
 
@@ -138,7 +138,7 @@ namespace GLaDOS {
         return nullptr;
     }
 
-    bool MetalShaderProgram::makePipelineDescriptor(const VertexBuffer* vertexBuffer) {
+    bool MetalShaderProgram::makePipelineDescriptor() {
         if (!mIsValid) {
             LOG_ERROR(logger, "Invalid Metal shader program");
             return false;

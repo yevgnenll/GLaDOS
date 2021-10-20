@@ -16,13 +16,12 @@ namespace GLaDOS {
 
       public:
         D3DX12ShaderProgram() = default;
-        ~D3DX12ShaderProgram() override;
+        ~D3DX12ShaderProgram() override = default;
 
         ComPtr<ID3D12RootSignature> getRootSignature() const;
-        ComPtr<ID3D12PipelineState> getPipelineState() const;
 
       private:
-        bool createShaderProgram(const std::string& vertex, const std::string& fragment, const VertexBuffer* vertexBuffer) override;
+        bool createShaderProgram(const std::string& vertex, const std::string& fragment) override;
         bool makePipelineDescriptor();
         bool addShaderArguments(const ComPtr<ID3D12ShaderReflection>& vertexShaderReflection, const ComPtr<ID3D12ShaderReflection>& fragmentShaderReflection);
         void addUniform(ID3D12ShaderReflectionConstantBuffer* constantBuffer, ShaderType type);
@@ -38,7 +37,7 @@ namespace GLaDOS {
         ComPtr<ID3DBlob> mFragmentFunction;
         ComPtr<ID3D12RootSignature> mRootSignature;
         Vector<D3D12_INPUT_ELEMENT_DESC> mInputLayout;
-        ComPtr<ID3D12PipelineState> mPipelineState;
+        D3D12_GRAPHICS_PIPELINE_STATE_DESC mPipelineDescriptor{};
     };
 }
 
