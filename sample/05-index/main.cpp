@@ -26,7 +26,7 @@ class MainScene : public Scene {
         if (mesh == nullptr) {
             return false;
         }
-        shaderProgram = Platform::getRenderer().createShaderProgram("textureVertex.metal", "textureFragment.metal", vertexData);
+        shaderProgram = Platform::getRenderer().createShaderProgramFromFile("textureVertex", "textureFragment", vertexData);
         if (shaderProgram == nullptr) {
             return false;
         }
