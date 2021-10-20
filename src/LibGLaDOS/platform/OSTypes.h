@@ -9,9 +9,11 @@
 #endif
 #define PLATFORM_WINDOW
 #define PATH_SEPARATOR "/\\"
+#define SHADER_SUFFIX "hlsl"
 #elif defined(__linux__)
 #define PLATFORM_LINUX
 #define PATH_SEPARATOR "/"
+#define SHADER_SUFFIX "glsl"
 #elif defined(__APPLE__) && defined(__MACH__)
 
 /*
@@ -43,6 +45,7 @@
 #define PLATFORM_BIG_ENDIAN TARGET_RT_BIG_ENDIAN
 
 #define PATH_SEPARATOR "/"
+#define SHADER_SUFFIX "metal"
 
 #endif
 

@@ -116,21 +116,31 @@ namespace GLaDOS {
         return indexBuffer;
     }
 
-    ShaderProgram* MetalRenderer::createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath, const VertexBuffer* vertexBuffer) {
+    ShaderProgram* MetalRenderer::createShaderProgram(const std::string& vertexSource, const std::string& fragmentSource, const VertexBuffer* vertexBuffer) {
         MetalShaderProgram* shaderProgram = NEW_T(MetalShaderProgram);
-        std::string shaderDirectory = shaderProgram->directory();
-
-        FileSystem vertexFile{shaderDirectory + vertexPath, OpenMode::ReadBinary};
-        std::string vertexSource;
-        if (!vertexFile.readAll(vertexSource)) {
-            LOG_ERROR(logger, "Vertex shader {0} is not found.", vertexPath);
+        if (!shaderProgram->createShaderProgram(vertexSource, fragmentSource, vertexBuffer)) {
+            LOG_ERROR(logger, "Shader compilation error");
             return nullptr;
         }
 
-        FileSystem fragmentFile{shaderDirectory + fragmentPath, OpenMode::ReadBinary};
+        return shaderProgram;
+    }
+
+    ShaderProgram* MetalRenderer::createShaderProgramFromFile(const std::string& vertexName, const std::string& fragmentName, const VertexBuffer* vertexBuffer) {
+        MetalShaderProgram* shaderProgram = NEW_T(MetalShaderProgram);
+        std::string shaderDirectory = shaderProgram->directory();
+
+        FileSystem vertexFile{shaderDirectory + vertexName + SHADER_SUFFIX, OpenMode::ReadBinary};
+        std::string vertexSource;
+        if (!vertexFile.readAll(vertexSource)) {
+            LOG_ERROR(logger, "Vertex shader {0} is not found.", vertexFile.fullName());
+            return nullptr;
+        }
+
+        FileSystem fragmentFile{shaderDirectory + fragmentName + SHADER_SUFFIX, OpenMode::ReadBinary};
         std::string fragmentSource;
         if (!fragmentFile.readAll(fragmentSource)) {
-            LOG_ERROR(logger, "Fragment shader {0} is not found.", fragmentPath);
+            LOG_ERROR(logger, "Fragment shader {0} is not found.", fragmentFile.fullName());
             return nullptr;
         }
 

@@ -84,6 +84,9 @@ namespace GLaDOS {
             return false;
         }
 
+        Platform::getInstance().registerKeyMap();
+        Platform::getInstance().mMainFrameBuffer = D3DX12Renderer::getInstance().createFrameBuffer();
+
         ShowWindow(mHandle, SW_SHOWDEFAULT);
         UpdateWindow(mHandle);
         ShowCursor(static_cast<BOOL>(Platform::getInstance().mIsShowCursor));

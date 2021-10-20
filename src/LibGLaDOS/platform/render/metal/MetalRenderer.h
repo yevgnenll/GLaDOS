@@ -25,7 +25,8 @@ namespace GLaDOS {
 
         GPUBuffer* createGPUVertexBuffer(GPUBufferUsage usage, void* data, std::size_t size) override;
         GPUBuffer* createGPUIndexBuffer(GPUBufferUsage usage, void* data, std::size_t size) override;
-        ShaderProgram* createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath, const VertexBuffer* vertexBuffer) override;
+        ShaderProgram* createShaderProgram(const std::string& vertexSource, const std::string& fragmentSource, const VertexBuffer* vertexBuffer) override;
+        ShaderProgram* createShaderProgramFromFile(const std::string& vertexName, const std::string& fragmentName, const VertexBuffer* vertexBuffer) override;
         Renderable* createRenderable(Mesh* mesh, Material* material) override;
         FrameBuffer* createFrameBuffer() override;
         RenderBuffer* createRenderBuffer() override;
