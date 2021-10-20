@@ -1,7 +1,12 @@
 #ifndef GLADOS_RENDERER_H
 #define GLADOS_RENDERER_H
 
+#include <string>
+#include "utils/Enumeration.h"
+#include "math/Color.h"
+
 namespace GLaDOS {
+    class Logger;
     class Blob;
     class Mesh;
     class Material;
@@ -35,9 +40,6 @@ namespace GLaDOS {
         virtual GPUBuffer* createGPUIndexBuffer(GPUBufferUsage usage, void* data, std::size_t size) = 0;
         virtual ShaderProgram* createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath, const VertexBuffer* vertexBuffer) = 0;
         virtual Renderable* createRenderable(Mesh* mesh, Material* material) = 0;
-        virtual Mesh* createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) = 0;
-        virtual Mesh* createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer) = 0;
-        virtual Mesh* createMesh(const std::string& meshPath, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) = 0;
         virtual FrameBuffer* createFrameBuffer() = 0;
         virtual RenderBuffer* createRenderBuffer() = 0;
         virtual DepthStencilState* createDepthStencilState(const DepthStencilDescription& desc) = 0;
@@ -52,6 +54,13 @@ namespace GLaDOS {
         virtual TextureCube* createTextureCube(const std::string& name, PixelFormat format) = 0;
         virtual RenderTexture* createRenderTexture(const std::string& name) = 0;
         virtual VertexBuffer* createVertexBuffer(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) = 0;
+
+        Mesh* createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage);
+        Mesh* createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer);
+        Mesh* createMesh(const std::string& meshPath, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage);
+
+      private:
+        static Logger* logger;
     };
 }  // namespace GLaDOS
 

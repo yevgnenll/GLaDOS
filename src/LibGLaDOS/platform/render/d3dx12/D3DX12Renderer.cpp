@@ -5,6 +5,8 @@
 #include "platform/windows/WindowsPlatform.h"
 #include "platform/render/VertexBuffer.h"
 #include "platform/render/d3dx12/D3DX12GPUBuffer.h"
+#include "platform/render/d3dx12/D3DX12ShaderProgram.h"
+#include "utils/FileSystem.h"
 
 namespace GLaDOS {
     Logger* D3DX12Renderer::logger = LoggerRegistry::getInstance().makeAndGetLogger("D3DX12Renderer");
@@ -277,22 +279,32 @@ namespace GLaDOS {
     }
 
     ShaderProgram* D3DX12Renderer::createShaderProgram(const std::string& vertexPath, const std::string& fragmentPath, const VertexBuffer* vertexBuffer) {
-        return nullptr;
+        D3DX12ShaderProgram* shaderProgram = NEW_T(D3DX12ShaderProgram);
+        std::string shaderDirectory = shaderProgram->directory();
+
+        FileSystem vertexFile{shaderDirectory + vertexPath, OpenMode::ReadBinary};
+        std::string vertexSource;
+        if (!vertexFile.readAll(vertexSource)) {
+            LOG_ERROR(logger, "Vertex shader {0} is not found.", vertexPath);
+            return nullptr;
+        }
+
+        FileSystem fragmentFile{shaderDirectory + fragmentPath, OpenMode::ReadBinary};
+        std::string fragmentSource;
+        if (!fragmentFile.readAll(fragmentSource)) {
+            LOG_ERROR(logger, "Fragment shader {0} is not found.", fragmentPath);
+            return nullptr;
+        }
+
+        if (!shaderProgram->createShaderProgram(vertexSource, fragmentSource, vertexBuffer)) {
+            LOG_ERROR(logger, "Shader compilation error");
+            return nullptr;
+        }
+
+        return shaderProgram;
     }
 
     Renderable* D3DX12Renderer::createRenderable(Mesh* mesh, Material* material) {
-        return nullptr;
-    }
-
-    Mesh* D3DX12Renderer::createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) {
-        return nullptr;
-    }
-
-    Mesh* D3DX12Renderer::createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer) {
-        return nullptr;
-    }
-
-    Mesh* D3DX12Renderer::createMesh(const std::string& meshPath, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) {
         return nullptr;
     }
 

@@ -151,31 +151,6 @@ namespace GLaDOS {
         return renderable;
     }
 
-    Mesh* MetalRenderer::createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) {
-        Mesh* mesh = NEW_T(Mesh(primitiveTopology, vertexUsage, indexUsage));
-        if (!mesh->build(vertexBuffer, indexBuffer)) {
-            LOG_ERROR(logger, "Failed to build mesh");
-            return nullptr;
-        }
-        return mesh;
-    }
-
-    Mesh* MetalRenderer::createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer) {
-        Mesh* mesh = NEW_T(Mesh);
-        if (!mesh->build(vertexBuffer, indexBuffer)) {
-            LOG_ERROR(logger, "Failed to build mesh");
-            return nullptr;
-        }
-        return mesh;
-    }
-
-    Mesh* MetalRenderer::createMesh(const std::string& meshPath, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) {
-        // TODO
-        // const auto& [vertexBuffer, indexBuffer] = MeshLoader::loadFromFile(meshPath);
-        // return createMesh(vertexBuffer, indexBuffer, primitiveTopology, dynamicVertex, dynamicIndex);
-        return nullptr;
-    }
-
     FrameBuffer* MetalRenderer::createFrameBuffer() {
         return NEW_T(MetalFrameBuffer);
     }

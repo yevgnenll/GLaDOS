@@ -12,6 +12,8 @@
 namespace GLaDOS {
     class Logger;
     class D3DX12ShaderProgram : public ShaderProgram {
+        friend class D3DX12Renderer;
+
       public:
         D3DX12ShaderProgram() = default;
         ~D3DX12ShaderProgram() override;
