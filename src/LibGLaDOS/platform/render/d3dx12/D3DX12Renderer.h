@@ -75,8 +75,8 @@ namespace GLaDOS {
         ComPtr<ID3D12CommandAllocator> mCommandAllocator;
         ComPtr<ID3D12GraphicsCommandList> mCommandList;
         ComPtr<ID3D12PipelineState> mPipelineState;
-        D3D12_VIEWPORT mScreenViewport;
-        D3D12_RECT mScissorRect;
+        D3D12_VIEWPORT mScreenViewport{};
+        D3D12_RECT mScissorRect{};
 
         // Synchronization objects.
         int mCurrBackBuffer{0};

@@ -9,6 +9,7 @@
 #undef min
 
 namespace GLaDOS {
+    Logger* D3DX12ShaderProgram::logger = LoggerRegistry::getInstance().makeAndGetLogger("D3DX12ShaderProgram");
     D3DX12ShaderProgram::~D3DX12ShaderProgram() {
 
     }
@@ -60,9 +61,7 @@ namespace GLaDOS {
             return false;
         }
 
-        if (!createInputLayout(vertexBuffer)) {
-            return false;
-        }
+        createInputLayout(vertexBuffer);
 
         // 루트 서명의 유효성은 파이프라인 상태 객체를 생성할 때 검증된다.
         D3D12_GRAPHICS_PIPELINE_STATE_DESC pipelineDescriptor;
@@ -303,12 +302,11 @@ namespace GLaDOS {
         return true;
     }
 
-    bool D3DX12ShaderProgram::createInputLayout(const VertexBuffer* vertexBuffer) {
+    void D3DX12ShaderProgram::createInputLayout(const VertexBuffer* vertexBuffer) {
         mInputLayout = {
             { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
             { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
         };
-        return true;
     }
 
     bool D3DX12ShaderProgram::createShader(const std::string& source, const std::string& target, ComPtr<ID3DBlob> function) {

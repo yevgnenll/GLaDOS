@@ -22,7 +22,7 @@ namespace GLaDOS {
         bool addShaderArguments(const ComPtr<ID3D12ShaderReflection>& vertexShaderReflection, const ComPtr<ID3D12ShaderReflection>& fragmentShaderReflection);
         void addUniform(ID3D12ShaderReflectionConstantBuffer* constantBuffer, ShaderType type);
         bool createRootSignature(const ComPtr<ID3D12ShaderReflection>& shaderReflection, D3D12_SHADER_DESC shaderDesc);
-        bool createInputLayout(const VertexBuffer* vertexBuffer);
+        void createInputLayout(const VertexBuffer* vertexBuffer);
 
         static bool createShader(const std::string& source, const std::string& target, ComPtr<ID3DBlob> function);
         static Logger* logger;
