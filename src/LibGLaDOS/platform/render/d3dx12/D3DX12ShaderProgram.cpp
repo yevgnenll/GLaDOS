@@ -15,6 +15,10 @@ namespace GLaDOS {
         return mRootSignature;
     }
 
+    D3D12_GRAPHICS_PIPELINE_STATE_DESC D3DX12ShaderProgram::getPipelineDescriptor() const {
+        return mPipelineDescriptor;
+    }
+
     bool D3DX12ShaderProgram::createShaderProgram(const std::string& vertex, const std::string& fragment) {
         bool isVsValid = D3DX12ShaderProgram::createShader(vertex, "vs_5_0", mVertexFunction);
         bool isFsValid = D3DX12ShaderProgram::createShader(fragment, "ps_5_0", mFragmentFunction);

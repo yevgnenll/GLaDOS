@@ -19,6 +19,7 @@ namespace GLaDOS {
         ~D3DX12ShaderProgram() override = default;
 
         ComPtr<ID3D12RootSignature> getRootSignature() const;
+        D3D12_GRAPHICS_PIPELINE_STATE_DESC getPipelineDescriptor() const;
 
       private:
         bool createShaderProgram(const std::string& vertex, const std::string& fragment) override;
