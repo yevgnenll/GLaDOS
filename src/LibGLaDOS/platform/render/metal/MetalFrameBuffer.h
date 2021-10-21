@@ -14,7 +14,7 @@ namespace GLaDOS {
     class MetalRenderer;
     class MetalFrameBuffer : public FrameBuffer {
       public:
-        MetalFrameBuffer();
+        MetalFrameBuffer() = default;
         ~MetalFrameBuffer() override;
 
         void begin() override;
@@ -24,7 +24,6 @@ namespace GLaDOS {
       private:
         static Logger* logger;
 
-        id<MTLCommandQueue> mCommandQueue{nil};
         id<MTLCommandBuffer> mCommandBuffer{nil};
         id<MTLRenderCommandEncoder> mCommandEncoder{nil};
         id<CAMetalDrawable> mNextDrawable{nil};

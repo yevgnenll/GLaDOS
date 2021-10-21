@@ -4,16 +4,9 @@
 
 namespace GLaDOS {
     Logger* MetalFrameBuffer::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalFrameBuffer");
-    MetalFrameBuffer::MetalFrameBuffer() {
-        id<MTLDevice> device = MetalRenderer::getInstance().getDevice();
-        if (nullptr != device) {
-            mCommandQueue = [device newCommandQueue];
-        }
-    }
 
     MetalFrameBuffer::~MetalFrameBuffer() {
         [mDepthStencilTexture release];
-        [mCommandQueue release];
     }
 
     void MetalFrameBuffer::begin() {
@@ -46,7 +39,7 @@ namespace GLaDOS {
         stencilAttachment.clearStencil = 1;
 
         // making command encoder with render pass descriptor
-        mCommandBuffer = [mCommandQueue commandBuffer];
+        mCommandBuffer = [MetalRenderer::getInstance().getCommandQueue() commandBuffer];
         mCommandEncoder = [mCommandBuffer renderCommandEncoderWithDescriptor:passDescriptor];
         MetalRenderer::getInstance().setCommandEncoder(mCommandEncoder);
     }

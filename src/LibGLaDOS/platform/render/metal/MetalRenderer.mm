@@ -24,6 +24,7 @@ namespace GLaDOS {
     }
 
     MetalRenderer::~MetalRenderer() {
+        [mCommandQueue release];
         [mMetalDevice release];
         [mMetalLayer release];
     }
@@ -46,6 +47,8 @@ namespace GLaDOS {
         // If YES, the nextDrawable method returns nil if it can’t provide a drawable object within one second.
         // If NO, the nextDrawable method waits indefinitely for a drawable to become available.
         mMetalLayer.allowsNextDrawableTimeout = NO;
+
+        mCommandQueue = [mMetalDevice newCommandQueue];
 
         LOG_TRACE(logger, "MetalRenderer supports MSAA sample count 1: {0}", static_cast<bool>([mMetalDevice supportsTextureSampleCount:1]));
         LOG_TRACE(logger, "MetalRenderer supports MSAA sample count 2: {0}", static_cast<bool>([mMetalDevice supportsTextureSampleCount:2]));
@@ -228,6 +231,10 @@ namespace GLaDOS {
 
     id<MTLDevice> MetalRenderer::getDevice() const {
         return mMetalDevice;
+    }
+
+    id<MTLCommandQueue> MetalRenderer::getCommandQueue() const {
+        return mCommandQueue;
     }
 
     id<MTLRenderCommandEncoder> MetalRenderer::getCommandEncoder() const {

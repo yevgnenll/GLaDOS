@@ -43,6 +43,7 @@ namespace GLaDOS {
         RenderTexture* createRenderTexture(const std::string& name) override;
 
         id<MTLDevice> getDevice() const;
+        id<MTLCommandQueue> getCommandQueue() const;
         id<MTLRenderCommandEncoder> getCommandEncoder() const;
         void setCommandEncoder(id<MTLRenderCommandEncoder> commandEncoder);
         CAMetalLayer* getMetalLayer() const;
@@ -51,6 +52,7 @@ namespace GLaDOS {
         static Logger* logger;
 
         id<MTLDevice> mMetalDevice{nil};
+        id<MTLCommandQueue> mCommandQueue{nil};
         id<MTLRenderCommandEncoder> mCommandEncoder{nil};
         CAMetalLayer* mMetalLayer{nil};
     };
