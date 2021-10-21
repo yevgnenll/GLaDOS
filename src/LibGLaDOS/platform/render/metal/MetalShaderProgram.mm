@@ -2,16 +2,17 @@
 
 #ifdef PLATFORM_MACOS
 
-#include <cstring>
 #include "MetalRenderState.h"
 #include "MetalRenderable.h"
+#include "MetalTypes.h"
 #include "platform/apple/CocoaPlatform.h"
 #include "platform/render/Uniform.h"
 #include "platform/render/VertexBuffer.h"
-#include "utils/Enumeration.h"
+#include "platform/render/CommonTypes.h"
 
 namespace GLaDOS {
     Logger* MetalShaderProgram::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalShaderProgram");
+    
     MetalShaderProgram::~MetalShaderProgram() {
         if (mIsValid) {
             [mVertexFunction release];
@@ -63,12 +64,12 @@ namespace GLaDOS {
         [commandEncoder setDepthStencilState:metalDepthStencilState()];
 
         RasterizerDescription rasterizerDesc = metalRasterizerState()->mRasterizerDescription;
-        [commandEncoder setTriangleFillMode:MetalShaderProgram::mapFillModeFrom(rasterizerDesc.mFillMode)];
-        [commandEncoder setFrontFacingWinding:MetalShaderProgram::mapWindingModeFrom(rasterizerDesc.mWindingMode)];
+        [commandEncoder setTriangleFillMode:MetalTypes::fillModeToMetalFillMode(rasterizerDesc.mFillMode)];
+        [commandEncoder setFrontFacingWinding:MetalTypes::windingModeToMetalWinding(rasterizerDesc.mWindingMode)];
         if (rasterizerDesc.mFillMode == FillMode::Lines) {
             [commandEncoder setCullMode:MTLCullModeNone];  // Wireframe rendering should be no cull.
         } else {
-            [commandEncoder setCullMode:MetalShaderProgram::mapCullModeFrom(rasterizerDesc.mCullMode)];
+            [commandEncoder setCullMode:MetalTypes::cullModeToMetalCullMode(rasterizerDesc.mCullMode)];
         }
 
         [commandEncoder setDepthBias:rasterizerDesc.mDepthBias slopeScale:rasterizerDesc.mSlopeScaleDepthBias clamp:rasterizerDesc.mDepthBiasClamp];
@@ -85,12 +86,36 @@ namespace GLaDOS {
             MTLVertexAttribute* attribute = findVertexAttribute(format->semantic());
             if (attribute != nullptr) {
                 std::size_t attributeIndex = attribute.attributeIndex;
-                vertexDescriptor.attributes[attributeIndex].format = MetalShaderProgram::mapVertexFormatFrom(format->type());
+                vertexDescriptor.attributes[attributeIndex].format = MetalTypes::vertexAttribTypeToVertexFormat(format->type());
                 vertexDescriptor.attributes[attributeIndex].bufferIndex = bufferIndex;
                 vertexDescriptor.attributes[attributeIndex].offset = offset;
             }
 
             offset += format->sizeAlign4();
+        }
+
+        if (offset != 0) {
+            vertexDescriptor.layouts[bufferIndex].stride = offset;
+        }
+
+        return vertexDescriptor;
+    }
+
+    MTLVertexDescriptor* MetalShaderProgram::makeVertexDescriptor(const Vector<MTLVertexAttribute*>& vertexAttributes) {
+        MTLVertexDescriptor* vertexDescriptor = [[MTLVertexDescriptor new] autorelease];
+
+        std::size_t bufferIndex = 1;  // bufferIndex 0번은 유니폼으로 사용됨
+        std::size_t offset = 0;
+        for (const auto& attribute : vertexAttributes) {
+            if (attribute != nullptr) {
+                std::size_t attributeIndex = attribute.attributeIndex;
+                MTLVertexFormat vertexFormat = MetalTypes::metalDataTypeToVertexFormat(attribute.attributeType);
+                vertexDescriptor.attributes[attributeIndex].format = vertexFormat;
+                vertexDescriptor.attributes[attributeIndex].bufferIndex = bufferIndex;
+                vertexDescriptor.attributes[attributeIndex].offset = offset;
+
+                offset += align4(MetalTypes::metalVertexFormatToSize(vertexFormat));
+            }
         }
 
         if (offset != 0) {
@@ -128,7 +153,7 @@ namespace GLaDOS {
             return nullptr;
         }
 
-        std::string attributeName = MetalShaderProgram::mapAttributeNameFrom(semantic);
+        std::string attributeName = CommonTypes::vertexSemanticToName(semantic);
         for (MTLVertexAttribute* attr in mVertexFunction.vertexAttributes) {
             if ([attr.name UTF8String] == attributeName) {
                 return attr;
@@ -163,7 +188,11 @@ namespace GLaDOS {
         mPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatDepth32Float_Stencil8;
         mPipelineDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatDepth32Float_Stencil8;
 
-        MTLVertexDescriptor* vertexDescriptor = makeVertexDescriptor(vertexBuffer->getVertexFormatHolder());
+        Vector<MTLVertexAttribute*> vertexAttributes;
+        for (MTLVertexAttribute* attribute in mVertexFunction.vertexAttributes) {
+            vertexAttributes.emplace_back(attribute);
+        }
+        MTLVertexDescriptor* vertexDescriptor = makeVertexDescriptor(vertexAttributes);;
         [mPipelineDescriptor setVertexDescriptor:vertexDescriptor];
 
         NSError* stateError;
@@ -210,223 +239,39 @@ namespace GLaDOS {
                 MTLStructType* structType = argument.bufferStructType;
                 if (structType != nullptr) {
                     for (MTLStructMember* member in structType.members) {
-                        Uniform* uniform = NEW_T(Uniform);
-                        uniform->mShaderType = type;
-                        uniform->mUniformType = MetalShaderProgram::mapUniformTypeFrom(member.dataType);
-                        uniform->mName = [member.name UTF8String];
-                        uniform->mCount = member.arrayType != nullptr ? member.arrayType.arrayLength : 1;
-                        uniform->mOffset = member.offset;
-                        uniform->resize(uniform->mCount * MetalShaderProgram::mapUniformTypeSizeForm(uniform->mUniformType));
-                        mUniforms.try_emplace(uniform->mName, uniform);
-                        LOG_TRACE(logger, "Uniform add -> [{0}]", uniform->toString());
+                        std::string name = [member.name UTF8String];
+                        if (!exists(name)) {
+                            Uniform* uniform = NEW_T(Uniform);
+                            uniform->mShaderType = type;
+                            uniform->mUniformType = MetalTypes::metalDataTypeToUniformType(member.dataType);
+                            uniform->mName = name;
+                            uniform->mCount = member.arrayType != nullptr ? member.arrayType.arrayLength : 1;
+                            uniform->mOffset = member.offset;
+                            uniform->resize(uniform->mCount * CommonTypes::uniformTypeToSize(uniform->mUniformType));
+                            mUniforms.try_emplace(uniform->mName, uniform);
+                            LOG_TRACE(logger, "Uniform add -> [{0}]", uniform->toString());
+                        }
                     }
                 }
                 break;
             }
             case MTLArgumentTypeTexture: {
-                Uniform* uniform = NEW_T(Uniform);
-                uniform->mShaderType = type;
-                uniform->mUniformType = MetalShaderProgram::mapUniformTypeFrom(MTLDataTypeTexture);
-                uniform->mName = [argument.name UTF8String];
-                uniform->mCount = 1;
-                uniform->mOffset = argument.index;
-                mUniforms.try_emplace(uniform->mName, uniform);
-                LOG_TRACE(logger, "Uniform add -> [{0}]", uniform->toString());
+                std::string name = [argument.name UTF8String];
+                if (!exists(name)) {
+                    Uniform* uniform = NEW_T(Uniform);
+                    uniform->mShaderType = type;
+                    uniform->mUniformType = MetalTypes::metalDataTypeToUniformType(MTLDataTypeTexture);
+                    uniform->mName = name;
+                    uniform->mCount = 1;
+                    uniform->mOffset = argument.index;
+                    mUniforms.try_emplace(uniform->mName, uniform);
+                    LOG_TRACE(logger, "Uniform add -> [{0}]", uniform->toString());
+                }
                 break;
             }
-        }
-    }
-
-    constexpr MTLVertexFormat MetalShaderProgram::mapVertexFormatFrom(VertexAttributeType type) {
-        switch (type) {
-            case VertexAttributeType::Float:
-                return MTLVertexFormatFloat;
-            case VertexAttributeType::Float2:
-                return MTLVertexFormatFloat2;
-            case VertexAttributeType::Float3:
-                return MTLVertexFormatFloat3;
-            case VertexAttributeType::Float4:
-                return MTLVertexFormatFloat4;
-            case VertexAttributeType::Half:
-                return MTLVertexFormatHalf;
-            case VertexAttributeType::Half2:
-                return MTLVertexFormatHalf2;
-            case VertexAttributeType::Half3:
-                return MTLVertexFormatHalf3;
-            case VertexAttributeType::Half4:
-                return MTLVertexFormatHalf4;
-            case VertexAttributeType::Int:
-                return MTLVertexFormatInt;
-            case VertexAttributeType::Int2:
-                return MTLVertexFormatInt2;
-            case VertexAttributeType::Int3:
-                return MTLVertexFormatInt3;
-            case VertexAttributeType::Int4:
-                return MTLVertexFormatInt4;
-            case VertexAttributeType::Byte:
-                return MTLVertexFormatChar;
-            case VertexAttributeType::Byte2:
-                return MTLVertexFormatChar2;
-            case VertexAttributeType::Byte3:
-                return MTLVertexFormatChar3;
-            case VertexAttributeType::Byte4:
-                return MTLVertexFormatChar4;
-            case VertexAttributeType::UByte:
-                return MTLVertexFormatUChar;
-            case VertexAttributeType::UByte2:
-                return MTLVertexFormatUChar2;
-            case VertexAttributeType::UByte3:
-                return MTLVertexFormatUChar3;
-            case VertexAttributeType::UByte4:
-                return MTLVertexFormatUChar4;
-            case VertexAttributeType::UByteNorm:
-                return MTLVertexFormatUCharNormalized;
-            case VertexAttributeType::UByte4Norm:
-                return MTLVertexFormatUChar4Normalized;
-            case VertexAttributeType::Short2:
-                return MTLVertexFormatShort2;
-            case VertexAttributeType::Short4:
-                return MTLVertexFormatShort4;
-            case VertexAttributeType::UShort2:
-                return MTLVertexFormatUShort2;
-            case VertexAttributeType::UShort2Norm:
-                return MTLVertexFormatUShort2Normalized;
-            case VertexAttributeType::Uint:
-                return MTLVertexFormatUInt;
-            case VertexAttributeType::UShortNorm:
-                return MTLVertexFormatUShortNormalized;
-            case VertexAttributeType::UShort4Norm:
-                return MTLVertexFormatUShort4Normalized;
             default:
-                LOG_ERROR(logger, "Unknown vertex attribute type");
+                LOG_WARN(logger, "Not supported variable type.");
                 break;
-        }
-
-        return MTLVertexFormatInvalid;
-    }
-
-    constexpr UniformType MetalShaderProgram::mapUniformTypeFrom(MTLDataType dataType) {
-        switch (dataType) {
-            case MTLDataTypeBool:
-                return UniformType::Bool;
-            case MTLDataTypeInt:
-                return UniformType::Int;
-            case MTLDataTypeUInt:
-                return UniformType::UInt;
-            case MTLDataTypeFloat:
-                return UniformType::Float;
-            case MTLDataTypeFloat2:
-                return UniformType::Vec2;
-            case MTLDataTypeFloat3:
-                return UniformType::Vec3;
-            case MTLDataTypeFloat4:
-                return UniformType::Vec4;
-            case MTLDataTypeFloat4x4:
-                return UniformType::Mat4;
-            case MTLDataTypeTexture:
-                return UniformType::Texture;
-            case MTLDataTypeSampler:
-                return UniformType::Sampler;
-            default:
-                LOG_ERROR(logger, "Unknown data type");
-                break;
-        }
-
-        return UniformType::Unknown;
-    }
-
-    constexpr std::size_t MetalShaderProgram::mapUniformTypeSizeForm(UniformType uniformType) {
-        switch (uniformType) {
-            case UniformType::Bool:
-                return 1;
-            case UniformType::Int:
-                return 4;
-            case UniformType::UInt:
-                return 4;
-            case UniformType::Float:
-                return 4;
-            case UniformType::Vec2:
-                return 8;
-            case UniformType::Vec3:
-                return 12;
-            case UniformType::Vec4:
-                return 16;
-            case UniformType::Mat4:
-                return 64;
-            case UniformType::Texture:
-                return 4;
-            case UniformType::Sampler:
-                return 4;
-            default:
-                LOG_ERROR(logger, "Unknown uniform type");
-                break;
-        }
-
-        return 0;
-    }
-
-    constexpr const char* MetalShaderProgram::mapAttributeNameFrom(VertexSemantic semantic) {
-        switch (semantic) {
-            case VertexSemantic::Position:
-                return "_position";
-            case VertexSemantic::Normal:
-                return "_normal";
-            case VertexSemantic::Color:
-                return "_color";
-            case VertexSemantic::TexCoord0:
-                return "_texCoord0";
-            case VertexSemantic::TexCoord1:
-                return "_texCoord1";
-            case VertexSemantic::TexCoord2:
-                return "_texCoord2";
-            case VertexSemantic::TexCoord3:
-                return "_texCoord3";
-            case VertexSemantic::TexCoord4:
-                return "_texCoord4";
-            case VertexSemantic::TexCoord5:
-                return "_texCoord5";
-            case VertexSemantic::TexCoord6:
-                return "_texCoord6";
-            case VertexSemantic::TexCoord7:
-                return "_texCoord7";
-            case VertexSemantic::Tangent:
-                return "_tangent";
-            case VertexSemantic::BiTangent:
-                return "_biTangent";
-            default:
-                LOG_WARN(logger, "Not supported vertex semantic type");
-                break;
-        }
-
-        return "";
-    }
-
-    constexpr MTLTriangleFillMode MetalShaderProgram::mapFillModeFrom(FillMode mode) {
-        switch (mode) {
-            case FillMode::Fill:
-                return MTLTriangleFillModeFill;
-            case FillMode::Lines:
-                return MTLTriangleFillModeLines;
-        }
-    }
-
-    constexpr MTLWinding MetalShaderProgram::mapWindingModeFrom(WindingMode mode) {
-        switch (mode) {
-            case WindingMode::ClockWise:
-                return MTLWindingClockwise;
-            case WindingMode::CounterClockWise:
-                return MTLWindingCounterClockwise;
-        }
-    }
-
-    constexpr MTLCullMode MetalShaderProgram::mapCullModeFrom(CullMode mode) {
-        switch (mode) {
-            case CullMode::None:
-                return MTLCullModeNone;
-            case CullMode::Front:
-                return MTLCullModeFront;
-            case CullMode::Back:
-                return MTLCullModeBack;
         }
     }
 

@@ -198,31 +198,42 @@ namespace GLaDOS {
         Float2,
         Float3,
         Float4,
+
         Half,
         Half2,
         Half3,
         Half4,
+
         Int,
         Int2,
         Int3,
         Int4,
+
+        UInt,
+        UInt2,
+        UInt3,
+        UInt4,
+
         Byte,
         Byte2,
         Byte3,
         Byte4,
+
         UByte,
         UByte2,
         UByte3,
         UByte4,
-        UByteNorm,
-        UByte4Norm,
+
+        Short,
         Short2,
+        Short3,
         Short4,
+
+        UShort,
         UShort2,
-        UShort2Norm,
-        Uint,
-        UShortNorm,
-        UShort4Norm,
+        UShort3,
+        UShort4,
+
         NumberOfAttributeType
     };
 

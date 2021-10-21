@@ -116,9 +116,9 @@ namespace GLaDOS {
         return indexBuffer;
     }
 
-    ShaderProgram* MetalRenderer::createShaderProgram(const std::string& vertexSource, const std::string& fragmentSource, const VertexBuffer* vertexBuffer) {
+    ShaderProgram* MetalRenderer::createShaderProgram(const std::string& vertexSource, const std::string& fragmentSource) {
         MetalShaderProgram* shaderProgram = NEW_T(MetalShaderProgram);
-        if (!shaderProgram->createShaderProgram(vertexSource, fragmentSource, vertexBuffer)) {
+        if (!shaderProgram->createShaderProgram(vertexSource, fragmentSource)) {
             LOG_ERROR(logger, "Shader compilation error");
             return nullptr;
         }

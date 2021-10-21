@@ -47,6 +47,7 @@ namespace GLaDOS {
         void setDepthStencilState(const DepthStencilDescription& desc);
         RasterizerState* rasterizerState();
         void setRasterizerState(const RasterizerDescription& desc);
+        bool exists(const std::string& name);
 
       private:
         virtual bool createShaderProgram(const std::string& vertex, const std::string& fragment) = 0;

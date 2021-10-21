@@ -220,6 +220,10 @@ namespace GLaDOS {
         mRasterizerState = Platform::getRenderer().createRasterizerState(desc);
     }
 
+    bool ShaderProgram::exists(const std::string& name) {
+        return mUniforms.find(name) != mUniforms.end();
+    }
+
     void ShaderProgram::reserveUniformMemory() {
         // 모든 유니폼객체에 대해 개별버퍼를 생성하지 않고 Blob으로 셰이더에 전달하기 위해 메모리 배열을 위한 공간을 만든다.
         mVertexUniformBuffer.clear();
