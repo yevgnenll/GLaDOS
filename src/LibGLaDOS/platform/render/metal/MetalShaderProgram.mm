@@ -77,54 +77,6 @@ namespace GLaDOS {
         // [commandEncoder setStencilFrontReferenceValue:1 backReferenceValue:1];
     }
 
-    MTLVertexDescriptor* MetalShaderProgram::makeVertexDescriptor(VertexFormatHolder* vertexFormatHolder) {
-        MTLVertexDescriptor* vertexDescriptor = [[MTLVertexDescriptor new] autorelease];
-
-        std::size_t bufferIndex = 1;  // bufferIndex 0번은 유니폼으로 사용됨
-        std::size_t offset = 0;
-        for (const auto& format : *vertexFormatHolder) {
-            MTLVertexAttribute* attribute = findVertexAttribute(format->semantic());
-            if (attribute != nullptr) {
-                std::size_t attributeIndex = attribute.attributeIndex;
-                vertexDescriptor.attributes[attributeIndex].format = MetalTypes::vertexAttribTypeToMetal(format->type());
-                vertexDescriptor.attributes[attributeIndex].bufferIndex = bufferIndex;
-                vertexDescriptor.attributes[attributeIndex].offset = offset;
-            }
-
-            offset += format->sizeAlign4();
-        }
-
-        if (offset != 0) {
-            vertexDescriptor.layouts[bufferIndex].stride = offset;
-        }
-
-        return vertexDescriptor;
-    }
-
-    MTLVertexDescriptor* MetalShaderProgram::makeVertexDescriptor(const Vector<MTLVertexAttribute*>& vertexAttributes) {
-        MTLVertexDescriptor* vertexDescriptor = [[MTLVertexDescriptor new] autorelease];
-
-        std::size_t bufferIndex = 1;  // bufferIndex 0번은 유니폼으로 사용됨
-        std::size_t offset = 0;
-        for (const auto& attribute : vertexAttributes) {
-            if (attribute != nullptr) {
-                std::size_t attributeIndex = attribute.attributeIndex;
-                MTLVertexFormat vertexFormat = MetalTypes::metalDataTypeToVertexFormat(attribute.attributeType);
-                vertexDescriptor.attributes[attributeIndex].format = vertexFormat;
-                vertexDescriptor.attributes[attributeIndex].bufferIndex = bufferIndex;
-                vertexDescriptor.attributes[attributeIndex].offset = offset;
-
-                offset += align4(MetalTypes::metalVertexFormatToSize(vertexFormat));
-            }
-        }
-
-        if (offset != 0) {
-            vertexDescriptor.layouts[bufferIndex].stride = offset;
-        }
-
-        return vertexDescriptor;
-    }
-
     id<MTLDepthStencilState> MetalShaderProgram::metalDepthStencilState() {
         return static_cast<MetalDepthStencilState*>(depthStencilState())->getMetalDepthStencilState();
     }
@@ -146,21 +98,6 @@ namespace GLaDOS {
         mFragmentShaderCode = fragment;
 
         return mIsValid;
-    }
-
-    MTLVertexAttribute* MetalShaderProgram::findVertexAttribute(VertexSemantic semantic) {
-        if (!mIsValid) {
-            return nullptr;
-        }
-
-        std::string attributeName = CommonTypes::vertexSemanticToName(semantic);
-        for (MTLVertexAttribute* attr in mVertexFunction.vertexAttributes) {
-            if ([attr.name UTF8String] == attributeName) {
-                return attr;
-            }
-        }
-
-        return nullptr;
     }
 
     bool MetalShaderProgram::makePipelineDescriptor() {
@@ -188,11 +125,7 @@ namespace GLaDOS {
         mPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatDepth32Float_Stencil8;
         mPipelineDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatDepth32Float_Stencil8;
 
-        Vector<MTLVertexAttribute*> vertexAttributes;
-        for (MTLVertexAttribute* attribute in mVertexFunction.vertexAttributes) {
-            vertexAttributes.emplace_back(attribute);
-        }
-        MTLVertexDescriptor* vertexDescriptor = makeVertexDescriptor(vertexAttributes);;
+        MTLVertexDescriptor* vertexDescriptor = makeVertexDescriptor(mVertexFunction.vertexAttributes);;
         [mPipelineDescriptor setVertexDescriptor:vertexDescriptor];
 
         NSError* stateError;
@@ -211,6 +144,30 @@ namespace GLaDOS {
         [pipelineState release];
 
         return true;
+    }
+
+    MTLVertexDescriptor* MetalShaderProgram::makeVertexDescriptor(NSArray<MTLVertexAttribute*>* vertexAttributes) {
+        MTLVertexDescriptor* vertexDescriptor = [[MTLVertexDescriptor new] autorelease];
+
+        std::size_t bufferIndex = 1;  // bufferIndex 0번은 유니폼으로 사용됨
+        std::size_t offset = 0;
+        for (MTLVertexAttribute* attribute in vertexAttributes) {
+            if (attribute != nullptr) {
+                std::size_t attributeIndex = attribute.attributeIndex;
+                MTLVertexFormat vertexFormat = MetalTypes::metalDataTypeToVertexFormat(attribute.attributeType);
+                vertexDescriptor.attributes[attributeIndex].format = vertexFormat;
+                vertexDescriptor.attributes[attributeIndex].bufferIndex = bufferIndex;
+                vertexDescriptor.attributes[attributeIndex].offset = offset;
+
+                offset += align4(MetalTypes::metalVertexFormatToSize(vertexFormat));
+            }
+        }
+
+        if (offset != 0) {
+            vertexDescriptor.layouts[bufferIndex].stride = offset;
+        }
+
+        return vertexDescriptor;
     }
 
     bool MetalShaderProgram::addShaderArguments(MTLRenderPipelineReflection* pipelineReflection) {
@@ -270,7 +227,7 @@ namespace GLaDOS {
                 break;
             }
             default:
-                LOG_WARN(logger, "Not supported variable type.");
+                LOG_WARN(logger, "Not supported variable type: {0}", argument.type);
                 break;
         }
     }

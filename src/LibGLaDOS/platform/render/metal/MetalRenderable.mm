@@ -7,9 +7,11 @@
 #include "MetalShaderProgram.h"
 #include "MetalTexture2D.h"
 #include "MetalTextureCube.h"
+#include "MetalTypes.h"
 #include "platform/render/Material.h"
 #include "platform/render/Mesh.h"
 #include "platform/render/Uniform.h"
+#include "platform/render/CommonTypes.h"
 
 namespace GLaDOS {
     Logger* MetalRenderable::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalRenderable");
@@ -25,12 +27,17 @@ namespace GLaDOS {
         }
 
         MetalShaderProgram* shaderProgram = static_cast<MetalShaderProgram*>(mMaterial->getShaderProgram());  // INTEND: do not use dynamic_cast here
-        if (shaderProgram == nullptr || !shaderProgram->isValid() || mVertexDescriptor != nil) {
+        if (shaderProgram == nullptr || !shaderProgram->isValid()) {
             LOG_ERROR(logger, "Invalid shader program state");
             return;
         }
 
-        mVertexDescriptor = shaderProgram->makeVertexDescriptor(mMesh->getVertexFormatHolder());
+        if (mVertexDescriptor != nil) {
+            LOG_ERROR(logger, "Invalid Renderable state");
+            return;
+        }
+
+        mVertexDescriptor = makeVertexDescriptor(mMesh->getVertexFormatHolder(), shaderProgram);
         MTLRenderPipelineDescriptor* pipelineDescriptor = shaderProgram->getPipelineDescriptor();
         if (pipelineDescriptor == nil || mPipelineState != nil) {
             LOG_ERROR(logger, "Invalid pipeline descriptor");
@@ -119,6 +126,45 @@ namespace GLaDOS {
             return nullptr;
         }
         return buffer->getMetalBuffer();
+    }
+
+    MTLVertexDescriptor* MetalRenderable::makeVertexDescriptor(VertexFormatHolder* vertexFormatHolder, MetalShaderProgram* shaderProgram) {
+        MTLVertexDescriptor* vertexDescriptor = [[MTLVertexDescriptor new] autorelease];
+        NSArray<MTLVertexAttribute*>* vertexAttributes = [[shaderProgram->getPipelineDescriptor() vertexFunction] vertexAttributes];
+
+        std::size_t bufferIndex = 1;  // bufferIndex 0번은 유니폼으로 사용됨
+        std::size_t offset = 0;
+        for (const auto& format : *vertexFormatHolder) {
+            MTLVertexAttribute* attribute = findVertexAttribute(format->semantic(), vertexAttributes);
+            if (attribute == nullptr) {
+                LOG_ERROR(logger, "Unknown vertex semantic in VertexFormat: {0}", format->semantic().toString());
+                continue;
+            }
+
+            std::size_t attributeIndex = attribute.attributeIndex;
+            vertexDescriptor.attributes[attributeIndex].format = MetalTypes::vertexAttribTypeToMetal(format->type());
+            vertexDescriptor.attributes[attributeIndex].bufferIndex = bufferIndex;
+            vertexDescriptor.attributes[attributeIndex].offset = offset;
+
+            offset += format->sizeAlign4();
+        }
+
+        if (offset != 0) {
+            vertexDescriptor.layouts[bufferIndex].stride = offset;
+        }
+
+        return vertexDescriptor;
+    }
+
+    MTLVertexAttribute* MetalRenderable::findVertexAttribute(VertexSemantic semantic, NSArray<MTLVertexAttribute*>* vertexAttributes) {
+        std::string attributeName = CommonTypes::vertexSemanticToName(semantic);
+        for (MTLVertexAttribute* attribute in vertexAttributes) {
+            if ([attribute.name UTF8String] == attributeName) {
+                return attribute;
+            }
+        }
+
+        return nullptr;
     }
 }
 

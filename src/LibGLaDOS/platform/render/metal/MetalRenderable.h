@@ -12,6 +12,8 @@ namespace GLaDOS {
     class Logger;
     class MetalTextureBase;
     class Uniform;
+    class VertexFormatHolder;
+    class MetalShaderProgram;
     class MetalRenderable : public Renderable {
       public:
         MetalRenderable() = default;
@@ -25,6 +27,9 @@ namespace GLaDOS {
         id<MTLBuffer> getIndexBuffer() const;
 
       private:
+        MTLVertexDescriptor* makeVertexDescriptor(VertexFormatHolder* vertexFormatHolder, MetalShaderProgram* shaderProgram);
+        MTLVertexAttribute* findVertexAttribute(VertexSemantic semantic, NSArray<MTLVertexAttribute*>* vertexAttributes);
+
         static void setTexture(id<MTLRenderCommandEncoder> commandEncoder, MetalTextureBase* texture, Uniform* uniform);
         static Logger* logger;
 

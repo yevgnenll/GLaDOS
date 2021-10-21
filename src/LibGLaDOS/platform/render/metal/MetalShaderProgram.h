@@ -27,16 +27,13 @@ namespace GLaDOS {
 
         MTLRenderPipelineDescriptor* getPipelineDescriptor() const;
         void bindUniforms(MetalRenderable* _renderable);
-        MTLVertexDescriptor* makeVertexDescriptor(VertexFormatHolder* vertexFormatHolder);
-        MTLVertexDescriptor* makeVertexDescriptor(const Vector<MTLVertexAttribute*>& vertexAttributes);
         id<MTLDepthStencilState> metalDepthStencilState();
         MetalRasterizerState* metalRasterizerState();
 
       private:
         bool createShaderProgram(const std::string& vertex, const std::string& fragment) override;
-
-        MTLVertexAttribute* findVertexAttribute(VertexSemantic semantic);
         bool makePipelineDescriptor();
+        MTLVertexDescriptor* makeVertexDescriptor(NSArray<MTLVertexAttribute*>* vertexAttributes);
         bool addShaderArguments(MTLRenderPipelineReflection* pipelineReflection);
         void addUniform(MTLArgument* argument, ShaderType type);
 

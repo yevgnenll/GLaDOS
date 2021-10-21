@@ -174,22 +174,69 @@ namespace GLaDOS {
         Shared  // stored in system memory and is accessible to both the CPU and GPU
     };
 
-    enum class VertexSemantic {
-        Unknown = -1,
-        Position,
-        Normal,
-        Color,
-        TexCoord0,
-        TexCoord1,
-        TexCoord2,
-        TexCoord3,
-        TexCoord4,
-        TexCoord5,
-        TexCoord6,
-        TexCoord7,
-        Tangent,
-        BiTangent,
-        NumberOfSemantic
+    class VertexSemantic {
+      public:
+        enum Value : int8_t {
+            Unknown = -1,
+            Position,
+            Normal,
+            Color,
+            TexCoord0,
+            TexCoord1,
+            TexCoord2,
+            TexCoord3,
+            TexCoord4,
+            TexCoord5,
+            TexCoord6,
+            TexCoord7,
+            Tangent,
+            BiTangent,
+            TheNumberOfSemantic
+        };
+
+        VertexSemantic() = delete;
+        constexpr VertexSemantic(Value _value) : value{_value} {}  // no explicit
+
+        constexpr operator Value() const { return value; }  // no explicit
+        explicit operator bool() = delete;
+        constexpr const char* toString() const {
+            switch (value) {
+                case Position:
+                    return "Position";
+                case Normal:
+                    return "Normal";
+                case Color:
+                    return "Color";
+                case TexCoord0:
+                    return "TexCoord0";
+                case TexCoord1:
+                    return "TexCoord1";
+                case TexCoord2:
+                    return "TexCoord2";
+                case TexCoord3:
+                    return "TexCoord3";
+                case TexCoord4:
+                    return "TexCoord4";
+                case TexCoord5:
+                    return "TexCoord5";
+                case TexCoord6:
+                    return "TexCoord6";
+                case TexCoord7:
+                    return "TexCoord7";
+                case Tangent:
+                    return "Tangent";
+                case BiTangent:
+                    return "BiTangent";
+                default:
+                    return "Unknown";
+            }
+        }
+        constexpr static std::size_t size() {
+            return TheNumberOfSemantic;
+        }
+
+      private:
+        Value value;
     };
 
     enum class VertexAttributeType {
