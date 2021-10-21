@@ -64,12 +64,12 @@ namespace GLaDOS {
         [commandEncoder setDepthStencilState:metalDepthStencilState()];
 
         RasterizerDescription rasterizerDesc = metalRasterizerState()->mRasterizerDescription;
-        [commandEncoder setTriangleFillMode:MetalTypes::fillModeToMetalFillMode(rasterizerDesc.mFillMode)];
-        [commandEncoder setFrontFacingWinding:MetalTypes::windingModeToMetalWinding(rasterizerDesc.mWindingMode)];
+        [commandEncoder setTriangleFillMode:MetalTypes::fillModeToMetal(rasterizerDesc.mFillMode)];
+        [commandEncoder setFrontFacingWinding:MetalTypes::windingModeToMetal(rasterizerDesc.mWindingMode)];
         if (rasterizerDesc.mFillMode == FillMode::Lines) {
             [commandEncoder setCullMode:MTLCullModeNone];  // Wireframe rendering should be no cull.
         } else {
-            [commandEncoder setCullMode:MetalTypes::cullModeToMetalCullMode(rasterizerDesc.mCullMode)];
+            [commandEncoder setCullMode:MetalTypes::cullModeToMetal(rasterizerDesc.mCullMode)];
         }
 
         [commandEncoder setDepthBias:rasterizerDesc.mDepthBias slopeScale:rasterizerDesc.mSlopeScaleDepthBias clamp:rasterizerDesc.mDepthBiasClamp];
@@ -86,7 +86,7 @@ namespace GLaDOS {
             MTLVertexAttribute* attribute = findVertexAttribute(format->semantic());
             if (attribute != nullptr) {
                 std::size_t attributeIndex = attribute.attributeIndex;
-                vertexDescriptor.attributes[attributeIndex].format = MetalTypes::vertexAttribTypeToVertexFormat(format->type());
+                vertexDescriptor.attributes[attributeIndex].format = MetalTypes::vertexAttribTypeToMetal(format->type());
                 vertexDescriptor.attributes[attributeIndex].bufferIndex = bufferIndex;
                 vertexDescriptor.attributes[attributeIndex].offset = offset;
             }

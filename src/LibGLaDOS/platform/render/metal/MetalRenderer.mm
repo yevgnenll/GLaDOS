@@ -78,7 +78,7 @@ namespace GLaDOS {
 
         Mesh* mesh = renderable->getMesh();
         GPUBuffer* indexBuffer = mesh->getGPUIndexBuffer();
-        MTLPrimitiveType primitiveType = MetalTypes::primitiveToMetalPrimitive(mesh->getPrimitiveType());
+        MTLPrimitiveType primitiveType = MetalTypes::primitiveTopologyToMetal(mesh->getPrimitiveType());
 
         [mCommandEncoder setRenderPipelineState:renderable->getPipelineState()];
         [mCommandEncoder setVertexBuffer:renderable->getVertexBuffer() offset:0 atIndex:1];

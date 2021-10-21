@@ -10,9 +10,9 @@ namespace GLaDOS {
         CommonTypes() = delete;
         ~CommonTypes() = delete;
 
-        static constexpr std::size_t vertexArrtibTypeToSize(VertexAttributeType type);
-        static constexpr std::size_t uniformTypeToSize(UniformType uniformType);
-        static constexpr const char* vertexSemanticToName(VertexSemantic semantic);
+        static std::size_t vertexArrtibTypeToSize(VertexAttributeType type);
+        static std::size_t uniformTypeToSize(UniformType uniformType);
+        static const char* vertexSemanticToName(VertexSemantic semantic);
 
       private:
         static Logger* logger;

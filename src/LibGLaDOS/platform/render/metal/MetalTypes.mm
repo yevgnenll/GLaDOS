@@ -5,7 +5,7 @@
 namespace GLaDOS {
     Logger* MetalTypes::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalTypes");
 
-    constexpr MTLVertexFormat MetalTypes::vertexAttribTypeToVertexFormat(VertexAttributeType type, bool normalized) {
+    MTLVertexFormat MetalTypes::vertexAttribTypeToMetal(VertexAttributeType type, bool normalized) {
         switch (type) {
             case VertexAttributeType::Float:        return MTLVertexFormatFloat;
             case VertexAttributeType::Float2:       return MTLVertexFormatFloat2;
@@ -55,7 +55,7 @@ namespace GLaDOS {
         return MTLVertexFormatInvalid;
     }
 
-    constexpr std::size_t MetalTypes::metalVertexFormatToSize(MTLVertexFormat vertexFormat) {
+    std::size_t MetalTypes::metalVertexFormatToSize(MTLVertexFormat vertexFormat) {
         const uint32_t component_32bit_byte_size = 4;
         const uint32_t component_16bit_byte_size = 2;
 
@@ -140,7 +140,7 @@ namespace GLaDOS {
         return 0;
     }
 
-    constexpr UniformType MetalTypes::metalDataTypeToUniformType(MTLDataType dataType) {
+    UniformType MetalTypes::metalDataTypeToUniformType(MTLDataType dataType) {
         switch (dataType) {
             case MTLDataTypeBool:      return UniformType::Bool;
             case MTLDataTypeInt:       return UniformType::Int;
@@ -160,21 +160,21 @@ namespace GLaDOS {
         return UniformType::Unknown;
     }
 
-    constexpr MTLTriangleFillMode MetalTypes::fillModeToMetalFillMode(FillMode mode) {
+    MTLTriangleFillMode MetalTypes::fillModeToMetal(FillMode mode) {
         switch (mode) {
             case FillMode::Fill:   return MTLTriangleFillModeFill;
             case FillMode::Lines:  return MTLTriangleFillModeLines;
         }
     }
 
-    constexpr MTLWinding MetalTypes::windingModeToMetalWinding(WindingMode mode) {
+    MTLWinding MetalTypes::windingModeToMetal(WindingMode mode) {
         switch (mode) {
             case WindingMode::ClockWise:         return MTLWindingClockwise;
             case WindingMode::CounterClockWise:  return MTLWindingCounterClockwise;
         }
     }
 
-    constexpr MTLCullMode MetalTypes::cullModeToMetalCullMode(CullMode mode) {
+    MTLCullMode MetalTypes::cullModeToMetal(CullMode mode) {
         switch (mode) {
             case CullMode::None:   return MTLCullModeNone;
             case CullMode::Front:  return MTLCullModeFront;
@@ -182,7 +182,7 @@ namespace GLaDOS {
         }
     }
 
-    constexpr MTLVertexFormat MetalTypes::metalDataTypeToVertexFormat(MTLDataType dataType, bool normalized) {
+    MTLVertexFormat MetalTypes::metalDataTypeToVertexFormat(MTLDataType dataType, bool normalized) {
         switch(dataType) {
             case MTLDataTypeFloat:      return MTLVertexFormatFloat;
             case MTLDataTypeFloat2:     return MTLVertexFormatFloat2;
@@ -232,7 +232,7 @@ namespace GLaDOS {
         return MTLVertexFormatInvalid;
     }
 
-    constexpr MTLPrimitiveType MetalTypes::primitiveToMetalPrimitive(PrimitiveTopology primitiveTopology) {
+    MTLPrimitiveType MetalTypes::primitiveTopologyToMetal(PrimitiveTopology primitiveTopology) {
         switch (primitiveTopology) {
             case PrimitiveTopology::Point:          return MTLPrimitiveTypePoint;
             case PrimitiveTopology::Line:           return MTLPrimitiveTypeLine;
@@ -242,7 +242,7 @@ namespace GLaDOS {
         }
     }
 
-    constexpr MTLIndexType MetalTypes::sizeToMetalIndexType(std::size_t size) {
+    MTLIndexType MetalTypes::sizeToMetalIndexType(std::size_t size) {
         switch (size) {
             case sizeof(uint32_t):  return MTLIndexTypeUInt32;
             case sizeof(uint16_t):  return MTLIndexTypeUInt16;
@@ -252,7 +252,7 @@ namespace GLaDOS {
         return MTLIndexTypeUInt16;
     }
 
-    constexpr MTLCompareFunction MetalTypes::comparisonFunctionToMetal(ComparisonFunction func) {
+    MTLCompareFunction MetalTypes::comparisonFunctionToMetal(ComparisonFunction func) {
         switch (func) {
             case ComparisonFunction::Never:
                 return MTLCompareFunctionNever;
@@ -278,7 +278,7 @@ namespace GLaDOS {
         return MTLCompareFunctionLess;
     }
 
-    constexpr MTLStencilOperation MetalTypes::stencilOperatorToMetal(StencilOperator op) {
+    MTLStencilOperation MetalTypes::stencilOperatorToMetal(StencilOperator op) {
         switch (op) {
             case StencilOperator::Keep:
                 return MTLStencilOperationKeep;
@@ -304,7 +304,7 @@ namespace GLaDOS {
         return MTLStencilOperationKeep;
     }
 
-    constexpr MTLSamplerMinMagFilter MetalTypes::filterModeToMetalMinMagFilter(FilterMode mode) {
+    MTLSamplerMinMagFilter MetalTypes::filterModeToMetalMinMagFilter(FilterMode mode) {
         switch (mode) {
             case FilterMode::Nearest:
                 return MTLSamplerMinMagFilterNearest;
@@ -317,7 +317,7 @@ namespace GLaDOS {
         return MTLSamplerMinMagFilterNearest;
     }
 
-    constexpr MTLSamplerMipFilter MetalTypes::filterModeToMetalMipFilter(FilterMode mode) {
+    MTLSamplerMipFilter MetalTypes::filterModeToMetalMipFilter(FilterMode mode) {
         switch (mode) {
             case FilterMode::None:
                 return MTLSamplerMipFilterNotMipmapped;
@@ -333,7 +333,7 @@ namespace GLaDOS {
         return MTLSamplerMipFilterNotMipmapped;
     }
 
-    constexpr MTLSamplerAddressMode MetalTypes::wrapModeToMetalAddressMode(WrapMode mode) {
+    MTLSamplerAddressMode MetalTypes::wrapModeToMetalAddressMode(WrapMode mode) {
         switch (mode) {
             case WrapMode::Clamp:
                 return MTLSamplerAddressModeClampToZero;
@@ -350,7 +350,7 @@ namespace GLaDOS {
         }
     }
 
-    constexpr MTLPixelFormat MetalTypes::pixelFormatToMetal(PixelFormat format) {
+    MTLPixelFormat MetalTypes::pixelFormatToMetal(PixelFormat format) {
         switch (format) {
             case PixelFormat::Red8:
                 return MTLPixelFormatR8Unorm;
@@ -400,7 +400,7 @@ namespace GLaDOS {
         return MTLPixelFormatInvalid;
     }
 
-    constexpr MTLTextureUsage MetalTypes::textureUsageToMetal(TextureUsage usage) {
+    MTLTextureUsage MetalTypes::textureUsageToMetal(TextureUsage usage) {
         switch (usage) {
             case TextureUsage::ShaderRead:
                 return MTLTextureUsageShaderRead;

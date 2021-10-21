@@ -4,7 +4,7 @@
 namespace GLaDOS {
     Logger* CommonTypes::logger = LoggerRegistry::getInstance().makeAndGetLogger("CommonTypes");
 
-    constexpr std::size_t CommonTypes::vertexArrtibTypeToSize(VertexAttributeType type) {
+    std::size_t CommonTypes::vertexArrtibTypeToSize(VertexAttributeType type) {
         switch (type) {
             case VertexAttributeType::Float:
                 return sizeof(float);
@@ -86,7 +86,7 @@ namespace GLaDOS {
         return 0;
     }
 
-    constexpr std::size_t CommonTypes::uniformTypeToSize(UniformType uniformType) {
+    std::size_t CommonTypes::uniformTypeToSize(UniformType uniformType) {
         switch (uniformType) {
             case UniformType::Bool:
                 return 1;
@@ -120,7 +120,7 @@ namespace GLaDOS {
         return 0;
     }
 
-    constexpr const char* CommonTypes::vertexSemanticToName(VertexSemantic semantic) {
+    const char* CommonTypes::vertexSemanticToName(VertexSemantic semantic) {
         switch (semantic) {
             case VertexSemantic::Position:
                 return "_position";
