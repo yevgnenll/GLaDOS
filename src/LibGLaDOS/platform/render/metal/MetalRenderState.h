@@ -18,9 +18,6 @@ namespace GLaDOS {
         id<MTLDepthStencilState> getMetalDepthStencilState();
 
       private:
-        static constexpr MTLCompareFunction mapComparisonFunctionFrom(ComparisonFunction func);
-        static constexpr MTLStencilOperation mapStencilOperatorFrom(StencilOperator op);
-
         static Logger* logger;
 
         MTLDepthStencilDescriptor* mDepthStencilDescriptor{nil};
@@ -35,10 +32,6 @@ namespace GLaDOS {
         id<MTLSamplerState> getMetalSamplerState();
 
       private:
-        static constexpr MTLSamplerMinMagFilter mapSamplerMinMagFilterFrom(FilterMode mode);
-        static constexpr MTLSamplerMipFilter mapSamplerMipFilterFrom(FilterMode mode);
-        static constexpr MTLSamplerAddressMode mapSamplerAddressModeFrom(WrapMode mode);
-
         static Logger* logger;
 
         MTLSamplerDescriptor* mSamplerDescriptor{nil};

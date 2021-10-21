@@ -10,6 +10,7 @@
 #include "MetalShaderProgram.h"
 #include "MetalTexture2D.h"
 #include "MetalTextureCube.h"
+#include "MetalTypes.h"
 #include "platform/render/Mesh.h"
 #include "platform/render/VertexBuffer.h"
 #include "resource/ResourceManager.h"
@@ -77,13 +78,13 @@ namespace GLaDOS {
 
         Mesh* mesh = renderable->getMesh();
         GPUBuffer* indexBuffer = mesh->getGPUIndexBuffer();
-        MTLPrimitiveType primitiveType = MetalRenderer::mapPrimitiveType(mesh->getPrimitiveType());
+        MTLPrimitiveType primitiveType = MetalTypes::primitiveToMetalPrimitive(mesh->getPrimitiveType());
 
         [mCommandEncoder setRenderPipelineState:renderable->getPipelineState()];
         [mCommandEncoder setVertexBuffer:renderable->getVertexBuffer() offset:0 atIndex:1];
         if (indexBuffer != nullptr) {
             // index primitive draw
-            MTLIndexType indexType = MetalRenderer::mapIndexType(mesh->getIndexStride());
+            MTLIndexType indexType = MetalTypes::sizeToMetalIndexType(mesh->getIndexStride());
             std::size_t indexCount = mesh->getIndexCount();
             NSUInteger indexOffset = mesh->getIndexStart() * mesh->getIndexStride();
             [mCommandEncoder drawIndexedPrimitives:primitiveType indexCount:indexCount indexType:indexType indexBuffer:renderable->getIndexBuffer() indexBufferOffset:indexOffset];
@@ -239,34 +240,6 @@ namespace GLaDOS {
 
     CAMetalLayer* MetalRenderer::getMetalLayer() const {
         return mMetalLayer;
-    }
-
-    MTLPrimitiveType MetalRenderer::mapPrimitiveType(PrimitiveTopology type) {
-        switch (type) {
-            case PrimitiveTopology::Point:
-                return MTLPrimitiveTypePoint;
-            case PrimitiveTopology::Line:
-                return MTLPrimitiveTypeLine;
-            case PrimitiveTopology::LineStrip:
-                return MTLPrimitiveTypeLineStrip;
-            case PrimitiveTopology::Triangle:
-                return MTLPrimitiveTypeTriangle;
-            case PrimitiveTopology::TriangleStrip:
-                return MTLPrimitiveTypeTriangleStrip;
-        }
-    }
-
-    MTLIndexType MetalRenderer::mapIndexType(std::size_t size) {
-        switch (size) {
-            case sizeof(uint32_t):
-                return MTLIndexTypeUInt32;
-            case sizeof(uint16_t):
-                return MTLIndexTypeUInt16;
-            default:
-                break;
-        }
-
-        return MTLIndexTypeUInt16;
     }
 }  // namespace GLaDOS
 

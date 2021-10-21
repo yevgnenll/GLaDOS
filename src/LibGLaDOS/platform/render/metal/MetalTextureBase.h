@@ -17,9 +17,6 @@ namespace GLaDOS {
         id<MTLTexture> texture();
         virtual id<MTLSamplerState> metalSamplerState() = 0;
 
-        static MTLPixelFormat mapMetalPixelFormatFrom(PixelFormat format);
-        static MTLTextureUsage mapMetalTextureUsageFrom(TextureUsage usage);
-
       protected:
         void release();
 

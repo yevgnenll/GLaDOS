@@ -3,9 +3,11 @@
 #ifdef PLATFORM_MACOS
 
 #import "MetalRenderState.h"
+#include "MetalTypes.h"
 
 namespace GLaDOS {
     Logger* MetalTextureCube::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalTextureCube");
+
     MetalTextureCube::MetalTextureCube(const std::string& name, PixelFormat format) : TextureCube{name, format} {
     }
 
@@ -28,10 +30,10 @@ namespace GLaDOS {
         release();
 
         mTextureDescriptor = [MTLTextureDescriptor new];
-        mTextureDescriptor.pixelFormat = MetalTextureBase::mapMetalPixelFormatFrom(mFormat);
+        mTextureDescriptor.pixelFormat = MetalTypes::pixelFormatToMetal(mFormat);
         mTextureDescriptor.width = mWidth;
         mTextureDescriptor.height = mHeight;
-        mTextureDescriptor.usage = MetalTextureBase::mapMetalTextureUsageFrom(mUsage);
+        mTextureDescriptor.usage = MetalTypes::textureUsageToMetal(mUsage);
         mTextureDescriptor.textureType = MTLTextureTypeCube;
         mTextureDescriptor.mipmapLevelCount = 1;
         mTexture = [device newTextureWithDescriptor:mTextureDescriptor];

@@ -2,12 +2,17 @@
 
 #ifdef PLATFORM_MACOS
 
+#include "MetalTypes.h"
+
 namespace GLaDOS {
     Logger* MetalDepthStencilState::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalDepthStencilState");
+    Logger* MetalSamplerState::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalSamplerState");
+
     MetalDepthStencilState::MetalDepthStencilState(const DepthStencilDescription& desc) : DepthStencilState{desc} {
         mDepthStencilDescriptor = [MTLDepthStencilDescriptor new];
         mDepthStencilDescriptor.depthWriteEnabled = static_cast<BOOL>(desc.mIsDepthWriteEnable);
-        mDepthStencilDescriptor.depthCompareFunction = MetalDepthStencilState::mapComparisonFunctionFrom(desc.mDepthFunction);
+        mDepthStencilDescriptor.depthCompareFunction = MetalTypes::comparisonFunctionToMetal(desc.mDepthFunction);
+        // TODO
         // if (desc.mFrontStencilEnable) {
         // mDepthStencilDescriptor.frontFaceStencil = ;
         // }
@@ -30,67 +35,14 @@ namespace GLaDOS {
         return mDepthStencilState;
     }
 
-    constexpr MTLCompareFunction MetalDepthStencilState::mapComparisonFunctionFrom(ComparisonFunction func) {
-        switch (func) {
-            case ComparisonFunction::Never:
-                return MTLCompareFunctionNever;
-            case ComparisonFunction::Always:
-                return MTLCompareFunctionAlways;
-            case ComparisonFunction::Less:
-                return MTLCompareFunctionLess;
-            case ComparisonFunction::LessEqual:
-                return MTLCompareFunctionLessEqual;
-            case ComparisonFunction::Equal:
-                return MTLCompareFunctionEqual;
-            case ComparisonFunction::NotEqual:
-                return MTLCompareFunctionNotEqual;
-            case ComparisonFunction::Greater:
-                return MTLCompareFunctionGreater;
-            case ComparisonFunction::GreaterEqual:
-                return MTLCompareFunctionGreaterEqual;
-            default:
-                LOG_WARN(logger, "Unknown Depth comparison function! fallback to ComparisonFunction::Less");
-                break;
-        }
-
-        return MTLCompareFunctionLess;
-    }
-
-    constexpr MTLStencilOperation MetalDepthStencilState::mapStencilOperatorFrom(StencilOperator op) {
-        switch (op) {
-            case StencilOperator::Keep:
-                return MTLStencilOperationKeep;
-            case StencilOperator::Zero:
-                return MTLStencilOperationZero;
-            case StencilOperator::Replace:
-                return MTLStencilOperationReplace;
-            case StencilOperator::Increase:
-                return MTLStencilOperationIncrementClamp;
-            case StencilOperator::IncreaseWrap:
-                return MTLStencilOperationIncrementWrap;
-            case StencilOperator::Decrease:
-                return MTLStencilOperationDecrementClamp;
-            case StencilOperator::DecreaseWrap:
-                return MTLStencilOperationDecrementWrap;
-            case StencilOperator::Invert:
-                return MTLStencilOperationInvert;
-            default:
-                LOG_WARN(logger, "Unknown Stencil operator! fallback to StencilOperator::Keep");
-                break;
-        }
-
-        return MTLStencilOperationKeep;
-    }
-
-    Logger* MetalSamplerState::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalSamplerState");
     MetalSamplerState::MetalSamplerState(const SamplerDescription& desc) : SamplerState{desc} {
         mSamplerDescriptor = [MTLSamplerDescriptor new];
-        mSamplerDescriptor.minFilter = MetalSamplerState::mapSamplerMinMagFilterFrom(desc.mMinFilter);
-        mSamplerDescriptor.magFilter = MetalSamplerState::mapSamplerMinMagFilterFrom(desc.mMagFilter);
-        mSamplerDescriptor.mipFilter = MetalSamplerState::mapSamplerMipFilterFrom(desc.mMipFilter);
-        mSamplerDescriptor.sAddressMode = MetalSamplerState::mapSamplerAddressModeFrom(desc.mSWrap);
-        mSamplerDescriptor.tAddressMode = MetalSamplerState::mapSamplerAddressModeFrom(desc.mTWrap);
-        mSamplerDescriptor.rAddressMode = MetalSamplerState::mapSamplerAddressModeFrom(desc.mRWrap);
+        mSamplerDescriptor.minFilter = MetalTypes::filterModeToMetalMinMagFilter(desc.mMinFilter);
+        mSamplerDescriptor.magFilter = MetalTypes::filterModeToMetalMinMagFilter(desc.mMagFilter);
+        mSamplerDescriptor.mipFilter = MetalTypes::filterModeToMetalMipFilter(desc.mMipFilter);
+        mSamplerDescriptor.sAddressMode = MetalTypes::wrapModeToMetalAddressMode(desc.mSWrap);
+        mSamplerDescriptor.tAddressMode = MetalTypes::wrapModeToMetalAddressMode(desc.mTWrap);
+        mSamplerDescriptor.rAddressMode = MetalTypes::wrapModeToMetalAddressMode(desc.mRWrap);
         mSamplerDescriptor.maxAnisotropy = desc.mMaxAnisotropyLevel;
 
         id<MTLDevice> device = MetalRenderer::getInstance().getDevice();
@@ -109,52 +61,6 @@ namespace GLaDOS {
     }
 
     MetalRasterizerState::MetalRasterizerState(const RasterizerDescription& desc) : RasterizerState{desc} {
-    }
-
-    constexpr MTLSamplerMinMagFilter MetalSamplerState::mapSamplerMinMagFilterFrom(FilterMode mode) {
-        switch (mode) {
-            case FilterMode::Nearest:
-                return MTLSamplerMinMagFilterNearest;
-            case FilterMode::Bilinear:
-                return MTLSamplerMinMagFilterLinear;
-            default:
-                LOG_WARN(logger, "Not recognized FilterMode in metal renderer fallback to Nearest");
-        }
-
-        return MTLSamplerMinMagFilterNearest;
-    }
-
-    constexpr MTLSamplerMipFilter MetalSamplerState::mapSamplerMipFilterFrom(FilterMode mode) {
-        switch (mode) {
-            case FilterMode::None:
-                return MTLSamplerMipFilterNotMipmapped;
-            case FilterMode::Nearest:
-                return MTLSamplerMipFilterNearest;
-            case FilterMode::Bilinear:
-                return MTLSamplerMipFilterLinear;
-            default:
-                LOG_WARN(logger, "Not recognized FilterMode in metal renderer fallback to Nearest");
-                break;
-        }
-
-        return MTLSamplerMipFilterNotMipmapped;
-    }
-
-    constexpr MTLSamplerAddressMode MetalSamplerState::mapSamplerAddressModeFrom(WrapMode mode) {
-        switch (mode) {
-            case WrapMode::Clamp:
-                return MTLSamplerAddressModeClampToZero;
-            case WrapMode::ClampBorder:
-                return MTLSamplerAddressModeClampToBorderColor;
-            case WrapMode::ClampEdge:
-                return MTLSamplerAddressModeClampToEdge;
-            case WrapMode::Repeat:
-                return MTLSamplerAddressModeRepeat;
-            case WrapMode::MirroredRepeat:
-                return MTLSamplerAddressModeMirrorRepeat;
-            case WrapMode::MirroredClampEdge:
-                return MTLSamplerAddressModeMirrorClampToEdge;
-        }
     }
 }
 

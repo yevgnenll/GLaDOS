@@ -3,10 +3,11 @@
 #ifdef PLATFORM_MACOS
 
 #include "MetalRenderState.h"
-#include "math/Math.h"
+#include "MetalTypes.h"
 
 namespace GLaDOS {
     Logger* MetalTexture2D::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalTexture2D");
+
     MetalTexture2D::MetalTexture2D(const std::string& name, PixelFormat format) : Texture2D{name, format} {
     }
 
@@ -23,10 +24,10 @@ namespace GLaDOS {
         release();
 
         mTextureDescriptor = [MTLTextureDescriptor new];
-        mTextureDescriptor.pixelFormat = MetalTextureBase::mapMetalPixelFormatFrom(mFormat);
+        mTextureDescriptor.pixelFormat = MetalTypes::pixelFormatToMetal(mFormat);
         mTextureDescriptor.width = mWidth;
         mTextureDescriptor.height = mHeight;
-        mTextureDescriptor.usage = MetalTextureBase::mapMetalTextureUsageFrom(mUsage);
+        mTextureDescriptor.usage = MetalTypes::textureUsageToMetal(mUsage);
         mTextureDescriptor.textureType = MTLTextureType2D;
         mTextureDescriptor.mipmapLevelCount = checkMipmapsUsable() ? calculateMipmapsCount(mWidth, mHeight) : 1; // The default value is 1
         mTexture = [device newTextureWithDescriptor:mTextureDescriptor];

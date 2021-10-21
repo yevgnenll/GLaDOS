@@ -48,8 +48,6 @@ namespace GLaDOS {
         CAMetalLayer* getMetalLayer() const;
 
       private:
-        static MTLPrimitiveType mapPrimitiveType(PrimitiveTopology type);
-        static MTLIndexType mapIndexType(std::size_t size);
         static Logger* logger;
 
         id<MTLDevice> mMetalDevice{nil};

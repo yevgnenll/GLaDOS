@@ -231,6 +231,189 @@ namespace GLaDOS {
 
         return MTLVertexFormatInvalid;
     }
+
+    constexpr MTLPrimitiveType MetalTypes::primitiveToMetalPrimitive(PrimitiveTopology primitiveTopology) {
+        switch (primitiveTopology) {
+            case PrimitiveTopology::Point:          return MTLPrimitiveTypePoint;
+            case PrimitiveTopology::Line:           return MTLPrimitiveTypeLine;
+            case PrimitiveTopology::LineStrip:      return MTLPrimitiveTypeLineStrip;
+            case PrimitiveTopology::Triangle:       return MTLPrimitiveTypeTriangle;
+            case PrimitiveTopology::TriangleStrip:  return MTLPrimitiveTypeTriangleStrip;
+        }
+    }
+
+    constexpr MTLIndexType MetalTypes::sizeToMetalIndexType(std::size_t size) {
+        switch (size) {
+            case sizeof(uint32_t):  return MTLIndexTypeUInt32;
+            case sizeof(uint16_t):  return MTLIndexTypeUInt16;
+            default:                break;
+        }
+
+        return MTLIndexTypeUInt16;
+    }
+
+    constexpr MTLCompareFunction MetalTypes::comparisonFunctionToMetal(ComparisonFunction func) {
+        switch (func) {
+            case ComparisonFunction::Never:
+                return MTLCompareFunctionNever;
+            case ComparisonFunction::Always:
+                return MTLCompareFunctionAlways;
+            case ComparisonFunction::Less:
+                return MTLCompareFunctionLess;
+            case ComparisonFunction::LessEqual:
+                return MTLCompareFunctionLessEqual;
+            case ComparisonFunction::Equal:
+                return MTLCompareFunctionEqual;
+            case ComparisonFunction::NotEqual:
+                return MTLCompareFunctionNotEqual;
+            case ComparisonFunction::Greater:
+                return MTLCompareFunctionGreater;
+            case ComparisonFunction::GreaterEqual:
+                return MTLCompareFunctionGreaterEqual;
+            default:
+                LOG_WARN(logger, "Unknown Depth comparison function! fallback to ComparisonFunction::Less");
+                break;
+        }
+
+        return MTLCompareFunctionLess;
+    }
+
+    constexpr MTLStencilOperation MetalTypes::stencilOperatorToMetal(StencilOperator op) {
+        switch (op) {
+            case StencilOperator::Keep:
+                return MTLStencilOperationKeep;
+            case StencilOperator::Zero:
+                return MTLStencilOperationZero;
+            case StencilOperator::Replace:
+                return MTLStencilOperationReplace;
+            case StencilOperator::Increase:
+                return MTLStencilOperationIncrementClamp;
+            case StencilOperator::IncreaseWrap:
+                return MTLStencilOperationIncrementWrap;
+            case StencilOperator::Decrease:
+                return MTLStencilOperationDecrementClamp;
+            case StencilOperator::DecreaseWrap:
+                return MTLStencilOperationDecrementWrap;
+            case StencilOperator::Invert:
+                return MTLStencilOperationInvert;
+            default:
+                LOG_WARN(logger, "Unknown Stencil operator! fallback to StencilOperator::Keep");
+                break;
+        }
+
+        return MTLStencilOperationKeep;
+    }
+
+    constexpr MTLSamplerMinMagFilter MetalTypes::filterModeToMetalMinMagFilter(FilterMode mode) {
+        switch (mode) {
+            case FilterMode::Nearest:
+                return MTLSamplerMinMagFilterNearest;
+            case FilterMode::Bilinear:
+                return MTLSamplerMinMagFilterLinear;
+            default:
+                LOG_WARN(logger, "Not recognized FilterMode in metal renderer fallback to Nearest");
+        }
+
+        return MTLSamplerMinMagFilterNearest;
+    }
+
+    constexpr MTLSamplerMipFilter MetalTypes::filterModeToMetalMipFilter(FilterMode mode) {
+        switch (mode) {
+            case FilterMode::None:
+                return MTLSamplerMipFilterNotMipmapped;
+            case FilterMode::Nearest:
+                return MTLSamplerMipFilterNearest;
+            case FilterMode::Bilinear:
+                return MTLSamplerMipFilterLinear;
+            default:
+                LOG_WARN(logger, "Not recognized FilterMode in metal renderer fallback to Nearest");
+                break;
+        }
+
+        return MTLSamplerMipFilterNotMipmapped;
+    }
+
+    constexpr MTLSamplerAddressMode MetalTypes::wrapModeToMetalAddressMode(WrapMode mode) {
+        switch (mode) {
+            case WrapMode::Clamp:
+                return MTLSamplerAddressModeClampToZero;
+            case WrapMode::ClampBorder:
+                return MTLSamplerAddressModeClampToBorderColor;
+            case WrapMode::ClampEdge:
+                return MTLSamplerAddressModeClampToEdge;
+            case WrapMode::Repeat:
+                return MTLSamplerAddressModeRepeat;
+            case WrapMode::MirroredRepeat:
+                return MTLSamplerAddressModeMirrorRepeat;
+            case WrapMode::MirroredClampEdge:
+                return MTLSamplerAddressModeMirrorClampToEdge;
+        }
+    }
+
+    constexpr MTLPixelFormat MetalTypes::pixelFormatToMetal(PixelFormat format) {
+        switch (format) {
+            case PixelFormat::Red8:
+                return MTLPixelFormatR8Unorm;
+            case PixelFormat::Red16:
+                return MTLPixelFormatR16Unorm;
+            case PixelFormat::RedHalf:
+                return MTLPixelFormatR16Float;
+            case PixelFormat::RedFloat:
+                return MTLPixelFormatR32Float;
+            case PixelFormat::RG16:
+                return MTLPixelFormatRG8Unorm;
+            case PixelFormat::RG32:
+                return MTLPixelFormatRG16Unorm;
+            case PixelFormat::RGHalf:
+                return MTLPixelFormatRG16Float;
+            case PixelFormat::RGFloat:
+                return MTLPixelFormatRG32Float;
+            case PixelFormat::RGB24:  // fallback alpha with 0xFF
+            case PixelFormat::RGBA32:
+                return MTLPixelFormatRGBA8Unorm;
+            case PixelFormat::BGRA32:
+                return MTLPixelFormatBGRA8Unorm;
+            case PixelFormat::RGBA64:
+                return MTLPixelFormatRGBA16Unorm;
+            case PixelFormat::RGBAHalf:
+                return MTLPixelFormatRGBA16Float;
+            case PixelFormat::RGBAFloat:
+                return MTLPixelFormatRGBA32Float;
+            case PixelFormat::Alpha8:
+                return MTLPixelFormatA8Unorm;
+            case PixelFormat::sRGB24:  // fallback alpha with 0xFF
+            case PixelFormat::sRGBA32:
+                return MTLPixelFormatRGBA8Unorm_sRGB;
+            case PixelFormat::Depth32:
+                return MTLPixelFormatDepth32Float;
+            case PixelFormat::Stencil8:
+                return MTLPixelFormatStencil8;
+            case PixelFormat::Depth24Stencil8:
+                return MTLPixelFormatX24_Stencil8;  // MTLPixelFormatDepth24Unorm_Stencil8 can't directly read the stencil value of a texture
+            case PixelFormat::Depth32Stencil8:
+                return MTLPixelFormatDepth32Float_Stencil8;
+            default:
+                LOG_ERROR(logger, "Invalid Texture format.");
+                break;
+        }
+
+        return MTLPixelFormatInvalid;
+    }
+
+    constexpr MTLTextureUsage MetalTypes::textureUsageToMetal(TextureUsage usage) {
+        switch (usage) {
+            case TextureUsage::ShaderRead:
+                return MTLTextureUsageShaderRead;
+            case TextureUsage::ShaderWrite:
+                return MTLTextureUsageShaderWrite;
+            case TextureUsage::RenderTarget:
+                return MTLTextureUsageRenderTarget;
+            default:
+                break;
+        }
+
+        return MTLTextureUsageUnknown;
+    }
 }
 
 #endif
