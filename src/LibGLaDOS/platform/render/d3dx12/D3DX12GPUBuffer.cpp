@@ -13,12 +13,12 @@ namespace GLaDOS {
     bool D3DX12GPUBuffer::uploadData(void* data, std::size_t size) {
         ComPtr<ID3D12Device> device = D3DX12Renderer::getInstance().getDevice();
         if (device == nullptr) {
-            LOG_ERROR(logger, "Invalid DirectX12 device state, upload GPUBuffer failed.");
+            LOG_ERROR(logger, "Invalid renderer device state.");
             return false;
         }
         ComPtr<ID3D12GraphicsCommandList> commandList = D3DX12Renderer::getInstance().getCommandList();
         if (commandList == nullptr) {
-            LOG_ERROR(logger, "Invalid DirectX12 commandList, upload GPUBuffer failed.");
+            LOG_ERROR(logger, "Invalid device command list.");
             return false;
         }
 
@@ -29,23 +29,17 @@ namespace GLaDOS {
         // 정적 버퍼를 만든다.
         CD3DX12_HEAP_PROPERTIES heapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
         CD3DX12_RESOURCE_DESC resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(size);
-        HRESULT hresult = D3DX12Renderer::getInstance().getDevice()->CreateCommittedResource(
-            &heapProperties,D3D12_HEAP_FLAG_NONE,&resourceDesc,
-            D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(mD3dx12Buffer.GetAddressOf())
-        );
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
+        if (FAILED(D3DX12Renderer::getInstance().getDevice()->CreateCommittedResource(&heapProperties,D3D12_HEAP_FLAG_NONE,&resourceDesc, D3D12_RESOURCE_STATE_COMMON, nullptr,
+                                                                                      IID_PPV_ARGS(mD3dx12Buffer.GetAddressOf())))) {
+            LOG_ERROR(logger, "Failed to create GPUBuffer resource.");
             return false;
         }
 
         // 임시 업로드 버퍼를 만든다.
         CD3DX12_HEAP_PROPERTIES uploadHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-        hresult = D3DX12Renderer::getInstance().getDevice()->CreateCommittedResource(
-            &uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc,
-            D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(mUploadBuffer.GetAddressOf())
-        );
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
+        if (FAILED(D3DX12Renderer::getInstance().getDevice()->CreateCommittedResource(&uploadHeapProperties, D3D12_HEAP_FLAG_NONE, &resourceDesc,
+                                                                                      D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(mUploadBuffer.GetAddressOf())))) {
+            LOG_ERROR(logger, "Failed to create upload buffer resource.");
             return false;
         }
 

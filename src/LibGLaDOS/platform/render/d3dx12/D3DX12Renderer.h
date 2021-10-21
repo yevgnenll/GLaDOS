@@ -48,7 +48,6 @@ namespace GLaDOS {
 
         ComPtr<ID3D12Device> getDevice() const;
         ComPtr<ID3D12GraphicsCommandList> getCommandList() const;
-        static std::string hresultToString(HRESULT hresult);
         static void getHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter, bool preferHighPerfAdapter = false);
 
       private:

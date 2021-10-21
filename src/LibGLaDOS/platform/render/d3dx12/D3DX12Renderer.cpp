@@ -30,7 +30,7 @@ namespace GLaDOS {
         ComPtr<ID3D12Debug1> debugController1;
         if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
             if (SUCCEEDED(debugController->QueryInterface(IID_PPV_ARGS(&debugController1)))) {
-                debugController1->SetEnableGPUBasedValidation(true);
+                debugController1->SetEnableGPUBasedValidation(TRUE);
             }
             debugController->EnableDebugLayer();
 
@@ -40,9 +40,8 @@ namespace GLaDOS {
 #endif
 
         ComPtr<IDXGIFactory4> factory;
-        HRESULT hresult = CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory));
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", hresultToString(hresult));
+        if (FAILED(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)))) {
+            LOG_ERROR(logger, "Failed to create DirectX Graphics Interface Factory.");
             return false;
         }
 
@@ -51,9 +50,8 @@ namespace GLaDOS {
         getHardwareAdapter(factory.Get(), &hardwareAdapter);
 
         // 장치 생성
-        hresult = D3D12CreateDevice(hardwareAdapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&mDevice));
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", hresultToString(hresult));
+        if (FAILED(D3D12CreateDevice(hardwareAdapter.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&mDevice)))) {
+            LOG_ERROR(logger, "Failed to create DirectX12 Device.");
             return false;
         }
 
@@ -61,30 +59,26 @@ namespace GLaDOS {
         D3D12_COMMAND_QUEUE_DESC queueDesc{};
         queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
         queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-        hresult = mDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&mCommandQueue));
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", hresultToString(hresult));
+        if (FAILED(mDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&mCommandQueue)))) {
+            LOG_ERROR(logger, "Failed to create DirectX Command queue.");
             return false;
         }
 
         // 명령 할당자 생성
-        hresult = mDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&mCommandAllocator));
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", hresultToString(hresult));
+        if (FAILED(mDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&mCommandAllocator)))) {
+            LOG_ERROR(logger, "Failed to create DirectX Command allocator.");
             return false;
         }
 
         // 명령 목록 생성
-        hresult = mDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, mCommandAllocator.Get(), nullptr, IID_PPV_ARGS(&mCommandList));
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", hresultToString(hresult));
+        if (FAILED(mDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, mCommandAllocator.Get(), nullptr, IID_PPV_ARGS(&mCommandList)))) {
+            LOG_ERROR(logger, "Failed to create DirectX Command list.");
             return false;
         }
 
         // 처음 시작할때는 닫힌 상태로 시작함. 이후 Reset()이 호출되면서 시작하게 되는데, 그러려면 먼저 닫혀있어야함.
-        hresult = mCommandList->Close();
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", hresultToString(hresult));
+        if (FAILED(mCommandList->Close())) {
+            LOG_ERROR(logger, "Failed to close Command list.");
             return false;
         }
 
@@ -102,36 +96,34 @@ namespace GLaDOS {
         swapChainDesc.SampleDesc.Count = 1;
         swapChainDesc.SampleDesc.Quality = 0;
 
-        DXGI_SWAP_CHAIN_FULLSCREEN_DESC swapChainFSDesc = {};
+        DXGI_SWAP_CHAIN_FULLSCREEN_DESC swapChainFSDesc{};
         swapChainFSDesc.Windowed = TRUE;
 
         ComPtr<IDXGISwapChain1> swapChain;
-        hresult = factory->CreateSwapChainForHwnd(mCommandQueue.Get(), WindowsPlatform::getWindowHandle(), &swapChainDesc, &swapChainFSDesc, nullptr, &swapChain);
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", hresultToString(hresult));
+        if (FAILED(factory->CreateSwapChainForHwnd(mCommandQueue.Get(), WindowsPlatform::getWindowHandle(), &swapChainDesc, &swapChainFSDesc, nullptr, &swapChain))) {
+            LOG_ERROR(logger, "Failed to create Swap chain for hwnd.");
             return false;
         }
 
-        hresult = factory->MakeWindowAssociation(WindowsPlatform::getWindowHandle(), DXGI_MWA_NO_PRINT_SCREEN);  // Prevent DXGI from responding to a print-screen key.
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", hresultToString(hresult));
+        // Prevent DXGI from responding to a print-screen key.
+        if (FAILED(factory->MakeWindowAssociation(WindowsPlatform::getWindowHandle(), DXGI_MWA_NO_PRINT_SCREEN))) {
+            LOG_ERROR(logger, "Failed to DirectX Graphics Interface window association.");
             return false;
         }
 
-        swapChain.As(&mSwapChain);
         // 초기 후면 버퍼 인덱스 지정
+        swapChain.As(&mSwapChain);
         mCurrBackBuffer = mSwapChain->GetCurrentBackBufferIndex();
 
         // 서술자 힙 생성
         // 서술자 힙은 서술자 종류마다 따로 만들어야함: swapChainBufferCount * RTV + DSV
         D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc{};
         rtvHeapDesc.NumDescriptors = renderTargetCount;
-        rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;  // The descriptor heap for the render-target view.
+        rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
         rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
         rtvHeapDesc.NodeMask = 0;
-        hresult = mDevice->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&mRenderTargetDescHeap));
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", hresultToString(hresult));
+        if (FAILED(mDevice->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&mRenderTargetDescHeap)))) {
+            LOG_ERROR(logger, "Failed to create RenderTarget descriptor heap.");
             return false;
         }
 
@@ -140,9 +132,8 @@ namespace GLaDOS {
         dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
         dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
         dsvHeapDesc.NodeMask = 0;
-        hresult = mDevice->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&mDepthStencilDescHeap));
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", hresultToString(hresult));
+        if (FAILED(mDevice->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&mDepthStencilDescHeap)))) {
+            LOG_ERROR(logger, "Failed to create DepthStencil descriptor heap.");
             return false;
         }
 
@@ -151,9 +142,8 @@ namespace GLaDOS {
         cbvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
         cbvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
         cbvHeapDesc.NodeMask = 0;
-        hresult = mDevice->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&mConstantBufferDescHeap));
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", hresultToString(hresult));
+        if (FAILED(mDevice->CreateDescriptorHeap(&cbvHeapDesc, IID_PPV_ARGS(&mConstantBufferDescHeap)))) {
+            LOG_ERROR(logger, "Failed to create ConstantBuffer descriptor heap.");
             return false;
         }
 
@@ -164,9 +154,8 @@ namespace GLaDOS {
         // 랜더 대상 뷰(RTV) 생성
         CD3DX12_CPU_DESCRIPTOR_HANDLE renderTargetHeapHandle{mRenderTargetDescHeap->GetCPUDescriptorHandleForHeapStart()};
         for (uint32_t i = 0; i < renderTargetCount; i++) {
-            hresult = mSwapChain->GetBuffer(i, IID_PPV_ARGS(&mRenderTargets[i]));
-            if (FAILED(hresult)) {
-                LOG_ERROR(logger, "{0}", hresultToString(hresult));
+            if (FAILED(mSwapChain->GetBuffer(i, IID_PPV_ARGS(&mRenderTargets[i])))) {
+                LOG_ERROR(logger, "Failed to get buffer in RenderTarget[{0}]", i);
                 return false;
             }
             mDevice->CreateRenderTargetView(mRenderTargets[i].Get(), nullptr, renderTargetHeapHandle);
@@ -193,9 +182,8 @@ namespace GLaDOS {
         optClear.DepthStencil.Stencil = 0;
 
         CD3DX12_HEAP_PROPERTIES heapProperties{D3D12_HEAP_TYPE_DEFAULT};
-        hresult = mDevice->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &depthStencilDesc, D3D12_RESOURCE_STATE_COMMON, &optClear, IID_PPV_ARGS(&mDepthStencil));
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", hresultToString(hresult));
+        if (FAILED(mDevice->CreateCommittedResource(&heapProperties, D3D12_HEAP_FLAG_NONE, &depthStencilDesc, D3D12_RESOURCE_STATE_COMMON, &optClear, IID_PPV_ARGS(&mDepthStencil)))) {
+            LOG_ERROR(logger, "Failed to create DepthStencil resource.");
             return false;
         }
         CD3DX12_CPU_DESCRIPTOR_HANDLE depthStencilHeapHandle{mDepthStencilDescHeap->GetCPUDescriptorHandleForHeapStart()};
@@ -205,16 +193,14 @@ namespace GLaDOS {
         mCommandList->ResourceBarrier(1, &transition);
 
         // 동기화 객체인 장벽 생성
-        hresult = mDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence));
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", hresultToString(hresult));
+        if (FAILED(mDevice->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence)))) {
+            LOG_ERROR(logger, "Failed to create Fence resource.");
             return false;
         }
         mFenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
         if (mFenceEvent == nullptr) {
-            hresult = HRESULT_FROM_WIN32(GetLastError());
-            if (FAILED(hresult)) {
-                LOG_ERROR(logger, "{0}", hresultToString(hresult));
+            if (FAILED(HRESULT_FROM_WIN32(GetLastError()))) {
+                LOG_ERROR(logger, "Failed to create Win32 Event.");
                 return false;
             }
         }
@@ -249,9 +235,8 @@ namespace GLaDOS {
         mCommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
         // 후면 버퍼와 전면 버퍼를 교환한다.
-        HRESULT hresult = mSwapChain->Present(0, 0);
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", hresultToString(hresult));
+        if (FAILED(mSwapChain->Present(0, 0))) {
+            LOG_ERROR(logger, "Failed to Present SwapChain.");
             return;
         }
 
@@ -378,12 +363,6 @@ namespace GLaDOS {
         return mCommandList;
     }
 
-    std::string D3DX12Renderer::hresultToString(HRESULT hresult) {
-        char s_str[64] = {};
-        sprintf_s(s_str, "HRESULT of 0x%08X", static_cast<UINT>(hresult));
-        return std::string(s_str);
-    }
-
     void D3DX12Renderer::getHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter, bool preferHighPerfAdapter) {
         // Helper function for acquiring the first available hardware adapter that supports Direct3D 12.
         // If no such adapter can be found, *ppAdapter will be set to nullptr.
@@ -473,9 +452,8 @@ namespace GLaDOS {
         // 명령 대기열을 flush 한다.
         // 현재 펜스까지 명령들을 표시하도록 펜스값을 전진시킨다.
         const uint64_t fence = mFenceValue;
-        HRESULT hresult = mCommandQueue->Signal(mFence.Get(), fence);
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", hresultToString(hresult));
+        if (FAILED(mCommandQueue->Signal(mFence.Get(), fence))) {
+            LOG_ERROR(logger, "Failed to flush CommandQueue.");
             return;
         }
         mFenceValue++;
@@ -483,9 +461,8 @@ namespace GLaDOS {
         // GPU가 이 펜스지점까지 명령들을 완료할때 까지 "기다"린다.
         if (mFence->GetCompletedValue() < fence) {
             // GPU가 현재 펜스 지점에 도달했으면 이벤트를 발동한다.
-            hresult = mFence->SetEventOnCompletion(fence, mFenceEvent);
-            if (FAILED(hresult)) {
-                LOG_ERROR(logger, "{0}", hresultToString(hresult));
+            if (FAILED(mFence->SetEventOnCompletion(fence, mFenceEvent))) {
+                LOG_ERROR(logger, "Failed to set event completion.");
                 return;
             }
             WaitForSingleObject(mFenceEvent, INFINITE);

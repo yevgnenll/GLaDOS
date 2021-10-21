@@ -47,18 +47,16 @@ namespace GLaDOS {
         }
 
         ComPtr<ID3D12ShaderReflection> vertexShaderReflection;
-        HRESULT hresult = D3DReflect(mVertexFunction->GetBufferPointer(), mVertexFunction->GetBufferSize(),
-                                     IID_ID3D12ShaderReflection, reinterpret_cast<void**>(vertexShaderReflection.GetAddressOf()));
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
+        if (FAILED(D3DReflect(mVertexFunction->GetBufferPointer(), mVertexFunction->GetBufferSize(),
+                              IID_ID3D12ShaderReflection, reinterpret_cast<void**>(vertexShaderReflection.GetAddressOf())))) {
+            LOG_ERROR(logger, "Failed to reflect Vertex shader.");
             return false;
         }
 
         ComPtr<ID3D12ShaderReflection> fragmentShaderReflection;
-        hresult = D3DReflect(mFragmentFunction->GetBufferPointer(), mFragmentFunction->GetBufferSize(),
-                                     IID_ID3D12ShaderReflection, reinterpret_cast<void**>(fragmentShaderReflection.GetAddressOf()));
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
+        if (FAILED(D3DReflect(mFragmentFunction->GetBufferPointer(), mFragmentFunction->GetBufferSize(),
+                              IID_ID3D12ShaderReflection, reinterpret_cast<void**>(fragmentShaderReflection.GetAddressOf())))) {
+            LOG_ERROR(logger, "Failed to reflect Fragment shader.");
             return false;
         }
 
@@ -88,9 +86,8 @@ namespace GLaDOS {
         mPipelineDescriptor.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
         ComPtr<ID3D12PipelineState> mPipelineState;
-        hresult = device->CreateGraphicsPipelineState(&mPipelineDescriptor, IID_PPV_ARGS(&mPipelineState));
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
+        if (FAILED(device->CreateGraphicsPipelineState(&mPipelineDescriptor, IID_PPV_ARGS(&mPipelineState)))) {
+            LOG_ERROR(logger, "Failed to create graphics pipeline state.");
             return false;
         }
 
@@ -109,16 +106,14 @@ namespace GLaDOS {
         }
 
         D3D12_SHADER_DESC vertexShaderDesc;
-        HRESULT hresult = vertexShaderReflection->GetDesc(&vertexShaderDesc);
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
+        if (FAILED(vertexShaderReflection->GetDesc(&vertexShaderDesc))) {
+            LOG_ERROR(logger, "Failed to get vertex shader descriptor");
             return false;
         }
 
         D3D12_SHADER_DESC fragmentShaderDesc;
-        hresult = fragmentShaderReflection->GetDesc(&fragmentShaderDesc);
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
+        if (FAILED(fragmentShaderReflection->GetDesc(&fragmentShaderDesc))) {
+            LOG_ERROR(logger, "Failed to get fragment shader descriptor");
             return false;
         }
 
@@ -143,28 +138,26 @@ namespace GLaDOS {
 
     void D3DX12ShaderProgram::addUniform(ID3D12ShaderReflectionConstantBuffer* constantBuffer, ShaderType type) {
         if (constantBuffer == nullptr) {
-            LOG_ERROR(logger, "DirectX12 Reflection error: constant buffer should not be nullptr.");
+            LOG_ERROR(logger, "Failed to get constant buffer from ShaderReflection.");
             return;
         }
 
         D3D12_SHADER_BUFFER_DESC constantBufferDesc;
-        HRESULT hresult = constantBuffer->GetDesc(&constantBufferDesc);
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
+        if (FAILED(constantBuffer->GetDesc(&constantBufferDesc))) {
+            LOG_ERROR(logger, "Failed to get constant buffer descriptor.");
             return;
         }
 
         for (unsigned int i = 0; i < constantBufferDesc.Variables; i++) {
             ID3D12ShaderReflectionVariable* variable = constantBuffer->GetVariableByIndex(i);
             if (variable == nullptr) {
-                LOG_ERROR(logger, "DirectX12 Reflection error: variable should not be nullptr.");
+                LOG_ERROR(logger, "Failed to get shader reflection variable.");
                 return;
             }
 
             D3D12_SHADER_VARIABLE_DESC variableDesc;
-            hresult = variable->GetDesc(&variableDesc);
-            if (FAILED(hresult)) {
-                LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
+            if (FAILED(variable->GetDesc(&variableDesc))) {
+                LOG_ERROR(logger, "Failed to get shader reflection variable descriptor.");
                 return;
             }
 
@@ -174,14 +167,13 @@ namespace GLaDOS {
 
     void D3DX12ShaderProgram::addUniformByType(ID3D12ShaderReflectionType* variableType, D3D12_SHADER_VARIABLE_DESC variableDesc, ShaderType type) {
         if (variableType == nullptr) {
-            LOG_ERROR(logger, "DirectX12 Reflection error: variable type should not be nullptr.");
+            LOG_ERROR(logger, "Failed to get shader reflection variable descriptor.");
             return;
         }
 
         D3D12_SHADER_TYPE_DESC variableTypeDesc;
-        HRESULT hresult = variableType->GetDesc(&variableTypeDesc);
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
+        if (FAILED(variableType->GetDesc(&variableTypeDesc))) {
+            LOG_ERROR(logger, "Failed to get shader reflection variable type descriptor.");
             return;
         }
 
@@ -224,9 +216,8 @@ namespace GLaDOS {
         uint32_t minSamplerBindPoint = 999;
         for (unsigned int i = 0; i < shaderDesc.BoundResources; i++) {
             D3D12_SHADER_INPUT_BIND_DESC inputBindDesc;
-            HRESULT hresult = shaderReflection->GetResourceBindingDesc(i, &inputBindDesc);
-            if (FAILED(hresult)) {
-                LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
+            if (FAILED(shaderReflection->GetResourceBindingDesc(i, &inputBindDesc))) {
+                LOG_ERROR(logger, "Failed to get shader input bind descriptor.");
                 return false;
             }
 
@@ -278,22 +269,16 @@ namespace GLaDOS {
 
         ComPtr<ID3DBlob> blobWithRootSignature;
         ComPtr<ID3DBlob> errorMessage;
-        HRESULT hresult = D3D12SerializeRootSignature(
-            &rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, blobWithRootSignature.GetAddressOf(), errorMessage.GetAddressOf());
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
+        if (FAILED(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, blobWithRootSignature.GetAddressOf(), errorMessage.GetAddressOf()))) {
+            if (errorMessage != nullptr) {
+                LOG_ERROR(logger, "{0}", StringUtils::normalize(static_cast<const char*>(errorMessage->GetBufferPointer())));
+            }
             return false;
         }
 
-        if(errorMessage != nullptr) {
-            LOG_ERROR(logger, "{0}", StringUtils::normalize(static_cast<const char*>(errorMessage->GetBufferPointer())));
-            return false;
-        }
-
-        hresult = D3DX12Renderer::getInstance().getDevice()->CreateRootSignature(
-            0, blobWithRootSignature->GetBufferPointer(), blobWithRootSignature->GetBufferSize(), IID_PPV_ARGS(mRootSignature.GetAddressOf()));
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
+        if (FAILED(D3DX12Renderer::getInstance().getDevice()->CreateRootSignature(0, blobWithRootSignature->GetBufferPointer(), blobWithRootSignature->GetBufferSize(),
+                                                                                  IID_PPV_ARGS(mRootSignature.GetAddressOf())))) {
+            LOG_ERROR(logger, "Failed to create root signature.");
             return false;
         }
 
@@ -302,17 +287,15 @@ namespace GLaDOS {
 
     void D3DX12ShaderProgram::createInputLayout(const ComPtr<ID3D12ShaderReflection>& shaderReflection) {
         D3D12_SHADER_DESC shaderDesc;
-        HRESULT hresult = shaderReflection->GetDesc(&shaderDesc);
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
+        if (FAILED(shaderReflection->GetDesc(&shaderDesc))) {
+            LOG_ERROR(logger, "Failed to get shader descriptor.");
             return;
         }
 
         for (unsigned int i = 0; i < shaderDesc.InputParameters; ++i) {
             D3D12_SIGNATURE_PARAMETER_DESC paramDesc;
-            hresult = shaderReflection->GetInputParameterDesc(i, &paramDesc);
-            if (FAILED(hresult)) {
-                LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
+            if (FAILED(shaderReflection->GetInputParameterDesc(i, &paramDesc))) {
+                LOG_ERROR(logger, "Failed to get input parameter descriptor.");
                 return;
             }
 
@@ -399,14 +382,11 @@ namespace GLaDOS {
         compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
         ComPtr<ID3DBlob> errors;
-        HRESULT hresult = D3DCompile(source.c_str(), source.size(), nullptr, nullptr,D3D_COMPILE_STANDARD_FILE_INCLUDE,
-                                     "main0", target.c_str(), compileFlags, 0, function.GetAddressOf(), errors.GetAddressOf());
-        if (errors != nullptr) {
-            LOG_ERROR(logger, static_cast<char*>(errors->GetBufferPointer()));
-        }
-
-        if (FAILED(hresult)) {
-            LOG_ERROR(logger, "{0}", D3DX12Renderer::hresultToString(hresult));
+        if (FAILED(D3DCompile(source.c_str(), source.size(), nullptr, nullptr,D3D_COMPILE_STANDARD_FILE_INCLUDE,
+                              "main0", target.c_str(), compileFlags, 0, function.GetAddressOf(), errors.GetAddressOf()))) {
+            if (errors != nullptr) {
+                LOG_ERROR(logger, static_cast<char*>(errors->GetBufferPointer()));
+            }
             return false;
         }
 
