@@ -18,6 +18,7 @@ namespace GLaDOS {
     constexpr static std::size_t _mem_alignment = 0x0040;  // 64 default cache line size
     constexpr static std::size_t _gpu_mem_alignment = 0x1000;  // 4096
 
+    // Aligns given value up to nearest multiply of align value. For example: alignment(11, 8) = 16.
     extern std::size_t alignment(std::size_t operand, std::size_t alignment);
     extern void* align_malloc(std::size_t size, std::size_t alignment);
     extern void align_free(void* pointer);
