@@ -38,6 +38,7 @@ find . -name '*.h' -o -name '*.hpp' | cpio -pdm ~/your/project/include
 
 2. Build GLaDOS static library and copy to your library directory.
 ```
+git submodule update --init --recursive
 mkdir build && cd build
 cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release
 ninja
