@@ -2,6 +2,16 @@
 #define GLADOS_ENUMERATION_H
 
 #include <chrono>
+#include <type_traits>
+
+#define BITWISE_OP(T) \
+inline constexpr TruthValue<T> operator&(T x, T y) {return static_cast<T>(underlying(x) & underlying(y));}\
+inline constexpr TruthValue<T> operator|(T x, T y) {return static_cast<T>(underlying(x) | underlying(y));}\
+inline constexpr TruthValue<T> operator^(T x, T y) {return static_cast<T>(underlying(x) ^ underlying(y));}\
+inline constexpr TruthValue<T> operator~(T x) {return static_cast<T>(~underlying(x));}\
+inline T& operator&=(T &x, T y) {x = x & y; return x;}\
+inline T& operator|=(T &x, T y) {x = x | y; return x;}\
+inline T& operator^=(T &x, T y) {x = x ^ y; return x;}
 
 namespace GLaDOS {
     using real = float;
@@ -11,6 +21,17 @@ namespace GLaDOS {
     using HighResolutionTimePoint = std::chrono::time_point<HighResolutionClock>;
     using millisecond = std::chrono::duration<real, std::milli>;
     using OSVersion = float;
+
+    template<typename T> using Underlying = typename std::underlying_type<T>::type;
+    template<typename T> constexpr Underlying<T> underlying(T t) { return Underlying<T>(t); }
+
+    template<typename T>
+    struct TruthValue {
+        T t;
+        constexpr TruthValue(T t): t(t) { }
+        constexpr operator T() const { return t; }
+        constexpr explicit operator bool() const { return underlying(t); }
+    };
 
     enum class FilterMode {
         None,
@@ -77,10 +98,10 @@ namespace GLaDOS {
     };
 
     enum class TextureUsage {
-        Unknown = -1,
-        ShaderRead,
-        ShaderWrite,
-        RenderTarget
+        Unknown = 0,
+        ShaderRead = 1 << 0,
+        ShaderWrite = 1 << 1,
+        RenderTarget = 1 << 2,
     };
 
     enum class FillMode {
@@ -524,10 +545,8 @@ namespace GLaDOS {
         Value value;
     };
 
-    inline WindowStyle operator|(const WindowStyle a, const WindowStyle b) { return static_cast<WindowStyle>(static_cast<int>(a) | static_cast<int>(b)); }
-    inline bool operator&(const WindowStyle a, const WindowStyle b) { return static_cast<WindowStyle>(static_cast<int>(a) & static_cast<int>(b)) == b; }
-    inline TextureUsage operator|(const TextureUsage a, const TextureUsage b) { return static_cast<TextureUsage>(static_cast<int>(a) | static_cast<int>(b)); }
-    inline bool operator&(const TextureUsage a, const TextureUsage b) { return static_cast<TextureUsage>(static_cast<int>(a) & static_cast<int>(b)) == b; }
+    BITWISE_OP(WindowStyle);
+    BITWISE_OP(TextureUsage);
 
     namespace EnumConstant {
         static const WindowStyle defaultWindowStyle = WindowStyle::Resizable |
