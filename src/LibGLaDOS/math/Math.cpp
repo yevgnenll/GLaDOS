@@ -108,6 +108,16 @@ namespace GLaDOS {
         return 0.f;
     }
 
+    constexpr uint64_t Math::kilobytes(uint32_t kb) {
+        return kb * 1024;
+    }
+    constexpr uint64_t Math::megabytes(uint32_t mb) {
+        return kilobytes(mb * 1024);
+    }
+    constexpr uint64_t Math::gigabytes(uint32_t gb) {
+        return megabytes(gb * 1024);
+    }
+
     real Math::sin(real angle) { return std::sin(angle); }
 
     real Math::cos(real angle) { return std::cos(angle); }

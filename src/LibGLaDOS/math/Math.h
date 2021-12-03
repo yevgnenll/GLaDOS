@@ -50,6 +50,9 @@ namespace GLaDOS {
         static real moveTowards(real current, real target, real maxDelta);
         static real moveTowardsAngle(real current, real target, real maxDelta);
         static real easeIn();
+        constexpr static uint64_t kilobytes(uint32_t kb);
+        constexpr static uint64_t megabytes(uint32_t mb);
+        constexpr static uint64_t gigabytes(uint32_t gb);
 
         static real sin(real angle);
         static real cos(real angle);
