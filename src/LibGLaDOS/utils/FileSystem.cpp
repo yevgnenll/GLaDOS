@@ -20,7 +20,7 @@ namespace GLaDOS {
     }
 
     bool FileSystem::open(const std::string& name, OpenMode accessType) {
-        auto [path, file] = StringUtils::extractBaseFileNamePair(name);
+        auto [path, file] = StringUtils::splitFileName(name);
         mPathName = std::move(path);
         mFileName = std::move(file);
         mFullName = name;

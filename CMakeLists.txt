@@ -85,9 +85,11 @@ if(APPLE)
   set(INCLUDE_LIBRARIES ${STB_LIB_DIR})
 elseif(UNIX AND NOT APPLE) # LINUX
   find_library(X11_LIBRARY X11 REQUIRED)
+  find_package(Vulkan REQUIRED)
   find_package(Threads)
-  set(LINK_LIBRARIES ${X11_LIBRARY})
-  set(INCLUDE_LIBRARIES ${STB_LIB_DIR})
+  target_compile_definitions(vulkan PRIVATE VK_USE_PLATFORM_WAYLAND_KHR)
+  set(LINK_LIBRARIES ${X11_LIBRARY} ${Vulkan_LIBRARIES})
+  set(INCLUDE_LIBRARIES ${STB_LIB_DIR} ${Vulkan_INCLUDE_DIRS})
 elseif(WIN32)
   # https://cmake.org/cmake/help/git-stage/policy/CMP0110.html
   if(POLICY CMP0110)
