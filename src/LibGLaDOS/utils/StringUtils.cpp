@@ -6,7 +6,12 @@ namespace GLaDOS {
     std::string StringUtils::normalize(const std::string& t) {
         return t;
     }
+
     std::string StringUtils::normalize(const char* t) {
+        return std::string{t};
+    }
+
+    std::string StringUtils::normalize(char* t) {
         return std::string{t};
     }
 

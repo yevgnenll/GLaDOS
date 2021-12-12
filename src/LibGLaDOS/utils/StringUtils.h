@@ -13,17 +13,22 @@ namespace GLaDOS {
         static std::string normalize(const T& t);
         static std::string normalize(const std::string& t);
         static std::string normalize(const char* t);
+        static std::string normalize(char* t);
+
         static std::string padRight(std::string const& str, std::size_t num, const char paddingChar = ' ');
         static std::string padLeft(std::string const& str, std::size_t num, const char paddingChar = ' ');
+
         static std::string toString(char c);
         static float toFloat(const std::string& str);
         static double toDouble(const std::string& str);
         static int toInt(const std::string& str, int base = 10);
         static long toLong(const std::string& str, int base = 10);
+
         template <typename Iter>
         static std::string join(const std::string& delimiter, Iter start, Iter end);
         template <typename Iter>
         static std::string join(const std::string& delimiter, const std::string& prefix, const std::string& suffix, Iter start, Iter end);
+
         static bool contains(const std::string& str, const std::string& substr);
         static std::size_t split(const std::string& str, std::vector<std::string>& slices, const std::string& delim);
         static bool equalsIgnoreCase(const std::string& strA, const std::string& strB);
