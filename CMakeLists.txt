@@ -63,10 +63,8 @@ option(GLADOS_ENABLE_BENCHMARK "Enable benchmarking of the GLaDOS." ON)
 option(GLADOS_ENABLE_SAMPLE "Enable sample build." ON)
 
 if (GLADOS_ENABLE_TESTING)
-  set(CATCH_BUILD_TESTING OFF CACHE BOOL "disable Catch2 self test")
   cmake_policy(SET CMP0110 NEW)
-  add_subdirectory(Catch2)
-  enable_testing()
+  find_package(Catch2 REQUIRED)
   add_subdirectory(test)
 endif ()
 

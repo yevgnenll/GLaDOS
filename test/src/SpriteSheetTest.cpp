@@ -1,4 +1,4 @@
-#include <catch2/catch_all.hpp>
+#include <catch2/catch.hpp>
 #include "resource/SpriteSheet.h"
 #include "platform/render/Texture2D.h"
 
