@@ -1,7 +1,13 @@
 #ifndef GLADOS_THREAD_H
 #define GLADOS_THREAD_H
 
+#include "platform/OSTypes.h"
+
+#ifdef PLATFORM_WINDOW
+#define HAVE_STRUCT_TIMESPEC
+#endif
 #include <pthread.h>
+
 #include <cstddef>
 
 namespace GLaDOS {
