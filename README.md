@@ -17,6 +17,13 @@ cmake -G Ninja ..
 ninja
 ```
 
+If your machine does not have needed dependencies, install on your target machine.
+On MacOS, you can easily install it like below
+
+```
+brew install catch2 google-benchmark
+```
+
 ### Features
 
 - Supporting texture format (JPEG, PNG, TGA, BMP, PSD, GIF, HDR, PIC, PNM)
@@ -38,7 +45,6 @@ find . -name '*.h' -o -name '*.hpp' | cpio -pdm ~/your/project/include
 
 2. Build GLaDOS static library and copy to your library directory.
 ```
-git submodule update --init --recursive
 mkdir build && cd build
 cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release
 ninja

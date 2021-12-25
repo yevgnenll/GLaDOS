@@ -69,10 +69,8 @@ if (GLADOS_ENABLE_TESTING)
 endif ()
 
 if (GLADOS_ENABLE_BENCHMARK)
-  set(BENCHMARK_ENABLE_GTEST_TESTS OFF CACHE BOOL "disable google test")
-  set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "disable google benchmark test")
+  find_package(benchmark REQUIRED)
   add_subdirectory(benchmark)
-  add_subdirectory(bench)
 endif ()
 
 if(APPLE)
