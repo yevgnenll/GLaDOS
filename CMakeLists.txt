@@ -70,7 +70,7 @@ endif ()
 
 if (GLADOS_ENABLE_BENCHMARK)
   find_package(benchmark REQUIRED)
-  add_subdirectory(benchmark)
+  add_subdirectory(bench)
 endif ()
 
 if(APPLE)
