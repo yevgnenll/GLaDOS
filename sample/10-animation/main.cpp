@@ -32,7 +32,7 @@ class MainScene : public Scene {
         texture->setSamplerState(samplerDesc);
 
         player = createGameObject("player");
-        spriteRenderer = player->addComponent<SpriteRenderer>(sprite);
+        player->addComponent<SpriteRenderer>(sprite);
         sprite->setPixelPerUnit(64);
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
@@ -68,14 +68,6 @@ class MainScene : public Scene {
             cameraTransform->rotate(cameraTransform->right(), Math::toRadians(rotationX));
             cameraTransform->rotate(UVec3::up, Math::toRadians(-rotationY));
         }
-
-        if (Input::isKeyDown(KeyCode::KEY_Z)) {
-            spriteRenderer->setFlipX(!spriteRenderer->getFlipX());
-        }
-
-        if (Input::isKeyDown(KeyCode::KEY_X)) {
-            spriteRenderer->setFlipY(!spriteRenderer->getFlipY());
-        }
     }
 
   private:
@@ -83,18 +75,10 @@ class MainScene : public Scene {
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;
     GameObject* player = nullptr;
-    SpriteRenderer* spriteRenderer = nullptr;
 };
 
 bool init() {
-    PlatformParams params{
-        .width = 1024,
-        .height = 800,
-        .titleName = "09-sprite",
-        .name = "GLaDOS",
-        .isFullscreen = false,
-        .isShowCursor = true
-    };
+    PlatformParams params{1024, 800, "10-animation", "GLaDOS", false};
     if (!Platform::getInstance().initialize(params)) {
         return false;
     }
