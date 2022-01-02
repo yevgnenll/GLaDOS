@@ -19,6 +19,9 @@ fragment float4 main0(VertexOut verts [[stage_in]],
                       constant FragmentUniforms &uniforms [[buffer(0)]]) {
     float4 sampledColor = tex2D.sample(sampler2D, verts._texCoord0) * uniforms.color;
 
+    if (sampledColor.a <= 0)
+        discard_fragment();
+
     if (uniforms.useColorKey) {
         bool3 isDiscard = sampledColor.rgb == uniforms.colorKey.rgb;
         if(isDiscard.x == true && isDiscard.y == true && isDiscard.z == true)

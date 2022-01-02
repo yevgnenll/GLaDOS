@@ -11,22 +11,24 @@
 
 namespace GLaDOS {
     Mesh* MeshGenerator::generateRectangle(const Rect<real> textureRect) {
+        // Counter-closk wise
         // Vertex,Texture
-        //	0----------1
+        //	0----------3
         //	|          |
-        //	3----------2
+        //	1----------2
         static Vector<real> vertices = {
             -1, 1, 0,
             textureRect.left, textureRect.top,
 
-            1, 1, 0,
-            textureRect.right, textureRect.top,
+            -1, -1, 0,
+            textureRect.left, textureRect.bottom,
 
             1, -1, 0,
             textureRect.right, textureRect.bottom,
 
-            -1, -1, 0,
-            textureRect.left, textureRect.bottom};
+            1, 1, 0,
+            textureRect.right, textureRect.top
+        };
         static Vector<uint16_t> indices = {
             0, 1, 2,
             0, 2, 3};

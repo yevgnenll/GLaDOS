@@ -11,6 +11,10 @@
 #include "platform/render/VertexBuffer.h"
 #include "resource/Sprite.h"
 #include "utils/MeshGenerator.h"
+#include "core/GameObject.hpp"
+#include "Transform.h"
+#include "Camera.h"
+#include "core/Scene.h"
 
 namespace GLaDOS {
     Logger* SpriteRenderer::logger = LoggerRegistry::getInstance().makeAndGetLogger("SpriteRenderer");
@@ -21,7 +25,7 @@ namespace GLaDOS {
     SpriteRenderer::SpriteRenderer(Sprite* sprite) : mSprite{sprite} {
         mName = "SpriteRenderer";
 
-        Mesh* mesh = MeshGenerator::generateRectangle(mSprite->getTextureCoords());
+        Mesh* mesh = MeshGenerator::generateRectangle(mSprite->getRect());
         if (mesh == nullptr) {
             LOG_ERROR(logger, "SpriteRenderer initialize failed!");
             return;
@@ -98,6 +102,19 @@ namespace GLaDOS {
 
     void SpriteRenderer::update(real deltaTime) {
         ShaderProgram* shaderProgram = mRenderable->getMaterial()->getShaderProgram();
+        Scene* currentScene = mGameObject->scene();
+        Camera* mainCamera = currentScene->getMainCamera();
+        Transform* transform = mGameObject->transform();
+
+        // calculate pixel per unit scale value of sprite
+        real reversePixelPerUnit = 1 / static_cast<real>(mSprite->getPixelPerUnit());
+        real scaleX = static_cast<real>(mSprite->getTexture()->getWidth()) * reversePixelPerUnit;
+        real scaleY = static_cast<real>(mSprite->getTexture()->getHeight()) * reversePixelPerUnit;
+        transform->setLossyScale({scaleX, scaleY, 1});
+
+        shaderProgram->setUniform("model", transform->localToWorldMatrix());
+        shaderProgram->setUniform("view", mainCamera->worldToCameraMatrix());
+        shaderProgram->setUniform("projection", mainCamera->projectionMatrix());
         shaderProgram->setUniform("flipX", mFlipX);
         shaderProgram->setUniform("flipY", mFlipY);
         shaderProgram->setUniform("color", mColor);

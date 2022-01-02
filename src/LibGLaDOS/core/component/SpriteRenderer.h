@@ -12,7 +12,7 @@ namespace GLaDOS {
         explicit SpriteRenderer(Sprite* sprite);
         ~SpriteRenderer() override;
 
-        void setSprite(Sprite* sprite);
+        void setSprite(Sprite* sprite); // change sprite of sprite renderer programmatically
         void setColor(const Color& color);
         void setColorKey(const Color& colorKey);
         void setFlipX(bool flipX);
@@ -39,6 +39,8 @@ namespace GLaDOS {
         bool mFlipX{false};
         bool mFlipY{false};
         bool mUseColorKey{false};
+        int mSortingOrder{0};
+        String mSortingLayerName{};
     };
 }  // namespace GLaDOS
 

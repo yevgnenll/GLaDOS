@@ -2,24 +2,31 @@
 #define GLADOS_SPRITE_H
 
 #include "math/Rect.hpp"
-#include "math/Vec2.h"
+#include "math/Point.hpp"
 
 namespace GLaDOS {
     class Texture2D;
     class Sprite {
       public:
         explicit Sprite(Texture2D* texture);
-        Sprite(Texture2D* texture, Rect<float> textureCoords);
+        Sprite(Texture2D* texture, const Rect<real>& rect);
+        Sprite(Texture2D* texture, const Rect<real>& rect, const Point<real>& pivot);
+        Sprite(Texture2D* texture, const Rect<real>& rect, const Point<real>& pivot, int pixelPerUnit);
         ~Sprite() = default;
 
         Texture2D* getTexture() const;
-        Rect<float> getTextureCoords() const;
-        Vec2 getPivot() const;
+        Rect<real> getRect() const;
+        Point<real> getPivot() const;
+        int getPixelPerUnit() const;
+
+        void setPivot(const Point<real>& pivot);
+        void setPixelPerUnit(int ppu);
 
       private:
         Texture2D* mTexture;
-        Rect<float> mTextureCoords;
-        Vec2 mPivot;
+        Rect<real> mRect;
+        Point<real> mPivot;
+        int mPixelPerUnit{10};
     };
 }  // namespace GLaDOS
 
