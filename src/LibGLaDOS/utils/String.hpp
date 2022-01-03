@@ -19,12 +19,16 @@ namespace GLaDOS {
         String(const std::string& str);
         String(const std::u16string& str);
         String(const String& str);
+        String(const UTF16String& str);
         String(std::string_view sv);
         String(std::u16string_view sv);
+        ~String();
 
         String& operator=(const char* chars);
         String& operator=(const std::string& str);
         String& operator=(const String& str);
+        String operator+(const String& str) const;
+        String& operator+=(const String& str);
 
         std::u16string_view toStringView();
 

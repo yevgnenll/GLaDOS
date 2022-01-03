@@ -38,11 +38,18 @@ namespace GLaDOS {
         copyCharType(str.c_str(), str.length());
     }
 
+    String::String(const UTF16String& str) : basic_string(str) {
+    }
+
     String::String(std::string_view sv) {
         copyCharType(sv.data(), sv.size());
     }
 
     String::String(std::u16string_view sv) : UTF16String{sv.data(), sv.size()} {
+    }
+
+    String::~String() {
+        // TODO: virtual 이 아닌 소멸자를 어떻게 하위 클래스에서 호출시켜주지?
     }
 
     String& String::operator=(const char* chars) {
@@ -66,6 +73,17 @@ namespace GLaDOS {
             clear();
         }
 
+        return *this;
+    }
+
+    String String::operator+(const String& str) const {
+        String result{*this};
+        result.append(str);
+        return result;
+    }
+
+    String& String::operator+=(const String& str) {
+        this->append(str);
         return *this;
     }
 

@@ -363,6 +363,10 @@ namespace GLaDOS {
         return [NSString stringWithCString:str.c_str() encoding:[NSString defaultCStringEncoding]];
     }
 
+    NSString* CocoaPlatform::toString(const String& str) {
+        return CocoaPlatform::toString(String::toUTF8(str));
+    }
+
     CVReturn CocoaPlatform::displayLinkCb(CVDisplayLinkRef displayLink, const CVTimeStamp* now, const CVTimeStamp* outputTime, CVOptionFlags flagsIn, CVOptionFlags* flagsOut, void* displayLinkContext) {
         @autoreleasepool {
             Platform::getInstance().render();

@@ -17,21 +17,22 @@ namespace GLaDOS {
         //	|          |
         //	1----------2
         static Vector<real> vertices = {
-            -1, 1, 0,
+            -0.5, 0.5, 0,
             textureRect.left, textureRect.top,
 
-            -1, -1, 0,
+            -0.5, -0.5, 0,
             textureRect.left, textureRect.bottom,
 
-            1, -1, 0,
+            0.5, -0.5, 0,
             textureRect.right, textureRect.bottom,
 
-            1, 1, 0,
+            0.5, 0.5, 0,
             textureRect.right, textureRect.top
         };
         static Vector<uint16_t> indices = {
             0, 1, 2,
-            0, 2, 3};
+            0, 2, 3
+        };
 
         VertexBuffer* vertexBuffer = NEW_T(VertexBuffer(VertexFormatDescriptor().position().texCoord0(), vertices.size()));
         vertexBuffer->setBufferData(vertices.data());

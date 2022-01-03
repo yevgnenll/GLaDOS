@@ -65,6 +65,7 @@ namespace GLaDOS {
         static std::pair<int, int> getScreenSize();
         static void createMenuBar();
         static NSString* toString(const std::string& str);
+        static NSString* toString(const String& str);
         static CVReturn displayLinkCb(CVDisplayLinkRef displayLink, const CVTimeStamp* now, const CVTimeStamp* outputTime, CVOptionFlags flagsIn, CVOptionFlags* flagsOut, void* displayLinkContext);
         static CocoaPlatform* getCocoaPlatform();
 

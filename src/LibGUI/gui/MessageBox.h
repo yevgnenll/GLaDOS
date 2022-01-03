@@ -1,16 +1,17 @@
 #ifndef GLADOS_MESSAGEBOX_H
 #define GLADOS_MESSAGEBOX_H
 
+#include <string>
+
 #include "AbstractDialog.h"
 
 namespace GLaDOS::GUI {
   class Font;
-  class String;
   class Label;
   class CloseButton;
   class MessageBox : public AbstractDialog {
   public:
-    MessageBox(const String& title, const String& description);
+    MessageBox(const std::string& title, const std::string& description);
     ~MessageBox() override;
 
     void setTitleFont(const Font& font);

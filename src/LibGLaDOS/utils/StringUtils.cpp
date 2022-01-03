@@ -1,10 +1,15 @@
 #include "StringUtils.h"
 
 #include "platform/OSTypes.h"
+#include "String.hpp"
 
 namespace GLaDOS {
     std::string StringUtils::normalize(const std::string& t) {
         return t;
+    }
+
+    std::string StringUtils::normalize(const String& t) {
+        return String::toUTF8(t);
     }
 
     std::string StringUtils::normalize(const char* t) {

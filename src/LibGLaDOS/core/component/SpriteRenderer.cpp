@@ -9,7 +9,7 @@
 #include "platform/render/ShaderProgram.h"
 #include "platform/render/Texture2D.h"
 #include "platform/render/VertexBuffer.h"
-#include "resource/Sprite.h"
+#include "core/Sprite.h"
 #include "utils/MeshGenerator.h"
 #include "core/GameObject.hpp"
 #include "Transform.h"

@@ -3,6 +3,11 @@
 
 namespace GLaDOS {
     class AnimationClip {
+      public:
+        AnimationClip();
+        ~AnimationClip();
+
+      private:
     };
 }
 

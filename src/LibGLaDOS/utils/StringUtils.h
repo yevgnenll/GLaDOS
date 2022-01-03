@@ -6,12 +6,14 @@
 #include <vector>
 
 namespace GLaDOS {
+    class String;
     class StringUtils {
       public:
         StringUtils() = delete;
         template <typename T>
         static std::string normalize(const T& t);
         static std::string normalize(const std::string& t);
+        static std::string normalize(const String& t);
         static std::string normalize(const char* t);
         static std::string normalize(char* t);
 
