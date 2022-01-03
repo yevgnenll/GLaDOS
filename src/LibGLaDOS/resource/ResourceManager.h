@@ -16,7 +16,7 @@ namespace GLaDOS {
 
         bool remove(Resource* resource);
         bool store(Resource* resource);
-        Resource* getResource(const std::string& name);
+        Resource* getResource(const std::string& name, ResourceType resourceType);
 
       private:
         static Logger* logger;

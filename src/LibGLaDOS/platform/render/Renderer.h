@@ -38,7 +38,7 @@ namespace GLaDOS {
 
         virtual GPUBuffer* createGPUVertexBuffer(GPUBufferUsage usage, void* data, std::size_t size) = 0;
         virtual GPUBuffer* createGPUIndexBuffer(GPUBufferUsage usage, void* data, std::size_t size) = 0;
-        virtual ShaderProgram* createShaderProgram(const std::string& vertexSource, const std::string& fragmentSource) = 0;
+        virtual ShaderProgram* createShaderProgram(const std::string& name, const std::string& vertexSource, const std::string& fragmentSource) = 0;
         virtual ShaderProgram* createShaderProgramFromFile(const std::string& vertexName, const std::string& fragmentName) = 0;
         virtual Renderable* createRenderable(Mesh* mesh, Material* material) = 0;
         virtual FrameBuffer* createFrameBuffer() = 0;

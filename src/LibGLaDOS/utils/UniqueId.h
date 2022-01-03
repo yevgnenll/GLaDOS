@@ -7,6 +7,7 @@ namespace GLaDOS {
     class UniqueId {
       public:
         UniqueId() : mInstanceId(++globalIdGenerator) {}
+        virtual ~UniqueId() = default;
 
         int getInstanceId() const { return mInstanceId; }
 

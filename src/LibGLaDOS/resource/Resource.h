@@ -17,6 +17,7 @@ namespace GLaDOS {
         void setResourceDir(const std::string& dir);
         std::string name() const;
         void setName(const std::string& name);
+        ResourceType getType() const;
 
       protected:
         std::string mFileDirectory;

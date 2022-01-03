@@ -39,9 +39,9 @@ namespace GLaDOS {
         return result.second;
     }
 
-    Resource* ResourceManager::getResource(const std::string& name) {
+    Resource* ResourceManager::getResource(const std::string& name, ResourceType resourceType) {
         auto iter = mResources.find(name);
-        if (iter != mResources.end()) {
+        if (iter != mResources.end() && iter->second->getType() == resourceType) {
             return iter->second;
         }
         return nullptr;

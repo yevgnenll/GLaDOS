@@ -18,4 +18,8 @@ namespace GLaDOS {
     void Resource::setName(const std::string& name) {
         mName = name;
     }
+
+    ResourceType Resource::getType() const {
+        return mResourceType;
+    }
 }  // namespace GLaDOS

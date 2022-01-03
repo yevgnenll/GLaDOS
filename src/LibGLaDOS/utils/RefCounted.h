@@ -11,6 +11,7 @@ namespace GLaDOS {
       public:
         RefCounted() = default;
         explicit constexpr RefCounted(int initialValue);
+        virtual ~RefCounted() = default;
 
         bool isRefOne() const;
         bool isRefZero() const;

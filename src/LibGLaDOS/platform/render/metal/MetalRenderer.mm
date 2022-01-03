@@ -120,10 +120,17 @@ namespace GLaDOS {
         return indexBuffer;
     }
 
-    ShaderProgram* MetalRenderer::createShaderProgram(const std::string& vertexSource, const std::string& fragmentSource) {
+    ShaderProgram* MetalRenderer::createShaderProgram(const std::string& name, const std::string& vertexSource, const std::string& fragmentSource) {
         MetalShaderProgram* shaderProgram = NEW_T(MetalShaderProgram);
+        shaderProgram->setName(name);
+
         if (!shaderProgram->createShaderProgram(vertexSource, fragmentSource)) {
+            DELETE_T(shaderProgram, MetalShaderProgram);
             LOG_ERROR(logger, "Shader compilation error");
+            return nullptr;
+        }
+
+        if (!ResourceManager::getInstance().store(shaderProgram)) {
             return nullptr;
         }
 
@@ -131,12 +138,20 @@ namespace GLaDOS {
     }
 
     ShaderProgram* MetalRenderer::createShaderProgramFromFile(const std::string& vertexName, const std::string& fragmentName) {
+        std::string name = vertexName + "_" + fragmentName;
+        Resource* cachedResource = ResourceManager::getInstance().getResource(name, ResourceType::ShaderProgram);
+        if (cachedResource != nullptr) {
+            return static_cast<ShaderProgram*>(cachedResource);
+        }
+
         MetalShaderProgram* shaderProgram = NEW_T(MetalShaderProgram);
         std::string shaderDirectory = shaderProgram->directory();
+        shaderProgram->setName(name);
 
         FileSystem vertexFile{shaderDirectory + vertexName + SHADER_SUFFIX, OpenMode::ReadBinary};
         std::string vertexSource;
         if (!vertexFile.readAll(vertexSource)) {
+            DELETE_T(shaderProgram, MetalShaderProgram);
             LOG_ERROR(logger, "Vertex shader {0} is not found.", vertexFile.fullName());
             return nullptr;
         }
@@ -144,12 +159,18 @@ namespace GLaDOS {
         FileSystem fragmentFile{shaderDirectory + fragmentName + SHADER_SUFFIX, OpenMode::ReadBinary};
         std::string fragmentSource;
         if (!fragmentFile.readAll(fragmentSource)) {
+            DELETE_T(shaderProgram, MetalShaderProgram);
             LOG_ERROR(logger, "Fragment shader {0} is not found.", fragmentFile.fullName());
             return nullptr;
         }
 
         if (!shaderProgram->createShaderProgram(vertexSource, fragmentSource)) {
+            DELETE_T(shaderProgram, MetalShaderProgram);
             LOG_ERROR(logger, "Shader compilation error");
+            return nullptr;
+        }
+
+        if (!ResourceManager::getInstance().store(shaderProgram)) {
             return nullptr;
         }
 
