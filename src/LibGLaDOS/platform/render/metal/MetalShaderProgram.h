@@ -18,6 +18,7 @@ namespace GLaDOS {
     class MetalDepthStencilState;
     class MetalRasterizerState;
     class VertexFormatHolder;
+    class MetalShader;
     class MetalShaderProgram : public ShaderProgram {
         friend class MetalRenderer;
 
@@ -31,17 +32,12 @@ namespace GLaDOS {
         MetalRasterizerState* metalRasterizerState();
 
       private:
-        bool createShaderProgram(const std::string& vertex, const std::string& fragment) override;
-        bool makePipelineDescriptor();
+        bool createShaderProgram(Shader* vertex, Shader* fragment) override;
+        bool makePipelineDescriptor(MetalShader* vertex, MetalShader* fragment);
         MTLVertexDescriptor* makeVertexDescriptor(NSArray<MTLVertexAttribute*>* vertexAttributes);
         bool addShaderArguments(MTLRenderPipelineReflection* pipelineReflection);
         void parseUniform(MTLArgument* argument, ShaderType type);
 
-        static bool createShader(const std::string& source, id<MTLFunction>& function);
-        static Logger* logger;
-
-        id<MTLFunction> mVertexFunction{nil};
-        id<MTLFunction> mFragmentFunction{nil};
         MTLRenderPipelineDescriptor* mPipelineDescriptor{nil};
     };
 }  // namespace GLaDOS

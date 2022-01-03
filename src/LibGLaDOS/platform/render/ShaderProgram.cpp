@@ -1,18 +1,12 @@
 ﻿#include "ShaderProgram.h"
-
 #include "RenderState.h"
 #include "Renderer.h"
-#include "RootDir.h"
 #include "Uniform.h"
 #include "math/Color.h"
 #include "platform/Platform.h"
 
 namespace GLaDOS {
     Logger* ShaderProgram::logger = LoggerRegistry::getInstance().makeAndGetLogger("ShaderProgram");
-    ShaderProgram::ShaderProgram() : Resource{ResourceType::ShaderProgram} {
-        setResourceDir(SHADER_DIR);
-    }
-
     ShaderProgram::~ShaderProgram() {
         deallocValueInMap(mUniforms);
         DELETE_T(mDepthStencilState, DepthStencilState);

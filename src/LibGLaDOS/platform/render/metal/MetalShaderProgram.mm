@@ -5,18 +5,14 @@
 #include "MetalRenderState.h"
 #include "MetalRenderable.h"
 #include "MetalTypes.h"
-#include "platform/apple/CocoaPlatform.h"
 #include "platform/render/Uniform.h"
 #include "platform/render/VertexBuffer.h"
 #include "platform/render/CommonTypes.h"
+#include "MetalShader.h"
 
 namespace GLaDOS {
-    Logger* MetalShaderProgram::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalShaderProgram");
-    
     MetalShaderProgram::~MetalShaderProgram() {
         if (mIsValid) {
-            [mVertexFunction release];
-            [mFragmentFunction release];
             [mPipelineDescriptor release];
         }
     }
@@ -85,22 +81,30 @@ namespace GLaDOS {
         return static_cast<MetalRasterizerState*>(rasterizerState());
     }
 
-    bool MetalShaderProgram::createShaderProgram(const std::string& vertex, const std::string& fragment) {
-        bool isVsValid = MetalShaderProgram::createShader(vertex, mVertexFunction);
-        bool isFsValid = MetalShaderProgram::createShader(fragment, mFragmentFunction);
-        mIsValid = isVsValid && isFsValid;
+    bool MetalShaderProgram::createShaderProgram(Shader* vertex, Shader* fragment) {
+        mIsValid = vertex->isCompiled() && fragment->isCompiled();
 
-        if (!makePipelineDescriptor()) {
+        MetalShader* metalVertex = static_cast<MetalShader*>(vertex);
+        MetalShader* metalFragment = static_cast<MetalShader*>(fragment);
+
+        if (!makePipelineDescriptor(metalVertex, metalFragment)) {
             mIsValid = false;
         }
-
-        mVertexShaderCode = vertex;
-        mFragmentShaderCode = fragment;
 
         return mIsValid;
     }
 
-    bool MetalShaderProgram::makePipelineDescriptor() {
+    bool MetalShaderProgram::makePipelineDescriptor(MetalShader* vertex, MetalShader* fragment) {
+        if (vertex == nullptr) {
+            LOG_ERROR(logger, "Invalid vertex shader");
+            return false;
+        }
+
+        if (fragment == nullptr) {
+            LOG_ERROR(logger, "Invalid fragment shader");
+            return false;
+        }
+
         if (!mIsValid) {
             LOG_ERROR(logger, "Invalid Metal shader program");
             return false;
@@ -113,8 +117,8 @@ namespace GLaDOS {
         }
 
         mPipelineDescriptor = [MTLRenderPipelineDescriptor new];
-        [mPipelineDescriptor setVertexFunction:mVertexFunction];
-        [mPipelineDescriptor setFragmentFunction:mFragmentFunction];
+        [mPipelineDescriptor setVertexFunction:vertex->getFunction()];
+        [mPipelineDescriptor setFragmentFunction:fragment->getFunction()];
 
         MTLRenderPipelineColorAttachmentDescriptor* colorAttachmentDescriptor = mPipelineDescriptor.colorAttachments[0];
         if (colorAttachmentDescriptor == nil) {
@@ -125,13 +129,15 @@ namespace GLaDOS {
         mPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatDepth32Float_Stencil8;
         mPipelineDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatDepth32Float_Stencil8;
 
-        MTLVertexDescriptor* vertexDescriptor = makeVertexDescriptor(mVertexFunction.vertexAttributes);;
+        MTLVertexDescriptor* vertexDescriptor = makeVertexDescriptor(vertex->getFunction().vertexAttributes);;
         [mPipelineDescriptor setVertexDescriptor:vertexDescriptor];
 
         NSError* stateError;
         MTLPipelineOption options = MTLPipelineOptionArgumentInfo | MTLPipelineOptionBufferTypeInfo;
         MTLRenderPipelineReflection* pipelineReflection;
         id<MTLRenderPipelineState> pipelineState = [device newRenderPipelineStateWithDescriptor:mPipelineDescriptor options:options reflection:&pipelineReflection error:&stateError];
+        [pipelineState release];
+
         if (stateError != nil) {
             LOG_ERROR(logger, "RenderPipelineState build error occurred!: \n{0}", [[stateError description] UTF8String]);
             return false;
@@ -140,8 +146,6 @@ namespace GLaDOS {
         if (!addShaderArguments(pipelineReflection)) {
             return false;
         }
-
-        [pipelineState release];
 
         return true;
     }
@@ -230,37 +234,6 @@ namespace GLaDOS {
                 LOG_WARN(logger, "Not supported variable type: {0}", argument.type);
                 break;
         }
-    }
-
-    bool MetalShaderProgram::createShader(const std::string& source, id<MTLFunction>& function) {
-        id<MTLDevice> device = MetalRenderer::getInstance().getDevice();
-        if (device == nil) {
-            LOG_ERROR(logger, "Invalid Metal device state");
-            return false;
-        }
-
-        NSString* shaderSource = CocoaPlatform::toString(source);
-        MTLCompileOptions* compileOptions = [MTLCompileOptions new];
-        compileOptions.languageVersion = MTLLanguageVersion1_1;
-        NSError* compileError;
-        id<MTLLibrary> library = [device newLibraryWithSource:shaderSource options:compileOptions error:&compileError];
-        [compileOptions release];
-
-        if (compileError != nil) {
-            NSString* errorMessage = [NSString stringWithFormat:@"%@", compileError];
-            LOG_ERROR(logger, [errorMessage UTF8String]);
-            [library release];
-            return false;
-        }
-
-        function = [library newFunctionWithName:@"main0"];
-        [library release];
-        if (function == nil) {
-            LOG_ERROR(logger, "Invalid function name main0");
-            return false;
-        }
-
-        return true;
     }
 }
 

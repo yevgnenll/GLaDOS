@@ -9,7 +9,7 @@ namespace GLaDOS {
     }
 
     Material::~Material() {
-        // No need to delete ShaderProgram of member variable
+        DELETE_T(mShaderProgram, ShaderProgram);
     }
 
     ShaderProgram* Material::getShaderProgram() const {

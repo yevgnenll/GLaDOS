@@ -20,10 +20,11 @@ namespace GLaDOS {
     struct DepthStencilDescription;
     class RasterizerState;
     struct RasterizerDescription;
-    class ShaderProgram : public Resource {
+    class Shader;
+    class ShaderProgram {
       public:
-        ShaderProgram();
-        ~ShaderProgram() override;
+        ShaderProgram() = default;
+        virtual ~ShaderProgram();
 
         void setUniform(const std::string& name, int value);
         void setUniform(const std::string& name, unsigned int value);
@@ -54,15 +55,12 @@ namespace GLaDOS {
 
 
       private:
-        virtual bool createShaderProgram(const std::string& vertex, const std::string& fragment) = 0;
-
-        static Logger* logger;
+        virtual bool createShaderProgram(Shader* vertex, Shader* fragment) = 0;
 
       protected:
         void reserveUniformMemory();
 
-        std::string mVertexShaderCode;
-        std::string mFragmentShaderCode;
+        static Logger* logger;
         Map<std::string, Uniform*> mUniforms;
         DepthStencilState* mDepthStencilState{nullptr};
         RasterizerState* mRasterizerState{nullptr};
