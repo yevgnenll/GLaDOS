@@ -26,7 +26,7 @@ namespace GLaDOS {
         ~MetalShaderProgram() override;
 
         MTLRenderPipelineDescriptor* getPipelineDescriptor() const;
-        void bindUniforms(MetalRenderable* _renderable);
+        void bindUniforms(MetalRenderable* renderable);
         id<MTLDepthStencilState> metalDepthStencilState();
         MetalRasterizerState* metalRasterizerState();
 
@@ -35,7 +35,7 @@ namespace GLaDOS {
         bool makePipelineDescriptor();
         MTLVertexDescriptor* makeVertexDescriptor(NSArray<MTLVertexAttribute*>* vertexAttributes);
         bool addShaderArguments(MTLRenderPipelineReflection* pipelineReflection);
-        void addUniform(MTLArgument* argument, ShaderType type);
+        void parseUniform(MTLArgument* argument, ShaderType type);
 
         static bool createShader(const std::string& source, id<MTLFunction>& function);
         static Logger* logger;

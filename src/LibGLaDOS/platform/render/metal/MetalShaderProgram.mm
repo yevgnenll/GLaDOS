@@ -25,7 +25,7 @@ namespace GLaDOS {
         return mPipelineDescriptor;
     }
 
-    void MetalShaderProgram::bindUniforms(MetalRenderable* _renderable) {
+    void MetalShaderProgram::bindUniforms(MetalRenderable* renderable) {
         // copy uniform buffer data
         for (const auto& [key, uniform] : mUniforms) {
             if (uniform->isTextureType()) {
@@ -178,11 +178,11 @@ namespace GLaDOS {
 
         mUniforms.clear();
         for (MTLArgument* arg in pipelineReflection.vertexArguments) {
-            addUniform(arg, ShaderType::VertexShader);
+            parseUniform(arg, ShaderType::VertexShader);
         }
 
         for (MTLArgument* arg in pipelineReflection.fragmentArguments) {
-            addUniform(arg, ShaderType::FragmentShader);
+            parseUniform(arg, ShaderType::FragmentShader);
         }
 
         reserveUniformMemory();
@@ -190,23 +190,23 @@ namespace GLaDOS {
         return true;
     }
 
-    void MetalShaderProgram::addUniform(MTLArgument* argument, ShaderType type) {
+    void MetalShaderProgram::parseUniform(MTLArgument* argument, ShaderType type) {
         switch (argument.type) {
             case MTLArgumentTypeBuffer: {
                 MTLStructType* structType = argument.bufferStructType;
                 if (structType != nullptr) {
                     for (MTLStructMember* member in structType.members) {
                         std::string name = [member.name UTF8String];
-                        if (!exists(name)) {
-                            Uniform* uniform = NEW_T(Uniform);
-                            uniform->mShaderType = type;
-                            uniform->mUniformType = MetalTypes::metalDataTypeToUniformType(member.dataType);
-                            uniform->mName = name;
-                            uniform->mCount = member.arrayType != nullptr ? member.arrayType.arrayLength : 1;
-                            uniform->mOffset = member.offset;
-                            uniform->resize(uniform->mCount * CommonTypes::uniformTypeToSize(uniform->mUniformType));
-                            mUniforms.try_emplace(uniform->mName, uniform);
-                            LOG_TRACE(logger, "Uniform add -> [{0}]", uniform->toString());
+                        Uniform* uniform = NEW_T(Uniform);
+                        uniform->mShaderType = type;
+                        uniform->mUniformType = MetalTypes::metalDataTypeToUniformType(member.dataType);
+                        uniform->mName = name;
+                        uniform->mCount = member.arrayType != nullptr ? member.arrayType.arrayLength : 1;
+                        uniform->mOffset = member.offset;
+                        uniform->resize(uniform->mCount * CommonTypes::uniformTypeToSize(uniform->mUniformType));
+
+                        if (!addUniform(name, uniform)) {
+                            DELETE_T(uniform, Uniform);
                         }
                     }
                 }
@@ -214,15 +214,15 @@ namespace GLaDOS {
             }
             case MTLArgumentTypeTexture: {
                 std::string name = [argument.name UTF8String];
-                if (!exists(name)) {
-                    Uniform* uniform = NEW_T(Uniform);
-                    uniform->mShaderType = type;
-                    uniform->mUniformType = MetalTypes::metalDataTypeToUniformType(MTLDataTypeTexture);
-                    uniform->mName = name;
-                    uniform->mCount = 1;
-                    uniform->mOffset = argument.index;
-                    mUniforms.try_emplace(uniform->mName, uniform);
-                    LOG_TRACE(logger, "Uniform add -> [{0}]", uniform->toString());
+                Uniform* uniform = NEW_T(Uniform);
+                uniform->mShaderType = type;
+                uniform->mUniformType = MetalTypes::metalDataTypeToUniformType(MTLDataTypeTexture);
+                uniform->mName = name;
+                uniform->mCount = 1;
+                uniform->mOffset = argument.index;
+
+                if (!addUniform(name, uniform)) {
+                    DELETE_T(uniform, Uniform);
                 }
                 break;
             }

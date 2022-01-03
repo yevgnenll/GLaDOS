@@ -159,6 +159,20 @@ namespace GLaDOS {
         (*it->second) << value;
     }
 
+    bool ShaderProgram::addUniform(const std::string& name, Uniform* uniform) {
+        if (uniform == nullptr) {
+            return false;
+        }
+
+        auto result = mUniforms.try_emplace(uniform->mName, uniform);
+        if (!result.second) {
+            return false;
+        }
+
+        LOG_TRACE(logger, "Uniform add -> [{0}]", uniform->toString());
+        return true;
+    }
+
     void ShaderProgram::setUniform(const std::string& name, bool value) {
         auto it = mUniforms.find(name);
         if (it == mUniforms.end()) {
@@ -218,10 +232,6 @@ namespace GLaDOS {
             DELETE_T(mRasterizerState, RasterizerState);
         }
         mRasterizerState = Platform::getRenderer().createRasterizerState(desc);
-    }
-
-    bool ShaderProgram::exists(const std::string& name) {
-        return mUniforms.find(name) != mUniforms.end();
     }
 
     void ShaderProgram::reserveUniformMemory() {

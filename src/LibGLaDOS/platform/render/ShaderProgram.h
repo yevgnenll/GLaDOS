@@ -39,15 +39,19 @@ namespace GLaDOS {
         void setUniform(const std::string& name, const Color* values, int count);
         void setUniform(const std::string& name, const Mat4<real>& value);
         void setUniform(const std::string& name, bool value);
+
+        bool addUniform(const std::string& name, Uniform* uniform);
         Uniform* getUniform(const std::string& name);
         Map<std::string, Uniform*>& getUniforms();
         std::size_t uniformSize() const;
+
         bool isValid() const;
+
         DepthStencilState* depthStencilState();
         void setDepthStencilState(const DepthStencilDescription& desc);
         RasterizerState* rasterizerState();
         void setRasterizerState(const RasterizerDescription& desc);
-        bool exists(const std::string& name);
+
 
       private:
         virtual bool createShaderProgram(const std::string& vertex, const std::string& fragment) = 0;
