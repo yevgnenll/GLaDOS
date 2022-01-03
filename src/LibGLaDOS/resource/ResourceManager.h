@@ -16,11 +16,11 @@ namespace GLaDOS {
 
         bool remove(Resource* resource);
         bool store(Resource* resource);
-        Resource* getResource(const String& name);
+        Resource* getResource(const std::string& name);
 
       private:
         static Logger* logger;
-        Map<String, Resource*> mResources;
+        Map<std::string, Resource*> mResources;
     };
 }  // namespace GLaDOS
 

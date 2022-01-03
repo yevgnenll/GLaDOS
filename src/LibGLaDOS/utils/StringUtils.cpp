@@ -54,6 +54,22 @@ namespace GLaDOS {
         return std::stol(str, 0, base);
     }
 
+    float StringUtils::toFloat(const String& str) {
+        return StringUtils::toFloat(String::toUTF8(str));
+    }
+
+    double StringUtils::toDouble(const String& str) {
+        return StringUtils::toDouble(String::toUTF8(str));
+    }
+
+    int StringUtils::toInt(const String& str, int base) {
+        return StringUtils::toInt(String::toUTF8(str), base);
+    }
+
+    long StringUtils::toLong(const String& str, int base) {
+        return StringUtils::toLong(String::toUTF8(str), base);
+    }
+
     bool StringUtils::contains(const std::string& str, const std::string& substr) {
         return str.find(substr) != std::string::npos;
     }

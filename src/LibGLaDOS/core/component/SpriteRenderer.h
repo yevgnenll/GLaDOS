@@ -40,7 +40,7 @@ namespace GLaDOS {
         bool mFlipY{false};
         bool mUseColorKey{false};
         int mSortingOrder{0};
-        String mSortingLayerName{};
+        std::string mSortingLayerName{};
     };
 }  // namespace GLaDOS
 

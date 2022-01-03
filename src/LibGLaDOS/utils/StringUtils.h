@@ -25,6 +25,10 @@ namespace GLaDOS {
         static double toDouble(const std::string& str);
         static int toInt(const std::string& str, int base = 10);
         static long toLong(const std::string& str, int base = 10);
+        static float toFloat(const String& str);
+        static double toDouble(const String& str);
+        static int toInt(const String& str, int base = 10);
+        static long toLong(const String& str, int base = 10);
 
         template <typename Iter>
         static std::string join(const std::string& delimiter, Iter start, Iter end);
