@@ -15,7 +15,7 @@ class MainScene : public Scene {
 
         camera = getMainCamera();
         cameraTransform = camera->gameObject()->transform();
-        cameraTransform->setLocalPosition({0, 0, 21});
+        cameraTransform->setLocalPosition({0, 0, 100});
 
         Texture2D* texture = Platform::getRenderer().createTexture2D("player.png", PixelFormat::RGBA32);
         Texture2D* texture2 = Platform::getRenderer().createTexture2D("player.png", PixelFormat::RGBA32);
@@ -27,9 +27,10 @@ class MainScene : public Scene {
         texture2->setSamplerState(samplerDesc);
 
         sprites = {
-            NEW_T(Sprite(texture, {12, 512, 39, 64}, {19.5, 32}, 64)),
-            NEW_T(Sprite(texture2, {76, 512, 39, 64}, {19.5, 32}, 64)),
-            NEW_T(Sprite(texture2, {140, 512, 39, 64}, {19.5, 32}, 64))
+            NEW_T(Sprite(texture2, {14, 448, 39, 64}, {19.5, 0})),
+            NEW_T(Sprite(texture2, {78, 448, 39, 63}, {19.5, 0})),
+            NEW_T(Sprite(texture2, {142, 448, 39, 64}, {19.5, 0})),
+            NEW_T(Sprite(texture2, {206, 448, 39, 63}, {19.5, 0}))
         };
 
         player = createGameObject("player");
@@ -49,7 +50,7 @@ class MainScene : public Scene {
 
         if (Input::isKeyDown(KeyCode::KEY_SPACE)) {
             spriteIndex++;
-            if (spriteIndex >= 3) {
+            if (spriteIndex >= sprites.size()) {
                 spriteIndex = 0;
             }
             spriteRenderer->setSprite(sprites[spriteIndex]);
@@ -79,11 +80,11 @@ class MainScene : public Scene {
     }
 
   private:
-    real sensitivity = 15;
+    real sensitivity = 50;
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;
     GameObject* player = nullptr;
-    Array<Sprite*, 3> sprites;
+    Array<Sprite*, 4> sprites;
     SpriteRenderer* spriteRenderer = nullptr;
     int spriteIndex = 0;
 };

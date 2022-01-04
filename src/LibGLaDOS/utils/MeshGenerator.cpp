@@ -11,23 +11,26 @@
 #include "math/Point.hpp"
 
 namespace GLaDOS {
-    Mesh* MeshGenerator::generateRectangle(const Rect<real> textureRect, const Point<real>& pivot) {
+    Mesh* MeshGenerator::generateRectangle(const Rect<real> textureRect, const Size<uint32_t>& size, const Point<real>& pivot) {
         // Counter-closk wise
         // Vertex,Texture
         //	0----------3
         //	|          |
         //	1----------2
+        real width = static_cast<real>(size.x) * 0.5f;
+        real height = static_cast<real>(size.y) * 0.5f;
+
         Vector<real> vertices = {
-            -0.5, 0.5, 0,
+            pivot.x() - width, pivot.y() + height, 0.f,
             textureRect.x, textureRect.h,
 
-            -0.5, -0.5, 0,
+            pivot.x() - width, pivot.y() - height, 0.f,
             textureRect.x, textureRect.y,
 
-            0.5, -0.5, 0,
+            pivot.x() + width, pivot.y() - height, 0.f,
             textureRect.w, textureRect.y,
 
-            0.5, 0.5, 0,
+            pivot.x() + width, pivot.y() + height, 0.f,
             textureRect.w, textureRect.h
         };
         static Vector<uint16_t> indices = {

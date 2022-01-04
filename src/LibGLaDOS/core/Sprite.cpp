@@ -10,29 +10,25 @@
 
 namespace GLaDOS {
     Logger* Sprite::logger = LoggerRegistry::getInstance().makeAndGetLogger("Sprite");
-    Sprite::Sprite(Texture2D* texture)
-        : mTexture{texture}, mRect{0, 0, 1, 1}, mPivot{0.5f, 0.5f} {
-        createRenderable(mRect, mTexture, mPivot);
+    Sprite::Sprite(Texture2D* texture) : mTexture{texture} {
+        Rect<uint32_t> rectInPixel{0, 0, texture->getWidth(), texture->getHeight()};
+        Point<real> pivotInPixel{static_cast<real>(texture->getWidth()) * 0.5f, static_cast<real>(texture->getHeight()) * 0.5f};
+        mRect = normalizePixelRect(rectInPixel, texture->getWidth(), texture->getHeight());
+        mPivot = normalizePixelPoint(pivotInPixel, rectInPixel.w, rectInPixel.h);
+        createRenderable(mRect, Rect<uint32_t>(0, 0, texture->getWidth(), texture->getHeight()), mTexture, pivotInPixel);
     }
 
     Sprite::Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel)
         : mTexture{texture}, mPivot{0.5f, 0.5f} {
         mRect = normalizePixelRect(rectInPixel, texture->getWidth(), texture->getHeight());
-        createRenderable(mRect, mTexture, mPivot);
+        createRenderable(mRect, rectInPixel, mTexture, mPivot);
     }
 
     Sprite::Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel, Point<real> pivotInPixel)
         : mTexture{texture} {
         mRect = normalizePixelRect(rectInPixel, texture->getWidth(), texture->getHeight());
         mPivot = normalizePixelPoint(pivotInPixel, rectInPixel.w, rectInPixel.h);
-        createRenderable(mRect, mTexture, mPivot);
-    }
-
-    Sprite::Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel, Point<real> pivotInPixel, int pixelPerUnit)
-        : mTexture{texture}, mPixelPerUnit{pixelPerUnit} {
-        mRect = normalizePixelRect(rectInPixel, texture->getWidth(), texture->getHeight());
-        mPivot = normalizePixelPoint(pivotInPixel, rectInPixel.w, rectInPixel.h);
-        createRenderable(mRect, mTexture, mPivot);
+        createRenderable(mRect, rectInPixel, mTexture, pivotInPixel);
     }
 
     Texture2D* Sprite::getTexture() const {
@@ -47,14 +43,6 @@ namespace GLaDOS {
         return mRenderable;
     }
 
-    int Sprite::getPixelPerUnit() const {
-        return mPixelPerUnit;
-    }
-
-    void Sprite::setPixelPerUnit(int ppu) {
-        mPixelPerUnit = ppu;
-    }
-
     Rect<real> Sprite::normalizePixelRect(const Rect<uint32_t>& rectInPixel, uint32_t width, uint32_t height) {
         /*
           rectInPixel as User's perspective
@@ -66,6 +54,8 @@ namespace GLaDOS {
             |             |
             +-------------+
           (0,0) == (x,y) (1,0)
+
+          This function convert and normalize its coordinates into downward-y axis.
         */
         Rect<real> result;
 
@@ -85,8 +75,8 @@ namespace GLaDOS {
         return Point<real>{pointInPixel.x() / static_cast<real>(width), pointInPixel.y() / static_cast<real>(height)};
     }
 
-    bool Sprite::createRenderable(const Rect<real>& normalizedRect, Texture2D* texture2D, Point<real> pivot) {
-        Mesh* mesh = MeshGenerator::generateRectangle(normalizedRect, pivot);
+    bool Sprite::createRenderable(const Rect<real>& normalizedRect, const Rect<uint32_t>& rectInPixel, Texture2D* texture2D, Point<real> pivot) {
+        Mesh* mesh = MeshGenerator::generateRectangle(normalizedRect, Size<uint32_t>(rectInPixel.w, rectInPixel.h), pivot);
         if (mesh == nullptr) {
             LOG_ERROR(logger, "Sprite initialize failed!");
             return false;

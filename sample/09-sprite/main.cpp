@@ -26,7 +26,7 @@ class MainScene : public Scene {
 
         player = createGameObject("player");
         spriteRenderer = player->addComponent<SpriteRenderer>(sprite);
-        sprite->setPixelPerUnit(64);
+        player->transform()->setLocalScale({0.1, 0.1, 0.1});
 
         Texture2D* texture2 = Platform::getRenderer().createTexture2D("spritesheet.png", PixelFormat::RGBA32);
 
@@ -35,8 +35,8 @@ class MainScene : public Scene {
 
         player2 = createGameObject("player2");
         player2->addComponent<SpriteRenderer>(sprite2);
-        sprite->setPixelPerUnit(32);
         player2->transform()->setPosition({30, 0, 0});
+        player2->transform()->setLocalScale({0.1, 0.1, 0.1});
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));

@@ -73,7 +73,7 @@ namespace GLaDOS {
     const Rect<T> Rect<T>::one = Rect<T>{(T)1, (T)1, (T)1, (T)1};
 
     template <typename T>
-    Rect<T>::Rect() : x{(T)0}, y{(T)0}, w{(T)0}, h{(T)0} {
+    Rect<T>::Rect() : x{(T)0}, y{(T)0}, w{(T)1}, h{(T)1} {
     }
 
     template <typename T>

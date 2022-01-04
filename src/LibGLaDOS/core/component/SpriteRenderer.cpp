@@ -89,12 +89,6 @@ namespace GLaDOS {
         Camera* mainCamera = currentScene->getMainCamera();
         Transform* transform = mGameObject->transform();
 
-        // calculate pixel per unit scale value of sprite
-        real reversePixelPerUnit = 1 / static_cast<real>(mSprite->getPixelPerUnit());
-        real scaleX = static_cast<real>(mSprite->getTexture()->getWidth()) * reversePixelPerUnit;
-        real scaleY = static_cast<real>(mSprite->getTexture()->getHeight()) * reversePixelPerUnit;
-        transform->setLossyScale({scaleX, scaleY, 1});
-
         shaderProgram->setUniform("model", transform->localToWorldMatrix());
         shaderProgram->setUniform("view", mainCamera->worldToCameraMatrix());
         shaderProgram->setUniform("projection", mainCamera->projectionMatrix());
