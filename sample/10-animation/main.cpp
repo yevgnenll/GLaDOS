@@ -27,9 +27,9 @@ class MainScene : public Scene {
         texture2->setSamplerState(samplerDesc);
 
         sprites = {
-            NEW_T(Sprite(texture, {12, 512, 41, 64}, 64)),
-            NEW_T(Sprite(texture2, {76, 512, 42, 64}, 64)),
-            NEW_T(Sprite(texture2, {140, 512, 41, 64}, 64))
+            NEW_T(Sprite(texture, {12, 512, 39, 64}, {19.5, 32}, 64)),
+            NEW_T(Sprite(texture2, {76, 512, 39, 64}, {19.5, 32}, 64)),
+            NEW_T(Sprite(texture2, {140, 512, 39, 64}, {19.5, 32}, 64))
         };
 
         player = createGameObject("player");

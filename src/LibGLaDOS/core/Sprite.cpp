@@ -11,20 +11,28 @@
 namespace GLaDOS {
     Logger* Sprite::logger = LoggerRegistry::getInstance().makeAndGetLogger("Sprite");
     Sprite::Sprite(Texture2D* texture)
-        : mTexture{texture}, mRect{0, 0, 1, 1} {
-        createRenderable(mRect, mTexture);
+        : mTexture{texture}, mRect{0, 0, 1, 1}, mPivot{0.5f, 0.5f} {
+        createRenderable(mRect, mTexture, mPivot);
     }
 
     Sprite::Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel)
-        : mTexture{texture} {
+        : mTexture{texture}, mPivot{0.5f, 0.5f} {
         mRect = normalizePixelRect(rectInPixel, texture->getWidth(), texture->getHeight());
-        createRenderable(mRect, mTexture);
+        createRenderable(mRect, mTexture, mPivot);
     }
 
-    Sprite::Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel, int pixelPerUnit)
+    Sprite::Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel, Point<real> pivotInPixel)
+        : mTexture{texture} {
+        mRect = normalizePixelRect(rectInPixel, texture->getWidth(), texture->getHeight());
+        mPivot = normalizePixelPoint(pivotInPixel, rectInPixel.w, rectInPixel.h);
+        createRenderable(mRect, mTexture, mPivot);
+    }
+
+    Sprite::Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel, Point<real> pivotInPixel, int pixelPerUnit)
         : mTexture{texture}, mPixelPerUnit{pixelPerUnit} {
         mRect = normalizePixelRect(rectInPixel, texture->getWidth(), texture->getHeight());
-        createRenderable(mRect, mTexture);
+        mPivot = normalizePixelPoint(pivotInPixel, rectInPixel.w, rectInPixel.h);
+        createRenderable(mRect, mTexture, mPivot);
     }
 
     Texture2D* Sprite::getTexture() const {
@@ -73,8 +81,12 @@ namespace GLaDOS {
         return result;
     }
 
-    bool Sprite::createRenderable(const Rect<real>& normalizedRect, Texture2D* texture2D) {
-        Mesh* mesh = MeshGenerator::generateRectangle(normalizedRect);
+    Point<real> Sprite::normalizePixelPoint(const Point<real>& pointInPixel, uint32_t width, uint32_t height) {
+        return Point<real>{pointInPixel.x() / static_cast<real>(width), pointInPixel.y() / static_cast<real>(height)};
+    }
+
+    bool Sprite::createRenderable(const Rect<real>& normalizedRect, Texture2D* texture2D, Point<real> pivot) {
+        Mesh* mesh = MeshGenerator::generateRectangle(normalizedRect, pivot);
         if (mesh == nullptr) {
             LOG_ERROR(logger, "Sprite initialize failed!");
             return false;

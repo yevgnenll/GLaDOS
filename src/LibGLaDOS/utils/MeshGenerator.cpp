@@ -8,9 +8,10 @@
 #include "platform/render/Renderer.h"
 #include "platform/render/VertexBuffer.h"
 #include "platform/render/VertexFormat.h"
+#include "math/Point.hpp"
 
 namespace GLaDOS {
-    Mesh* MeshGenerator::generateRectangle(const Rect<real> textureRect) {
+    Mesh* MeshGenerator::generateRectangle(const Rect<real> textureRect, const Point<real>& pivot) {
         // Counter-closk wise
         // Vertex,Texture
         //	0----------3
