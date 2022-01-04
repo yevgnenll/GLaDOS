@@ -97,9 +97,7 @@ namespace GLaDOS {
         shaderProgram->setUniform("color", mColor);
         shaderProgram->setUniform("colorKey", mColorKey);
         shaderProgram->setUniform("useColorKey", mUseColorKey);
-    }
 
-    void SpriteRenderer::render() {
-        Platform::getRenderer().render(mRenderable);
+        MeshRenderer::update(deltaTime);
     }
 }  // namespace GLaDOS

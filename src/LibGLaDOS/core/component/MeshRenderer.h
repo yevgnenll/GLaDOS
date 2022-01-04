@@ -19,10 +19,10 @@ namespace GLaDOS {
       private:
         static Logger* logger;
 
+      protected:
         void update(real deltaTime) override;
         void render() override;
 
-      protected:
         Renderable* mRenderable{nullptr};
     };
 }  // namespace GLaDOS

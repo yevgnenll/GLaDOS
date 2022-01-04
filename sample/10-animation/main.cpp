@@ -18,19 +18,17 @@ class MainScene : public Scene {
         cameraTransform->setLocalPosition({0, 0, 100});
 
         Texture2D* texture = Platform::getRenderer().createTexture2D("player.png", PixelFormat::RGBA32);
-        Texture2D* texture2 = Platform::getRenderer().createTexture2D("player.png", PixelFormat::RGBA32);
         SamplerDescription samplerDesc;
         samplerDesc.mMinFilter = FilterMode::Nearest;
         samplerDesc.mMagFilter = FilterMode::Nearest;
         samplerDesc.mMipFilter = FilterMode::Nearest;
         texture->setSamplerState(samplerDesc);
-        texture2->setSamplerState(samplerDesc);
 
         sprites = {
-            NEW_T(Sprite(texture2, {14, 448, 39, 64}, {19.5, 0})),
-            NEW_T(Sprite(texture2, {78, 448, 39, 63}, {19.5, 0})),
-            NEW_T(Sprite(texture2, {142, 448, 39, 64}, {19.5, 0})),
-            NEW_T(Sprite(texture2, {206, 448, 39, 63}, {19.5, 0}))
+            NEW_T(Sprite(texture, {14, 448, 39, 64}, {19.5, 0})),
+            NEW_T(Sprite(texture, {78, 448, 39, 63}, {19.5, 0})),
+            NEW_T(Sprite(texture, {142, 448, 39, 64}, {19.5, 0})),
+            NEW_T(Sprite(texture, {206, 448, 39, 63}, {19.5, 0}))
         };
 
         player = createGameObject("player");
@@ -54,6 +52,19 @@ class MainScene : public Scene {
                 spriteIndex = 0;
             }
             spriteRenderer->setSprite(sprites[spriteIndex]);
+        }
+
+        if (Input::isKeyDown(KeyCode::KEY_M)) {
+            rasterizerDesc.mFillMode = FillMode::Lines;
+            for (auto* sprite : sprites) {
+                sprite->getRenderable()->getMaterial()->getShaderProgram()->setRasterizerState(rasterizerDesc);
+            }
+        }
+        if (Input::isKeyDown(KeyCode::KEY_N)) {
+            rasterizerDesc.mFillMode = FillMode::Fill;
+            for (auto* sprite : sprites) {
+                sprite->getRenderable()->getMaterial()->getShaderProgram()->setRasterizerState(rasterizerDesc);
+            }
         }
 
         // camera translation
@@ -87,6 +98,7 @@ class MainScene : public Scene {
     Array<Sprite*, 4> sprites;
     SpriteRenderer* spriteRenderer = nullptr;
     int spriteIndex = 0;
+    RasterizerDescription rasterizerDesc{};
 };
 
 bool init() {
