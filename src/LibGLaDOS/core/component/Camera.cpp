@@ -35,10 +35,10 @@ namespace GLaDOS {
     }
 
     Vec3 Camera::screenToWorldPoint(const Vec2& pos) {
-        Rect<uint32_t> viewport = viewportRect();
+        Rect<real> viewport = viewportRect();
         Vec4 clipCoords;
-        clipCoords.x = (2.f * (pos.x - viewport.left)) / viewport.right - 1.f;
-        clipCoords.y = (2.f * (viewport.bottom - pos.y - (1 - viewport.top))) / viewport.bottom - 1.f;
+        clipCoords.x = (2.f * (pos.x - viewport.x)) / viewport.w - 1.f;
+        clipCoords.y = (2.f * (viewport.h - pos.y - (1 - viewport.y))) / viewport.h - 1.f;
         clipCoords.z = -1.f;  // forward
         clipCoords.w = 1.f;
 
@@ -77,7 +77,7 @@ namespace GLaDOS {
         return static_cast<real>(Platform::getInstance().width()) / static_cast<real>(Platform::getInstance().height());
     }
 
-    Rect<uint32_t> Camera::viewportRect() const {
+    Rect<real> Camera::viewportRect() const {
         return mViewportRect;  // TODO: Graphics::getViewport()
     }
 

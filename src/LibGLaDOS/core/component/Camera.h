@@ -26,7 +26,7 @@ namespace GLaDOS {
         real nearClipPlane() const;
         real farClipPlane() const;
         real aspectRatio() const;
-        Rect<uint32_t> viewportRect() const;
+        Rect<real> viewportRect() const;
         void setFieldOfView(real fov);
         void setNearClipPlane(real near);
         void setFarClipPlane(real far);
@@ -40,7 +40,7 @@ namespace GLaDOS {
         real mNearClipPlane{real(0.1)};
         real mFarClipPlane{real(1000.0)};
         bool mIsOrthographic{false};
-        Rect<uint32_t> mViewportRect;
+        Rect<real> mViewportRect;
     };
 }  // namespace GLaDOS
 

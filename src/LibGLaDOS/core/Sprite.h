@@ -11,8 +11,8 @@ namespace GLaDOS {
     class Sprite {
       public:
         explicit Sprite(Texture2D* texture);
-        Sprite(Texture2D* texture, const Rect<real>& rect);
-        Sprite(Texture2D* texture, const Rect<real>& rect, int pixelPerUnit);
+        Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel);
+        Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel, int pixelPerUnit);
         ~Sprite() = default;
 
         Texture2D* getTexture() const;
@@ -22,7 +22,8 @@ namespace GLaDOS {
         void setPixelPerUnit(int ppu);
 
       private:
-        bool createRenderable();
+        static Rect<real> normalizePixelRect(const Rect<uint32_t>& rectInPixel, uint32_t width, uint32_t height) ;
+        bool createRenderable(const Rect<real>& normalizedRect, Texture2D* texture2D);
 
         static Logger* logger;
 

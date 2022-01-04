@@ -18,17 +18,22 @@ class MainScene : public Scene {
         cameraTransform->setLocalPosition({0, 0, 21});
 
         Texture2D* texture = Platform::getRenderer().createTexture2D("player.png", PixelFormat::RGBA32);
-
-        Sprite* sprite = NEW_T(Sprite(texture));
+        Texture2D* texture2 = Platform::getRenderer().createTexture2D("player.png", PixelFormat::RGBA32);
         SamplerDescription samplerDesc;
         samplerDesc.mMinFilter = FilterMode::Nearest;
         samplerDesc.mMagFilter = FilterMode::Nearest;
         samplerDesc.mMipFilter = FilterMode::Nearest;
         texture->setSamplerState(samplerDesc);
+        texture2->setSamplerState(samplerDesc);
+
+        sprites = {
+            NEW_T(Sprite(texture, {12, 512, 41, 64}, 64)),
+            NEW_T(Sprite(texture2, {76, 512, 42, 64}, 64)),
+            NEW_T(Sprite(texture2, {140, 512, 41, 64}, 64))
+        };
 
         player = createGameObject("player");
-        player->addComponent<SpriteRenderer>(sprite);
-        sprite->setPixelPerUnit(64);
+        spriteRenderer = player->addComponent<SpriteRenderer>(sprites[spriteIndex]);
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
@@ -40,6 +45,14 @@ class MainScene : public Scene {
     void onUpdate(real deltaTime) override {
         if (Input::isKeyDown(KeyCode::KEY_ESCAPE)) {
             Platform::getInstance().quit();
+        }
+
+        if (Input::isKeyDown(KeyCode::KEY_SPACE)) {
+            spriteIndex++;
+            if (spriteIndex >= 3) {
+                spriteIndex = 0;
+            }
+            spriteRenderer->setSprite(sprites[spriteIndex]);
         }
 
         // camera translation
@@ -70,6 +83,9 @@ class MainScene : public Scene {
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;
     GameObject* player = nullptr;
+    Array<Sprite*, 3> sprites;
+    SpriteRenderer* spriteRenderer = nullptr;
+    int spriteIndex = 0;
 };
 
 bool init() {

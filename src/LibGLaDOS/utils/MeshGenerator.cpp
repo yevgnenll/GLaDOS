@@ -16,18 +16,18 @@ namespace GLaDOS {
         //	0----------3
         //	|          |
         //	1----------2
-        static Vector<real> vertices = {
+        Vector<real> vertices = {
             -0.5, 0.5, 0,
-            textureRect.left, textureRect.top,
+            textureRect.x, textureRect.h,
 
             -0.5, -0.5, 0,
-            textureRect.left, textureRect.bottom,
+            textureRect.x, textureRect.y,
 
             0.5, -0.5, 0,
-            textureRect.right, textureRect.bottom,
+            textureRect.w, textureRect.y,
 
             0.5, 0.5, 0,
-            textureRect.right, textureRect.top
+            textureRect.w, textureRect.h
         };
         static Vector<uint16_t> indices = {
             0, 1, 2,
@@ -132,7 +132,7 @@ namespace GLaDOS {
 
     Mesh* MeshGenerator::generateIcoSphere(unsigned int subdivisions) {
         real t = (1.f + Math::sqrt(5.f) / 2.f);
-        Vector<Vec3> vertices = {
+        static Vector<Vec3> vertices = {
             // position
             Vec3(-1.f, t, 0.f).makeNormalize(),
             Vec3(1.f, t, 0.f).makeNormalize(),
@@ -148,13 +148,13 @@ namespace GLaDOS {
             Vec3(t, 0.f, 1.f).makeNormalize(),
             Vec3(-t, 0.f, -1.f).makeNormalize(),
             Vec3(-t, 0.f, 1.f).makeNormalize()};
-        Vector<uint32_t> indices = {
+        static Vector<uint32_t> indices = {
             0, 11, 5, 0, 5, 1, 0, 1, 7, 0, 7, 10, 0, 10, 11,
             1, 5, 9, 5, 11, 4, 11, 10, 2, 10, 7, 6, 7, 1, 8,
             3, 9, 4, 3, 4, 2, 3, 2, 6, 3, 6, 8, 3, 8, 9,
             4, 9, 5, 2, 4, 11, 6, 2, 10, 8, 6, 7, 9, 8, 1};
 
-        auto subdivide = [&vertices](std::size_t p1, std::size_t p2) {
+        auto subdivide = [](std::size_t p1, std::size_t p2) {
             Vec3 middle = (vertices[p1] + vertices[p2]) / 2.f;
             vertices.emplace_back(Vec3::normalize(middle));
             return vertices.size() - 1;
