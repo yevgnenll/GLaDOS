@@ -29,7 +29,7 @@ namespace GLaDOS {
 
         virtual bool loadTextureFromFile() { return false; };
         virtual bool loadTextureFromBuffer(Blob& buffer) { return false; };
-        virtual bool loadTextureFromFile(Vector<std::string>& names) { return false; };
+        virtual bool loadTextureFromFile(const Array<std::string, 6>& names) { return false; };
         virtual bool loadTextureFromBuffer(const Vector<std::reference_wrapper<Blob>>& buffer) { return false; };
 
       protected:

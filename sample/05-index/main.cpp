@@ -37,9 +37,6 @@ class MainScene : public Scene {
         shaderProgram->setRasterizerState(desc);
 
         Texture2D* quadTexture = Platform::getRenderer().createTexture2D("container.jpg", PixelFormat::RGB24);
-        if (!quadTexture->loadTextureFromFile()) {
-            return false;
-        }
 
         Material* material = NEW_T(Material);
         material->setShaderProgram(shaderProgram);

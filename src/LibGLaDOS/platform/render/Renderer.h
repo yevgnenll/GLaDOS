@@ -4,6 +4,7 @@
 #include <string>
 #include "utils/Enumeration.h"
 #include "math/Color.h"
+#include "utils/Stl.h"
 
 namespace GLaDOS {
     class Logger;
@@ -53,7 +54,7 @@ namespace GLaDOS {
         virtual Texture2D* createTexture2D(PixelFormat format, Blob& data) = 0;
         virtual Texture2D* createTexture2D(uint32_t width, uint32_t height, PixelFormat format, unsigned char* data) = 0;
         virtual Texture3D* createTexture3D(const std::string& name) = 0;
-        virtual TextureCube* createTextureCube(const std::string& name, PixelFormat format) = 0;
+        virtual TextureCube* createTextureCube(const std::string& name, const Array<std::string, 6>& cubeNames, PixelFormat format) = 0;
         virtual RenderTexture* createRenderTexture(const std::string& name) = 0;
 
         Mesh* createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage);

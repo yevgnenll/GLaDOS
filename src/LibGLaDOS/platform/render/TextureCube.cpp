@@ -14,7 +14,7 @@ namespace GLaDOS {
     TextureCube::~TextureCube() {
     }
 
-    bool TextureCube::loadTextureFromFile(Vector<std::string>& names) {
+    bool TextureCube::loadTextureFromFile(const Array<std::string, 6>& names) {
         if (names.empty() || names.size() != static_cast<uint32_t>(CubeMapFace::TheNumberOfFace)) {
             LOG_ERROR(logger, "Cubemap can only be created from exactly six images");
             return false;

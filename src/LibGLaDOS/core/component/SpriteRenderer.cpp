@@ -10,7 +10,6 @@
 #include "platform/render/Texture2D.h"
 #include "platform/render/VertexBuffer.h"
 #include "core/Sprite.h"
-#include "utils/MeshGenerator.h"
 #include "core/GameObject.hpp"
 #include "Transform.h"
 #include "Camera.h"
@@ -24,28 +23,7 @@ namespace GLaDOS {
 
     SpriteRenderer::SpriteRenderer(Sprite* sprite) : mSprite{sprite} {
         mName = "SpriteRenderer";
-
-        Mesh* mesh = MeshGenerator::generateRectangle(mSprite->getRect());
-        if (mesh == nullptr) {
-            LOG_ERROR(logger, "SpriteRenderer initialize failed!");
-            return;
-        }
-        ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgramFromFile("spriteVertex", "spriteFragment");
-        if (shaderProgram == nullptr) {
-            LOG_ERROR(logger, "SpriteRenderer initialize failed!");
-            return;
-        }
-
-        Material* material = NEW_T(Material);
-        material->setShaderProgram(shaderProgram);
-        material->setTexture0(mSprite->getTexture());
-
-        Renderable* renderable = Platform::getRenderer().createRenderable(mesh, material);
-        if (renderable == nullptr) {
-            LOG_ERROR(logger, "SpriteRenderer initialize failed!");
-            return;
-        }
-        mRenderable = renderable;
+        mRenderable = sprite->getRenderable();
     }
 
     SpriteRenderer::~SpriteRenderer() {
@@ -54,6 +32,7 @@ namespace GLaDOS {
 
     void SpriteRenderer::setSprite(Sprite* sprite) {
         mSprite = sprite;
+        mRenderable = sprite->getRenderable();
     }
 
     void SpriteRenderer::setColor(const Color& color) {
@@ -101,6 +80,10 @@ namespace GLaDOS {
     }
 
     void SpriteRenderer::update(real deltaTime) {
+        if (mRenderable == nullptr) {
+            return;
+        }
+
         ShaderProgram* shaderProgram = mRenderable->getMaterial()->getShaderProgram();
         Scene* currentScene = mGameObject->scene();
         Camera* mainCamera = currentScene->getMainCamera();

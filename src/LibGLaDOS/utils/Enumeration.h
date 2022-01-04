@@ -174,7 +174,6 @@ namespace GLaDOS {
 
     enum class ResourceType {
         Undefined = -1,
-        Buffer,
         Shader,
         Sound,
         Texture,

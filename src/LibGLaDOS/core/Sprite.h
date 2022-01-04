@@ -7,6 +7,7 @@
 namespace GLaDOS {
     class Texture2D;
     class Renderable;
+    class Logger;
     class Sprite {
       public:
         explicit Sprite(Texture2D* texture);
@@ -16,10 +17,15 @@ namespace GLaDOS {
 
         Texture2D* getTexture() const;
         Rect<real> getRect() const;
+        Renderable* getRenderable();
         int getPixelPerUnit() const;
         void setPixelPerUnit(int ppu);
 
       private:
+        bool createRenderable();
+
+        static Logger* logger;
+
         Texture2D* mTexture;
         Rect<real> mRect;
         int mPixelPerUnit{10};

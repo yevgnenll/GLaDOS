@@ -70,9 +70,6 @@ class MainScene : public Scene {
         shaderProgram->setDepthStencilState(depthStencilDesc);
 
         Texture2D* cubeTexture = Platform::getRenderer().createTexture2D("cube.png", PixelFormat::RGBA32);
-        if (!cubeTexture->loadTextureFromFile()) {
-            return false;
-        }
 
         Material* material = NEW_T(Material);
         material->setShaderProgram(shaderProgram);

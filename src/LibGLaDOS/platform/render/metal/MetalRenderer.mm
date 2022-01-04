@@ -224,15 +224,37 @@ namespace GLaDOS {
     }
 
     Texture2D* MetalRenderer::createTexture2D(const std::string& name, PixelFormat format, const Color& colorKey) {
+        Resource* resource = ResourceManager::getInstance().getResource(name, ResourceType::Texture);
+        if (resource != nullptr) {
+            return static_cast<Texture2D*>(resource);
+        }
+
         MetalTexture2D* texture = NEW_T(MetalTexture2D(name, format));
         texture->setColorKey(colorKey);
+        if (!texture->loadTextureFromFile()) {
+            DELETE_T(texture, MetalTexture2D);
+            return nullptr;
+        }
+
         ResourceManager::getInstance().store(texture);
+
         return texture;
     }
 
     Texture2D* MetalRenderer::createTexture2D(const std::string& name, PixelFormat format) {
+        Resource* resource = ResourceManager::getInstance().getResource(name, ResourceType::Texture);
+        if (resource != nullptr) {
+            return static_cast<Texture2D*>(resource);
+        }
+
         MetalTexture2D* texture = NEW_T(MetalTexture2D(name, format));
+        if (!texture->loadTextureFromFile()) {
+            DELETE_T(texture, MetalTexture2D);
+            return nullptr;
+        }
+
         ResourceManager::getInstance().store(texture);
+
         return texture;
     }
 
@@ -256,9 +278,20 @@ namespace GLaDOS {
         return nullptr;
     }
 
-    TextureCube* MetalRenderer::createTextureCube(const std::string& name, PixelFormat format) {
+    TextureCube* MetalRenderer::createTextureCube(const std::string& name, const Array<std::string, 6>& cubeNames, PixelFormat format) {
+        Resource* resource = ResourceManager::getInstance().getResource(name, ResourceType::Texture);
+        if (resource != nullptr) {
+            return static_cast<TextureCube*>(resource);
+        }
+
         TextureCube* textureCube = NEW_T(MetalTextureCube(name, format));
+        if (!textureCube->loadTextureFromFile(cubeNames)) {
+            DELETE_T(textureCube, TextureCube);
+            return nullptr;
+        }
+
         ResourceManager::getInstance().store(textureCube);
+
         return textureCube;
     }
 

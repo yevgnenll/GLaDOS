@@ -39,7 +39,7 @@ namespace GLaDOS {
         Texture2D* createTexture2D(PixelFormat format, Blob& data) override;
         Texture2D* createTexture2D(uint32_t width, uint32_t height, PixelFormat format, unsigned char* data) override;
         Texture3D* createTexture3D(const std::string& name) override;
-        TextureCube* createTextureCube(const std::string& name, PixelFormat format) override;
+        TextureCube* createTextureCube(const std::string& name, const Array<std::string, 6>& cubeNames, PixelFormat format) override;
         RenderTexture* createRenderTexture(const std::string& name) override;
 
         id<MTLDevice> getDevice() const;

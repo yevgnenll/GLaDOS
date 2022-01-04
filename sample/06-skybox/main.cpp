@@ -5,11 +5,7 @@ using namespace GLaDOS;
 class MainScene : public Scene {
   public:
     bool onInit() override {
-        TextureCube* cubemap = Platform::getRenderer().createTextureCube("test", PixelFormat::RGBA32);
-        Vector<std::string> cubemapImages = {"px.png", "nx.png", "py.png", "ny.png", "pz.png", "nz.png"};
-        if (!cubemap->loadTextureFromFile(cubemapImages)) {
-            return false;
-        }
+        TextureCube* cubemap = Platform::getRenderer().createTextureCube("test", {"px.png", "nx.png", "py.png", "ny.png", "pz.png", "nz.png"}, PixelFormat::RGBA32);
 
         GameObject* cubemapObject = createGameObject("cubemap");
         CubemapRenderer* cubemapRenderer = cubemapObject->addComponent<CubemapRenderer>();
