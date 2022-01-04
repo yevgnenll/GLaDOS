@@ -18,10 +18,11 @@ namespace GLaDOS {
         createRenderable(mRect, Rect<uint32_t>(0, 0, texture->getWidth(), texture->getHeight()), mTexture, pivotInPixel);
     }
 
-    Sprite::Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel)
-        : mTexture{texture}, mPivot{0.5f, 0.5f} {
+    Sprite::Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel) : mTexture{texture} {
+        Point<real> pivotInPixel{static_cast<real>(texture->getWidth()) * 0.5f, static_cast<real>(texture->getHeight()) * 0.5f};
         mRect = normalizePixelRect(rectInPixel, texture->getWidth(), texture->getHeight());
-        createRenderable(mRect, rectInPixel, mTexture, mPivot);
+        mPivot = normalizePixelPoint(pivotInPixel, rectInPixel.w, rectInPixel.h);
+        createRenderable(mRect, rectInPixel, mTexture, pivotInPixel);
     }
 
     Sprite::Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel, Point<real> pivotInPixel)
