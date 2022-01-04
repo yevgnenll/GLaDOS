@@ -12,14 +12,14 @@ namespace GLaDOS {
     Logger* Sprite::logger = LoggerRegistry::getInstance().makeAndGetLogger("Sprite");
     Sprite::Sprite(Texture2D* texture) : mTexture{texture} {
         Rect<uint32_t> rectInPixel{0, 0, texture->getWidth(), texture->getHeight()};
-        Point<real> pivotInPixel{static_cast<real>(texture->getWidth()) * 0.5f, static_cast<real>(texture->getHeight()) * 0.5f};
+        Point<real> pivotInPixel{static_cast<real>(rectInPixel.w) * 0.5f, static_cast<real>(rectInPixel.h) * 0.5f};
         mRect = normalizePixelRect(rectInPixel, texture->getWidth(), texture->getHeight());
         mPivot = normalizePixelPoint(pivotInPixel, rectInPixel.w, rectInPixel.h);
         createRenderable(mRect, Rect<uint32_t>(0, 0, texture->getWidth(), texture->getHeight()), mTexture, pivotInPixel);
     }
 
     Sprite::Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel) : mTexture{texture} {
-        Point<real> pivotInPixel{static_cast<real>(texture->getWidth()) * 0.5f, static_cast<real>(texture->getHeight()) * 0.5f};
+        Point<real> pivotInPixel{static_cast<real>(rectInPixel.w) * 0.5f, static_cast<real>(rectInPixel.h) * 0.5f};
         mRect = normalizePixelRect(rectInPixel, texture->getWidth(), texture->getHeight());
         mPivot = normalizePixelPoint(pivotInPixel, rectInPixel.w, rectInPixel.h);
         createRenderable(mRect, rectInPixel, mTexture, pivotInPixel);
@@ -38,6 +38,10 @@ namespace GLaDOS {
 
     Rect<float> Sprite::getRect() const {
         return mRect;
+    }
+
+    Point<real> Sprite::getPivot() const {
+        return mPivot;
     }
 
     Renderable* Sprite::getRenderable() {

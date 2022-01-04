@@ -17,6 +17,7 @@ namespace GLaDOS {
 
         Texture2D* getTexture() const;
         Rect<real> getRect() const;
+        Point<real> getPivot() const;
         Renderable* getRenderable();
 
       private:
@@ -27,8 +28,8 @@ namespace GLaDOS {
         static Logger* logger;
 
         Texture2D* mTexture;
-        Rect<real> mRect;
-        Point<real> mPivot;
+        Rect<real> mRect; // normalized texture rect
+        Point<real> mPivot; // normalized pivot
         Renderable* mRenderable{nullptr};
     };
 }  // namespace GLaDOS
