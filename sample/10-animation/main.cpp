@@ -14,7 +14,7 @@ class MainScene : public Scene {
         cubemapRenderer->setTextureCube(cubemap);
 
         camera = getMainCamera();
-        camera->setOrthographic(false);
+        camera->setOrthographic(true);
         cameraTransform = camera->gameObject()->transform();
         cameraTransform->setLocalPosition({0, 0, 1});
 
@@ -26,14 +26,15 @@ class MainScene : public Scene {
         texture->setSamplerState(samplerDesc);
 
         sprites = {
-            NEW_T(Sprite(texture, {14, 448, 39, 64}, {19.5, 0})),
-            NEW_T(Sprite(texture, {78, 448, 39, 63}, {19.5, 0})),
-            NEW_T(Sprite(texture, {142, 448, 39, 64}, {19.5, 0})),
-            NEW_T(Sprite(texture, {206, 448, 39, 63}, {19.5, 0}))
+            NEW_T(Sprite(texture, {14, 448, 39, 64}, {19.5, 32})),
+            NEW_T(Sprite(texture, {78, 448, 39, 63}, {19.5, 31.5})),
+            NEW_T(Sprite(texture, {142, 448, 39, 64}, {19.5, 32})),
+            NEW_T(Sprite(texture, {206, 448, 39, 63}, {19.5, 31.5}))
         };
 
         player = createGameObject("player");
         spriteRenderer = player->addComponent<SpriteRenderer>(sprites[spriteIndex]);
+        player->transform()->translate({100, 100, 0.f}, Space::Self);
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));

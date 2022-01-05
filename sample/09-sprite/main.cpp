@@ -30,7 +30,6 @@ class MainScene : public Scene {
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
-        Input::addAxis("Vertical", NEW_T(InputHandler(KeyCode::KEY_W, KeyCode::KEY_S, 0.1)));
 
         return true;
     }
@@ -48,19 +47,6 @@ class MainScene : public Scene {
         Vec3 up = cameraTransform->up();
         up *= Input::getAxis("Forward") * moveSensitivity * deltaTime;
         cameraTransform->translate(up);
-
-        Vec3 forward = cameraTransform->forward();
-        forward *= Input::getAxis("Vertical") * moveSensitivity * deltaTime;
-        cameraTransform->translate(forward);
-
-        // camera rotation
-        if (Input::isMousePress(MouseButton::MOUSE_RIGHT)) {
-            Vec3 mouseDelta = Input::mouseDeltaPosition();
-            real rotationX = mouseDelta.y * sensitivity * deltaTime;
-            real rotationY = mouseDelta.x * sensitivity * deltaTime;
-            cameraTransform->rotate(cameraTransform->right(), Math::toRadians(rotationX));
-            cameraTransform->rotate(UVec3::up, Math::toRadians(-rotationY));
-        }
 
         if (Input::isKeyDown(KeyCode::KEY_Z)) {
             spriteRenderer->setFlipX(!spriteRenderer->getFlipX());

@@ -477,6 +477,7 @@ namespace GLaDOS {
         auto tanHalfFovy = Math::tan(static_cast<T>(fieldOfView) / T(2.0));
 
         /*
+            http://metashapes.com/blog/opengl-metal-projection-matrix-problem/
             Metal defines its Normalized Device Coordinate (NDC) system as a 2x2x1 cube with its center at (0, 0, 0.5).
             Post multiplication by 0.5 to have the correct center.
             | 1  0  0    0 |
@@ -512,6 +513,7 @@ namespace GLaDOS {
             | 0             0            -2/(f-n)      -(f+n)/(f-n) |
             | -(r+l)/(r-l)  -(t+b)/t-b)  -(f+n)/(f-n)  1            |
 
+            http://metashapes.com/blog/opengl-metal-projection-matrix-problem/
             Metal defines its Normalized Device Coordinate (NDC) system as a 2x2x1 cube with its center at (0, 0, 0.5).
             Post multiplication by 0.5 to have the correct center.
             | 1  0  0    0 |
