@@ -12,8 +12,9 @@ class MainScene : public Scene {
         cubemapRenderer->setTextureCube(cubemap);
 
         camera = getMainCamera();
+        camera->setOrthographic(true);
         cameraTransform = camera->gameObject()->transform();
-        cameraTransform->setLocalPosition({0, 0, 21});
+        cameraTransform->setLocalPosition({0, 0, 1});
 
         Texture2D* texture = Platform::getRenderer().createTexture2D("player.png", PixelFormat::RGBA32);
 
@@ -26,17 +27,6 @@ class MainScene : public Scene {
 
         player = createGameObject("player");
         spriteRenderer = player->addComponent<SpriteRenderer>(sprite);
-        player->transform()->setLocalScale({0.1, 0.1, 0.1});
-
-        Texture2D* texture2 = Platform::getRenderer().createTexture2D("spritesheet.png", PixelFormat::RGBA32);
-
-        Sprite* sprite2 = NEW_T(Sprite(texture2));
-        texture2->setSamplerState(samplerDesc);
-
-        player2 = createGameObject("player2");
-        player2->addComponent<SpriteRenderer>(sprite2);
-        player2->transform()->setPosition({30, 0, 0});
-        player2->transform()->setLocalScale({0.1, 0.1, 0.1});
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
@@ -52,15 +42,15 @@ class MainScene : public Scene {
 
         // camera translation
         Vec3 right = cameraTransform->right();
-        right *= Input::getAxis("Horizontal") * sensitivity * deltaTime;
+        right *= Input::getAxis("Horizontal") * moveSensitivity * deltaTime;
         cameraTransform->translate(right);
 
         Vec3 up = cameraTransform->up();
-        up *= Input::getAxis("Forward") * sensitivity * deltaTime;
+        up *= Input::getAxis("Forward") * moveSensitivity * deltaTime;
         cameraTransform->translate(up);
 
         Vec3 forward = cameraTransform->forward();
-        forward *= Input::getAxis("Vertical") * sensitivity * deltaTime;
+        forward *= Input::getAxis("Vertical") * moveSensitivity * deltaTime;
         cameraTransform->translate(forward);
 
         // camera rotation
@@ -82,11 +72,11 @@ class MainScene : public Scene {
     }
 
   private:
-    real sensitivity = 15;
+    real moveSensitivity = 120;
+    real sensitivity = 15;;
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;
     GameObject* player = nullptr;
-    GameObject* player2 = nullptr;
     SpriteRenderer* spriteRenderer = nullptr;
 };
 

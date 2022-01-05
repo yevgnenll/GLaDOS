@@ -11,6 +11,7 @@
 #include "Vec3.h"
 #include "Vec4.h"
 #include "utils/Utility.h"
+#include "platform/OSTypes.h"
 
 namespace GLaDOS {
     template <typename T>
@@ -475,6 +476,14 @@ namespace GLaDOS {
     std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::perspective(Rad fieldOfView, const T& aspectRatio, const T& znear, const T& zfar) {
         auto tanHalfFovy = Math::tan(static_cast<T>(fieldOfView) / T(2.0));
 
+        /*
+            Metal defines its Normalized Device Coordinate (NDC) system as a 2x2x1 cube with its center at (0, 0, 0.5).
+            Post multiplication by 0.5 to have the correct center.
+            | 1  0  0    0 |
+            | 0  1  0    0 |
+            | 0  0  0.5  0 |
+            | 0  0  0.5  1 |
+        */
         Mat4<real> mat = Mat4<T>::zero;
         mat._m16[0] = T(1.0) / (aspectRatio * tanHalfFovy);
         mat._m16[5] = T(1.0) / tanHalfFovy;
@@ -482,7 +491,13 @@ namespace GLaDOS {
         mat._m16[11] = T(-1.0);
         mat._m16[14] = -(T(2.0) * zfar * znear) / (zfar - znear);
 
-        return mat;
+        Mat4<T> adjust;
+#ifdef PLATFORM_MACOS
+        adjust._m16[10] = T(0.5);
+        adjust._m16[14] = T(0.5);
+#endif
+
+        return mat * adjust;
     }
 
     template <typename T>
@@ -491,6 +506,19 @@ namespace GLaDOS {
         T tb = T(1.0) / (top - bottom);
         T fn = T(1.0) / (zfar - znear);
 
+        /*  row-major matrix
+            | 2/(r-l)       0            0             0            |
+            | 0             2/(t-b)      0             0            |
+            | 0             0            -2/(f-n)      -(f+n)/(f-n) |
+            | -(r+l)/(r-l)  -(t+b)/t-b)  -(f+n)/(f-n)  1            |
+
+            Metal defines its Normalized Device Coordinate (NDC) system as a 2x2x1 cube with its center at (0, 0, 0.5).
+            Post multiplication by 0.5 to have the correct center.
+            | 1  0  0    0 |
+            | 0  1  0    0 |
+            | 0  0  0.5  0 |
+            | 0  0  0.5  1 |
+        */
         Mat4<T> mat{};
         mat._m16[0] = T(2.0) * rl;
         mat._m16[5] = T(2.0) * tb;
@@ -499,7 +527,13 @@ namespace GLaDOS {
         mat._m16[13] = -(top + bottom) * tb;
         mat._m16[14] = -(zfar + znear) * fn;
 
-        return mat;
+        Mat4<T> adjust;
+#ifdef PLATFORM_MACOS
+        adjust._m16[10] = T(0.5);
+        adjust._m16[14] = T(0.5);
+#endif
+
+        return mat * adjust;
     }
 
     template <typename T>

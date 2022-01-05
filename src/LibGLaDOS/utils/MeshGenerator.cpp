@@ -17,20 +17,20 @@ namespace GLaDOS {
         //	0----------3
         //	|          |
         //	1----------2
-        real width = static_cast<real>(size.x) * 0.5f;
-        real height = static_cast<real>(size.y) * 0.5f;
+        real halfWidth = static_cast<real>(size.x) * 0.5f;
+        real halfHeight = static_cast<real>(size.y) * 0.5f;
 
         Vector<real> vertices = {
-            pivot.x() - width, pivot.y() + height, 0.f,
+            pivot.x() - halfWidth, pivot.y() + halfHeight, 0.f,
             textureRect.x, textureRect.h,
 
-            pivot.x() - width, pivot.y() - height, 0.f,
+            pivot.x() - halfWidth, pivot.y() - halfHeight, 0.f,
             textureRect.x, textureRect.y,
 
-            pivot.x() + width, pivot.y() - height, 0.f,
+            pivot.x() + halfWidth, pivot.y() - halfHeight, 0.f,
             textureRect.w, textureRect.y,
 
-            pivot.x() + width, pivot.y() + height, 0.f,
+            pivot.x() + halfWidth, pivot.y() + halfHeight, 0.f,
             textureRect.w, textureRect.h
         };
         static Vector<uint16_t> indices = {

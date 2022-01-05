@@ -14,8 +14,9 @@ class MainScene : public Scene {
         cubemapRenderer->setTextureCube(cubemap);
 
         camera = getMainCamera();
+        camera->setOrthographic(false);
         cameraTransform = camera->gameObject()->transform();
-        cameraTransform->setLocalPosition({0, 0, 100});
+        cameraTransform->setLocalPosition({0, 0, 1});
 
         Texture2D* texture = Platform::getRenderer().createTexture2D("player.png", PixelFormat::RGBA32);
         SamplerDescription samplerDesc;
@@ -69,15 +70,15 @@ class MainScene : public Scene {
 
         // camera translation
         Vec3 right = cameraTransform->right();
-        right *= Input::getAxis("Horizontal") * sensitivity * deltaTime;
+        right *= Input::getAxis("Horizontal") * moveSensitivity * deltaTime;
         cameraTransform->translate(right);
 
         Vec3 up = cameraTransform->up();
-        up *= Input::getAxis("Forward") * sensitivity * deltaTime;
+        up *= Input::getAxis("Forward") * moveSensitivity * deltaTime;
         cameraTransform->translate(up);
 
         Vec3 forward = cameraTransform->forward();
-        forward *= Input::getAxis("Vertical") * sensitivity * deltaTime;
+        forward *= Input::getAxis("Vertical") * moveSensitivity * deltaTime;
         cameraTransform->translate(forward);
 
         // camera rotation
@@ -91,7 +92,8 @@ class MainScene : public Scene {
     }
 
   private:
-    real sensitivity = 50;
+    real moveSensitivity = 120;
+    real sensitivity = 15;
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;
     GameObject* player = nullptr;
