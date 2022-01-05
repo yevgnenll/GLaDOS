@@ -66,7 +66,6 @@ namespace GLaDOS {
             [mWindow setHidesOnDeactivate:NO];
         }
         [mWindow makeKeyAndOrderFront:nil];
-        [mWindow orderFrontRegardless];
 
         // 초기 backingScaleFactor 셋팅
         [MetalRenderer::getInstance().getMetalLayer() setContentsScale:[mWindow backingScaleFactor]];

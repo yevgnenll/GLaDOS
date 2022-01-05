@@ -12,24 +12,24 @@ namespace GLaDOS {
       public:
         explicit Sprite(Texture2D* texture);
         Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel);
-        Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel, Point<real> pivotInPixel);
+        Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel, Point<real> anchorPointInPixel);
         ~Sprite() = default;
 
         Texture2D* getTexture() const;
         Rect<real> getRect() const;
-        Point<real> getPivot() const;
+        Point<real> getAnchorPoint() const;
         Renderable* getRenderable();
 
       private:
         static Rect<real> normalizePixelRect(const Rect<uint32_t>& rectInPixel, uint32_t width, uint32_t height);
         static Point<real> normalizePixelPoint(const Point<real>& pointInPixel, uint32_t width, uint32_t height);
-        bool createRenderable(const Rect<real>& normalizedRect, const Rect<uint32_t>& rectInPixel, Texture2D* texture2D, Point<real> pivot);
+        bool createRenderable(const Rect<real>& normalizedRect, const Rect<uint32_t>& rectInPixel, Texture2D* texture2D, Point<real> anchorPoint);
 
         static Logger* logger;
 
         Texture2D* mTexture;
         Rect<real> mRect; // normalized texture rect
-        Point<real> mPivot; // normalized pivot
+        Point<real> mAnchorPoint; // normalized anchorPoint
         Renderable* mRenderable{nullptr};
     };
 }  // namespace GLaDOS
