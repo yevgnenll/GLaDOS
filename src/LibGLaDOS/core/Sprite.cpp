@@ -25,8 +25,7 @@ namespace GLaDOS {
         createRenderable(mRect, rectInPixel, mTexture, pivotInPixel);
     }
 
-    Sprite::Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel, Point<real> pivotInPixel)
-        : mTexture{texture} {
+    Sprite::Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel, Point<real> pivotInPixel) : mTexture{texture} {
         mRect = normalizePixelRect(rectInPixel, texture->getWidth(), texture->getHeight());
         mPivot = normalizePixelPoint(pivotInPixel, rectInPixel.w, rectInPixel.h);
         createRenderable(mRect, rectInPixel, mTexture, pivotInPixel);

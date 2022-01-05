@@ -17,9 +17,9 @@ namespace GLaDOS {
     Mat4<real> Camera::projectionMatrix() const {
         if (mIsOrthographic) {
             // left, right, bottom, top
-            return Mat4<real>::orthogonal(0, static_cast<real>(Platform::getInstance().width()),
-                                          0, static_cast<real>(Platform::getInstance().height()),
-                                          mNearClipPlane, mFarClipPlane);
+            real halfWidth = static_cast<real>(Platform::getInstance().width()) * 0.5f;
+            real halfHeight = static_cast<real>(Platform::getInstance().height()) * 0.5f;
+            return Mat4<real>::orthogonal(-halfWidth, halfWidth, -halfHeight, halfHeight, mNearClipPlane, mFarClipPlane);
         }
         return Mat4<real>::perspective(Math::toRadians(fieldOfView()), aspectRatio(), mNearClipPlane, mFarClipPlane);
     }

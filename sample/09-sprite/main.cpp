@@ -16,7 +16,7 @@ class MainScene : public Scene {
         cameraTransform = camera->gameObject()->transform();
         cameraTransform->setLocalPosition({0, 0, 1});
 
-        Texture2D* texture = Platform::getRenderer().createTexture2D("player.png", PixelFormat::RGBA32);
+        Texture2D* texture = Platform::getRenderer().createTexture2D("spritesheet.png", PixelFormat::RGBA32);
 
         Sprite* sprite = NEW_T(Sprite(texture));
         SamplerDescription samplerDesc;
@@ -28,8 +28,8 @@ class MainScene : public Scene {
         player = createGameObject("player");
         spriteRenderer = player->addComponent<SpriteRenderer>(sprite);
 
-        Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
+        Input::addAxis("Vertical", NEW_T(InputHandler(KeyCode::KEY_W, KeyCode::KEY_S, 0.1)));
 
         return true;
     }
@@ -45,7 +45,7 @@ class MainScene : public Scene {
         cameraTransform->translate(right);
 
         Vec3 up = cameraTransform->up();
-        up *= Input::getAxis("Forward") * moveSensitivity * deltaTime;
+        up *= Input::getAxis("Vertical") * moveSensitivity * deltaTime;
         cameraTransform->translate(up);
 
         if (Input::isKeyDown(KeyCode::KEY_Z)) {
@@ -58,7 +58,7 @@ class MainScene : public Scene {
     }
 
   private:
-    real moveSensitivity = 120;
+    real moveSensitivity = 200;
     real sensitivity = 15;;
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;
