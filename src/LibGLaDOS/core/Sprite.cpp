@@ -42,7 +42,7 @@ namespace GLaDOS {
         return mTexture;
     }
 
-    Rect<float> Sprite::getRect() const {
+    Rect<real> Sprite::getRect() const {
         return mRect;
     }
 

@@ -22,14 +22,13 @@ typedef struct {
 
 vertex VertexOut main0(VertexIn verts [[stage_in]], constant VertexUniforms &uniforms [[buffer(0)]]) {
     VertexOut out;
-    float2 resultTexCoord = verts._texCoord0;
     if (uniforms.flipX) {
-        resultTexCoord = float2(1.0 - resultTexCoord.x, resultTexCoord.y);
+        verts._texCoord0.x = 1.0 - verts._texCoord0.x;
     }
     if (uniforms.flipY) {
-        resultTexCoord = float2(resultTexCoord.x, 1.0 - resultTexCoord.y);
+        verts._texCoord0.y = 1.0 - verts._texCoord0.y;
     }
     out._position = uniforms.projection * uniforms.view * uniforms.model * float4(verts._position, 1);
-    out._texCoord0 = resultTexCoord;
+    out._texCoord0 = verts._texCoord0;
     return out;
 }
