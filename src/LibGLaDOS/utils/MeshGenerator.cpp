@@ -17,20 +17,25 @@ namespace GLaDOS {
         //	0----------3
         //	|          |
         //	1----------2
-        real halfWidth = static_cast<real>(size.x) * 0.5f;
-        real halfHeight = static_cast<real>(size.y) * 0.5f;
+        real width = static_cast<real>(size.x);
+        real height = static_cast<real>(size.y);
+
+        real w1 = width - anchorPoint.x();
+        real w2 = width - w1;
+        real h1 = height - anchorPoint.y();
+        real h2 = height - h1;
 
         Vector<real> vertices = {
-            anchorPoint.x() - halfWidth, anchorPoint.y() + halfHeight, 0.f,
+            -w2, h1, 0.f,
             textureRect.x, textureRect.h,
 
-            anchorPoint.x() - halfWidth, anchorPoint.y() - halfHeight, 0.f,
+            -w2, -h2, 0.f,
             textureRect.x, textureRect.y,
 
-            anchorPoint.x() + halfWidth, anchorPoint.y() - halfHeight, 0.f,
+            w1, -h2, 0.f,
             textureRect.w, textureRect.y,
 
-            anchorPoint.x() + halfWidth, anchorPoint.y() + halfHeight, 0.f,
+            w1, h1, 0.f,
             textureRect.w, textureRect.h
         };
         static Vector<uint16_t> indices = {

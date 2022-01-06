@@ -26,10 +26,10 @@ class MainScene : public Scene {
         texture->setSamplerState(samplerDesc);
 
         sprites = {
-            NEW_T(Sprite(texture, {14, 448, 39, 64}, {19.5, 32})),
-            NEW_T(Sprite(texture, {78, 448, 39, 63}, {19.5, 31.5})),
-            NEW_T(Sprite(texture, {142, 448, 39, 64}, {19.5, 32})),
-            NEW_T(Sprite(texture, {206, 448, 39, 63}, {19.5, 31.5}))
+            NEW_T(Sprite(texture, {14, 448, 39, 64}, {19, 0})),
+            NEW_T(Sprite(texture, {78, 448, 39, 63}, {19, 0})),
+            NEW_T(Sprite(texture, {142, 448, 39, 64}, {19, 0})),
+            NEW_T(Sprite(texture, {206, 448, 39, 63}, {19, 0}))
         };
 
         player = createGameObject("player");

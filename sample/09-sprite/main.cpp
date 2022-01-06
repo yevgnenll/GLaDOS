@@ -18,7 +18,7 @@ class MainScene : public Scene {
 
         Texture2D* texture = Platform::getRenderer().createTexture2D("spritesheet.png", PixelFormat::RGBA32);
 
-        Sprite* sprite = NEW_T(Sprite(texture));
+        Sprite* sprite = NEW_T(Sprite(texture, {154, 9}));
         SamplerDescription samplerDesc;
         samplerDesc.mMinFilter = FilterMode::Nearest;
         samplerDesc.mMagFilter = FilterMode::Nearest;
@@ -38,6 +38,8 @@ class MainScene : public Scene {
         if (Input::isKeyDown(KeyCode::KEY_ESCAPE)) {
             Platform::getInstance().quit();
         }
+
+        player->transform()->rotate(Vec3{0, 0, deltaTime * 50});
 
         // camera translation
         Vec3 right = cameraTransform->right();

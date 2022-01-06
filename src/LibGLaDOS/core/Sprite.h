@@ -12,6 +12,7 @@ namespace GLaDOS {
       public:
         explicit Sprite(Texture2D* texture);
         Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel);
+        Sprite(Texture2D* texture, Point<real> anchorPointInPixel);
         Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel, Point<real> anchorPointInPixel);
         ~Sprite() = default;
 

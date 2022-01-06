@@ -25,6 +25,13 @@ namespace GLaDOS {
         createRenderable(mRect, rectInPixel, mTexture, anchorPointInPixel);
     }
 
+    Sprite::Sprite(Texture2D* texture, Point<real> anchorPointInPixel) : mTexture{texture} {
+        Rect<uint32_t> rectInPixel{0, 0, texture->getWidth(), texture->getHeight()};
+        mRect = normalizePixelRect(rectInPixel, texture->getWidth(), texture->getHeight());
+        mAnchorPoint = normalizePixelPoint(anchorPointInPixel, rectInPixel.w, rectInPixel.h);
+        createRenderable(mRect, Rect<uint32_t>(0, 0, texture->getWidth(), texture->getHeight()), mTexture, anchorPointInPixel);
+    }
+
     Sprite::Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel, Point<real> anchorPointInPixel) : mTexture{texture} {
         mRect = normalizePixelRect(rectInPixel, texture->getWidth(), texture->getHeight());
         mAnchorPoint = normalizePixelPoint(anchorPointInPixel, rectInPixel.w, rectInPixel.h);
