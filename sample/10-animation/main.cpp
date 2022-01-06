@@ -26,10 +26,51 @@ class MainScene : public Scene {
         texture->setSamplerState(samplerDesc);
 
         sprites = {
+            // idle
+            NEW_T(Sprite(texture, {12, 512, 39, 64}, {19, 0})),
+            NEW_T(Sprite(texture, {76, 512, 39, 64}, {19, 0})),
+            NEW_T(Sprite(texture, {140, 512, 39, 64}, {19, 0})),
+
+            // walk
             NEW_T(Sprite(texture, {14, 448, 39, 64}, {19, 0})),
             NEW_T(Sprite(texture, {78, 448, 39, 63}, {19, 0})),
             NEW_T(Sprite(texture, {142, 448, 39, 64}, {19, 0})),
-            NEW_T(Sprite(texture, {206, 448, 39, 63}, {19, 0}))
+            NEW_T(Sprite(texture, {206, 448, 39, 63}, {19, 0})),
+
+            // crouch attack
+            NEW_T(Sprite(texture, {0, 384, 63, 36}, {32, 0})),
+            NEW_T(Sprite(texture, {64, 384, 63, 36}, {32, 0})),
+
+            // jump
+            NEW_T(Sprite(texture, {142, 384, 39, 62}, {19, 0})),
+
+            // alert
+            NEW_T(Sprite(texture, {14, 320, 39, 61}, {19, 0})),
+            NEW_T(Sprite(texture, {78, 320, 39, 62}, {19, 0})),
+            NEW_T(Sprite(texture, {142, 320, 39, 63}, {19, 0})),
+
+            // swing1
+            NEW_T(Sprite(texture, {0, 256, 45, 58}, {28, 0})),
+            NEW_T(Sprite(texture, {87, 256, 39, 63}, {21, 0})),
+            NEW_T(Sprite(texture, {176, 256, 56, 57}, {12, 0})),
+
+            // swing2
+            NEW_T(Sprite(texture, {12, 192, 44, 64}, {33, 0})),
+            NEW_T(Sprite(texture, {86, 192, 40, 62}, {28, 0})),
+            NEW_T(Sprite(texture, {144, 192, 48, 59}, {35, 0})),
+
+            // swing3
+            NEW_T(Sprite(texture, {0, 128, 52, 59}, {32, 0})),
+            NEW_T(Sprite(texture, {104, 128, 41, 60}, {18, 0})),
+            NEW_T(Sprite(texture, {184, 128, 45, 58}, {8, 0})),
+
+            // stab1
+            NEW_T(Sprite(texture, {15, 64, 46, 61}, {41, 0})),
+            NEW_T(Sprite(texture, {102, 64, 53, 58}, {10, 0})),
+
+            // stab2
+            NEW_T(Sprite(texture, {14, 0, 46, 64}, {34, 0})),
+            NEW_T(Sprite(texture, {100, 0, 55, 57}, {7, 0})),
         };
 
         player = createGameObject("player");
@@ -53,6 +94,14 @@ class MainScene : public Scene {
                 spriteIndex = 0;
             }
             spriteRenderer->setSprite(sprites[spriteIndex]);
+        }
+
+        if (Input::isKeyDown(KeyCode::KEY_P)) {
+            spriteRenderer->setFlipX(!spriteRenderer->getFlipX());
+        }
+
+        if (Input::isKeyDown(KeyCode::KEY_O)) {
+            spriteRenderer->setFlipY(!spriteRenderer->getFlipY());
         }
 
         if (Input::isKeyDown(KeyCode::KEY_M)) {
@@ -97,7 +146,7 @@ class MainScene : public Scene {
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;
     GameObject* player = nullptr;
-    Array<Sprite*, 4> sprites;
+    Vector<Sprite*> sprites;
     SpriteRenderer* spriteRenderer = nullptr;
     int spriteIndex = 0;
     RasterizerDescription rasterizerDesc{};
