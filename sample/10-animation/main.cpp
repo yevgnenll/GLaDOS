@@ -55,9 +55,9 @@ class MainScene : public Scene {
             NEW_T(Sprite(texture, {176, 256, 56, 57}, {12, 0})),
 
             // swing2
-            NEW_T(Sprite(texture, {12, 192, 44, 64}, {33, 0})),
-            NEW_T(Sprite(texture, {86, 192, 40, 62}, {28, 0})),
-            NEW_T(Sprite(texture, {144, 192, 48, 59}, {35, 0})),
+            NEW_T(Sprite(texture, {12, 192, 44, 64}, {17, 0})),
+            NEW_T(Sprite(texture, {86, 192, 40, 62}, {10, 0})),
+            NEW_T(Sprite(texture, {144, 192, 48, 59}, {15, 0})),
 
             // swing3
             NEW_T(Sprite(texture, {0, 128, 52, 59}, {32, 0})),

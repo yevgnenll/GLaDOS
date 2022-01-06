@@ -1,0 +1,392 @@
+{
+  "animations": [
+    {
+      "name": "idle",
+      "frames": [
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 12,
+            "y": 512,
+            "w": 39,
+            "h": 64
+          },
+          "anchor": {
+            "x": 19,
+            "y": 0
+          }
+        },
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 76,
+            "y": 512,
+            "w": 39,
+            "h": 64
+          },
+          "anchor": {
+            "x": 19,
+            "y": 0
+          }
+        },
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 140,
+            "y": 512,
+            "w": 39,
+            "h": 64
+          },
+          "anchor": {
+            "x": 19,
+            "y": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "walk",
+      "frames": [
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 14,
+            "y": 448,
+            "w": 39,
+            "h": 64
+          },
+          "anchor": {
+            "x": 19,
+            "y": 0
+          }
+        },
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 78,
+            "y": 448,
+            "w": 39,
+            "h": 63
+          },
+          "anchor": {
+            "x": 19,
+            "y": 0
+          }
+        },
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 142,
+            "y": 448,
+            "w": 39,
+            "h": 64
+          },
+          "anchor": {
+            "x": 19,
+            "y": 0
+          }
+        },
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 206,
+            "y": 448,
+            "w": 39,
+            "h": 63
+          },
+          "anchor": {
+            "x": 19,
+            "y": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "crouch attack",
+      "frames": [
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 0,
+            "y": 384,
+            "w": 63,
+            "h": 36
+          },
+          "anchor": {
+            "x": 32,
+            "y": 0
+          }
+        },
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 64,
+            "y": 384,
+            "w": 63,
+            "h": 36
+          },
+          "anchor": {
+            "x": 32,
+            "y": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "jump",
+      "frames": [
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 142,
+            "y": 384,
+            "w": 39,
+            "h": 62
+          },
+          "anchor": {
+            "x": 19,
+            "y": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "alert",
+      "frames": [
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 14,
+            "y": 320,
+            "w": 39,
+            "h": 61
+          },
+          "anchor": {
+            "x": 19,
+            "y": 0
+          }
+        },
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 78,
+            "y": 320,
+            "w": 39,
+            "h": 62
+          },
+          "anchor": {
+            "x": 19,
+            "y": 0
+          }
+        },
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 142,
+            "y": 320,
+            "w": 39,
+            "h": 63
+          },
+          "anchor": {
+            "x": 19,
+            "y": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "swing01",
+      "frames": [
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 0,
+            "y": 256,
+            "w": 45,
+            "h": 58
+          },
+          "anchor": {
+            "x": 28,
+            "y": 0
+          }
+        },
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 87,
+            "y": 256,
+            "w": 39,
+            "h": 63
+          },
+          "anchor": {
+            "x": 21,
+            "y": 0
+          }
+        },
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 176,
+            "y": 256,
+            "w": 56,
+            "h": 57
+          },
+          "anchor": {
+            "x": 12,
+            "y": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "swing02",
+      "frames": [
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 12,
+            "y": 192,
+            "w": 44,
+            "h": 64
+          },
+          "anchor": {
+            "x": 17,
+            "y": 0
+          }
+        },
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 86,
+            "y": 192,
+            "w": 40,
+            "h": 62
+          },
+          "anchor": {
+            "x": 10,
+            "y": 0
+          }
+        },
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 144,
+            "y": 192,
+            "w": 48,
+            "h": 59
+          },
+          "anchor": {
+            "x": 15,
+            "y": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "swing03",
+      "frames": [
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 0,
+            "y": 128,
+            "w": 52,
+            "h": 59
+          },
+          "anchor": {
+            "x": 32,
+            "y": 0
+          }
+        },
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 104,
+            "y": 128,
+            "w": 41,
+            "h": 60
+          },
+          "anchor": {
+            "x": 18,
+            "y": 0
+          }
+        },
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 184,
+            "y": 128,
+            "w": 45,
+            "h": 58
+          },
+          "anchor": {
+            "x": 8,
+            "y": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "stab01",
+      "frames": [
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 15,
+            "y": 64,
+            "w": 46,
+            "h": 61
+          },
+          "anchor": {
+            "x": 41,
+            "y": 0
+          }
+        },
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 102,
+            "y": 64,
+            "w": 53,
+            "h": 58
+          },
+          "anchor": {
+            "x": 10,
+            "y": 0
+          }
+        }
+      ]
+    },
+    {
+      "name": "stab02",
+      "frames": [
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 14,
+            "y": 0,
+            "w": 46,
+            "h": 64
+          },
+          "anchor": {
+            "x": 34,
+            "y": 0
+          }
+        },
+        {
+          "texture": "player.png",
+          "rect": {
+            "x": 100,
+            "y": 0,
+            "w": 55,
+            "h": 57
+          },
+          "anchor": {
+            "x": 7,
+            "y": 0
+          }
+        }
+      ]
+    }
+  ]
+}
