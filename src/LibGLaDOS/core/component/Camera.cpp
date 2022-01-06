@@ -60,6 +60,10 @@ namespace GLaDOS {
         return Vec2{};
     }
 
+    bool Camera::isOrthographic() const {
+        return mIsOrthographic;
+    }
+
     void Camera::setOrthographic(bool orthographic) {
         mIsOrthographic = orthographic;
     }

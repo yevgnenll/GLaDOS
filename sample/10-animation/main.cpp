@@ -14,7 +14,6 @@ class MainScene : public Scene {
         cubemapRenderer->setTextureCube(cubemap);
 
         camera = getMainCamera();
-        camera->setOrthographic(true);
         cameraTransform = camera->gameObject()->transform();
         cameraTransform->setLocalPosition({0, 0, 1});
 
@@ -115,6 +114,10 @@ class MainScene : public Scene {
                 spriteIndex = 0;
             }
             spriteRenderer->setSprite(sprites[spriteIndex]);
+        }
+
+        if (Input::isKeyDown(KeyCode::KEY_T)) {
+            camera->setOrthographic(!camera->isOrthographic());
         }
 
         if (Input::isKeyDown(KeyCode::KEY_P)) {

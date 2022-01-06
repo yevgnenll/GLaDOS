@@ -20,6 +20,7 @@ namespace GLaDOS {
         Ray screenPointToRay(const Vec3& pos);
         Vec3 screenToWorldPoint(const Vec2& pos);
         Vec2 worldToScreenPoint(const Vec3& pos);
+        bool isOrthographic() const;
         void setOrthographic(bool orthographic);
 
         real fieldOfView() const;
