@@ -88,6 +88,7 @@ namespace GLaDOS {
         Scene* currentScene = mGameObject->scene();
         Camera* mainCamera = currentScene->getMainCamera();
         Transform* transform = mGameObject->transform();
+        Rect<real> textureRect = getSprite()->getRect();
 
         shaderProgram->setUniform("model", transform->localToWorldMatrix());
         shaderProgram->setUniform("view", mainCamera->worldToCameraMatrix());
@@ -97,6 +98,8 @@ namespace GLaDOS {
         shaderProgram->setUniform("color", mColor);
         shaderProgram->setUniform("colorKey", mColorKey);
         shaderProgram->setUniform("useColorKey", mUseColorKey);
+        shaderProgram->setUniform("flipXOffset", textureRect.x + textureRect.w);
+        shaderProgram->setUniform("flipYOffset", textureRect.y + textureRect.h);
 
         MeshRenderer::update(deltaTime);
     }

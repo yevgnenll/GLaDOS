@@ -37,5 +37,7 @@
 #include "utils/MeshGenerator.h"
 #include "utils/String.hpp"
 #include "utils/Utility.h"
+#include "utils/JsonParser.h"
+#include "utils/FileSystem.h"
 
 #endif  //GLADOS_GLADOS_H

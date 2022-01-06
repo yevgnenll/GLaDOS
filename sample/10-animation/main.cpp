@@ -25,6 +25,27 @@ class MainScene : public Scene {
         samplerDesc.mMipFilter = FilterMode::Nearest;
         texture->setSamplerState(samplerDesc);
 
+        std::string filename = std::string(RESOURCE_DIR) + "player.json";
+        FileSystem file{filename, OpenMode::Read};
+        if (!file.isOpen()) {
+            std::cout << "file open failed: " << filename << std::endl;
+            return false;
+        }
+
+        std::string jsonString;
+        JsonNode rootJson;
+        std::string errString;
+        file.readAll(jsonString);
+        if (!JsonParser::parse(rootJson, jsonString, errString)) {
+            std::cout << "json parse error! cause: " << errString << std::endl;
+            return false;
+        }
+
+        JsonNode::array animationNode = rootJson["animations"].getArray();
+        for (const auto& element : animationNode) {
+            std::cout << (*element)["name"].getString() << std::endl;
+        }
+
         sprites = {
             // idle
             NEW_T(Sprite(texture, {12, 512, 39, 64}, {19, 0})),
