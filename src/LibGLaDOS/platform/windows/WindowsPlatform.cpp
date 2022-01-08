@@ -42,8 +42,8 @@ namespace GLaDOS {
         } else if (!(params.windowStyle & WindowStyle::Resizable)) {
             style = WS_CAPTION | WS_SYSMENU;
         }
-        Platform::getInstance().mWidth = params.width;
-        Platform::getInstance().mHeight = params.height;
+        Platform::getInstance().mContentWidth = params.width;
+        Platform::getInstance().mContentHeight = params.height;
         Platform::getInstance().mIsFullScreen = params.isFullscreen;
         Platform::getInstance().mTitleName = params.titleName;
 
@@ -65,7 +65,7 @@ namespace GLaDOS {
             return false;
         }
 
-        RECT rt = {0, 0, Platform::getInstance().mWidth, Platform::getInstance().mHeight};
+        RECT rt = {0, 0, Platform::getInstance().mContentWidth, Platform::getInstance().mContentHeight};
         if (AdjustWindowRectEx(&rt, style, 0, mExStyle) == 0) {
             LOG_ERROR(logger, "AdjustWindowRectEx failed.");
             return false;
@@ -103,7 +103,7 @@ namespace GLaDOS {
 
     std::pair<int, int> WindowsPlatform::centerOfScreen() {
         const auto& [w, h] = WindowsPlatform::getScreenSize();
-        return std::make_pair((w - Platform::getInstance().mWidth) / 2, (h - Platform::getInstance().mHeight) / 2);
+        return std::make_pair((w - Platform::getInstance().mContentWidth) / 2, (h - Platform::getInstance().mContentHeight) / 2);
     }
 
     std::pair<int, int> WindowsPlatform::getScreenSize() {
@@ -130,8 +130,8 @@ namespace GLaDOS {
                 // TODO
                 break;
             case WM_SIZE:
-                Platform::getInstance().mWidth = LOWORD(lParam);
-                Platform::getInstance().mHeight = HIWORD(lParam);
+                Platform::getInstance().mContentWidth = LOWORD(lParam);
+                Platform::getInstance().mContentHeight = HIWORD(lParam);
                 break;
             case WM_EXITSIZEMOVE:
                 // TODO

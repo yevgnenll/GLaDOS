@@ -37,15 +37,17 @@ namespace GLaDOS {
         bool initialize(const PlatformParams& params);
         void render();
         void update();
-        void setViewport(int width, int height);
+        void setContentRect(int width, int height);
         void setTitleName(const std::string& titleName);
         void showCursor(bool isShowCursor);
         void fullScreen(bool isFullScreen);
 
         // common methods
         void quit();
-        int width() const;
-        int height() const;
+        int getContentWidth() const;
+        int getContentHeight() const;
+        real getDrawableWidth() const;
+        real getDrawableHeight() const;
         std::string titleName() const;
         bool isFullScreen() const;
         bool isRunning() const;
@@ -73,8 +75,7 @@ namespace GLaDOS {
 
         static Logger* logger;
 
-        int mWidth, mHeight;
-        int mLastWidth, mLastHeight;
+        int mContentWidth, mContentHeight;
         std::string mTitleName;
         bool mIsShowCursor{true}, mIsFullScreen{false}, mIsRunning{true};
         bool mIsFocused, mIsOccluded;

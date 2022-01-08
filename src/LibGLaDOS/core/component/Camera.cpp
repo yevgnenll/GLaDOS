@@ -17,8 +17,8 @@ namespace GLaDOS {
     Mat4<real> Camera::projectionMatrix() const {
         if (mIsOrthographic) {
             // left, right, bottom, top
-            real halfWidth = static_cast<real>(Platform::getInstance().width()) * 0.5f * mUnitSize;
-            real halfHeight = static_cast<real>(Platform::getInstance().height()) * 0.5f * mUnitSize;
+            real halfWidth = static_cast<real>(Platform::getInstance().getDrawableWidth()) * 0.5f * mUnitSize;
+            real halfHeight = static_cast<real>(Platform::getInstance().getDrawableHeight()) * 0.5f * mUnitSize;
             return Mat4<real>::orthogonal(-halfWidth, halfWidth, -halfHeight, halfHeight, mNearClipPlane, mFarClipPlane);
         }
         return Mat4<real>::perspective(Math::toRadians(fieldOfView()), aspectRatio(), mNearClipPlane, mFarClipPlane);
@@ -81,7 +81,7 @@ namespace GLaDOS {
     }
 
     real Camera::aspectRatio() const {
-        return static_cast<real>(Platform::getInstance().width()) / static_cast<real>(Platform::getInstance().height());
+        return static_cast<real>(Platform::getInstance().getDrawableWidth()) / static_cast<real>(Platform::getInstance().getDrawableHeight());
     }
 
     Rect<real> Camera::getViewportRect() const {

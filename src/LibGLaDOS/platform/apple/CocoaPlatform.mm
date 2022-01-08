@@ -24,7 +24,7 @@ namespace GLaDOS {
         LOG_TRACE(logger, "Initialize Cocoa Platform...");
 
         if (params.width <= 0 || params.height <= 0) {
-            LOG_ERROR(logger, "Platform width and height should not be less than 0.");
+            LOG_ERROR(logger, "Platform getContentWidth and getContentHeight should not be less than 0.");
             return false;
         }
 
@@ -36,7 +36,7 @@ namespace GLaDOS {
         Platform::getInstance().registerKeyMap();
 
         // create contentView
-        mContentView = [[ContentView alloc] initWithFrame:makeViewRect(params.width, params.height, params.isFullscreen)];
+        mContentView = [[ContentView alloc] initWithFrame:makeContentRect(params.width, params.height, params.isFullscreen)];
         [mContentView setWantsLayer:YES];  // you must still call the setWantsLayer: method to let the view know that it should use layers.
         [mContentView setLayer:MetalRenderer::getInstance().getMetalLayer()];
         Platform::getInstance().mMainFrameBuffer = MetalRenderer::getInstance().createFrameBuffer();
@@ -87,22 +87,20 @@ namespace GLaDOS {
         return true;
     }
 
-    NSRect CocoaPlatform::makeViewRect(int width, int height, bool isFullScreen) {
+    NSRect CocoaPlatform::makeContentRect(int width, int height, bool isFullScreen) {
         Platform::getInstance().mIsFullScreen = isFullScreen;
         NSRect contentSize;
         if (Platform::getInstance().mIsFullScreen) {
             NSRect screenRect = [[NSScreen mainScreen] frame];
-            Platform::getInstance().mWidth = static_cast<int>(screenRect.size.width);
-            Platform::getInstance().mHeight = static_cast<int>(screenRect.size.height);
-            contentSize = NSMakeRect(0, 0, Platform::getInstance().mWidth, Platform::getInstance().mHeight);
+            Platform::getInstance().mContentWidth = static_cast<int>(screenRect.size.width);
+            Platform::getInstance().mContentHeight = static_cast<int>(screenRect.size.height);
+            contentSize = NSMakeRect(0, 0, Platform::getInstance().mContentWidth, Platform::getInstance().mContentHeight);
         } else {
-            Platform::getInstance().mWidth = width;
-            Platform::getInstance().mHeight = height;
+            Platform::getInstance().mContentWidth = width;
+            Platform::getInstance().mContentHeight = height;
             const auto [x, y] = CocoaPlatform::centerOfScreen();
-            contentSize = NSMakeRect(x, y, Platform::getInstance().mWidth, Platform::getInstance().mHeight);
+            contentSize = NSMakeRect(x, y, Platform::getInstance().mContentWidth, Platform::getInstance().mContentHeight);
         }
-        Platform::getInstance().mLastWidth = Platform::getInstance().mWidth;
-        Platform::getInstance().mLastHeight = Platform::getInstance().mHeight;
         return contentSize;
     }
 
@@ -136,10 +134,8 @@ namespace GLaDOS {
     void CocoaPlatform::viewDidEndLiveResize() {
         CGRect frame = [mWindow frame];
         CGRect contentRect = [mWindow contentRectForFrameRect:frame];
-        Platform::getInstance().mLastWidth = Platform::getInstance().mWidth;
-        Platform::getInstance().mLastHeight = Platform::getInstance().mHeight;
-        Platform::getInstance().mWidth = static_cast<int>(contentRect.size.width);
-        Platform::getInstance().mHeight = static_cast<int>(contentRect.size.height);
+        Platform::getInstance().mContentWidth = static_cast<int>(contentRect.size.width);
+        Platform::getInstance().mContentHeight = static_cast<int>(contentRect.size.height);
         CGFloat scaleFactor = static_cast<CGFloat>(Platform::getInstance().mContentScale);
         [MetalRenderer::getInstance().getMetalLayer() setDrawableSize:NSMakeSize(contentRect.size.width * scaleFactor, contentRect.size.height * scaleFactor)];
         Platform::getInstance().mMainFrameBuffer->makeDepthStencilTexture();
@@ -321,7 +317,7 @@ namespace GLaDOS {
 
     Size<int32_t> CocoaPlatform::centerOfScreen() {
         const Size<int32_t> screenSize = CocoaPlatform::getScreenSize();
-        return Size<int32_t>{(screenSize.x - Platform::getInstance().mWidth) >> 1, (screenSize.y - Platform::getInstance().mHeight) >> 1};
+        return Size<int32_t>{(screenSize.x - Platform::getInstance().mContentWidth) >> 1, (screenSize.y - Platform::getInstance().mContentHeight) >> 1};
     }
 
     Size<int32_t> CocoaPlatform::getScreenSize() {
@@ -564,9 +560,9 @@ namespace GLaDOS {
         }
     }
 
-    void Platform::setViewport(int width, int height) {
+    void Platform::setContentRect(int width, int height) {
         // TODO: 테스트 필요
-        if (mWidth == width && mHeight == height) {
+        if (mContentWidth == width && mContentHeight == height) {
             return;
         }
         NSRect contentRect = [CocoaPlatform::cocoaPlatformInstance->mWindow contentRectForFrameRect:[CocoaPlatform::cocoaPlatformInstance->mWindow frame]];
@@ -574,10 +570,8 @@ namespace GLaDOS {
         contentRect.origin.y -= height;                   // new Y coordinate for the origin
         contentRect.size = CGSizeMake(static_cast<CGFloat>(width), static_cast<CGFloat>(height));
         [CocoaPlatform::cocoaPlatformInstance->mWindow setFrame:contentRect display:YES];
-        mLastWidth = mWidth;
-        mLastHeight = mHeight;
-        mWidth = width;
-        mHeight = height;
+        mContentWidth = width;
+        mContentHeight = height;
     }
 
     void Platform::setTitleName(const std::string& titleName) {
@@ -609,9 +603,9 @@ namespace GLaDOS {
             frame = [[NSScreen mainScreen] frame];
         } else {
             Size<int32_t> screenCoord = CocoaPlatform::centerOfScreen();
-            frame = NSMakeRect(screenCoord.x, screenCoord.y, mWidth, mHeight);
+            frame = NSMakeRect(screenCoord.x, screenCoord.y, mContentWidth, mContentHeight);
         }
-        setViewport(static_cast<int>(frame.size.width), static_cast<int>(frame.size.height));
+        setContentRect(static_cast<int>(frame.size.width), static_cast<int>(frame.size.height));
 
         // set window options
         NSWindow* window = CocoaPlatform::cocoaPlatformInstance->mWindow;
@@ -633,6 +627,14 @@ namespace GLaDOS {
             [window setHidesOnDeactivate:NO];
         }
         mIsFullScreen = isFullScreen;
+    }
+
+    real Platform::getDrawableWidth() const {
+        return static_cast<real>(mContentWidth) * mContentScale;
+    }
+
+    real Platform::getDrawableHeight() const {
+        return static_cast<real>(mContentHeight) * mContentScale;
     }
 
     Renderer& Platform::getRenderer() {

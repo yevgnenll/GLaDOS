@@ -71,7 +71,7 @@ namespace GLaDOS {
         static CocoaPlatform* getCocoaPlatform();
 
       private:
-        NSRect makeViewRect(int width, int height, bool isFullScreen);
+        NSRect makeContentRect(int width, int height, bool isFullScreen);
         void initCursorMode(bool isShowCursor);
         static OSVersion makeOSVersion(uint32_t major, uint32_t minor, uint32_t patch);
 

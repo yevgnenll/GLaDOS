@@ -19,9 +19,9 @@ namespace GLaDOS {
     Logger* Platform::logger = LoggerRegistry::getInstance().makeAndGetLogger("Platform");
     void Platform::quit() { mIsRunning = false; }
 
-    int Platform::width() const { return mWidth; }
+    int Platform::getContentWidth() const { return mContentWidth; }
 
-    int Platform::height() const { return mHeight; }
+    int Platform::getContentHeight() const { return mContentHeight; }
 
     std::string Platform::titleName() const { return mTitleName; }
 
