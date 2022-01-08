@@ -13,7 +13,8 @@ class MainScene : public Scene {
 
         camera = getMainCamera();
         camera->setOrthographic(true);
-        camera->setViewportRect({0.66, 0.21, 0.19, 0.22});
+        camera->setUnitSize(5);
+        camera->setViewportRect({0.25, 0.25, 0.5, 0.5});
         cameraTransform = camera->gameObject()->transform();
         cameraTransform->setLocalPosition({0, 0, 1});
 
@@ -58,6 +59,8 @@ class MainScene : public Scene {
         if (Input::isKeyDown(KeyCode::KEY_X)) {
             spriteRenderer->setFlipY(!spriteRenderer->getFlipY());
         }
+
+        spriteRenderer->setColor(Color::lerp(Color(1.f, 0.f, 0.f, 1.f), Color(0.f, 1.f, 1.f, 1.f), Math::pingPong(Timer::getInstance().elapsedTime(), 1.f)));
     }
 
   private:

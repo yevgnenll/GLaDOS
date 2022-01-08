@@ -47,6 +47,8 @@ namespace GLaDOS {
 
         mMetalLayer.device = mMetalDevice;
         mMetalLayer.pixelFormat = MTLPixelFormatBGRA8Unorm;
+        // The default is NO, which indicates the use of the texture is not restricted.
+        mMetalLayer.framebufferOnly = NO;
         // If YES, the nextDrawable method returns nil if it can’t provide a drawable object within one second.
         // If NO, the nextDrawable method waits indefinitely for a drawable to become available.
         mMetalLayer.allowsNextDrawableTimeout = NO;
