@@ -57,9 +57,9 @@ namespace GLaDOS {
         CGSize drawableSize = MetalRenderer::getInstance().getMetalLayer().drawableSize;
 
         // recreate texture when depth texture size and drawable size is changed.
-        if ([mDepthStencilTexture width] != drawableSize.width || [mDepthStencilTexture height] != drawableSize.height) {
-            mWidth = static_cast<real>(drawableSize.width);
-            mHeight = static_cast<real>(drawableSize.height);
+        if ([mDepthStencilTexture width] != static_cast<NSUInteger>(drawableSize.width) || [mDepthStencilTexture height] != static_cast<NSUInteger>(drawableSize.height)) {
+            mFrameWidth = static_cast<real>(drawableSize.width);
+            mFrameHeight = static_cast<real>(drawableSize.height);
             MTLTextureDescriptor* textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatDepth32Float_Stencil8
                                                                                                          width:static_cast<NSUInteger>(drawableSize.width)
                                                                                                         height:static_cast<NSUInteger>(drawableSize.height)
