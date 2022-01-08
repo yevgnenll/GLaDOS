@@ -16,7 +16,6 @@ namespace GLaDOS {
 
       private:
         void update(real deltaTime) override;
-        void render() override;
 
         static Logger* logger;
     };

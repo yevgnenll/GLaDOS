@@ -13,6 +13,7 @@ class MainScene : public Scene {
 
         camera = getMainCamera();
         camera->setOrthographic(true);
+        camera->setViewportRect({0.66, 0.21, 0.19, 0.22});
         cameraTransform = camera->gameObject()->transform();
         cameraTransform->setLocalPosition({0, 0, 1});
 

@@ -21,7 +21,7 @@ namespace GLaDOS {
         ~MetalRenderer() override;
 
         bool initialize(int width, int height) override;
-        void render(Renderable* _renderable) override;
+        void render(Renderable* _renderable, const Rect<real>& normalizedViewportRect) override;
 
         GPUBuffer* createGPUVertexBuffer(GPUBufferUsage usage, void* data, std::size_t size) override;
         GPUBuffer* createGPUIndexBuffer(GPUBufferUsage usage, void* data, std::size_t size) override;

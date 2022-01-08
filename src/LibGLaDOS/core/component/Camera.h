@@ -27,10 +27,13 @@ namespace GLaDOS {
         real nearClipPlane() const;
         real farClipPlane() const;
         real aspectRatio() const;
-        Rect<real> viewportRect() const;
+        Rect<real> getViewportRect() const;
+        void setViewportRect(Rect<real> viewport);
         void setFieldOfView(real fov);
         void setNearClipPlane(real near);
         void setFarClipPlane(real far);
+        void setUnitSize(real unitSize);
+        real getUnitSize() const;
 
       protected:
         void update(real deltaTime) override;
@@ -41,7 +44,8 @@ namespace GLaDOS {
         real mNearClipPlane{real(0.1)};
         real mFarClipPlane{real(1000.0)};
         bool mIsOrthographic{false};
-        Rect<real> mViewportRect;
+        real mUnitSize{real(1)}; // only affect orthographic projection
+        Rect<real> mViewportRect; // normalized viewport Rect default is (0, 0, 1, 1) bottom-left to top-right
     };
 }  // namespace GLaDOS
 

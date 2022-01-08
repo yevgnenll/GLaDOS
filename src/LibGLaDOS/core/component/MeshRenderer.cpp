@@ -6,6 +6,9 @@
 #include "platform/render/Material.h"
 #include "platform/render/ShaderProgram.h"
 #include "platform/render/RenderState.h"
+#include "core/GameObject.hpp"
+#include "Camera.h"
+#include "core/Scene.h"
 
 namespace GLaDOS {
     Logger* MeshRenderer::logger = LoggerRegistry::getInstance().makeAndGetLogger("MeshRenderer");
@@ -35,6 +38,8 @@ namespace GLaDOS {
     }
 
     void MeshRenderer::render() {
-        Platform::getRenderer().render(mRenderable);
+        Scene* currentScene = mGameObject->scene();
+        Camera* mainCamera = currentScene->getMainCamera();
+        Platform::getRenderer().render(mRenderable, mainCamera->getViewportRect());
     }
 }  // namespace GLaDOS

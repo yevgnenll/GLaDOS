@@ -17,6 +17,7 @@
 #include "utils/FileSystem.h"
 #include "MetalShader.h"
 #include "RootDir.h"
+#include "math/Rect.hpp"
 
 namespace GLaDOS {
     Logger* MetalRenderer::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalRenderer");
@@ -74,7 +75,7 @@ namespace GLaDOS {
         return true;
     }
 
-    void MetalRenderer::render(Renderable* _renderable) {
+    void MetalRenderer::render(Renderable* _renderable, const Rect<real>& normalizedViewportRect) {
         if (_renderable == nullptr) {
             return;
         }
@@ -87,6 +88,40 @@ namespace GLaDOS {
 
         [mCommandEncoder setRenderPipelineState:renderable->getPipelineState()];
         [mCommandEncoder setVertexBuffer:renderable->getVertexBuffer() offset:0 atIndex:1];
+
+        // change viewport of camera
+        CGSize renderTargetSize = [mMetalLayer drawableSize];
+        CGFloat renderTargetWidth = renderTargetSize.width; // scaleFactor 가 적용된 넓이
+        CGFloat renderTargetHeight = renderTargetSize.height; // scaleFactor 가 적용된 높이
+        Rect<double> viewportRect;
+        viewportRect.x = normalizedViewportRect.x * renderTargetWidth;
+        viewportRect.y = normalizedViewportRect.y * renderTargetHeight;
+        viewportRect.w = normalizedViewportRect.w * renderTargetWidth;
+        viewportRect.h = normalizedViewportRect.h * renderTargetHeight;
+
+        /*
+            Metal viewport coordinate (framebuffer coordinate)
+            The origin (0, 0) is located at the top-left corner (Y down)
+            (0, 0)                 (1024, 0)
+              +--------------------+ +X
+              |                    |
+              |                    |
+              |                    |
+              |                    |
+              |                    |
+              |                    |
+              +--------------------+
+              +Y (0, 800)
+        */
+        MTLViewport viewport;
+        viewport.originX = viewportRect.x;
+        viewport.originY = renderTargetHeight - viewportRect.y - viewportRect.h; // convert to Y up
+        viewport.width = viewportRect.w;
+        viewport.height = viewportRect.h;
+        viewport.znear = 0;
+        viewport.zfar = 1;
+        [mCommandEncoder setViewport:viewport];
+
         if (indexBuffer != nullptr) {
             // index primitive draw
             MTLIndexType indexType = MetalTypes::sizeToMetalIndexType(mesh->getIndexStride());

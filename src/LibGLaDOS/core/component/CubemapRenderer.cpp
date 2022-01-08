@@ -67,8 +67,4 @@ namespace GLaDOS {
             shaderProgram->setUniform("viewProjection", viewProjection);
         }
     }
-
-    void CubemapRenderer::render() {
-        Platform::getRenderer().render(mRenderable);
-    }
 }  // namespace GLaDOS

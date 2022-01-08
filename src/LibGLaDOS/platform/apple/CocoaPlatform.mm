@@ -319,15 +319,15 @@ namespace GLaDOS {
         return style;
     }
 
-    std::pair<int, int> CocoaPlatform::centerOfScreen() {
-        const auto [w, h] = CocoaPlatform::getScreenSize();
-        return std::make_pair((w - Platform::getInstance().mWidth) / 2, (h - Platform::getInstance().mHeight) / 2);
+    Size<int32_t> CocoaPlatform::centerOfScreen() {
+        const Size<int32_t> screenSize = CocoaPlatform::getScreenSize();
+        return Size<int32_t>{(screenSize.x - Platform::getInstance().mWidth) >> 1, (screenSize.y - Platform::getInstance().mHeight) >> 1};
     }
 
-    std::pair<int, int> CocoaPlatform::getScreenSize() {
+    Size<int32_t> CocoaPlatform::getScreenSize() {
         int width = static_cast<int>([[NSScreen mainScreen] frame].size.width);
         int height = static_cast<int>([[NSScreen mainScreen] frame].size.height);
-        return std::make_pair(width, height);
+        return Size<int32_t>{width, height};
     }
 
     void CocoaPlatform::createMenuBar() {
@@ -566,7 +566,9 @@ namespace GLaDOS {
 
     void Platform::setViewport(int width, int height) {
         // TODO: 테스트 필요
-        if (mWidth == width && mHeight == height) return;
+        if (mWidth == width && mHeight == height) {
+            return;
+        }
         NSRect contentRect = [CocoaPlatform::cocoaPlatformInstance->mWindow contentRectForFrameRect:[CocoaPlatform::cocoaPlatformInstance->mWindow frame]];
         contentRect.origin.y += contentRect.size.height;  // origin.y is top Y coordinate now
         contentRect.origin.y -= height;                   // new Y coordinate for the origin
@@ -580,7 +582,9 @@ namespace GLaDOS {
 
     void Platform::setTitleName(const std::string& titleName) {
         @autoreleasepool {
-            if (mTitleName == titleName) return;
+            if (mTitleName == titleName) {
+                return;
+            }
             [CocoaPlatform::cocoaPlatformInstance->mWindow setTitle:CocoaPlatform::toString(titleName)];
             mTitleName = titleName;
         }
@@ -604,8 +608,8 @@ namespace GLaDOS {
         if (isFullScreen) {
             frame = [[NSScreen mainScreen] frame];
         } else {
-            const auto [x, y] = CocoaPlatform::centerOfScreen();
-            frame = NSMakeRect(x, y, mWidth, mHeight);
+            Size<int32_t> screenCoord = CocoaPlatform::centerOfScreen();
+            frame = NSMakeRect(screenCoord.x, screenCoord.y, mWidth, mHeight);
         }
         setViewport(static_cast<int>(frame.size.width), static_cast<int>(frame.size.height));
 

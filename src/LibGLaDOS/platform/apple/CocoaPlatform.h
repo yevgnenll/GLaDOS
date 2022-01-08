@@ -8,6 +8,7 @@
 #include <Cocoa/Cocoa.h>
 #include <string>
 #include "platform/Platform.h"
+#include "math/Size.hpp"
 
 @interface CocoaWindow : NSWindow
 @end
@@ -61,8 +62,8 @@ namespace GLaDOS {
 
         // static methods
         static NSWindowStyleMask makeWindowStyle(WindowStyle windowStyle);
-        static std::pair<int, int> centerOfScreen();
-        static std::pair<int, int> getScreenSize();
+        static Size<int32_t> centerOfScreen();
+        static Size<int32_t> getScreenSize();
         static void createMenuBar();
         static NSString* toString(const std::string& str);
         static NSString* toString(const String& str);

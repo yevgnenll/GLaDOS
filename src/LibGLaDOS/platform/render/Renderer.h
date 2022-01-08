@@ -30,13 +30,15 @@ namespace GLaDOS {
     class RenderTexture;
     class VertexFormatDescriptor;
     class Shader;
+    template <typename T>
+    class Rect;
     class Renderer {
       public:
         Renderer() = default;
         virtual ~Renderer() = default;
 
         virtual bool initialize(int width, int height) = 0;
-        virtual void render(Renderable* _renderable) = 0;
+        virtual void render(Renderable* _renderable, const Rect<real>& normalizedViewportRect) = 0;
 
         virtual GPUBuffer* createGPUVertexBuffer(GPUBufferUsage usage, void* data, std::size_t size) = 0;
         virtual GPUBuffer* createGPUIndexBuffer(GPUBufferUsage usage, void* data, std::size_t size) = 0;

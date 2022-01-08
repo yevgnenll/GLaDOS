@@ -17,8 +17,8 @@ namespace GLaDOS {
     Mat4<real> Camera::projectionMatrix() const {
         if (mIsOrthographic) {
             // left, right, bottom, top
-            real halfWidth = static_cast<real>(Platform::getInstance().width()) * 0.5f;
-            real halfHeight = static_cast<real>(Platform::getInstance().height()) * 0.5f;
+            real halfWidth = static_cast<real>(Platform::getInstance().width()) * 0.5f * mUnitSize;
+            real halfHeight = static_cast<real>(Platform::getInstance().height()) * 0.5f * mUnitSize;
             return Mat4<real>::orthogonal(-halfWidth, halfWidth, -halfHeight, halfHeight, mNearClipPlane, mFarClipPlane);
         }
         return Mat4<real>::perspective(Math::toRadians(fieldOfView()), aspectRatio(), mNearClipPlane, mFarClipPlane);
@@ -38,7 +38,7 @@ namespace GLaDOS {
     }
 
     Vec3 Camera::screenToWorldPoint(const Vec2& pos) {
-        Rect<real> viewport = viewportRect();
+        Rect<real> viewport = getViewportRect();
         Vec4 clipCoords;
         clipCoords.x = (2.f * (pos.x - viewport.x)) / viewport.w - 1.f;
         clipCoords.y = (2.f * (viewport.h - pos.y - (1 - viewport.y))) / viewport.h - 1.f;
@@ -84,8 +84,12 @@ namespace GLaDOS {
         return static_cast<real>(Platform::getInstance().width()) / static_cast<real>(Platform::getInstance().height());
     }
 
-    Rect<real> Camera::viewportRect() const {
-        return mViewportRect;  // TODO: Graphics::getViewport()
+    Rect<real> Camera::getViewportRect() const {
+        return mViewportRect;
+    }
+
+    void Camera::setViewportRect(Rect<real> viewport) {
+        mViewportRect = viewport;
     }
 
     void Camera::setFieldOfView(real fov) {
@@ -100,9 +104,19 @@ namespace GLaDOS {
         mFarClipPlane = far;
     }
 
+    void Camera::setUnitSize(real unitSize) {
+        mUnitSize = 1.F / unitSize;
+    }
+
+    real Camera::getUnitSize() const {
+        return 1.F / mUnitSize;
+    }
+
     void Camera::update(real deltaTime) {
+        // Nothing to do here
     }
 
     void Camera::render() {
+        // Nothing to do here
     }
 }  // namespace GLaDOS
