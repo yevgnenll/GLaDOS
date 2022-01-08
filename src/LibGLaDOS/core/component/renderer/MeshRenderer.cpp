@@ -7,7 +7,7 @@
 #include "platform/render/ShaderProgram.h"
 #include "platform/render/RenderState.h"
 #include "core/GameObject.hpp"
-#include "Camera.h"
+#include "core/component/Camera.h"
 #include "core/Scene.h"
 
 namespace GLaDOS {

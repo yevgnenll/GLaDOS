@@ -1,6 +1,6 @@
 #include "CubemapRenderer.h"
 
-#include "Camera.h"
+#include "core/component/Camera.h"
 #include "core/GameObject.hpp"
 #include "core/Scene.h"
 #include "platform/Platform.h"

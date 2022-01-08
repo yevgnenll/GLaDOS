@@ -11,8 +11,8 @@
 #include "platform/render/VertexBuffer.h"
 #include "core/Sprite.h"
 #include "core/GameObject.hpp"
-#include "Transform.h"
-#include "Camera.h"
+#include "core/component/Transform.h"
+#include "core/component/Camera.h"
 #include "core/Scene.h"
 
 namespace GLaDOS {
