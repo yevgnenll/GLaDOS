@@ -73,7 +73,7 @@ namespace GLaDOS {
 
         int len;
         unsigned char* png = stbi_write_png_to_mem(
-            reinterpret_cast<unsigned char *>(sourceBuffer), bytesPerRow, mWidth, mHeight, 3, &len);
+            reinterpret_cast<unsigned char *>(sourceBuffer), bytesPerRow, mWidth, mHeight, bytesPerPixel, &len);
         FREE(sourceBuffer);
         if (png == nullptr) {
             LOG_ERROR(logger, "error to encode texture to png");
