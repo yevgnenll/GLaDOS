@@ -33,6 +33,8 @@ namespace GLaDOS {
         virtual void onLateUpdate(real deltaTime) {}
         // fixed time update (TODO)
         virtual void fixedUpdate() {}
+        virtual void onPreRender() {}
+        virtual void onPostRender() {}
 
         GameObject* createGameObject(std::string name);
         GameObject* createGameObject(std::string name, GameObject* parent);

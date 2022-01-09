@@ -12,6 +12,7 @@ namespace GLaDOS {
     }
 
     Scene::~Scene() {
+        onDestroy();
         deallocIterable(mGameObjects);
     }
 
@@ -87,10 +88,12 @@ namespace GLaDOS {
     }
 
     void Scene::render() {
+        onPreRender();
         for (auto& gameObject : mGameObjects) {
             if (gameObject->isActive()) {
                 gameObject->render();
             }
         }
+        onPostRender();
     }
 }  // namespace GLaDOS
