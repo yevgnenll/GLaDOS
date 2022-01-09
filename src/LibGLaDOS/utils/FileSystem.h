@@ -19,11 +19,11 @@ namespace GLaDOS {
         bool readAllBytes(std::string& output);
 
         template <typename T, std::size_t count>
-        std::size_t writeBuffer(const T (&buffer)[count]);
-        std::size_t writeBuffer(void* buffer, std::size_t size, std::size_t count);
+        std::size_t writeBytes(const T (&buffer)[count]);
+        std::size_t writeBytes(void* buffer, std::size_t size, std::size_t count);
         template <typename T, std::size_t count>
-        std::size_t readBuffer(T (&buffer)[count]);
-        std::size_t readBuffer(void* buffer, std::size_t size, std::size_t count);
+        std::size_t readBytes(T (&buffer)[count]);
+        std::size_t readBytes(void* buffer, std::size_t size, std::size_t count);
 
         std::string getLine();  // Retrieve one line delimited by '\n'
         std::string getLine(char delim);  // Retrieve one line delimited by delim
@@ -50,7 +50,7 @@ namespace GLaDOS {
     };
 
     template <typename T, std::size_t count>
-    std::size_t FileSystem::writeBuffer(const T (&buffer)[count]) {
+    std::size_t FileSystem::writeBytes(const T (&buffer)[count]) {
         if (!isOpen()) {
             return 0;
         }
@@ -59,7 +59,7 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t count>
-    std::size_t FileSystem::readBuffer(T (&buffer)[count]) {
+    std::size_t FileSystem::readBytes(T (&buffer)[count]) {
         if (!isOpen()) {
             return 0;
         }

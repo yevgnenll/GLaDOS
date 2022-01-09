@@ -85,7 +85,7 @@ namespace GLaDOS {
         return true;
     }
 
-    std::size_t FileSystem::writeBuffer(void* buffer, std::size_t size, std::size_t count) {
+    std::size_t FileSystem::writeBytes(void* buffer, std::size_t size, std::size_t count) {
         if (!isOpen()) {
             return 0;
         }
@@ -93,7 +93,7 @@ namespace GLaDOS {
         return std::fwrite(buffer, size, count, mFilePointer);
     }
 
-    std::size_t FileSystem::readBuffer(void* buffer, std::size_t size, std::size_t count) {
+    std::size_t FileSystem::readBytes(void* buffer, std::size_t size, std::size_t count) {
         if (!isOpen()) {
             return 0;
         }

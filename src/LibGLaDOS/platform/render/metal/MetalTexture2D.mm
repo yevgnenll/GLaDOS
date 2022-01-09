@@ -84,6 +84,7 @@ namespace GLaDOS {
     }
 
     Blob MetalTexture2D::encodeToJPG() const {
+        // https://github.com/nothings/stb/issues/1132
         return Blob(); // TODO: stbi_write_jpg_to_mem 에 대응되는 함수가 없음
     }
 
