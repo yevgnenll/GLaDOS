@@ -17,6 +17,7 @@ namespace GLaDOS {
         Blob(const std::byte* data, std::size_t size);
         virtual ~Blob() = default;
 
+        // all << operator behave like backward emplacer.
         Blob& operator<<(int8_t i);
         Blob& operator<<(int16_t i);
         Blob& operator<<(int32_t i);
@@ -39,9 +40,14 @@ namespace GLaDOS {
         void copyFrom(Blob& buffer);
         void copyFrom(const Vector<std::byte>& data);
         void copyFrom(const std::byte* data, std::size_t size);
+        void copyFrom(std::size_t offset, const std::byte* data, std::size_t size);
 
-        void* offsetOf(std::size_t offset);
-        void* pointer();
+        // NOTE: insertFrom 함수는 기존 버퍼 뒤에 새로운 공간을 할당하여 데이터를 채워넣는다.
+        void insertFrom(Blob& buffer);
+        void insertFrom(const Vector<std::byte>& data);
+        void insertFrom(const std::byte* data, std::size_t size);
+
+        std::byte* pointer();
         const void* constPointer() const;
         std::size_t size() const;
         void resize(std::size_t n);

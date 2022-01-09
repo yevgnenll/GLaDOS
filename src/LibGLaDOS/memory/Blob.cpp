@@ -90,25 +90,38 @@ namespace GLaDOS {
 
     void Blob::copyFrom(Blob& buffer) {
         throwIfOverflow(buffer.size());
-        std::memcpy(pointer(), buffer.pointer(), buffer.size());
+        std::copy(buffer.pointer(), buffer.pointer() + buffer.size(), pointer());
     }
 
     void Blob::copyFrom(const Vector<std::byte>& data) {
         throwIfOverflow(data.size());
-        std::memcpy(pointer(), data.data(), data.size());
+        std::copy(data.data(), data.data() + data.size(), pointer());
     }
 
     void Blob::copyFrom(const std::byte* data, size_t size) {
         throwIfOverflow(size);
-        std::memcpy(pointer(), data, size);
+        std::copy(data, data + size, pointer());
     }
 
-    void* Blob::offsetOf(std::size_t offset) {
-        return CAST(std::byte*, pointer()) + offset;
+    void Blob::copyFrom(std::size_t offset, const std::byte* data, std::size_t size) {
+        throwIfOverflow(size);
+        std::copy(data, data + size, pointer() + offset);
     }
 
-    void* Blob::pointer() {
-        return &mData[0];
+    void Blob::insertFrom(Blob& buffer) {
+        std::copy(buffer.pointer(), buffer.pointer() + buffer.size(), std::back_inserter(mData));
+    }
+
+    void Blob::insertFrom(const Vector<std::byte>& data) {
+        std::copy(data.data(), data.data() + data.size(), std::back_inserter(mData));
+    }
+
+    void Blob::insertFrom(const std::byte* data, std::size_t size) {
+        std::copy(data, data + size, std::back_inserter(mData));
+    }
+
+    std::byte* Blob::pointer() {
+        return mData.data();
     }
 
     void const* Blob::constPointer() const {
@@ -145,8 +158,6 @@ namespace GLaDOS {
             return;
         }
 
-        for (std::size_t i = 0; i < count; i++) {
-            mData[i] = bytes[i];
-        }
+        std::copy(bytes, bytes + count, pointer());
     }
 }  // namespace GLaDOS

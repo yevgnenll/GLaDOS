@@ -7,7 +7,7 @@ namespace GLaDOS {
 
     Message::Message(MessageType type, void* data, std::size_t size) : mType(type) {
         mData.resize(size);
-        std::memcpy(mData.pointer(), data, size);
+        mData.copyFrom(reinterpret_cast<std::byte*>(data), size);
     }
 
     Message::Message(const Message& rhs) {

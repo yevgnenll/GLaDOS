@@ -4,6 +4,8 @@
 
 #include "MetalRenderState.h"
 #include "MetalTypes.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb_image_write.h>
 
 namespace GLaDOS {
     Logger* MetalTexture2D::logger = LoggerRegistry::getInstance().makeAndGetLogger("MetalTexture2D");
@@ -56,19 +58,39 @@ namespace GLaDOS {
     }
 
     Blob MetalTexture2D::encodeToPNG() const {
-        return Blob();
+        const static uint32_t bytesPerPixel = 4;
+
+        // The total number of bytes of the texture
+        uint32_t imageByteCount = mWidth * mHeight * bytesPerPixel;
+
+        // The number of bytes for each image row
+        uint32_t bytesPerRow = mWidth * bytesPerPixel;
+        unsigned char* sourceBuffer = new unsigned char[imageByteCount];
+
+        // Gets the bytes from the texture
+        MTLRegion region = MTLRegionMake2D(0, 0, mWidth, mHeight);
+        [mTexture getBytes:sourceBuffer bytesPerRow:bytesPerRow fromRegion:region mipmapLevel:0];
+
+        int len;
+        unsigned char* png = stbi_write_png_to_mem((const unsigned char *)sourceBuffer, bytesPerRow, mWidth, mHeight, 3, &len);
+        if (png == nullptr) {
+            LOG_ERROR(logger, "error to encode texture to png");
+            return Blob{};
+        }
+
+        return Blob{reinterpret_cast<std::byte*>(png), static_cast<std::size_t>(len)};
     }
 
     Blob MetalTexture2D::encodeToJPG() const {
-        return Blob();
+        return Blob(); // TODO: stbi_write_jpg_to_mem 에 대응되는 함수가 없음
     }
 
     Blob MetalTexture2D::encodeToBMP() const {
-        return Blob();
+        return Blob(); // TODO: stbi_write_bmp_to_mem 에 대응되는 함수가 없음
     }
 
     Blob MetalTexture2D::encodeToTGA() const {
-        return Blob();
+        return Blob(); // TODO: stbi_write_tga_to_mem 에 대응되는 함수가 없음
     }
 }
 
