@@ -33,7 +33,7 @@ namespace GLaDOS {
         virtual bool loadTextureFromBuffer(const Vector<std::reference_wrapper<Blob>>& buffer) { return false; };
 
       protected:
-        static int mapChannelNumberFrom(PixelFormat format);
+        static uint32_t mapChannelNumberFrom(PixelFormat format);
 
         uint32_t mWidth{0};
         uint32_t mHeight{0};

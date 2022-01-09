@@ -73,7 +73,7 @@ namespace GLaDOS {
         return mDimension;
     }
 
-    int Texture::mapChannelNumberFrom(PixelFormat format) {
+    uint32_t Texture::mapChannelNumberFrom(PixelFormat format) {
         switch (format) {
             case PixelFormat::Red8:
                 return 1;

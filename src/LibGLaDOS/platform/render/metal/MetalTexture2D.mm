@@ -58,21 +58,23 @@ namespace GLaDOS {
     }
 
     Blob MetalTexture2D::encodeToPNG() const {
-        const static uint32_t bytesPerPixel = 4;
+        const static uint32_t bytesPerPixel = Texture::mapChannelNumberFrom(mFormat);
 
         // The total number of bytes of the texture
         uint32_t imageByteCount = mWidth * mHeight * bytesPerPixel;
 
         // The number of bytes for each image row
         uint32_t bytesPerRow = mWidth * bytesPerPixel;
-        unsigned char* sourceBuffer = new unsigned char[imageByteCount];
+        void* sourceBuffer = MALLOC(sizeof(unsigned char) * imageByteCount);
 
         // Gets the bytes from the texture
         MTLRegion region = MTLRegionMake2D(0, 0, mWidth, mHeight);
         [mTexture getBytes:sourceBuffer bytesPerRow:bytesPerRow fromRegion:region mipmapLevel:0];
 
         int len;
-        unsigned char* png = stbi_write_png_to_mem((const unsigned char *)sourceBuffer, bytesPerRow, mWidth, mHeight, 3, &len);
+        unsigned char* png = stbi_write_png_to_mem(
+            reinterpret_cast<unsigned char *>(sourceBuffer), bytesPerRow, mWidth, mHeight, 3, &len);
+        FREE(sourceBuffer);
         if (png == nullptr) {
             LOG_ERROR(logger, "error to encode texture to png");
             return Blob{};
