@@ -54,6 +54,22 @@ namespace GLaDOS {
     id<MTLSamplerState> MetalTexture2D::metalSamplerState() {
         return static_cast<MetalSamplerState*>(samplerState())->getMetalSamplerState();
     }
+
+    Blob MetalTexture2D::encodeToPNG() const {
+        return Blob();
+    }
+
+    Blob MetalTexture2D::encodeToJPG() const {
+        return Blob();
+    }
+
+    Blob MetalTexture2D::encodeToBMP() const {
+        return Blob();
+    }
+
+    Blob MetalTexture2D::encodeToTGA() const {
+        return Blob();
+    }
 }
 
 #endif

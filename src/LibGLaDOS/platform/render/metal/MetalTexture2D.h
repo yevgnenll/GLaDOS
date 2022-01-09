@@ -19,6 +19,10 @@ namespace GLaDOS {
         void generateTexture(uint32_t x, uint32_t y, uint8_t* data) override;
         void replaceRegion(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint32_t level, uint8_t* data) override;
         id<MTLSamplerState> metalSamplerState() override;
+        Blob encodeToPNG() const override;
+        Blob encodeToJPG() const override;
+        Blob encodeToBMP() const override;
+        Blob encodeToTGA() const override;
 
       private:
         static Logger* logger;

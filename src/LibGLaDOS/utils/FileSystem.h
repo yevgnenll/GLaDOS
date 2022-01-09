@@ -16,7 +16,7 @@ namespace GLaDOS {
         void close();  // Close file pointer
         void writeFormat(const char* format, ...);
         void readFormat(const char* format, ...);
-        bool readAll(std::string& output);
+        bool readAllBytes(std::string& output);
 
         template <typename T, std::size_t count>
         std::size_t writeBuffer(const T (&buffer)[count]);

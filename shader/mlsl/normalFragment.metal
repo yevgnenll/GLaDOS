@@ -10,6 +10,7 @@ typedef struct {
 
 typedef struct {
   float3 viewPos;
+  bool isWireFrameMode;
 } FragmentUniforms;
 
 constant float3 lightColor = float3(1.0, 1.0, 1.0);
@@ -19,6 +20,10 @@ constant float shininess = 16;
 constant float pi = 3.14159265;
 
 fragment float4 main0(VertexOut verts [[stage_in]], constant FragmentUniforms &uniforms [[buffer(0)]]) {
+    if (uniforms.isWireFrameMode) {
+        return float4(0.10588, 0.76862, 0.16078, 1.0);
+    }
+
     // ambient color
 	float ambientStrength = 0.1;
 	float3 ambient = ambientStrength * lightColor;

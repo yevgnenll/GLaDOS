@@ -43,7 +43,6 @@ namespace GLaDOS {
         bool operator!=(const Mat4<T>& m) const;
 
         Vec4 operator*(const Vec4& v);
-        Mat4<T>& operator*=(const Vec4& v);
 
         Mat4<T> operator+(const T& scalar) const;
         Mat4<T>& operator+=(const T& scalar);
@@ -261,14 +260,14 @@ namespace GLaDOS {
 
     template <typename T>
     Vec4 Mat4<T>::operator*(const Vec4& v) {
-        //TODO
-        return Vec4();
-    }
+        Vec4 t{};
+        for (unsigned r = 0; r < 4; r++) {
+            for (unsigned c = 0; c < 4; c++) {
+                t[c] += _m44[r][c] * v[c];
+            }
+        }
 
-    template <typename T>
-    Mat4<T>& Mat4<T>::operator*=(const Vec4& v) {
-        //TODO
-        return *this;
+        return t;
     }
 
     template <typename T>

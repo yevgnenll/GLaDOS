@@ -34,7 +34,7 @@ class MainScene : public Scene {
         std::string jsonString;
         JsonNode rootJson;
         std::string errString;
-        file.readAll(jsonString);
+        file.readAllBytes(jsonString);
         if (!JsonParser::parse(rootJson, jsonString, errString)) {
             std::cout << "json parse error! cause: " << errString << std::endl;
             return false;

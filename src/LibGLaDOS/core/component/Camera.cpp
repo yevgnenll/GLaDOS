@@ -5,6 +5,7 @@
 #include "math/UVec3.h"
 #include "math/Vec2.h"
 #include "platform/Platform.h"
+#include "platform/OSTypes.h"
 
 namespace GLaDOS {
     Camera::Camera() : Component{"Camera"} {
@@ -34,19 +35,35 @@ namespace GLaDOS {
     }
 
     Ray Camera::screenPointToRay(const Vec3& pos) {
-        return {mGameObject->transform()->localPosition(), screenToWorldPoint(Vec2{pos})};
+        return {mGameObject->transform()->localPosition(), screenToWorldPoint(Vec3::toVec2(pos))};
     }
 
     Vec3 Camera::screenToWorldPoint(const Vec2& pos) {
         Rect<real> viewport = getViewportRect();
+        viewport.x *= Platform::getInstance().getDrawableWidth();
+        viewport.y *= Platform::getInstance().getDrawableHeight();
+        viewport.w *= Platform::getInstance().getDrawableWidth();
+        viewport.h *= Platform::getInstance().getDrawableHeight();
+
         Vec4 clipCoords;
         clipCoords.x = (2.f * (pos.x - viewport.x)) / viewport.w - 1.f;
         clipCoords.y = (2.f * (viewport.h - pos.y - (1 - viewport.y))) / viewport.h - 1.f;
-        clipCoords.z = -1.f;  // forward
+#ifdef PLATFORM_MACOS
+        // metal use 2x2x1 NDC space
+        clipCoords.z = 1.f;  // forward
+#else
+    // Vulkan, D3DX12 coordinate system
+#endif
         clipCoords.w = 1.f;
 
         Vec4 eyeCoords = Mat4<real>::inverse(projectionMatrix()) * clipCoords;
+#ifdef PLATFORM_MACOS
+        // metal use 2x2x1 NDC space
+        eyeCoords.z = 1.f;  // forward
+#else
+        // Vulkan, D3DX12 coordinate system
         eyeCoords.z = -1.f;  // forward
+#endif
         eyeCoords.w = 0.f;
 
         // NOTE: not cameraToWorldMatrix()
@@ -80,10 +97,6 @@ namespace GLaDOS {
         return mFarClipPlane;
     }
 
-    real Camera::aspectRatio() const {
-        return static_cast<real>(Platform::getInstance().getDrawableWidth()) / static_cast<real>(Platform::getInstance().getDrawableHeight());
-    }
-
     Rect<real> Camera::getViewportRect() const {
         return mViewportRect;
     }
@@ -110,6 +123,18 @@ namespace GLaDOS {
 
     real Camera::getUnitSize() const {
         return 1.F / mUnitSize;
+    }
+
+    void Camera::setTargetTexture(Texture2D* targetTexture) {
+        mTargetTexture = targetTexture;
+    }
+
+    Texture2D* Camera::getTargetTexture() {
+        return mTargetTexture;
+    }
+
+    real Camera::aspectRatio() {
+        return static_cast<real>(Platform::getInstance().getDrawableWidth()) / static_cast<real>(Platform::getInstance().getDrawableHeight());
     }
 
     void Camera::update(real deltaTime) {

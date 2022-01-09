@@ -7,6 +7,7 @@
 #include "math/Rect.hpp"
 
 namespace GLaDOS {
+    class Texture2D;
     class Camera : public Component {
       public:
         Camera();
@@ -26,7 +27,6 @@ namespace GLaDOS {
         real fieldOfView() const;
         real nearClipPlane() const;
         real farClipPlane() const;
-        real aspectRatio() const;
         Rect<real> getViewportRect() const;
         void setViewportRect(Rect<real> viewport);
         void setFieldOfView(real fov);
@@ -34,6 +34,10 @@ namespace GLaDOS {
         void setFarClipPlane(real far);
         void setUnitSize(real unitSize);
         real getUnitSize() const;
+        void setTargetTexture(Texture2D* targetTexture);
+        Texture2D* getTargetTexture();
+
+        static real aspectRatio();
 
       protected:
         void update(real deltaTime) override;
@@ -46,6 +50,7 @@ namespace GLaDOS {
         bool mIsOrthographic{false};
         real mUnitSize{real(1)}; // only affect orthographic projection
         Rect<real> mViewportRect; // normalized viewport Rect default is (0, 0, 1, 1) bottom-left to top-right
+        Texture2D* mTargetTexture{nullptr};
     };
 }  // namespace GLaDOS
 

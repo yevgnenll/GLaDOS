@@ -177,7 +177,7 @@ namespace GLaDOS {
         if (vertexResource == nullptr) {
             FileSystem vertexFile{SHADER_DIR + vertexName + SHADER_SUFFIX, OpenMode::ReadBinary};
             std::string vertexSource;
-            if (!vertexFile.readAll(vertexSource)) {
+            if (!vertexFile.readAllBytes(vertexSource)) {
                 LOG_ERROR(logger, "Vertex shader {0} is not found.", vertexFile.fullName());
                 return nullptr;
             }
@@ -202,7 +202,7 @@ namespace GLaDOS {
         if (fragmentResource == nullptr) {
             FileSystem fragmentFile{SHADER_DIR + fragmentName + SHADER_SUFFIX, OpenMode::ReadBinary};
             std::string fragmentSource;
-            if (!fragmentFile.readAll(fragmentSource)) {
+            if (!fragmentFile.readAllBytes(fragmentSource)) {
                 LOG_ERROR(logger, "Fragment shader {0} is not found.", fragmentFile.fullName());
                 return nullptr;
             }

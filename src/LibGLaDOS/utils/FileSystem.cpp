@@ -74,7 +74,7 @@ namespace GLaDOS {
         va_end(args);
     }
 
-    bool FileSystem::readAll(std::string& output) {
+    bool FileSystem::readAllBytes(std::string& output) {
         if (!isOpen()) {
             return false;
         }
