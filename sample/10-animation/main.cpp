@@ -142,7 +142,7 @@ class MainScene : public Scene {
         }
 
         if (Input::isKeyDown(KeyCode::KEY_BACKSPACE)) {
-            Blob blob = spriteRenderer->getSprite()->getRenderable()->getMaterial()->getTexture0()->encodeToPNG();
+            Blob blob = static_cast<Texture2D*>(spriteRenderer->getSprite()->getRenderable()->getMaterial()->getTexture0())->encodeToPNG();
             std::string filename = std::string(RESOURCE_DIR) + "test.png";
             FileSystem file{filename, OpenMode::WriteBinary};
             file.writeBuffer(blob.pointer(), blob.size(), 1);

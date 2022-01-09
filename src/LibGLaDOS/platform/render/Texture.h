@@ -3,7 +3,6 @@
 
 #include "resource/Resource.h"
 #include "utils/Utility.h"
-#include "memory/Blob.h"
 
 namespace GLaDOS {
     class Logger;
@@ -32,10 +31,6 @@ namespace GLaDOS {
         virtual bool loadTextureFromBuffer(Blob& buffer) { return false; }
         virtual bool loadTextureFromFile(const Array<std::string, 6>& names) { return false; }
         virtual bool loadTextureFromBuffer(const Vector<std::reference_wrapper<Blob>>& buffer) { return false; }
-        virtual Blob encodeToPNG() const { return Blob{}; }
-        virtual Blob encodeToJPG() const { return Blob{}; }
-        virtual Blob encodeToBMP() const { return Blob{}; }
-        virtual Blob encodeToTGA() const { return Blob{}; }
 
       protected:
         static uint32_t mapChannelNumberFrom(PixelFormat format);
