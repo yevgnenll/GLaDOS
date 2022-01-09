@@ -58,10 +58,10 @@ namespace GLaDOS {
     }
 
     Blob MetalTexture2D::encodeToPNG() const {
-        const static uint32_t bytesPerPixel = Texture::mapChannelNumberFrom(mFormat);
+        const uint32_t bytesPerPixel = Texture::mapChannelNumberFrom(mFormat);
 
         // The total number of bytes of the texture
-        uint32_t imageByteCount = mWidth * mHeight * bytesPerPixel;
+        const uint32_t imageByteCount = mWidth * mHeight * bytesPerPixel;
 
         // The number of bytes for each image row
         uint32_t bytesPerRow = mWidth * bytesPerPixel;
