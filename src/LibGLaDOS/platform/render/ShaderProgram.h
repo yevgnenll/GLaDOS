@@ -11,6 +11,12 @@ namespace GLaDOS {
     class Logger;
     template <typename T>
     class Mat4;
+    template <typename T>
+    class Point;
+    template <typename T>
+    class Size;
+    template <typename T>
+    class Rect;
     class Uniform;
     class Color;
     class Vec2;
@@ -30,14 +36,21 @@ namespace GLaDOS {
         void setUniform(const std::string& name, unsigned int value);
         void setUniform(const std::string& name, float value);
         void setUniform(const std::string& name, const Vec2& value);
+        void setUniform(const std::string& name, const Point<real>& value);
         void setUniform(const std::string& name, const Vec3& value);
         void setUniform(const std::string& name, const Vec4& value);
         void setUniform(const std::string& name, const Color& value);
-        void setUniform(const std::string& name, const float* values, int count);
-        void setUniform(const std::string& name, const Vec2* values, int count);
-        void setUniform(const std::string& name, const Vec3* values, int count);
-        void setUniform(const std::string& name, const Vec4* values, int count);
-        void setUniform(const std::string& name, const Color* values, int count);
+        void setUniform(const std::string& name, const Point<int32_t>& value);
+        void setUniform(const std::string& name, const Size<int32_t>& value);
+        void setUniform(const std::string& name, const Rect<int32_t>& value);
+        void setUniform(const std::string& name, const Point<uint32_t>& value);
+        void setUniform(const std::string& name, const Size<uint32_t>& value);
+        void setUniform(const std::string& name, const Rect<uint32_t>& value);
+        void setUniform(const std::string& name, float* values, int count);
+        void setUniform(const std::string& name, Vec2* values, int count);
+        void setUniform(const std::string& name, Vec3* values, int count);
+        void setUniform(const std::string& name, Vec4* values, int count);
+        void setUniform(const std::string& name, Color* values, int count);
         void setUniform(const std::string& name, const Mat4<real>& value);
         void setUniform(const std::string& name, bool value);
 

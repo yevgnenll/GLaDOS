@@ -11,26 +11,30 @@ namespace GLaDOS {
     class Sprite {
       public:
         explicit Sprite(Texture2D* texture);
-        Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel);
-        Sprite(Texture2D* texture, Point<real> anchorPointInPixel);
-        Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel, Point<real> anchorPointInPixel);
+        Sprite(Texture2D* texture, const Rect<uint32_t>& rect);
+        Sprite(Texture2D* texture, Point<real> anchorPoint);
+        Sprite(Texture2D* texture, const Rect<uint32_t>& rect, Point<real> anchorPoint);
         ~Sprite() = default;
 
         Texture2D* getTexture() const;
-        Rect<real> getRect() const;
+        Rect<uint32_t> getRect() const;
+        Rect<real> getRectNormalized() const;
         Point<real> getAnchorPoint() const;
+        Point<real> getAnchorPointNormalized() const;
         Renderable* getRenderable();
 
+        static Rect<uint32_t> getFullRect(Texture2D* texture2D);
+        static Point<real> getCenterAnchorPoint(const Rect<uint32_t>& rect);
+        static Rect<real> normalizePixelRect(const Rect<uint32_t>& rect, uint32_t width, uint32_t height);
+
       private:
-        static Rect<real> normalizePixelRect(const Rect<uint32_t>& rectInPixel, uint32_t width, uint32_t height);
-        static Point<real> normalizePixelPoint(const Point<real>& pointInPixel, uint32_t width, uint32_t height);
-        bool createRenderable(const Rect<real>& normalizedRect, const Rect<uint32_t>& rectInPixel, Texture2D* texture2D, Point<real> anchorPoint);
+        bool createRenderable();
 
         static Logger* logger;
 
         Texture2D* mTexture;
-        Rect<real> mRect; // normalized texture rect
-        Point<real> mAnchorPoint; // normalized anchorPoint
+        Rect<uint32_t> mRect;
+        Point<real> mAnchorPoint;
         Renderable* mRenderable{nullptr};
     };
 }  // namespace GLaDOS

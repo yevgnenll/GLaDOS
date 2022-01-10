@@ -31,7 +31,7 @@ namespace GLaDOS {
         bool isIdentity() const;
         Mat4<T>& makeTranspose();
         Mat4<T>& makeInverse();
-        const T* pointer() const;
+        T* pointer();
 
         Mat4<T> operator+(const Mat4<T>& m) const;
         Mat4<T>& operator+=(const Mat4<T>& m);
@@ -185,7 +185,7 @@ namespace GLaDOS {
     }
 
     template <typename T>
-    const T* Mat4<T>::pointer() const {
+    T* Mat4<T>::pointer() {
         return _m16;
     }
 
@@ -370,7 +370,7 @@ namespace GLaDOS {
 
     template <typename T>
     std::size_t Mat4<T>::size() const {
-        return 16;
+        return sizeof(T) * 16;
     }
 
     template <typename T>

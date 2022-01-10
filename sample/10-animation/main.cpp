@@ -14,6 +14,7 @@ class MainScene : public Scene {
         cubemapRenderer->setTextureCube(cubemap);
 
         camera = getMainCamera();
+        camera->setOrthographic(true);
         cameraTransform = camera->gameObject()->transform();
         cameraTransform->setLocalPosition({0, 0, 1});
 

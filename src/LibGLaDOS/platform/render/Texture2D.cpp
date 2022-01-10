@@ -1,5 +1,6 @@
 #include "Texture2D.h"
 
+#include "math/Math.h"
 #include "memory/Blob.h"
 #include "utils/Utility.h"
 #define STB_IMAGE_IMPLEMENTATION

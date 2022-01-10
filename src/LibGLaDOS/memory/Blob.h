@@ -1,7 +1,6 @@
 ﻿#ifndef GLADOS_BLOB_H
 #define GLADOS_BLOB_H
 
-#include "math/Mat4.hpp"
 #include "utils/Utility.h"
 
 namespace GLaDOS {
@@ -11,30 +10,44 @@ namespace GLaDOS {
     class Vec4;
     class Quat;
     class Color;
+    template <typename T>
+    class Point;
+    template <typename T>
+    class Size;
+    template <typename T>
+    class Rect;
+    template <typename T>
+    class Mat4;
     class Blob {
       public:
         Blob() = default;
         Blob(const std::byte* data, std::size_t size);
         virtual ~Blob() = default;
 
-        // all << operator behave like backward emplacer.
-        Blob& operator<<(int8_t i);
-        Blob& operator<<(int16_t i);
-        Blob& operator<<(int32_t i);
-        Blob& operator<<(int64_t i);
-        Blob& operator<<(uint8_t i);
-        Blob& operator<<(uint16_t i);
-        Blob& operator<<(uint32_t i);
-        Blob& operator<<(uint64_t i);
-        Blob& operator<<(float i);
-        Blob& operator<<(double i);
-        Blob& operator<<(const Vec2& i);
-        Blob& operator<<(const Vec3& i);
-        Blob& operator<<(const Vec4& i);
-        Blob& operator<<(const Quat& i);
-        Blob& operator<<(const Color& i);
-        template <typename T>
-        Blob& operator<<(const Mat4<T>& i);
+        // all << operator behave backward emplacer.
+        Blob& operator<<(int8_t value);
+        Blob& operator<<(int16_t value);
+        Blob& operator<<(int32_t value);
+        Blob& operator<<(int64_t value);
+        Blob& operator<<(uint8_t value);
+        Blob& operator<<(uint16_t value);
+        Blob& operator<<(uint32_t value);
+        Blob& operator<<(uint64_t value);
+        Blob& operator<<(float value);
+        Blob& operator<<(double value);
+        Blob& operator<<(Vec2& value);
+        Blob& operator<<(Point<real>& value);
+        Blob& operator<<(Vec3& value);
+        Blob& operator<<(Vec4& value);
+        Blob& operator<<(Quat& value);
+        Blob& operator<<(Color& value);
+        Blob& operator<<(Point<int32_t>& value);
+        Blob& operator<<(Size<int32_t>& value);
+        Blob& operator<<(Rect<int32_t>& value);
+        Blob& operator<<(Point<uint32_t>& value);
+        Blob& operator<<(Size<uint32_t>& value);
+        Blob& operator<<(Rect<uint32_t>& value);
+        Blob& operator<<(Mat4<real>& value);
 
         // NOTE: copyFrom 함수 호출전에 항상 resize로 버퍼를 확보해야함
         void copyFrom(Blob& buffer);
@@ -58,17 +71,11 @@ namespace GLaDOS {
         void throwIfOverflow(std::size_t size) const;
 
       private:
-        void writeBytes(std::byte* bytes, unsigned int count);
+        void writeBytes(std::byte* bytes, std::size_t count);
 
         static Logger* logger;
         Vector<std::byte> mData;
     };
-
-    template <typename T>
-    Blob& Blob::operator<<(const Mat4<T>& i) {
-        writeBytes(reinterpret_cast<std::byte*>(const_cast<real*>(i.pointer())), sizeof(T) * i.size());
-        return *this;
-    }
 }  // namespace GLaDOS
 
 #endif

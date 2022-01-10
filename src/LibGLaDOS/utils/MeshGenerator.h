@@ -13,7 +13,7 @@ namespace GLaDOS {
         MeshGenerator() = delete;
         ~MeshGenerator() = delete;
 
-        static Mesh* generateRectangle(Rect<real> textureRect, const Size<uint32_t>& size, const Point<real>& anchorPoint);
+        static Mesh* generateRectangle(Rect<real> textureRect, const Size<uint32_t>& size);
         static Mesh* generatePlane(unsigned int dimensions = 50);
         static Mesh* generateCube();
         static Mesh* generateIcoSphere(unsigned int subdivisions = 3);

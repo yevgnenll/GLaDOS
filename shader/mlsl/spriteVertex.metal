@@ -18,19 +18,25 @@ typedef struct {
   float4x4 projection;
   bool flipX;
   bool flipY;
-  float flipXOffset;
-  float flipYOffset;
+  float2 flipOffset;
+  float2 anchorPoint;
+  uint2 size;
 } VertexUniforms;
 
 vertex VertexOut main0(VertexIn verts [[stage_in]], constant VertexUniforms &uniforms [[buffer(0)]]) {
     VertexOut out;
+    float2 anchorPointOffset = uniforms.anchorPoint;
     if (uniforms.flipX) {
-        verts._texCoord0.x = uniforms.flipXOffset - verts._texCoord0.x;
+        verts._texCoord0.x = uniforms.flipOffset.x - verts._texCoord0.x;
+        anchorPointOffset.x = uniforms.size.x - uniforms.anchorPoint.x;
     }
     if (uniforms.flipY) {
-        verts._texCoord0.y = uniforms.flipYOffset - verts._texCoord0.y;
+        verts._texCoord0.y = uniforms.flipOffset.y - verts._texCoord0.y;
+        anchorPointOffset.y = uniforms.size.y - uniforms.anchorPoint.y;
     }
-    out._position = uniforms.projection * uniforms.view * uniforms.model * float4(verts._position, 1);
+    out._position = uniforms.projection * uniforms.view * uniforms.model *
+                    float4(verts._position.x - anchorPointOffset.x,
+                           verts._position.y - anchorPointOffset.y, verts._position.z, 1);
     out._texCoord0 = verts._texCoord0;
     return out;
 }

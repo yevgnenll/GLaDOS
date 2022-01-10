@@ -30,7 +30,7 @@ namespace GLaDOS {
 
             std::byte* data = uniform->pointer();
             if (data == nullptr) {
-                LOG_ERROR(logger, "Uniform [offset({0})] in {1} should not be null", uniform->mOffset, uniform->mShaderType.toString());
+                LOG_ERROR(logger, "Uniform {0} [offset({1})] in {2} should not be null", uniform->mName, uniform->mOffset, uniform->mShaderType.toString());
                 continue;
             }
 

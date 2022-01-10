@@ -10,53 +10,57 @@
 
 namespace GLaDOS {
     Logger* Sprite::logger = LoggerRegistry::getInstance().makeAndGetLogger("Sprite");
-    Sprite::Sprite(Texture2D* texture) : mTexture{texture} {
-        Rect<uint32_t> rectInPixel{0, 0, texture->getWidth(), texture->getHeight()};
-        Point<real> anchorPointInPixel{static_cast<real>(rectInPixel.w) * 0.5f, static_cast<real>(rectInPixel.h) * 0.5f};
-        mRect = normalizePixelRect(rectInPixel, texture->getWidth(), texture->getHeight());
-        mAnchorPoint = normalizePixelPoint(anchorPointInPixel, rectInPixel.w, rectInPixel.h);
-        createRenderable(mRect, Rect<uint32_t>(0, 0, texture->getWidth(), texture->getHeight()), mTexture, anchorPointInPixel);
+    Sprite::Sprite(Texture2D* texture) : mTexture{texture}, mRect{getFullRect(mTexture)}, mAnchorPoint{getCenterAnchorPoint(mRect)} {
+        createRenderable();
     }
 
-    Sprite::Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel) : mTexture{texture} {
-        Point<real> anchorPointInPixel{static_cast<real>(rectInPixel.w) * 0.5f, static_cast<real>(rectInPixel.h) * 0.5f};
-        mRect = normalizePixelRect(rectInPixel, texture->getWidth(), texture->getHeight());
-        mAnchorPoint = normalizePixelPoint(anchorPointInPixel, rectInPixel.w, rectInPixel.h);
-        createRenderable(mRect, rectInPixel, mTexture, anchorPointInPixel);
+    Sprite::Sprite(Texture2D* texture, const Rect<uint32_t>& rect) : mTexture{texture}, mRect{rect}, mAnchorPoint{getCenterAnchorPoint(mRect)} {
+        createRenderable();
     }
 
-    Sprite::Sprite(Texture2D* texture, Point<real> anchorPointInPixel) : mTexture{texture} {
-        Rect<uint32_t> rectInPixel{0, 0, texture->getWidth(), texture->getHeight()};
-        mRect = normalizePixelRect(rectInPixel, texture->getWidth(), texture->getHeight());
-        mAnchorPoint = normalizePixelPoint(anchorPointInPixel, rectInPixel.w, rectInPixel.h);
-        createRenderable(mRect, Rect<uint32_t>(0, 0, texture->getWidth(), texture->getHeight()), mTexture, anchorPointInPixel);
+    Sprite::Sprite(Texture2D* texture, Point<real> anchorPoint) : mTexture{texture}, mRect{getFullRect(mTexture)}, mAnchorPoint{anchorPoint} {
+        createRenderable();
     }
 
-    Sprite::Sprite(Texture2D* texture, const Rect<uint32_t>& rectInPixel, Point<real> anchorPointInPixel) : mTexture{texture} {
-        mRect = normalizePixelRect(rectInPixel, texture->getWidth(), texture->getHeight());
-        mAnchorPoint = normalizePixelPoint(anchorPointInPixel, rectInPixel.w, rectInPixel.h);
-        createRenderable(mRect, rectInPixel, mTexture, anchorPointInPixel);
+    Sprite::Sprite(Texture2D* texture, const Rect<uint32_t>& rect, Point<real> anchorPoint) : mTexture{texture}, mRect{rect}, mAnchorPoint{anchorPoint} {
+        createRenderable();
     }
 
     Texture2D* Sprite::getTexture() const {
         return mTexture;
     }
 
-    Rect<real> Sprite::getRect() const {
+    Rect<uint32_t> Sprite::getRect() const {
         return mRect;
+    }
+
+    Rect<real> Sprite::getRectNormalized() const {
+        return normalizePixelRect(mRect, mTexture->getWidth(), mTexture->getHeight());
     }
 
     Point<real> Sprite::getAnchorPoint() const {
         return mAnchorPoint;
     }
 
+    Point<real> Sprite::getAnchorPointNormalized() const {
+        return Point<real>{mAnchorPoint.x() / static_cast<real>(mRect.w), mAnchorPoint.y() / static_cast<real>(mRect.h)};
+    }
+
     Renderable* Sprite::getRenderable() {
         return mRenderable;
     }
 
-    Rect<real> Sprite::normalizePixelRect(const Rect<uint32_t>& rectInPixel, uint32_t width, uint32_t height) {
+    Rect<uint32_t> Sprite::getFullRect(Texture2D* texture2D) {
+        return Rect<uint32_t>{0.f, 0.f, texture2D->getWidth(), texture2D->getHeight()};
+    }
+
+    Point<real> Sprite::getCenterAnchorPoint(const Rect<uint32_t>& rect) {
+        return Point<real>{static_cast<real>(rect.w) * 0.5f, static_cast<real>(rect.h) * 0.5f};
+    }
+
+    Rect<real> Sprite::normalizePixelRect(const Rect<uint32_t>& rect, uint32_t width, uint32_t height) {
         /*
-          rectInPixel as User's perspective
+          rect as User's perspective
           (0,1)          (1,1) == (w,h)
             +-------------+
             |             |
@@ -72,22 +76,18 @@ namespace GLaDOS {
 
         real invw = 1 / static_cast<real>(width);
         real invh = 1 / static_cast<real>(height);
-        uint32_t inverseTop = height - rectInPixel.y; // upside down height
+        uint32_t inverseTop = height - rect.y; // upside down height
 
-        result.x = static_cast<real>(rectInPixel.x) * invw;
+        result.x = static_cast<real>(rect.x) * invw;
         result.y = static_cast<real>(inverseTop) * invh;
-        result.w = (static_cast<real>(rectInPixel.w + rectInPixel.x)) * invw;
-        result.h = (static_cast<real>(inverseTop - rectInPixel.h)) * invh;
+        result.w = (static_cast<real>(rect.w + rect.x)) * invw;
+        result.h = (static_cast<real>(inverseTop - rect.h)) * invh;
 
         return result;
     }
 
-    Point<real> Sprite::normalizePixelPoint(const Point<real>& pointInPixel, uint32_t width, uint32_t height) {
-        return Point<real>{pointInPixel.x() / static_cast<real>(width), pointInPixel.y() / static_cast<real>(height)};
-    }
-
-    bool Sprite::createRenderable(const Rect<real>& normalizedRect, const Rect<uint32_t>& rectInPixel, Texture2D* texture2D, Point<real> anchorPoint) {
-        Mesh* mesh = MeshGenerator::generateRectangle(normalizedRect, Size<uint32_t>(rectInPixel.w, rectInPixel.h), anchorPoint);
+    bool Sprite::createRenderable() {
+        Mesh* mesh = MeshGenerator::generateRectangle(getRectNormalized(), Size<uint32_t>(mRect.w, mRect.h));
         if (mesh == nullptr) {
             LOG_ERROR(logger, "Sprite initialize failed!");
             return false;
@@ -101,7 +101,7 @@ namespace GLaDOS {
 
         Material* material = NEW_T(Material);
         material->setShaderProgram(shaderProgram);
-        material->setTexture0(texture2D);
+        material->setTexture0(mTexture);
 
         Renderable* renderable = Platform::getRenderer().createRenderable(mesh, material);
         if (renderable == nullptr) {

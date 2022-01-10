@@ -1,5 +1,7 @@
 #include "MeshGenerator.h"
 
+#include "math/UVec3.h"
+#include "math/Vec3.h"
 #include "math/Math.h"
 #include "platform/Platform.h"
 #include "platform/render/IndexBuffer.h"
@@ -8,10 +10,9 @@
 #include "platform/render/Renderer.h"
 #include "platform/render/VertexBuffer.h"
 #include "platform/render/VertexFormat.h"
-#include "math/Point.hpp"
 
 namespace GLaDOS {
-    Mesh* MeshGenerator::generateRectangle(const Rect<real> textureRect, const Size<uint32_t>& size, const Point<real>& anchorPoint) {
+    Mesh* MeshGenerator::generateRectangle(const Rect<real> textureRect, const Size<uint32_t>& size) {
         // Counter-closk wise
         // Vertex,Texture
         //	0----------3
@@ -20,22 +21,17 @@ namespace GLaDOS {
         real width = static_cast<real>(size.x);
         real height = static_cast<real>(size.y);
 
-        real w1 = width - anchorPoint.x();
-        real w2 = width - w1;
-        real h1 = height - anchorPoint.y();
-        real h2 = height - h1;
-
         Vector<real> vertices = {
-            -w2, h1, 0.f,
+            0.f, height, 0.f,
             textureRect.x, textureRect.h,
 
-            -w2, -h2, 0.f,
+            0.f, 0.f, 0.f,
             textureRect.x, textureRect.y,
 
-            w1, -h2, 0.f,
+            width, 0.f, 0.f,
             textureRect.w, textureRect.y,
 
-            w1, h1, 0.f,
+            width, height, 0.f,
             textureRect.w, textureRect.h
         };
         static Vector<uint16_t> indices = {

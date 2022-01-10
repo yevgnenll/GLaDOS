@@ -37,6 +37,7 @@ namespace GLaDOS {
         Rect<T>& operator/=(const Rect<T>& other);
 
         Size<T> toSize() const;
+        Size<T> toFullSize() const;
         Rect& makeMerge(const Rect<T>& other);
         bool intersect(const Rect<T>& other) const;
         bool contains(const Vec2& value) const;
@@ -162,6 +163,11 @@ namespace GLaDOS {
     template <typename T>
     Size<T> Rect<T>::toSize() const {
         return Size<T>{w - x, h - y};
+    }
+
+    template <typename T>
+    Size<T> Rect<T>::toFullSize() const {
+        return Size<T>{w, h};
     }
 
     template <typename T>

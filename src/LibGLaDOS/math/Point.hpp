@@ -14,6 +14,28 @@ namespace GLaDOS {
         T x() const { return mFirst; }
         T y() const { return mSecond; }
 
+        T& operator[](unsigned int i) {
+            switch (i) {
+                case 0:
+                    return mFirst;
+                case 1:
+                    return mSecond;
+                default:
+                    return mFirst;
+            }
+        }
+
+        const T& operator[](unsigned int i) const {
+            switch (i) {
+                case 0:
+                    return mFirst;
+                case 1:
+                    return mSecond;
+                default:
+                    return mFirst;
+            }
+        }
+
         T length() const {
             return static_cast<T>(Math::sqrt(mFirst * mFirst + mSecond * mSecond));
         }

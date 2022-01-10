@@ -5,6 +5,10 @@
 #include "math/Vec2.h"
 #include "math/Vec3.h"
 #include "math/Vec4.h"
+#include "math/Mat4.hpp"
+#include "math/Point.hpp"
+#include "math/Size.hpp"
+#include "math/Rect.hpp"
 
 namespace GLaDOS {
     Logger* Blob::logger = LoggerRegistry::getInstance().makeAndGetLogger("Blob");
@@ -13,78 +17,118 @@ namespace GLaDOS {
         copyFrom(data, size);
     }
 
-    Blob& Blob::operator<<(int8_t i) {
-        writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
+    Blob& Blob::operator<<(int8_t value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value), sizeof(value));
         return *this;
     }
 
-    Blob& Blob::operator<<(int16_t i) {
-        writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
+    Blob& Blob::operator<<(int16_t value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value), sizeof(value));
         return *this;
     }
 
-    Blob& Blob::operator<<(int32_t i) {
-        writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
+    Blob& Blob::operator<<(int32_t value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value), sizeof(value));
         return *this;
     }
 
-    Blob& Blob::operator<<(int64_t i) {
-        writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
+    Blob& Blob::operator<<(int64_t value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value), sizeof(value));
         return *this;
     }
 
-    Blob& Blob::operator<<(uint8_t i) {
-        writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
+    Blob& Blob::operator<<(uint8_t value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value), sizeof(value));
         return *this;
     }
 
-    Blob& Blob::operator<<(uint16_t i) {
-        writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
+    Blob& Blob::operator<<(uint16_t value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value), sizeof(value));
         return *this;
     }
 
-    Blob& Blob::operator<<(uint32_t i) {
-        writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
+    Blob& Blob::operator<<(uint32_t value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value), sizeof(value));
         return *this;
     }
 
-    Blob& Blob::operator<<(uint64_t i) {
-        writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
+    Blob& Blob::operator<<(uint64_t value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value), sizeof(value));
         return *this;
     }
 
-    Blob& Blob::operator<<(float i) {
-        writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
+    Blob& Blob::operator<<(float value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value), sizeof(value));
         return *this;
     }
 
-    Blob& Blob::operator<<(double i) {
-        writeBytes(reinterpret_cast<std::byte*>(&i), sizeof(i));
+    Blob& Blob::operator<<(double value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value), sizeof(value));
         return *this;
     }
 
-    Blob& Blob::operator<<(const Vec2& i) {
-        writeBytes(reinterpret_cast<std::byte*>(const_cast<real*>(&i[0])), sizeof(i));
+    Blob& Blob::operator<<(Vec2& value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value[0]), sizeof(value));
         return *this;
     }
 
-    Blob& Blob::operator<<(const Vec3& i) {
-        writeBytes(reinterpret_cast<std::byte*>(const_cast<real*>(&i[0])), sizeof(i));
+    Blob& Blob::operator<<(Point<real>& value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value[0]), sizeof(value));
         return *this;
     }
 
-    Blob& Blob::operator<<(const Vec4& i) {
-        writeBytes(reinterpret_cast<std::byte*>(const_cast<real*>(&i[0])), sizeof(i));
+    Blob& Blob::operator<<(Vec3& value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value[0]), sizeof(value));
         return *this;
     }
 
-    Blob& Blob::operator<<(const Quat& i) {
-        writeBytes(reinterpret_cast<std::byte*>(const_cast<real*>(&i[0])), sizeof(i));
+    Blob& Blob::operator<<(Vec4& value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value[0]), sizeof(value));
         return *this;
     }
 
-    Blob& Blob::operator<<(const Color& i) {
-        writeBytes(reinterpret_cast<std::byte*>(const_cast<real*>(&i[0])), sizeof(i));
+    Blob& Blob::operator<<(Quat& value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value[0]), sizeof(value));
+        return *this;
+    }
+
+    Blob& Blob::operator<<(Color& value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value[0]), sizeof(value));
+        return *this;
+    }
+
+    Blob& Blob::operator<<(Point<int32_t>& value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value[0]), sizeof(value));
+        return *this;
+    }
+
+    Blob& Blob::operator<<(Size<int32_t>& value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value.x), sizeof(value));
+        return *this;
+    }
+
+    Blob& Blob::operator<<(Rect<int32_t>& value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value.x), sizeof(value));
+        return *this;
+    }
+
+    Blob& Blob::operator<<(Point<uint32_t>& value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value[0]), sizeof(value));
+        return *this;
+    }
+
+    Blob& Blob::operator<<(Size<uint32_t>& value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value.x), sizeof(value));
+        return *this;
+    }
+
+    Blob& Blob::operator<<(Rect<uint32_t>& value) {
+        writeBytes(reinterpret_cast<std::byte*>(&value.x), sizeof(value));
+        return *this;
+    }
+
+    Blob& Blob::operator<<(Mat4<real>& value) {
+        writeBytes(reinterpret_cast<std::byte*>(value.pointer()), value.size());
         return *this;
     }
 
@@ -152,7 +196,7 @@ namespace GLaDOS {
         }
     }
 
-    void Blob::writeBytes(std::byte* bytes, unsigned int count) {
+    void Blob::writeBytes(std::byte* bytes, std::size_t count) {
         if (size() < count) {
             LOG_ERROR(logger, "buffer overflow");
             return;

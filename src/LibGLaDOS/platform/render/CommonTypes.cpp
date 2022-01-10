@@ -92,8 +92,20 @@ namespace GLaDOS {
                 return 1;
             case UniformType::Int:
                 return 4;
+            case UniformType::Int2:
+                return 8;
+            case UniformType::Int3:
+                return 12;
+            case UniformType::Int4:
+                return 16;
             case UniformType::UInt:
                 return 4;
+            case UniformType::UInt2:
+                return 8;
+            case UniformType::UInt3:
+                return 12;
+            case UniformType::UInt4:
+                return 16;
             case UniformType::Float:
                 return 4;
             case UniformType::Vec2:

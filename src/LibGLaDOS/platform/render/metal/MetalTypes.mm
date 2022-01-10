@@ -144,11 +144,19 @@ namespace GLaDOS {
         switch (dataType) {
             case MTLDataTypeBool:      return UniformType::Bool;
             case MTLDataTypeInt:       return UniformType::Int;
+            case MTLDataTypeInt2:      return UniformType::Int2;
+            case MTLDataTypeInt3:      return UniformType::Int3;
+            case MTLDataTypeInt4:      return UniformType::Int4;
             case MTLDataTypeUInt:      return UniformType::UInt;
+            case MTLDataTypeUInt2:     return UniformType::UInt2;
+            case MTLDataTypeUInt3:     return UniformType::UInt3;
+            case MTLDataTypeUInt4:     return UniformType::UInt4;
             case MTLDataTypeFloat:     return UniformType::Float;
             case MTLDataTypeFloat2:    return UniformType::Vec2;
             case MTLDataTypeFloat3:    return UniformType::Vec3;
             case MTLDataTypeFloat4:    return UniformType::Vec4;
+            case MTLDataTypeFloat2x2:  return UniformType::Mat2;
+            case MTLDataTypeFloat3x3:  return UniformType::Mat3;
             case MTLDataTypeFloat4x4:  return UniformType::Mat4;
             case MTLDataTypeTexture:   return UniformType::Texture;
             case MTLDataTypeSampler:   return UniformType::Sampler;
