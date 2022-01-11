@@ -110,14 +110,15 @@ namespace GLaDOS {
         static Vec4 toVec4(const Vec3& v);
         static Vec3 abs(const Vec3& v);
         static Vec3 lerp(const Vec3& a, const Vec3& b, real t);
-        static Vec3 slerp(const Vec3& a, const Vec3& b, real t);
-        static UVec3 nlerp(const Vec3& a, const Vec3& b, real t);
+        static Vec3 slerp(const Vec3& a, const Vec3& b, real t); // spherical linear interpolation
+        static UVec3 nlerp(const Vec3& a, const Vec3& b, real t); // normalize linear interpolation (nlerp approximates slerp)
         static Vec3 project(const Vec3& v, const UVec3& onNormal);
-        static Vec3 projectOnPlane(const Vec3& v, const UVec3& planeNormal);
+        static Vec3 reject(const Vec3& v, const UVec3& onNormal);
         static UVec3 normalize(const Vec3& v);
-        static Deg angle(const UVec3& from, const UVec3& to);
+        static Deg angleBetween(const UVec3& from, const UVec3& to); // already normalized angle between two vector
+        static Deg angleBetween(const Vec3& a, const Vec3& b);
+        static Vec3 reflect(const Vec3& a, const Vec3& b);
         static Vec3 negate(const Vec3& v);
-        static real angleBetween(const Vec3& a, const Vec3& b);
 
         real x{0.0}, y{0.0}, z{0.0};
         static const Vec3 up, down, left, right, forward, backward, one, zero;

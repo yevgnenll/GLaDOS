@@ -204,7 +204,7 @@ namespace GLaDOS {
         return UVec4{v * inv};
     }
 
-    Deg Vec4::angle(const UVec4& from, const UVec4& to) {
+    Deg Vec4::angleBetween(const UVec4& from, const UVec4& to) {
         return Math::toDegrees(Math::acos(Math::clamp(Vec4::dot(from, to), static_cast<real>(-1.0), static_cast<real>(1.0))));
     }
 

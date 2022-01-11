@@ -45,11 +45,11 @@ class MainScene : public Scene {
 
         // camera translation
         Vec3 right = cameraTransform->right();
-        right *= Input::getAxis("Horizontal") * moveSensitivity * deltaTime;
+        right *= Input::getAxisRaw("Horizontal") * moveSensitivity * deltaTime;
         cameraTransform->translate(right);
 
         Vec3 up = cameraTransform->up();
-        up *= Input::getAxis("Vertical") * moveSensitivity * deltaTime;
+        up *= Input::getAxisRaw("Vertical") * moveSensitivity * deltaTime;
         cameraTransform->translate(up);
 
         if (Input::isKeyDown(KeyCode::KEY_Z)) {

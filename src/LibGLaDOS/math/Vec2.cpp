@@ -193,8 +193,28 @@ namespace GLaDOS {
         return UVec2{v * inv};
     }
 
-    Deg Vec2::angle(const UVec2& from, const UVec2& to) {
+    Deg Vec2::angleBetween(const UVec2& from, const UVec2& to) {
         return Math::toDegrees(Math::acos(Math::clamp(Vec2::dot(from, to), static_cast<real>(-1.0), static_cast<real>(1.0))));
+    }
+
+    Deg Vec2::angleBetween(const Vec2& a, const Vec2& b) {
+        real lengthInv = 1 / (a.length() * b.length());
+        real dot = Vec2::dot(a, b);
+        return Math::toDegrees(Math::acos(dot * lengthInv));
+    }
+
+    Vec2 Vec2::reflect(const Vec2& a, const Vec2& b) {
+        real len = b.length();
+        if (len < Math::realEpsilon) {
+            return Vec2::zero;
+        }
+        real scale = Vec2::dot(a, b) / len;
+        Vec2 proj2 = b * (scale * 2);
+        return a - proj2;
+    }
+
+    Vec2 Vec2::negate(const Vec2& v) {
+        return Vec2{-v.x, -v.y};
     }
 
     void Vec2::swap(Vec2& first, Vec2& second) {

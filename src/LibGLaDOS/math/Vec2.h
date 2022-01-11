@@ -72,10 +72,13 @@ namespace GLaDOS {
         static Vec4 toVec4(const Vec2& v);
         static Vec2 abs(const Vec2& v);
         static Vec2 lerp(const Vec2& a, const Vec2& b, real t);
-        static Vec2 slerp(const Vec2& a, const Vec2& b, real t);
-        static UVec2 nlerp(const Vec2& a, const Vec2& b, real t);
+        static Vec2 slerp(const Vec2& a, const Vec2& b, real t); // spherical linear interpolation
+        static UVec2 nlerp(const Vec2& a, const Vec2& b, real t); // normalize linear interpolation (nlerp approximates slerp)
         static UVec2 normalize(const Vec2& v);
-        static Deg angle(const UVec2& from, const UVec2& to);
+        static Deg angleBetween(const UVec2& from, const UVec2& to);
+        static Deg angleBetween(const Vec2& a, const Vec2& b);
+        static Vec2 reflect(const Vec2& a, const Vec2& b);
+        static Vec2 negate(const Vec2& v);
 
         real x{0.0}, y{0.0};
         static const Vec2 up, down, left, right, one, zero;

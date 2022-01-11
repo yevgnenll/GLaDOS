@@ -14,6 +14,7 @@ class MainScene : public Scene {
         cubemapRenderer->setTextureCube(cubemap);
 
         camera = getMainCamera();
+        camera->setUnitSize(2);
         camera->setOrthographic(true);
         cameraTransform = camera->gameObject()->transform();
         cameraTransform->setLocalPosition({0, 0, 1});
@@ -117,6 +118,25 @@ class MainScene : public Scene {
             spriteRenderer->setSprite(sprites[spriteIndex]);
         }
 
+        real moveX = 0.f;
+        real moveY = 0.f;
+
+        if (Input::isKeyPress(KeyCode::KEY_LEFT)) {
+            moveX = -1.f;
+        }
+        if (Input::isKeyPress(KeyCode::KEY_RIGHT)) {
+            moveX = +1.f;
+        }
+        if (Input::isKeyPress(KeyCode::KEY_UP)) {
+            moveY = +1.f;
+        }
+        if (Input::isKeyPress(KeyCode::KEY_DOWN)) {
+            moveY = -1.f;
+        }
+
+        Vec3 moveDir = Vec3{moveX, moveY}.makeNormalize();
+        player->transform()->translate(moveDir * moveSpeed * deltaTime, Space::World);
+
         if (Input::isKeyDown(KeyCode::KEY_T)) {
             camera->setOrthographic(!camera->isOrthographic());
         }
@@ -152,15 +172,15 @@ class MainScene : public Scene {
 
         // camera translation
         Vec3 right = cameraTransform->right();
-        right *= Input::getAxis("Horizontal") * moveSensitivity * deltaTime;
+        right *= Input::getAxisRaw("Horizontal") * moveSensitivity * deltaTime;
         cameraTransform->translate(right);
 
         Vec3 up = cameraTransform->up();
-        up *= Input::getAxis("Forward") * moveSensitivity * deltaTime;
+        up *= Input::getAxisRaw("Forward") * moveSensitivity * deltaTime;
         cameraTransform->translate(up);
 
         Vec3 forward = cameraTransform->forward();
-        forward *= Input::getAxis("Vertical") * moveSensitivity * deltaTime;
+        forward *= Input::getAxisRaw("Vertical") * moveSensitivity * deltaTime;
         cameraTransform->translate(forward);
 
         // camera rotation
@@ -176,6 +196,7 @@ class MainScene : public Scene {
   private:
     real moveSensitivity = 120;
     real sensitivity = 15;
+    real moveSpeed = 100;
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;
     GameObject* player = nullptr;

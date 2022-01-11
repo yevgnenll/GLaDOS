@@ -9,7 +9,7 @@ namespace GLaDOS {
     void Timer::update() {
         mCurrentTime = now();
 
-        mUnscaledDeltaTime = static_cast<real>(getInterval(mStart, mCurrentTime) * 0.001);
+        mUnscaledDeltaTime = getInterval(mStart, mCurrentTime) * 0.001f;
         mDeltaTime = mUnscaledDeltaTime * mTimeScale;
 
         mUnscaledTime += mUnscaledDeltaTime;

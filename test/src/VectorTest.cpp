@@ -1,6 +1,8 @@
 #include <catch2/catch.hpp>
 
 #include "math/Vec3.h"
+#include "math/UVec3.h"
+#include "math/Math.h"
 
 using namespace GLaDOS;
 
@@ -35,5 +37,19 @@ TEST_CASE("Vector unit tests", "[Vector]") {
     REQUIRE(v2.x == 1);
     REQUIRE(v2.y == 2);
     REQUIRE(v2.z == 3);
+  }
+
+  SECTION("Vec3 angle between two normalized vector") {
+      Vec3 v1 = {4, 3, 0};
+      Vec3 v2 = {3, 5, 0};
+      Deg angle = Vec3::angleBetween(v1.makeNormalize(), v2.makeNormalize());
+      REQUIRE(Math::equal(angle.get(), 22.16634f));
+  }
+
+  SECTION("Vec3 angle between two vector") {
+      Vec3 v1 = {4, 3, 0};
+      Vec3 v2 = {3, 5, 0};
+      Deg angle = Vec3::angleBetween(v1, v2);
+      REQUIRE(Math::equal(angle.get(), 22.16633f));
   }
 }

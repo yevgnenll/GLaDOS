@@ -206,7 +206,7 @@ namespace GLaDOS {
         return static_cast<Vec3>(onNormal) * Vec3::dot(v, onNormal) / num;
     }
 
-    Vec3 Vec3::projectOnPlane(const Vec3& v, const UVec3& planeNormal) { return v - Vec3::project(v, planeNormal); }
+    Vec3 Vec3::reject(const Vec3& v, const UVec3& onNormal) { return v - Vec3::project(v, onNormal); }
 
     UVec3 Vec3::normalize(const Vec3& v) {
         real len = v.length();
@@ -218,18 +218,28 @@ namespace GLaDOS {
         return UVec3{v * inv};
     }
 
-    Deg Vec3::angle(const UVec3& from, const UVec3& to) {
+    Deg Vec3::angleBetween(const UVec3& from, const UVec3& to) {
         return Math::toDegrees(Math::acos(Math::clamp(Vec3::dot(from, to), static_cast<real>(-1.0), static_cast<real>(1.0))));
+    }
+
+    Deg Vec3::angleBetween(const Vec3& a, const Vec3& b) {
+        real lengthInv = 1 / (a.length() * b.length());
+        real dot = Vec3::dot(a, b);
+        return Math::toDegrees(Math::acos(dot * lengthInv));
+    }
+
+    Vec3 Vec3::reflect(const Vec3& a, const Vec3& b) {
+        real len = b.length();
+        if (len < Math::realEpsilon) {
+            return Vec3::zero;
+        }
+        real scale = Vec3::dot(a, b) / len;
+        Vec3 proj2 = b * (scale * 2);
+        return a - proj2;
     }
 
     Vec3 Vec3::negate(const Vec3& v) {
         return Vec3{-v.x, -v.y, -v.z};
-    }
-
-    real Vec3::angleBetween(const Vec3& a, const Vec3& b) {
-        real lengthInv = 1 / (a.length() * b.length());
-        real dot = Vec3::dot(a, b);
-        return Math::acos(dot * lengthInv);
     }
 
     void Vec3::swap(Vec3& first, Vec3& second) {
