@@ -8,75 +8,75 @@ namespace GLaDOS {
     class Point {
       public:
         Point() : Point(0, 0) {}
-        Point(T first, T second) : mFirst(first), mSecond(second) {}
-        Point(const Point<T>& other) : mFirst(other.mFirst), mSecond(other.mSecond) {}
+        Point(T first, T second) : _x(first), _y(second) {}
+        Point(const Point<T>& other) : _x(other._x), _y(other._y) {}
 
-        T x() const { return mFirst; }
-        T y() const { return mSecond; }
+        T x() const { return _x; }
+        T y() const { return _y; }
 
         T& operator[](unsigned int i) {
             switch (i) {
                 case 0:
-                    return mFirst;
+                    return _x;
                 case 1:
-                    return mSecond;
+                    return _y;
                 default:
-                    return mFirst;
+                    return _x;
             }
         }
 
         const T& operator[](unsigned int i) const {
             switch (i) {
                 case 0:
-                    return mFirst;
+                    return _x;
                 case 1:
-                    return mSecond;
+                    return _y;
                 default:
-                    return mFirst;
+                    return _x;
             }
         }
 
         T length() const {
-            return static_cast<T>(Math::sqrt(mFirst * mFirst + mSecond * mSecond));
+            return static_cast<T>(Math::sqrt(_x * _x + _y * _y));
         }
 
         bool same() const {
-            return mFirst == mSecond;
+            return _x == _y;
         }
 
         T distance(Point<T> v) const {
-            return Point<T>(mFirst - v.mFirst, mSecond - v.mSecond).length();
+            return Point<T>(_x - v._x, _y - v._y).length();
         }
 
         void setX(T v) {
-            mFirst = v;
+            _x = v;
         }
 
         void setY(T v) {
-            mSecond = v;
+            _y = v;
         }
 
         void shiftX(T v) {
-            mFirst += v;
+            _x += v;
         }
 
         void shiftY(T v) {
-            mSecond += v;
+            _y += v;
         }
 
         void shift(T x, T y) {
-            mFirst += x;
-            mSecond += y;
+            _x += x;
+            _y += y;
         }
 
         Point<T>& operator=(const Point<T>& other) {
-            mFirst = other.mFirst;
-            mSecond = other.mSecond;
+            _x = other._x;
+            _y = other._y;
             return *this;
         }
 
         bool operator==(const Point<T>& v) const {
-            return mFirst == v.mFirst && mSecond == v.mSecond;
+            return _x == v._x && _y == v._y;
         }
 
         bool operator!=(const Point<T>& v) const {
@@ -84,56 +84,56 @@ namespace GLaDOS {
         }
 
         void operator+=(Point<T> v) {
-            mFirst += v.mFirst;
-            mSecond += v.mSecond;
+            _x += v._x;
+            _y += v._y;
         }
 
         void operator-=(Point<T> v) {
-            mFirst -= v.mFirst;
-            mSecond -= v.mSecond;
+            _x -= v._x;
+            _y -= v._y;
         }
 
         constexpr Point<T> operator-() const {
-            return {-mFirst, -mSecond};
+            return {-_x, -_y};
         }
 
         constexpr Point<T> operator+(T v) const {
-            return {mFirst + v, mSecond + v};
+            return {_x + v, _y + v};
         }
 
         constexpr Point<T> operator-(T v) const {
-            return {mFirst - v, mSecond - v};
+            return {_x - v, _y - v};
         }
 
         constexpr Point<T> operator*(T v) const {
-            return {mFirst * v, mSecond * v};
+            return {_x * v, _y * v};
         }
 
         constexpr Point<T> operator/(T v) const {
-            return {mFirst / v, mSecond / v};
+            return {_x / v, _y / v};
         }
 
         constexpr Point<T> operator+(Point<T> v) const {
-            return {mFirst + v.mFirst, mSecond + v.mSecond};
+            return {_x + v._x, _y + v._y};
         }
 
         constexpr Point<T> operator-(Point<T> v) const {
-            return {mFirst - v.mFirst, mSecond - v.mSecond};
+            return {_x - v._x, _y - v._y};
         }
 
         constexpr Point<T> operator*(Point<T> v) const {
-            return {mFirst / v.mFirst, mSecond / v.mSecond};
+            return {_x / v._x, _y / v._y};
         }
 
         constexpr Point<T> operator/(Point<T> v) const {
             return {
-                mFirst / (v.mFirst == 0 ? 1 : v.mFirst),
-                mSecond / (v.mSecond == 0 ? 1 : v.mSecond)};
+                _x / (v._x == 0 ? 1 : v._x),
+                _y / (v._y == 0 ? 1 : v._y)};
         }
 
       private:
-        T mFirst;
-        T mSecond;
+        T _x;
+        T _y;
     };
 }  // namespace GLaDOS
 
