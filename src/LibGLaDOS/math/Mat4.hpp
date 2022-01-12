@@ -99,9 +99,13 @@ namespace GLaDOS {
         static const Mat4<T> zero;
 
       private:
+        static Logger* logger;
         static T determinant3x3(const Mat4<T>& mat3x3);
         static void swap(Mat4& first, Mat4& second);
     };
+
+    template <typename T>
+    Logger* Mat4<T>::logger = LoggerRegistry::getInstance().makeAndGetLogger("Mat4");
 
     template <typename T>
     const Mat4<T> Mat4<T>::one{1, 1, 1, 1,
@@ -460,7 +464,7 @@ namespace GLaDOS {
     Mat4<T> Mat4<T>::inverse(const Mat4<T>& other) {
         real determinant = Mat4<T>::determinant(other);
         if (determinant == 0.f) {
-            printf("Matrix determinant is zero! Inverse does not exist.\n");
+            LOG_ERROR(logger, "Matrix determinant is zero! Inverse does not exist.");
             return Mat4<T>::identity();
         }
 
@@ -518,7 +522,7 @@ namespace GLaDOS {
     template <typename T>
     std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::orthogonal(const T& left, const T& right, const T& bottom, const T& top, const T& znear, const T& zfar) {
         if (left == right || top == bottom || znear == zfar) {
-            printf("Invalid orthogonal matrix.\n");
+            LOG_ERROR(logger, "Invalid orthogonal matrix.");
             return Mat4<T>::identity();
         }
 
@@ -559,20 +563,32 @@ namespace GLaDOS {
 
     template <typename T>
     std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::frustum(const T& left, const T& right, const T& bottom, const T& top, const T& znear, const T& zfar) {
-        Mat4<T> mat{};
-
         if (left == right || top == bottom || znear == zfar) {
-            printf("Invalid frustum matrix.\n");
+            LOG_ERROR(logger, "Invalid frustum matrix.");
             return Mat4<T>::identity();
         }
+
+        T rl = T(1.0) / (right - left);
+        T tb = T(1.0) / (top - bottom);
+        T fn = T(1.0) / (zfar - znear);
 
         // TODO
         /*  row-major matrix
             | (2*n)/(r-l)       0            0             0        |
             | 0             (2*n)/(t-b)      0             0        |
-            | (r+l)/(r-l)    (t+b)/t-b)   -(f+n)/(f-n)     -1       |
+            | (r+l)/(r-l)   (t+b)/(t-b)   -(f+n)/(f-n)     -1       |
             | 0                 0        -(2*f*n)/(f-n)    0        |
         */
+        Mat4<T> mat{};
+        mat._m16[0] = T(2) * znear * rl;
+        mat._m16[5] = T(2) * znear * tb;
+
+        mat._m16[8] = (right + left) * rl;
+        mat._m16[9] = (top + bottom) * tb;
+        mat._m16[10] = -(zfar + znear) * fn;
+        mat._m16[11] = T(-1);
+        mat._m16[14] = -(T(2) * zfar * znear) * fn;
+        mat._m16[15] = T(0);
 
         Mat4<T> adjust;
 #ifdef PLATFORM_MACOS
@@ -714,9 +730,9 @@ namespace GLaDOS {
     template <typename T>
     T Mat4<T>::determinant3x3(const Mat4<T>& mat3x3) {
         /*
-                     |a b c|
-            matrix = |d e f|
-                     |g h i|
+            |a b c|
+            |d e f|
+            |g h i|
         */
 
         T aei = mat3x3._m44[0][0] * mat3x3._m44[1][1] * mat3x3._m44[2][2];
