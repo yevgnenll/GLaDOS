@@ -120,7 +120,10 @@ TEST_CASE("Matrix unit test", "[Matrix]") {
   }
 
   SECTION("multiply with Vec4") {
-    // TODO
+    Mat4x m1;
+    Vec4 v1{1,2,3,4};
+    Vec4 v2 = m1 * v1;
+    REQUIRE(v2 == Vec4{1,2,3,4});
   }
 
   SECTION("inverse of matex test") {

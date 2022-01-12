@@ -63,11 +63,16 @@ namespace GLaDOS {
 
         static constexpr Mat4<T> identity();
         static Mat4<T> transpose(const Mat4<T>& other);
+        static T minor(const Mat4<T>& other, std::size_t row, std::size_t col);
+        static T cofactor(const Mat4<T>& other, std::size_t row, std::size_t col);
+        static T determinant(const Mat4<T>& other);
+        static Mat4<T> adjugate(const Mat4<T>& other);
         static Mat4<T> inverse(const Mat4<T>& other);
         static Mat4<T> toMat3(const Mat4<T>& other);
         static Mat4<T> abs(const Mat4<T>& other);
         static std::enable_if_t<is_real_v<T>, Mat4<T>> perspective(Rad fieldOfView, const T& aspectRatio, const T& znear, const T& zfar);
         static std::enable_if_t<is_real_v<T>, Mat4<T>> orthogonal(const T& left, const T& right, const T& bottom, const T& top, const T& znear, const T& zfar);
+        static std::enable_if_t<is_real_v<T>, Mat4<T>> frustum(const T& left, const T& right, const T& bottom, const T& top, const T& znear, const T& zfar);
         static std::enable_if_t<is_real_v<T>, Mat4<T>> lookAt(const Vec3& eye, const Vec3& forward, const UVec3& up);
         static std::enable_if_t<is_real_v<T>, Mat4<T>> translate(const Vec3& trans);
         static std::enable_if_t<is_real_v<T>, Mat4<T>> scale(const Vec3& scale);
@@ -94,6 +99,7 @@ namespace GLaDOS {
         static const Mat4<T> zero;
 
       private:
+        static T determinant3x3(const Mat4<T>& mat3x3);
         static void swap(Mat4& first, Mat4& second);
     };
 
@@ -260,7 +266,7 @@ namespace GLaDOS {
 
     template <typename T>
     Vec4 Mat4<T>::operator*(const Vec4& v) {
-        Vec4 t{};
+        Vec4 t = Vec4::zero;
         for (unsigned r = 0; r < 4; r++) {
             for (unsigned c = 0; c < 4; c++) {
                 t[c] += _m44[r][c] * v[c];
@@ -397,59 +403,68 @@ namespace GLaDOS {
     }
 
     template <typename T>
-    Mat4<T> Mat4<T>::inverse(const Mat4<T>& other) {
-        // 		   | a  b |
-        //   A = | c  d |
+    T Mat4<T>::minor(const Mat4<T>& other, std::size_t row, std::size_t col) {
+        Mat4<T> minorMatrix;
+        std::size_t minorRow = 0;
+        std::size_t minorCol = 0;
 
-        //	       	  1  | d  -b |
-        //   A^-1 = ad-bc| -c  a |
-        real determinant =
-            other._m16[0] * other._m16[5] * other._m16[10] * other._m16[15] + other._m16[0] * other._m16[6] * other._m16[11] * other._m16[13] + other._m16[0] * other._m16[7] * other._m16[9] * other._m16[14] +
-            other._m16[1] * other._m16[4] * other._m16[11] * other._m16[14] + other._m16[1] * other._m16[6] * other._m16[8] * other._m16[15] + other._m16[1] * other._m16[7] * other._m16[10] * other._m16[12] +
-            other._m16[2] * other._m16[4] * other._m16[9] * other._m16[15] + other._m16[2] * other._m16[5] * other._m16[11] * other._m16[12] + other._m16[2] * other._m16[7] * other._m16[8] * other._m16[13] +
-            other._m16[3] * other._m16[4] * other._m16[10] * other._m16[13] + other._m16[3] * other._m16[5] * other._m16[8] * other._m16[14] + other._m16[3] * other._m16[6] * other._m16[9] * other._m16[12] -
-            other._m16[0] * other._m16[5] * other._m16[11] * other._m16[14] - other._m16[0] * other._m16[6] * other._m16[9] * other._m16[15] - other._m16[0] * other._m16[7] * other._m16[10] * other._m16[13] -
-            other._m16[1] * other._m16[4] * other._m16[10] * other._m16[15] - other._m16[1] * other._m16[6] * other._m16[11] * other._m16[12] - other._m16[1] * other._m16[7] * other._m16[8] * other._m16[14] -
-            other._m16[2] * other._m16[4] * other._m16[11] * other._m16[13] - other._m16[2] * other._m16[5] * other._m16[8] * other._m16[15] - other._m16[2] * other._m16[7] * other._m16[9] * other._m16[12] -
-            other._m16[3] * other._m16[4] * other._m16[9] * other._m16[14] - other._m16[3] * other._m16[5] * other._m16[10] * other._m16[12] - other._m16[3] * other._m16[6] * other._m16[8] * other._m16[13];
-
-        if (determinant == 0) {
-            throw std::logic_error("determinant is zero! Inverse does not exist.");
+        for (std::size_t i = 0; i < 4; i++) {
+            if (i != row) {
+                for (std::size_t j = 0; j < 4; j++) {
+                    if (j != col) {
+                        minorMatrix._m44[minorRow][minorCol] = other._m44[i][j];
+                        minorCol++;
+                    }
+                }
+                minorCol = 0;
+                minorRow++;
+            }
+            if (minorRow > 2) {
+                minorRow = 0;
+            }
         }
 
-        Mat4<T> mat = Mat4<T>(other._m16[5] * other._m16[10] * other._m16[15] + other._m16[6] * other._m16[11] * other._m16[13] + other._m16[7] * other._m16[9] * other._m16[14] -
-                                  other._m16[5] * other._m16[11] * other._m16[14] - other._m16[6] * other._m16[9] * other._m16[15] - other._m16[7] * other._m16[10] * other._m16[13],
-                              other._m16[1] * other._m16[11] * other._m16[14] + other._m16[2] * other._m16[9] * other._m16[15] + other._m16[3] * other._m16[10] * other._m16[13] -
-                                  other._m16[1] * other._m16[10] * other._m16[15] - other._m16[2] * other._m16[11] * other._m16[13] - other._m16[3] * other._m16[9] * other._m16[14],
-                              other._m16[1] * other._m16[6] * other._m16[15] + other._m16[2] * other._m16[7] * other._m16[13] + other._m16[3] * other._m16[5] * other._m16[14] -
-                                  other._m16[1] * other._m16[7] * other._m16[14] - other._m16[2] * other._m16[5] * other._m16[15] - other._m16[3] * other._m16[6] * other._m16[13],
-                              other._m16[1] * other._m16[7] * other._m16[10] + other._m16[2] * other._m16[5] * other._m16[11] + other._m16[3] * other._m16[6] * other._m16[9] -
-                                  other._m16[1] * other._m16[6] * other._m16[11] - other._m16[2] * other._m16[7] * other._m16[9] - other._m16[3] * other._m16[5] * other._m16[10],
-                              other._m16[4] * other._m16[11] * other._m16[14] + other._m16[6] * other._m16[8] * other._m16[15] + other._m16[7] * other._m16[10] * other._m16[12] -
-                                  other._m16[4] * other._m16[10] * other._m16[15] - other._m16[6] * other._m16[11] * other._m16[12] - other._m16[7] * other._m16[8] * other._m16[14],
-                              other._m16[0] * other._m16[10] * other._m16[15] + other._m16[2] * other._m16[11] * other._m16[12] + other._m16[3] * other._m16[8] * other._m16[14] -
-                                  other._m16[0] * other._m16[11] * other._m16[14] - other._m16[2] * other._m16[8] * other._m16[15] - other._m16[3] * other._m16[10] * other._m16[12],
-                              other._m16[0] * other._m16[7] * other._m16[14] + other._m16[2] * other._m16[4] * other._m16[15] + other._m16[3] * other._m16[6] * other._m16[12] -
-                                  other._m16[0] * other._m16[6] * other._m16[15] - other._m16[2] * other._m16[7] * other._m16[12] - other._m16[3] * other._m16[4] * other._m16[14],
-                              other._m16[0] * other._m16[6] * other._m16[11] + other._m16[2] * other._m16[7] * other._m16[8] + other._m16[3] * other._m16[4] * other._m16[10] -
-                                  other._m16[0] * other._m16[7] * other._m16[10] - other._m16[2] * other._m16[4] * other._m16[11] - other._m16[3] * other._m16[6] * other._m16[8],
-                              other._m16[4] * other._m16[9] * other._m16[15] + other._m16[5] * other._m16[11] * other._m16[12] + other._m16[7] * other._m16[8] * other._m16[13] -
-                                  other._m16[4] * other._m16[11] * other._m16[13] - other._m16[5] * other._m16[8] * other._m16[15] - other._m16[7] * other._m16[9] * other._m16[12],
-                              other._m16[0] * other._m16[11] * other._m16[13] + other._m16[1] * other._m16[8] * other._m16[15] + other._m16[3] * other._m16[9] * other._m16[12] -
-                                  other._m16[0] * other._m16[9] * other._m16[15] - other._m16[1] * other._m16[11] * other._m16[12] - other._m16[3] * other._m16[8] * other._m16[13],
-                              other._m16[0] * other._m16[5] * other._m16[15] + other._m16[1] * other._m16[7] * other._m16[12] + other._m16[3] * other._m16[4] * other._m16[13] -
-                                  other._m16[0] * other._m16[7] * other._m16[13] - other._m16[1] * other._m16[4] * other._m16[15] - other._m16[3] * other._m16[5] * other._m16[12],
-                              other._m16[0] * other._m16[7] * other._m16[9] + other._m16[1] * other._m16[4] * other._m16[11] + other._m16[3] * other._m16[5] * other._m16[8] -
-                                  other._m16[0] * other._m16[5] * other._m16[11] - other._m16[1] * other._m16[7] * other._m16[8] - other._m16[3] * other._m16[4] * other._m16[9],
-                              other._m16[4] * other._m16[10] * other._m16[13] + other._m16[5] * other._m16[8] * other._m16[14] + other._m16[6] * other._m16[9] * other._m16[12] -
-                                  other._m16[4] * other._m16[9] * other._m16[14] - other._m16[5] * other._m16[10] * other._m16[12] - other._m16[6] * other._m16[8] * other._m16[13],
-                              other._m16[0] * other._m16[9] * other._m16[14] + other._m16[1] * other._m16[10] * other._m16[12] + other._m16[2] * other._m16[8] * other._m16[13] -
-                                  other._m16[0] * other._m16[10] * other._m16[13] - other._m16[1] * other._m16[8] * other._m16[14] - other._m16[2] * other._m16[9] * other._m16[12],
-                              other._m16[0] * other._m16[6] * other._m16[13] + other._m16[1] * other._m16[4] * other._m16[14] + other._m16[2] * other._m16[5] * other._m16[12] -
-                                  other._m16[0] * other._m16[5] * other._m16[14] - other._m16[1] * other._m16[6] * other._m16[12] - other._m16[2] * other._m16[4] * other._m16[13],
-                              other._m16[0] * other._m16[5] * other._m16[10] + other._m16[1] * other._m16[6] * other._m16[8] + other._m16[2] * other._m16[4] * other._m16[9] -
-                                  other._m16[0] * other._m16[6] * other._m16[9] - other._m16[1] * other._m16[4] * other._m16[10] - other._m16[2] * other._m16[5] * other._m16[8]);
-        return mat * (1 / determinant);
+        return determinant3x3(minorMatrix);
+    }
+
+    template <typename T>
+    T Mat4<T>::cofactor(const Mat4<T>& other, std::size_t row, std::size_t col) {
+        // Cofactor Matrix: (-1)^(row+col) * minor(row,col)
+        return Math::pow(real(-1), real(row + col)) * Mat4<T>::minor(other, row, col);
+    }
+
+    template <typename T>
+    T Mat4<T>::determinant(const Mat4<T>& other) {
+        // Laplace expansion: Sigma(col=0->n)[A(0,col)*Cofactor(0,col)]
+        T result = T(0);
+        for (int j = 0; j < 4; j++) {
+            result += other._m44[0][j] * Mat4<T>::cofactor(other, 0, j);
+        }
+
+        return result;
+    }
+
+    template <typename T>
+    Mat4<T> Mat4<T>::adjugate(const Mat4<T>& other) {
+        Mat4<T> cofactorMatrix;
+        for (int i = 0 ; i < 4 ; i++) {
+            for (int j = 0 ; j < 4 ; j++) {
+                cofactorMatrix._m44[i][j] = Mat4<T>::cofactor(other, i, j);
+            }
+        }
+
+        return Mat4<T>::transpose(cofactorMatrix);
+    }
+
+    template <typename T>
+    Mat4<T> Mat4<T>::inverse(const Mat4<T>& other) {
+        real determinant = Mat4<T>::determinant(other);
+        if (determinant == 0.f) {
+            printf("Matrix determinant is zero! Inverse does not exist.\n");
+            return Mat4<T>::identity();
+        }
+
+        return Mat4<T>::adjugate(other) * (1.f / determinant);
     }
 
     template <typename T>
@@ -502,6 +517,11 @@ namespace GLaDOS {
 
     template <typename T>
     std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::orthogonal(const T& left, const T& right, const T& bottom, const T& top, const T& znear, const T& zfar) {
+        if (left == right || top == bottom || znear == zfar) {
+            printf("Invalid orthogonal matrix.\n");
+            return Mat4<T>::identity();
+        }
+
         T rl = T(1.0) / (right - left);
         T tb = T(1.0) / (top - bottom);
         T fn = T(1.0) / (zfar - znear);
@@ -538,6 +558,32 @@ namespace GLaDOS {
     }
 
     template <typename T>
+    std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::frustum(const T& left, const T& right, const T& bottom, const T& top, const T& znear, const T& zfar) {
+        Mat4<T> mat{};
+
+        if (left == right || top == bottom || znear == zfar) {
+            printf("Invalid frustum matrix.\n");
+            return Mat4<T>::identity();
+        }
+
+        // TODO
+        /*  row-major matrix
+            | (2*n)/(r-l)       0            0             0        |
+            | 0             (2*n)/(t-b)      0             0        |
+            | (r+l)/(r-l)    (t+b)/t-b)   -(f+n)/(f-n)     -1       |
+            | 0                 0        -(2*f*n)/(f-n)    0        |
+        */
+
+        Mat4<T> adjust;
+#ifdef PLATFORM_MACOS
+        adjust._m16[10] = T(0.5);
+        adjust._m16[14] = T(0.5);
+#endif
+
+        return mat * adjust;
+    }
+
+    template <typename T>
     std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::lookAt(const Vec3& eye, const Vec3& forward, const UVec3& up) {
         UVec3 zaxis = Vec3::normalize(eye - forward);
         UVec3 xaxis = Vec3::normalize(Vec3::cross(up, zaxis));
@@ -552,11 +598,11 @@ namespace GLaDOS {
     template <typename T>
     std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::translate(const Vec3& trans) {
         /*
-     |1 0 0 0|
-     |0 1 0 0|
-     |0 0 1 0|
-     |x y z 1|
-    */
+         |1 0 0 0|
+         |0 1 0 0|
+         |0 0 1 0|
+         |x y z 1|
+        */
         Mat4<T> mat;
         mat._m16[12] = trans.x;
         mat._m16[13] = trans.y;
@@ -568,11 +614,11 @@ namespace GLaDOS {
     template <typename T>
     std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::scale(const Vec3& scale) {
         /*
-     |x 0 0 0|
-     |0 y 0 0|
-     |0 0 z 0|
-     |0 0 0 1|
-    */
+         |x 0 0 0|
+         |0 y 0 0|
+         |0 0 z 0|
+         |0 0 0 1|
+        */
         Mat4<T> mat;
         mat._m16[0] = scale.x;
         mat._m16[5] = scale.y;
@@ -584,21 +630,21 @@ namespace GLaDOS {
     template <typename T>
     std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::rotate(Rad angle, const UVec3& axis) {
         /*
-     x = | 1  0    0   0 |
-         | 0 cos -sin  0 |
-         | 0 sin  cos  0 |
-         | 0  0    0   1 |
+             x = | 1  0    0   0 |
+                 | 0 cos -sin  0 |
+                 | 0 sin  cos  0 |
+                 | 0  0    0   1 |
 
-     y = |  cos  0  sin  0 |
-         |   0	 1	 0   0 |
-         | -sin  0  cos	 0 |
-         |   0	 0	 0   1 |
+             y = |  cos  0  sin  0 |
+                 |   0	 1	 0   0 |
+                 | -sin  0  cos	 0 |
+                 |   0	 0	 0   1 |
 
-     z = | cos -sin  0  0 |
-         | sin  cos  0  0 |
-         |  0    0   1  0 |
-         |  0    0   0  1 |
-    */
+             z = | cos -sin  0  0 |
+                 | sin  cos  0  0 |
+                 |  0    0   1  0 |
+                 |  0    0   0  1 |
+        */
         T c = Math::cos(static_cast<T>(angle));
         T s = Math::sin(static_cast<T>(angle));
         T t = 1.F - c;
@@ -611,10 +657,13 @@ namespace GLaDOS {
         T sy = s * axis->y;
         T sz = s * axis->z;
 
-        return Mat4<T>{tx * axis->x + c, tx * axis->y + sz, tx * axis->z - sy, T(0.0),
-                       ty * axis->x - sz, ty * axis->y + c, ty * axis->z + sx, T(0.0),
-                       tz * axis->x + sy, tz * axis->y - sx, tz * axis->z + c, T(0.0),
-                       T(0.0), T(0.0), T(0.0), T(1.0)};
+        auto z = static_cast<T>(0);
+        auto o = static_cast<T>(1);
+
+        return Mat4<T>{tx * axis->x + c, tx * axis->y + sz, tx * axis->z - sy, z,
+                       ty * axis->x - sz, ty * axis->y + c, ty * axis->z + sx, z,
+                       tz * axis->x + sy, tz * axis->y - sx, tz * axis->z + c, z,
+                       z, z, z, o};
     }
 
     template <typename T>
@@ -654,12 +703,30 @@ namespace GLaDOS {
     template <typename T>
     std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::buildTRS(const Vec3& p, const Quat& q, const Vec3& s) {
         /*
-      if using column vectors
-      M := T * R * S
-      else if using row vectors
-      M := S * R * T
-    */
+          if using column vectors
+          M := T * R * S
+          else if using row vectors
+          M := S * R * T
+        */
         return Mat4<real>::scale(s) * Quat::toRotMat(q) * Mat4<real>::translate(p);
+    }
+
+    template <typename T>
+    T Mat4<T>::determinant3x3(const Mat4<T>& mat3x3) {
+        /*
+                     |a b c|
+            matrix = |d e f|
+                     |g h i|
+        */
+
+        T aei = mat3x3._m44[0][0] * mat3x3._m44[1][1] * mat3x3._m44[2][2];
+        T afh = mat3x3._m44[0][0] * mat3x3._m44[1][2] * mat3x3._m44[2][1];
+        T bfg = mat3x3._m44[0][1] * mat3x3._m44[1][2] * mat3x3._m44[2][0];
+        T bdi = mat3x3._m44[0][1] * mat3x3._m44[1][0] * mat3x3._m44[2][2];
+        T cdh = mat3x3._m44[0][2] * mat3x3._m44[1][0] * mat3x3._m44[2][1];
+        T ceg = mat3x3._m44[0][2] * mat3x3._m44[1][1] * mat3x3._m44[2][0];
+
+        return (aei - afh) + (bfg - bdi) + (cdh - ceg);
     }
 
     template <typename T>
