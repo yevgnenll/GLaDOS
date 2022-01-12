@@ -5,6 +5,8 @@
 #include "Vec4.h"
 
 namespace GLaDOS {
+    Vec2::Vec2() : x{0.0}, y{0.0} {}
+
     Vec2::Vec2(real _x) : x{_x}, y{0.0} {}
 
     Vec2::Vec2(real _x, real _y) : x{_x}, y{_y} {}
@@ -24,25 +26,11 @@ namespace GLaDOS {
     }
 
     real& Vec2::operator[](unsigned int i) {
-        switch (i) {
-            case 0:
-                return x;
-            case 1:
-                return y;
-            default:
-                return x;
-        }
+        return v[i];
     }
 
     const real& Vec2::operator[](unsigned int i) const {
-        switch (i) {
-            case 0:
-                return x;
-            case 1:
-                return y;
-            default:
-                return x;
-        }
+        return v[i];
     }
 
     Vec2 Vec2::operator+(const Vec2& other) const {
@@ -197,9 +185,9 @@ namespace GLaDOS {
         return Math::toDegrees(Math::acos(Math::clamp(Vec2::dot(from, to), static_cast<real>(-1.0), static_cast<real>(1.0))));
     }
 
-    Deg Vec2::angleBetween(const Vec2& a, const Vec2& b) {
-        real lengthInv = 1 / (a.length() * b.length());
-        real dot = Vec2::dot(a, b);
+    Deg Vec2::angleBetween(const Vec2& from, const Vec2& to) {
+        real lengthInv = 1 / (from.length() * to.length());
+        real dot = Vec2::dot(from, to);
         return Math::toDegrees(Math::acos(dot * lengthInv));
     }
 

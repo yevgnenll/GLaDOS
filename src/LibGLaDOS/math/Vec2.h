@@ -9,7 +9,7 @@ namespace GLaDOS {
     class Vec3;
     class Vec2 {
       public:
-        Vec2() = default;
+        Vec2();
         ~Vec2() = default;
         explicit Vec2(real _x);
         Vec2(real _x, real _y);
@@ -76,11 +76,17 @@ namespace GLaDOS {
         static UVec2 nlerp(const Vec2& a, const Vec2& b, real t); // normalize linear interpolation (nlerp approximates slerp)
         static UVec2 normalize(const Vec2& v);
         static Deg angleBetween(const UVec2& from, const UVec2& to);
-        static Deg angleBetween(const Vec2& a, const Vec2& b);
+        static Deg angleBetween(const Vec2& from, const Vec2& to);
         static Vec2 reflect(const Vec2& a, const Vec2& b);
         static Vec2 negate(const Vec2& v);
 
-        real x{0.0}, y{0.0};
+        union {
+            struct {
+                real x;
+                real y;
+            };
+            real v[2];
+        };
         static const Vec2 up, down, left, right, one, zero;
 
       private:

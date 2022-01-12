@@ -5,6 +5,8 @@
 #include "Vec3.h"
 
 namespace GLaDOS {
+    Quat::Quat() : x{0.0}, y{0.0}, z{0.0}, w{1.0} {}
+
     Quat::Quat(real _w, real _x, real _y, real _z) : w{_w}, x{_x}, y{_y}, z{_z} {}
 
     Quat::Quat(real _w, const Vec3& _v) : w{_w}, x{_v.x}, y{_v.y}, z{_v.z} {}
@@ -215,14 +217,14 @@ namespace GLaDOS {
 
     Quat Quat::fromEuler(const Vec3& euler) {
         /*
-       Suppose euler is in radian unit.
+           Suppose euler is in radian unit.
 
-       Qx = [ cos(a/2), (sin(a/2), 0, 0)]
-       Qy = [ cos(b/2), (0, sin(b/2), 0)]
-       Qz = [ cos(c/2), (0, 0, sin(c/2))]
+           Qx = [ cos(a/2), (sin(a/2), 0, 0)]
+           Qy = [ cos(b/2), (0, sin(b/2), 0)]
+           Qz = [ cos(c/2), (0, 0, sin(c/2))]
 
-       Qx * Qy * Qz
-    */
+           Qx * Qy * Qz
+        */
         Quat qx(Math::cos(euler.x * real(0.5)), Math::sin(euler.x * real(0.5)), real(0.0), real(0.0));
         Quat qy(Math::cos(euler.y * real(0.5)), real(0.0), Math::sin(euler.y * real(0.5)), real(0.0));
         Quat qz(Math::cos(euler.z * real(0.5)), real(0.0), real(0.0), Math::sin(euler.z * real(0.5)));
@@ -267,11 +269,11 @@ namespace GLaDOS {
 
     Mat4<real> Quat::toRotMat(const Quat& q) {
         /*
-       1-2y^2-2z^2		2xy-2wz		 2xz+2wy		0
-       2xy+2wz			1-2x^2-2z^2	 2yz-2wx		0
-       2xz-2wy			2yz+2wx		 1-2x^2-2y^2	0
-       0				0			 0				1
-    */
+           1-2y^2-2z^2		2xy-2wz		 2xz+2wy		0
+           2xy+2wz			1-2x^2-2z^2	 2yz-2wx		0
+           2xz-2wy			2yz+2wx		 1-2x^2-2y^2	0
+           0				0			 0				1
+        */
         Mat4<real> result;
 
         real xx = q.x * q.x;

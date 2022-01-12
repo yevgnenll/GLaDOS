@@ -3,16 +3,16 @@
 
 #include "Angle.hpp"
 #include "utils/Enumeration.h"
+#include "Vec3.h"
 
 namespace GLaDOS {
-    class Vec3;
     class UVec3;
     class Vec4;
     template <typename T>
     class Mat4;
     class Quat {
       public:
-        Quat() = default;
+        Quat();
         ~Quat() = default;
         Quat(real _w, real _x, real _y, real _z);
         Quat(real _w, const Vec3& _v);
@@ -66,7 +66,19 @@ namespace GLaDOS {
         static Quat slerp(const Quat& a, const Quat& b, real t);
 
         // vector(imaginary) part, real part
-        real w{1.0}, x{0.0}, y{0.0}, z{0.0};
+        union {
+            struct {
+                real x;
+                real y;
+                real z;
+                real w;
+            };
+            struct {
+                Vec3 vector;
+                real scalar;
+            };
+            real v[4];
+        };
         static const Quat zero, identity;
 
       private:

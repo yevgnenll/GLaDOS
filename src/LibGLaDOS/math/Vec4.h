@@ -9,7 +9,7 @@ namespace GLaDOS {
     class UVec4;
     class Vec4 {
       public:
-        Vec4() = default;
+        Vec4();
         ~Vec4() = default;
         Vec4(real _x, real _y, real _z, real _w);
         explicit Vec4(const Vec2& other);
@@ -149,7 +149,15 @@ namespace GLaDOS {
         static UVec4 normalize(const Vec4& v);
         static Deg angleBetween(const UVec4& from, const UVec4& to);
 
-        real x{0.0}, y{0.0}, z{0.0}, w{1.0};
+        union {
+            struct {
+                real x;
+                real y;
+                real z;
+                real w;
+            };
+            real v[4];
+        };
         static const Vec4 up, down, left, right, forward, backward, one, zero;
 
       private:

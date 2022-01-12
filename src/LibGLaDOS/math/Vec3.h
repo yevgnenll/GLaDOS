@@ -10,7 +10,7 @@ namespace GLaDOS {
     class UVec3;
     class Vec3 {
       public:
-        Vec3() = default;
+        Vec3();
         ~Vec3() = default;
         explicit Vec3(real _x);
         Vec3(real _x, real _y);
@@ -120,7 +120,14 @@ namespace GLaDOS {
         static Vec3 reflect(const Vec3& a, const Vec3& b);
         static Vec3 negate(const Vec3& v);
 
-        real x{0.0}, y{0.0}, z{0.0};
+        union {
+            struct {
+                real x;
+                real y;
+                real z;
+            };
+            real v[3];
+        };
         static const Vec3 up, down, left, right, forward, backward, one, zero;
 
       private:

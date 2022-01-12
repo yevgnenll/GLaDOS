@@ -5,6 +5,8 @@
 #include "Vec4.h"
 
 namespace GLaDOS {
+    Vec3::Vec3() : x{0.0}, y{0.0} {}
+
     Vec3::Vec3(real _x) : x{_x}, y{0.0}, z{0.0} {}
 
     Vec3::Vec3(const real _x, const real _y) : x{_x}, y{_y}, z{0.0} {}
@@ -28,29 +30,11 @@ namespace GLaDOS {
     }
 
     real& Vec3::operator[](unsigned int i) {
-        switch (i) {
-            case 0:
-                return x;
-            case 1:
-                return y;
-            case 2:
-                return z;
-            default:
-                return x;
-        }
+        return v[i];
     }
 
     const real& Vec3::operator[](unsigned int i) const {
-        switch (i) {
-            case 0:
-                return x;
-            case 1:
-                return y;
-            case 2:
-                return z;
-            default:
-                return x;
-        }
+        return v[i];
     }
 
     Vec3 Vec3::operator+(const Vec3& other) const {

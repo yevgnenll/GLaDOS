@@ -4,6 +4,8 @@
 #include "UVec4.h"
 
 namespace GLaDOS {
+    Vec4::Vec4() : x{0.0}, y{0.0}, z{0.0}, w{1.0} {}
+
     Vec4::Vec4(real _x, real _y, real _z, real _w) : x{_x}, y{_y}, z{_z}, w{_w} {}
 
     Vec4::Vec4(const Vec2& other) : x{other.x}, y{other.y}, z{0.0}, w{1.0} {}
@@ -24,33 +26,11 @@ namespace GLaDOS {
     }
 
     real& Vec4::operator[](unsigned int i) {
-        switch (i) {
-            case 0:
-                return x;
-            case 1:
-                return y;
-            case 2:
-                return z;
-            case 3:
-                return w;
-            default:
-                return x;
-        }
+        return v[i];
     }
 
     const real& Vec4::operator[](unsigned int i) const {
-        switch (i) {
-            case 0:
-                return x;
-            case 1:
-                return y;
-            case 2:
-                return z;
-            case 3:
-                return w;
-            default:
-                return x;
-        }
+        return v[i];
     }
 
     Vec4 Vec4::operator+(const Vec4& other) const {
