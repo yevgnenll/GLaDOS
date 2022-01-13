@@ -59,9 +59,9 @@ namespace GLaDOS {
         static Vec3 toEuler(const Quat& q);
         static Quat fromEuler(const Vec3& euler);
         static Quat angleAxis(Rad angle, const UVec3& axis);
-        static Quat fromToRot(const Vec3& from, const Vec3& to);
-        static Mat4<real> toRotMat(const Quat& q);
-        static Quat fromRotMat(const Mat4<real>& m);
+        static Quat fromToRotation(const Vec3& from, const Vec3& to);
+        static Mat4<real> toRotationMat(const Quat& q);
+        static Quat fromRotationMat(const Mat4<real>& m);
         static Quat lerp(const Quat& a, const Quat& b, real t);
         static Quat slerp(const Quat& a, const Quat& b, real t);
 

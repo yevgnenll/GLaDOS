@@ -724,7 +724,7 @@ namespace GLaDOS {
           else if using row vectors
           M := S * R * T
         */
-        return Mat4<real>::scale(s) * Quat::toRotMat(q) * Mat4<real>::translate(p);
+        return Mat4<real>::scale(s) * Quat::toRotationMat(q) * Mat4<real>::translate(p);
     }
 
     template <typename T>

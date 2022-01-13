@@ -243,7 +243,7 @@ namespace GLaDOS {
             halfSin * axis->z};
     }
 
-    Quat Quat::fromToRot(const Vec3& from, const Vec3& to) {
+    Quat Quat::fromToRotation(const Vec3& from, const Vec3& to) {
         UVec3 v0 = Vec3::normalize(from);
         UVec3 v1 = Vec3::normalize(to);
 
@@ -267,7 +267,7 @@ namespace GLaDOS {
         return Quat{s * real(0.5), v3.x, v3.y, v3.z}.makeNormalize();
     }
 
-    Mat4<real> Quat::toRotMat(const Quat& q) {
+    Mat4<real> Quat::toRotationMat(const Quat& q) {
         /*
            1-2y^2-2z^2		2xy-2wz		 2xz+2wy		0
            2xy+2wz			1-2x^2-2z^2	 2yz-2wx		0
@@ -309,7 +309,7 @@ namespace GLaDOS {
         return result;
     }
 
-    Quat Quat::fromRotMat(const Mat4<real>& m) {
+    Quat Quat::fromRotationMat(const Mat4<real>& m) {
         real w = Math::sqrt(m._m44[0][0] + m._m44[1][1] + m._m44[2][2] + 1.0F) * real(0.5);
         real x = (m._m44[2][1] - m._m44[1][2]) / (4 * w);
         real y = (m._m44[0][2] - m._m44[2][0]) / (4 * w);
