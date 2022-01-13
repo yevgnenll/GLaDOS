@@ -115,7 +115,7 @@ namespace GLaDOS {
     }
 
     bool Quat::operator==(const Quat& other) const {
-        return (x == other.x && y == other.y && z == other.z && w == other.w);
+        return (Math::equal(x, other.x) && Math::equal(y, other.y) && Math::equal(z, other.z) && Math::equal(w, other.w));
     }
 
     bool Quat::operator!=(const Quat& other) const {
