@@ -65,7 +65,6 @@ namespace GLaDOS {
             [mWindow setLevel:NSNormalWindowLevel];
             [mWindow setHidesOnDeactivate:NO];
         }
-        [mWindow makeKeyAndOrderFront:nil];
 
         // 초기 backingScaleFactor 셋팅
         [MetalRenderer::getInstance().getMetalLayer() setContentsScale:[mWindow backingScaleFactor]];
@@ -79,6 +78,7 @@ namespace GLaDOS {
         CVDisplayLinkSetOutputCallback(mDisplayLink, &displayLinkCb, nullptr);
         CVDisplayLinkSetCurrentCGDisplay(mDisplayLink, 0);
         CVDisplayLinkStart(mDisplayLink);
+        [mWindow makeKeyAndOrderFront:nil]; // show window
 
         NSOperatingSystemVersion osVer = [[NSProcessInfo processInfo] operatingSystemVersion];
         mCurrentOSVersion = makeOSVersion((uint32_t)osVer.majorVersion, (uint32_t)osVer.minorVersion, (uint32_t)osVer.patchVersion);
