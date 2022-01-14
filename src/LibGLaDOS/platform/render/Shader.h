@@ -13,6 +13,7 @@ namespace GLaDOS {
         virtual bool createShader() = 0;
         std::string getShaderSourceCode() const;
         bool isCompiled() const;
+        std::string getShaderFullName() const;
 
       protected:
         static Logger* logger;

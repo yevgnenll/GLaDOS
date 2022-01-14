@@ -59,13 +59,19 @@ namespace GLaDOS {
         LOG_TRACE(logger, "MetalRenderer supports MSAA sample count 2: {0}", static_cast<bool>([mMetalDevice supportsTextureSampleCount:2]));
         LOG_TRACE(logger, "MetalRenderer supports MSAA sample count 4: {0}", static_cast<bool>([mMetalDevice supportsTextureSampleCount:4]));
         LOG_TRACE(logger, "MetalRenderer supports MSAA sample count 8: {0}", static_cast<bool>([mMetalDevice supportsTextureSampleCount:8]));
-        LOG_TRACE(logger, "MetalRenderer supports argument buffers: {0}", static_cast<bool>([mMetalDevice argumentBuffersSupport]));
         if (static_cast<int>([mMetalDevice respondsToSelector:@selector(supports32BitMSAA)]) != 0) {
             LOG_TRACE(logger, "MetalRenderer supports 32 bits floating point MSAA: {0}", static_cast<bool>([mMetalDevice supports32BitMSAA]));
         }
         if (static_cast<int>([mMetalDevice respondsToSelector:@selector(supportsBCTextureCompression)]) != 0) {
             LOG_TRACE(logger, "MetalRenderer supports BC Texture compression format: {0}", static_cast<bool>([mMetalDevice supportsBCTextureCompression]));
         }
+        if (static_cast<int>([mMetalDevice respondsToSelector:@selector(argumentBuffersSupport)]) != 0) {
+            LOG_TRACE(logger, "MetalRenderer supports argument buffers: {0}", static_cast<bool>([mMetalDevice argumentBuffersSupport]));
+        }
+        if (static_cast<int>([mMetalDevice respondsToSelector:@selector(readWriteTextureSupport)]) != 0) {
+            LOG_TRACE(logger, "MetalRenderer supports read write texture: {0}", static_cast<bool>([mMetalDevice readWriteTextureSupport]));
+        }
+
 #if defined(ARCH_ARM_CPU)
         LOG_TRACE(logger, "Target Apple Silicon");
 #elif defined(ARCH_INTEL_CPU)
@@ -164,7 +170,7 @@ namespace GLaDOS {
 
         if (!shaderProgram->createShaderProgram(vertex, fragment)) {
             DELETE_T(shaderProgram, MetalShaderProgram);
-            LOG_ERROR(logger, "Shader compilation error");
+            LOG_ERROR(logger, "ShaderProgram compilation error: `{0}`, `{1}`", vertex->getShaderFullName(), fragment->getShaderFullName());
             return nullptr;
         }
 
@@ -178,7 +184,7 @@ namespace GLaDOS {
             FileSystem vertexFile{SHADER_DIR + vertexName + SHADER_SUFFIX, OpenMode::ReadBinary};
             std::string vertexSource;
             if (!vertexFile.readAllBytes(vertexSource)) {
-                LOG_ERROR(logger, "Vertex shader {0} is not found.", vertexFile.fullName());
+                LOG_ERROR(logger, "Vertex shader `{0}` is not found.", vertexFile.fullName());
                 return nullptr;
             }
 
@@ -203,7 +209,7 @@ namespace GLaDOS {
             FileSystem fragmentFile{SHADER_DIR + fragmentName + SHADER_SUFFIX, OpenMode::ReadBinary};
             std::string fragmentSource;
             if (!fragmentFile.readAllBytes(fragmentSource)) {
-                LOG_ERROR(logger, "Fragment shader {0} is not found.", fragmentFile.fullName());
+                LOG_ERROR(logger, "Fragment shader `{0}` is not found.", fragmentFile.fullName());
                 return nullptr;
             }
 

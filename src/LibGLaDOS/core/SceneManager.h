@@ -38,7 +38,7 @@ namespace GLaDOS {
     template <typename T>
     Scene* SceneManager::createScene(const std::string& name) {
         if (sceneByName(name) != nullptr) {
-            LOG_ERROR(logger, "Already exist scene name");
+            LOG_ERROR(logger, "Already exist scene name: `{0}`", name);
             return nullptr;
         }
 
@@ -49,10 +49,10 @@ namespace GLaDOS {
         new (scene) T{};
         scene->mBuildIndex = mLastSceneCount;
         scene->mName = name;
-        LOG_TRACE(logger, "Scene {0} created with buildIndex {1}.", scene->mName, scene->mBuildIndex);
+        LOG_TRACE(logger, "Scene `{0}` created with buildIndex {1}.", scene->mName, scene->mBuildIndex);
 
         if (!scene->onInit()) {
-            LOG_TRACE(logger, "Failed to onInit in scene {0}", scene->getName());
+            LOG_TRACE(logger, "Failed to onInit in scene `{0}`", scene->getName());
             FREE(scene);
             return nullptr;
         }

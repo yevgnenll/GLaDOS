@@ -1,6 +1,7 @@
 #include "Shader.h"
 #include "utils/LoggerRegistry.h"
 #include "RootDir.h"
+#include "platform/OSTypes.h"
 
 namespace GLaDOS {
     Logger* Shader::logger = LoggerRegistry::getInstance().makeAndGetLogger("Shader");
@@ -14,5 +15,9 @@ namespace GLaDOS {
 
     bool Shader::isCompiled() const {
         return mIsCompiled;
+    }
+
+    std::string Shader::getShaderFullName() const {
+        return mFileDirectory + mName + SHADER_SUFFIX;
     }
 }

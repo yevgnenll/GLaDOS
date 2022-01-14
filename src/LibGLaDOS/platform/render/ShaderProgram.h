@@ -66,7 +66,6 @@ namespace GLaDOS {
         RasterizerState* rasterizerState();
         void setRasterizerState(const RasterizerDescription& desc);
 
-
       private:
         virtual bool createShaderProgram(Shader* vertex, Shader* fragment) = 0;
 

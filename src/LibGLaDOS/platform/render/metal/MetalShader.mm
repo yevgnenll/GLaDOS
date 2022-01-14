@@ -27,15 +27,15 @@ namespace GLaDOS {
 
         if (compileError != nil) {
             NSString* errorMessage = [NSString stringWithFormat:@"%@", compileError];
-            LOG_ERROR(logger, [errorMessage UTF8String]);
+            LOG_ERROR(logger, "failed to compile `{0}` shader file: \n{1}", getShaderFullName(), [errorMessage UTF8String]);
             [library release];
             return false;
         }
 
-        mFunction = [library newFunctionWithName:@"main0"];
+        mFunction = [library newFunctionWithName:@"main0"]; // main0 is fixed name in GLaDOS
         [library release];
         if (mFunction == nil) {
-            LOG_ERROR(logger, "Invalid function name main0");
+            LOG_ERROR(logger, "failed to compile `{0}` shader file: Invalid function name main0", getShaderFullName());
             return false;
         }
 
