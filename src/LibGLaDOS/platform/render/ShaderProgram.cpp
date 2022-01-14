@@ -243,7 +243,7 @@ namespace GLaDOS {
             return false;
         }
 
-        LOG_TRACE(logger, "Uniform add -> [{0}]", uniform->toString());
+        LOG_TRACE(logger, "Uniform add [{0}]", uniform->toString());
         return true;
     }
 

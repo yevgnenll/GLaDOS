@@ -12,7 +12,7 @@ namespace GLaDOS {
             mScene = scene;
             scene->addGameObject(this);
         }
-        LOG_TRACE(logger, "GameObject {0} created in scene {1}.", mName, mScene->getName());
+        LOG_TRACE(logger, "GameObject `{0}` created in scene `{1}`.", mName, mScene->getName());
     }
 
     GameObject::GameObject(std::string name, GameObject* parent, Scene* scene) : mParent{parent} {
@@ -23,7 +23,7 @@ namespace GLaDOS {
             mScene = scene;
             scene->addGameObject(this);
         }
-        LOG_TRACE(logger, "GameObject {0} created in scene {1}.", mName, mScene->getName());
+        LOG_TRACE(logger, "GameObject `{0}` created in scene `{1}`.", mName, mScene->getName());
     }
 
     GameObject::~GameObject() {

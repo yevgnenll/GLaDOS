@@ -51,7 +51,7 @@ namespace GLaDOS {
         });
 
         if (iter == mGameObjects.end()) {
-            LOG_INFO(logger, "No GameObject name: {0}, instanceId: {1} found.", gameObject->getName(), gameObject->getInstanceId());
+            LOG_INFO(logger, "No GameObject name: `{0}`, instanceId: {1} found.", gameObject->getName(), gameObject->getInstanceId());
             return false;
         }
 

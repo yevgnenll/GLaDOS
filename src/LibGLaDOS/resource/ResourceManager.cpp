@@ -13,14 +13,14 @@ namespace GLaDOS {
 
     bool ResourceManager::remove(Resource* resource) {
         if (resource == nullptr) {
-            LOG_TRACE(logger, "resource is null");
+            LOG_TRACE(logger, "resource is null.");
             return false;
         }
 
         auto iter = mResources.find(resource->name());
         if(iter != mResources.end()) {
             mResources.erase(iter);
-            LOG_TRACE(logger, "Resource {0} removed", resource->name());
+            LOG_TRACE(logger, "Resource `{0}` removed.", resource->name());
             return true;
         }
         return false;
@@ -28,13 +28,13 @@ namespace GLaDOS {
 
     bool ResourceManager::store(Resource* resource) {
         if (resource == nullptr) {
-            LOG_TRACE(logger, "resource is null");
+            LOG_TRACE(logger, "resource is null.");
             return false;
         }
 
         auto result = mResources.insert(std::make_pair(resource->name(), resource));
         if (result.second) {
-            LOG_TRACE(logger, "Resource {0} newly added", resource->name());
+            LOG_TRACE(logger, "Resource `{0}` newly added.", resource->name());
         }
         return result.second;
     }

@@ -84,7 +84,7 @@ namespace GLaDOS {
         generateTexture(textureParameter);
 
         for (auto& image : images) {
-            LOG_TRACE(logger, "CubeTexture load success: [name={0}, width={1}, height={2}, bpp={3}]", image.name, image.width, image.height, image.channels);
+            LOG_TRACE(logger, "CubeTexture load success [name={0}, width={1}, height={2}, bpp={3}]", image.name, image.width, image.height, image.channels);
             stbi_image_free(image.data);
         }
 
