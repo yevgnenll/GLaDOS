@@ -220,8 +220,8 @@ namespace GLaDOS {
         Vector<real> indices;
         indices.reserve(indexCount);
 
-        Rad mainSegmentAngleStep = Math::toRadians(static_cast<real>(Math::degrees / mainSegments));
-        Rad tubeSegmentAngleStep = Math::toRadians(static_cast<real>(Math::degrees / tubeSegments));
+        Rad mainSegmentAngleStep = Math::toRadians(Deg{static_cast<real>(Math::degrees / mainSegments)});
+        Rad tubeSegmentAngleStep = Math::toRadians(Deg{static_cast<real>(Math::degrees / tubeSegments)});
 
         // vertex creation
         real currentMainSegmentAngle = 0.0;

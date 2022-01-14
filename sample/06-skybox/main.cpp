@@ -72,8 +72,8 @@ class MainScene : public Scene {
             Vec3 mouseDelta = Input::mouseDeltaPosition();
             real rotationX = mouseDelta.y * sensitivity * deltaTime;
             real rotationY = mouseDelta.x * sensitivity * deltaTime;
-            cameraTransform->rotate(cameraTransform->right(), Math::toRadians(rotationX));
-            cameraTransform->rotate(UVec3::up, Math::toRadians(-rotationY));
+            cameraTransform->rotate(cameraTransform->right(), Math::toRadians(Deg{rotationX}));
+            cameraTransform->rotate(UVec3::up, Math::toRadians(Deg{-rotationY}));
         }
 
         if (Input::isKeyDown(KeyCode::KEY_M)) {

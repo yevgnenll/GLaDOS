@@ -62,20 +62,21 @@ namespace GLaDOS {
         static Quat fromToRotation(const Vec3& from, const Vec3& to);
         static Mat4<real> toRotationMat(const Quat& q);
         static Quat fromRotationMat(const Mat4<real>& m);
+        // Quaternion nlerp is not defined because it's same as lerp.
         static Quat lerp(const Quat& a, const Quat& b, real t);
         static Quat slerp(const Quat& a, const Quat& b, real t);
 
-        // vector(imaginary) part, real part
+        // real part, vector(imaginary) part
         union {
             struct {
+                real w;
                 real x;
                 real y;
                 real z;
-                real w;
             };
             struct {
-                Vec3 vector;
                 real scalar;
+                Vec3 vector;
             };
             real v[4];
         };

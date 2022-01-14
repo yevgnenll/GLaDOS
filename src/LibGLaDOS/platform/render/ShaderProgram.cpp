@@ -16,7 +16,7 @@ namespace GLaDOS {
     void ShaderProgram::setUniform(const std::string& name, int value) {
         auto it = mUniforms.find(name);
         if (it == mUniforms.end()) {
-            LOG_WARN(logger, "uniform {0} not exist", name);
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
@@ -26,7 +26,7 @@ namespace GLaDOS {
     void ShaderProgram::setUniform(const std::string& name, unsigned int value) {
         auto it = mUniforms.find(name);
         if (it == mUniforms.end()) {
-            LOG_WARN(logger, "uniform {0} not exist", name);
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
@@ -36,7 +36,7 @@ namespace GLaDOS {
     void ShaderProgram::setUniform(const std::string& name, float value) {
         auto it = mUniforms.find(name);
         if (it == mUniforms.end()) {
-            LOG_WARN(logger, "uniform {0} not exist", name);
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
@@ -46,7 +46,7 @@ namespace GLaDOS {
     void ShaderProgram::setUniform(const std::string& name, const Vec2& value) {
         auto it = mUniforms.find(name);
         if (it == mUniforms.end()) {
-            LOG_WARN(logger, "uniform {0} not exist", name);
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
@@ -56,7 +56,7 @@ namespace GLaDOS {
     void ShaderProgram::setUniform(const std::string& name, const Point<real>& value) {
         auto it = mUniforms.find(name);
         if (it == mUniforms.end()) {
-            LOG_WARN(logger, "uniform {0} not exist", name);
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
@@ -66,7 +66,7 @@ namespace GLaDOS {
     void ShaderProgram::setUniform(const std::string& name, const Vec3& value) {
         auto it = mUniforms.find(name);
         if (it == mUniforms.end()) {
-            LOG_WARN(logger, "uniform {0} not exist", name);
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
@@ -76,7 +76,7 @@ namespace GLaDOS {
     void ShaderProgram::setUniform(const std::string& name, const Vec4& value) {
         auto it = mUniforms.find(name);
         if (it == mUniforms.end()) {
-            LOG_WARN(logger, "uniform {0} not exist", name);
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
@@ -86,7 +86,7 @@ namespace GLaDOS {
     void ShaderProgram::setUniform(const std::string& name, const Color& value) {
         auto it = mUniforms.find(name);
         if (it == mUniforms.end()) {
-            LOG_WARN(logger, "uniform {0} not exist", name);
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
@@ -96,7 +96,7 @@ namespace GLaDOS {
     void ShaderProgram::setUniform(const std::string& name, const Point<int32_t>& value) {
         auto it = mUniforms.find(name);
         if (it == mUniforms.end()) {
-            LOG_WARN(logger, "uniform {0} not exist", name);
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
@@ -106,7 +106,7 @@ namespace GLaDOS {
     void ShaderProgram::setUniform(const std::string& name, const Size<int32_t>& value) {
         auto it = mUniforms.find(name);
         if (it == mUniforms.end()) {
-            LOG_WARN(logger, "uniform {0} not exist", name);
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
@@ -116,7 +116,7 @@ namespace GLaDOS {
     void ShaderProgram::setUniform(const std::string& name, const Rect<int32_t>& value) {
         auto it = mUniforms.find(name);
         if (it == mUniforms.end()) {
-            LOG_WARN(logger, "uniform {0} not exist", name);
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
@@ -126,7 +126,7 @@ namespace GLaDOS {
     void ShaderProgram::setUniform(const std::string& name, const Point<uint32_t>& value) {
         auto it = mUniforms.find(name);
         if (it == mUniforms.end()) {
-            LOG_WARN(logger, "uniform {0} not exist", name);
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
@@ -136,7 +136,7 @@ namespace GLaDOS {
     void ShaderProgram::setUniform(const std::string& name, const Size<uint32_t>& value) {
         auto it = mUniforms.find(name);
         if (it == mUniforms.end()) {
-            LOG_WARN(logger, "uniform {0} not exist", name);
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
@@ -146,7 +146,7 @@ namespace GLaDOS {
     void ShaderProgram::setUniform(const std::string& name, const Rect<uint32_t>& value) {
         auto it = mUniforms.find(name);
         if (it == mUniforms.end()) {
-            LOG_WARN(logger, "uniform {0} not exist", name);
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
@@ -156,7 +156,7 @@ namespace GLaDOS {
     void ShaderProgram::setUniform(const std::string& name, float* values, int count) {
         auto iter = mUniforms.find(name);
         if (iter == mUniforms.end()) {
-            LOG_WARN(logger, "uniform {0} not exist", name);
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
@@ -168,7 +168,7 @@ namespace GLaDOS {
     void ShaderProgram::setUniform(const std::string& name, Vec2* values, int count) {
         auto iter = mUniforms.find(name);
         if (iter == mUniforms.end()) {
-            LOG_WARN(logger, "uniform {0} not exist", name);
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
@@ -180,7 +180,7 @@ namespace GLaDOS {
     void ShaderProgram::setUniform(const std::string& name, Vec3* values, int count) {
         auto iter = mUniforms.find(name);
         if (iter == mUniforms.end()) {
-            LOG_WARN(logger, "uniform {0} not exist", name);
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
@@ -192,7 +192,7 @@ namespace GLaDOS {
     void ShaderProgram::setUniform(const std::string& name, Vec4* values, int count) {
         auto iter = mUniforms.find(name);
         if (iter == mUniforms.end()) {
-            LOG_WARN(logger, "uniform {0} not exist", name);
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
@@ -204,7 +204,7 @@ namespace GLaDOS {
     void ShaderProgram::setUniform(const std::string& name, Color* values, int count) {
         auto iter = mUniforms.find(name);
         if (iter == mUniforms.end()) {
-            LOG_WARN(logger, "uniform {0} not exist", name);
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
@@ -216,7 +216,7 @@ namespace GLaDOS {
     void ShaderProgram::setUniform(const std::string& name, const Mat4<real>& value) {
         auto iter = mUniforms.find(name);
         if (iter == mUniforms.end()) {
-            LOG_WARN(logger, "uniform {0} not exist", name);
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
@@ -226,7 +226,7 @@ namespace GLaDOS {
     void ShaderProgram::setUniform(const std::string& name, bool value) {
         auto iter = mUniforms.find(name);
         if (iter == mUniforms.end()) {
-            LOG_WARN(logger, "uniform {0} not exist", name);
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
@@ -318,7 +318,7 @@ namespace GLaDOS {
                     fragmentUniformSize += (uniform->mOffset + uniform->size());
                     break;
                 default:
-                    LOG_WARN(logger, "Not supported type yet!");
+                    LOG_WARN(logger, "Not supported type yet: `{0}`", uniform->mShaderType.toString());
                     break;
             }
         }

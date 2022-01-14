@@ -9,8 +9,12 @@ typedef struct {
 
 typedef struct {
   float brightness;
+  bool isWireFrameMode;
 } FragmentUniforms;
 
 fragment float4 main0(VertexOut verts [[stage_in]], constant FragmentUniforms &uniforms [[buffer(0)]]) {
+    if (uniforms.isWireFrameMode) {
+        return float4(0.10588, 0.76862, 0.16078, 1.0);
+    }
     return float4(uniforms.brightness * verts._color.rgb, verts._color.a);
 }

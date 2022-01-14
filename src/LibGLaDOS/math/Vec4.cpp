@@ -185,7 +185,13 @@ namespace GLaDOS {
     }
 
     Deg Vec4::angleBetween(const UVec4& from, const UVec4& to) {
-        return Math::toDegrees(Math::acos(Math::clamp(Vec4::dot(from, to), static_cast<real>(-1.0), static_cast<real>(1.0))));
+        return Math::toDegrees(Rad{Math::acos(Math::clamp(Vec4::dot(from, to), static_cast<real>(-1.0), static_cast<real>(1.0)))});
+    }
+
+    Deg Vec4::angleBetween(const Vec4& from, const Vec4& to) {
+        real lengthInv = 1 / (from.length() * to.length());
+        real dot = Vec4::dot(from, to);
+        return Math::toDegrees(Rad{Math::acos(dot * lengthInv)});
     }
 
     void Vec4::swap(Vec4& first, Vec4& second) {

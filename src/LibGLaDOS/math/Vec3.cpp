@@ -203,13 +203,13 @@ namespace GLaDOS {
     }
 
     Deg Vec3::angleBetween(const UVec3& from, const UVec3& to) {
-        return Math::toDegrees(Math::acos(Math::clamp(Vec3::dot(from, to), static_cast<real>(-1.0), static_cast<real>(1.0))));
+        return Math::toDegrees(Rad{Math::acos(Math::clamp(Vec3::dot(from, to), static_cast<real>(-1.0), static_cast<real>(1.0)))});
     }
 
-    Deg Vec3::angleBetween(const Vec3& a, const Vec3& b) {
-        real lengthInv = 1 / (a.length() * b.length());
-        real dot = Vec3::dot(a, b);
-        return Math::toDegrees(Math::acos(dot * lengthInv));
+    Deg Vec3::angleBetween(const Vec3& from, const Vec3& to) {
+        real lengthInv = 1 / (from.length() * to.length());
+        real dot = Vec3::dot(from, to);
+        return Math::toDegrees(Rad{Math::acos(dot * lengthInv)});
     }
 
     Vec3 Vec3::reflect(const Vec3& a, const Vec3& b) {

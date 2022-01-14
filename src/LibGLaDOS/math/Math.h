@@ -35,9 +35,9 @@ namespace GLaDOS {
         static real lerpUnclamped(real a, real b, real t);
         static real lerpAngle(real a, real b, real t);
         static real inverseLerp(real a, real b, real value);
-        static Rad toRadians(real deg);
+        static Rad toRadians(Deg deg);
         static Vec3 toRadians(Vec3 degVec);
-        static Deg toDegrees(real rad);
+        static Deg toDegrees(Rad rad);
         static Vec3 toDegrees(Vec3 radVec);
         static real sign(real f);
         static real repeat(real t, real length);

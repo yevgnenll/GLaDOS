@@ -85,7 +85,7 @@ namespace GLaDOS {
         mIsOrthographic = orthographic;
     }
 
-    real Camera::fieldOfView() const {
+    Deg Camera::fieldOfView() const {
         return mFieldOfView;
     }
 
@@ -105,7 +105,7 @@ namespace GLaDOS {
         mViewportRect = viewport;
     }
 
-    void Camera::setFieldOfView(real fov) {
+    void Camera::setFieldOfView(Deg fov) {
         mFieldOfView = fov;
     }
 

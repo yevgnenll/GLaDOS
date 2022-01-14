@@ -16,7 +16,7 @@ namespace GLaDOS {
         explicit constexpr Angle(real r) noexcept : val{r} {}
 
         template <typename S>
-        constexpr explicit Angle(const Angle<S>& r) noexcept : val{r.get() / r.ratio * ratio} {}
+        explicit constexpr Angle(const Angle<S>& r) noexcept : val{r.get() / r.ratio * ratio} {}
 
         [[nodiscard]] constexpr real get() const noexcept { return val; }
         explicit constexpr operator real() const noexcept { return val; }

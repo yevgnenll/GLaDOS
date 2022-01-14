@@ -1,5 +1,7 @@
 #include <catch2/catch.hpp>
 
+#include "math/Vec2.h"
+#include "math/UVec2.h"
 #include "math/Vec3.h"
 #include "math/UVec3.h"
 #include "math/Math.h"
@@ -9,9 +11,7 @@ using namespace GLaDOS;
 TEST_CASE("Vector unit tests", "[Vector]") {
   SECTION("Vec3 default init test") {
     Vec3 v;
-    REQUIRE(v.x == 0.0);
-    REQUIRE(v.y == 0.0);
-    REQUIRE(v.z == 0.0);
+    REQUIRE(v == Vec3{0, 0, 0});
   }
 
   SECTION("Vec3 copy constructor test") {
@@ -51,5 +51,33 @@ TEST_CASE("Vector unit tests", "[Vector]") {
       Vec3 v2 = {3, 5, 0};
       Deg angle = Vec3::angleBetween(v1, v2);
       REQUIRE(Math::equal(angle.get(), 22.16633f));
+  }
+
+  SECTION("Vec2 angle between two normalized vector") {
+      Vec2 v1 = {1, 0};
+      Vec2 v2 = {0.5f, Math::sqrt(3.f)/2.f};
+      Deg degree = Vec2::angleBetween(v1.makeNormalize(), v2.makeNormalize());
+      REQUIRE(degree.get() == 60);
+  }
+
+  SECTION("Vec2 angle between two vector") {
+      Vec2 v1 = {1, 0};
+      Vec2 v2 = {0.5f, Math::sqrt(3.f)/2.f};
+      Deg degree = Vec2::angleBetween(v1, v2);
+      REQUIRE(degree.get() == 60);
+  }
+
+  SECTION("Vec2 slerp") {
+      Vec2 v1 = {1, 0};
+      Vec2 v2 = {0.5f, Math::sqrt(3.f)/2.f};
+      Vec2 result = Vec2::slerp(v1, v2, 0.5f);
+      REQUIRE(result == Vec2{Math::sqrt(3.f)/2.f, 0.5f});
+  }
+
+  SECTION("Vec2 slerp2") {
+      Vec2 v1 = {1, 0};
+      Vec2 v2 = {0.5f, Math::sqrt(3.f)/2.f};
+      Vec2 result = Vec2::slerp(v1, v2, 0.75f);
+      REQUIRE(result == Vec2{Math::sqrt(2.f)/2.f, Math::sqrt(2.f)/2.f});
   }
 }

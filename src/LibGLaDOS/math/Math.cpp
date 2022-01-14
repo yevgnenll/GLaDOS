@@ -25,13 +25,13 @@ namespace GLaDOS {
         return Math::clamp01((value - a) / (b - a));
     }
 
-    Rad Math::toRadians(real deg) { return Rad{deg * deg2Rad}; }
+    Rad Math::toRadians(Deg deg) { return Rad{deg}; }
 
     Vec3 Math::toRadians(Vec3 degVec) {
         return Vec3{degVec.x * deg2Rad, degVec.y * deg2Rad, degVec.z * deg2Rad};
     }
 
-    Deg Math::toDegrees(real rad) { return Deg{rad * rad2Deg}; }
+    Deg Math::toDegrees(Rad rad) { return Deg{rad}; }
 
     Vec3 Math::toDegrees(Vec3 radVec) {
         return Vec3{radVec.x * rad2Deg, radVec.y * rad2Deg, radVec.z * rad2Deg};
@@ -205,15 +205,15 @@ namespace GLaDOS {
     }
 
     Deg Math::pitch(const Quat& q) {
-        return toDegrees(Math::atan2(real(2.0) * (q.y * q.z + q.w * q.x), q.w * q.w - q.x * q.x - q.y * q.y + q.z * q.z));
+        return toDegrees(Rad{Math::atan2(real(2.0) * (q.y * q.z + q.w * q.x), q.w * q.w - q.x * q.x - q.y * q.y + q.z * q.z)});
     }
 
     Deg Math::yaw(const Quat& q) {
-        return toDegrees(Math::asin(real(-2.0) * (q.x * q.z - q.w * q.y)));
+        return toDegrees(Rad{Math::asin(real(-2.0) * (q.x * q.z - q.w * q.y))});
     }
 
     Deg Math::roll(const Quat& q) {
-        return toDegrees(Math::atan2(real(2.0) * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.y * q.y - q.z * q.z));
+        return toDegrees(Rad{Math::atan2(real(2.0) * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.y * q.y - q.z * q.z)});
     }
 
     constexpr bool Math::isDigit(const char x) {

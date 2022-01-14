@@ -5,7 +5,7 @@
 #include "Vec3.h"
 
 namespace GLaDOS {
-    Quat::Quat() : x{0.0}, y{0.0}, z{0.0}, w{1.0} {}
+    Quat::Quat() : w{1.0}, x{0.0}, y{0.0}, z{0.0} {}
 
     Quat::Quat(real _w, real _x, real _y, real _z) : w{_w}, x{_x}, y{_y}, z{_z} {}
 
@@ -53,10 +53,11 @@ namespace GLaDOS {
     Quat& Quat::operator*=(const Quat& other) {
         Quat tmp;
 
-        tmp.w = (other.w * w) - (other.x * x) - (other.y * y) - (other.z * z);
-        tmp.x = (other.w * x) + (other.x * w) + (other.z * y) - (other.y * z);
-        tmp.y = (other.w * y) + (other.y * w) + (other.x * z) - (other.z * x);
-        tmp.z = (other.w * z) + (other.z * w) + (other.y * x) - (other.x * y);
+        // w * other.w - (Vec3::dot(vector, other.vector)) + w * other.vector + other.w * vector + (Vec3::cross(vector, other.vector)
+        tmp.w = (w * other.w) - (x * other.x) - (y * other.y) - (z * other.z);
+        tmp.x = (w * other.x) + (x * other.w) + (y * other.z) - (z * other.y);
+        tmp.y = (w * other.y) - (x * other.z) + (y * other.w) + (z * other.x);
+        tmp.z = (w * other.z) + (x * other.y) - (y * other.x) + (z * other.w);
 
         return *this = tmp;
     }
@@ -115,7 +116,7 @@ namespace GLaDOS {
     }
 
     bool Quat::operator==(const Quat& other) const {
-        return (Math::equal(x, other.x) && Math::equal(y, other.y) && Math::equal(z, other.z) && Math::equal(w, other.w));
+        return (Math::equal(w, other.w) && Math::equal(x, other.x) && Math::equal(y, other.y) && Math::equal(z, other.z));
     }
 
     bool Quat::operator!=(const Quat& other) const {
@@ -123,33 +124,11 @@ namespace GLaDOS {
     }
 
     real& Quat::operator[](unsigned int i) {
-        switch (i) {
-            case 0:
-                return w;
-            case 1:
-                return x;
-            case 2:
-                return y;
-            case 3:
-                return z;
-            default:
-                return w;
-        }
+        return v[i];
     }
 
     const real& Quat::operator[](unsigned int i) const {
-        switch (i) {
-            case 0:
-                return w;
-            case 1:
-                return x;
-            case 2:
-                return y;
-            case 3:
-                return z;
-            default:
-                return w;
-        }
+        return v[i];
     }
 
     Quat& Quat::makeConjugate() {
@@ -219,15 +198,17 @@ namespace GLaDOS {
         /*
            Suppose euler is in radian unit.
 
-           Qx = [ cos(a/2), (sin(a/2), 0, 0)]
-           Qy = [ cos(b/2), (0, sin(b/2), 0)]
-           Qz = [ cos(c/2), (0, 0, sin(c/2))]
+           Qx = [ cos(a/2), sin(a/2) ,    0    ,     0   ]
+           Qy = [ cos(b/2),     0    , sin(b/2),     0   ]
+           Qz = [ cos(c/2),     0    ,    0    , sin(c/2)]
 
            Qx * Qy * Qz
         */
-        Quat qx(Math::cos(euler.x * real(0.5)), Math::sin(euler.x * real(0.5)), real(0.0), real(0.0));
-        Quat qy(Math::cos(euler.y * real(0.5)), real(0.0), Math::sin(euler.y * real(0.5)), real(0.0));
-        Quat qz(Math::cos(euler.z * real(0.5)), real(0.0), real(0.0), Math::sin(euler.z * real(0.5)));
+        real rzero = real(0.0);
+        real divider = real(0.5);
+        Quat qx(Math::cos(euler.x * divider), Math::sin(euler.x * divider), rzero, rzero);
+        Quat qy(Math::cos(euler.y * divider), rzero, Math::sin(euler.y * divider), rzero);
+        Quat qz(Math::cos(euler.z * divider), rzero, rzero, Math::sin(euler.z * divider));
 
         return qx * qy * qz;
     }
@@ -347,10 +328,10 @@ namespace GLaDOS {
     void Quat::swap(Quat& first, Quat& second) {
         using std::swap;
 
+        swap(first.w, second.w);
         swap(first.x, second.x);
         swap(first.y, second.y);
         swap(first.z, second.z);
-        swap(first.w, second.w);
     }
 
     const Quat Quat::zero(0.0, 0.0, 0.0, 0.0);

@@ -148,6 +148,7 @@ namespace GLaDOS {
         static Vec4 rsqrt(const Vec4& v);
         static UVec4 normalize(const Vec4& v);
         static Deg angleBetween(const UVec4& from, const UVec4& to);
+        static Deg angleBetween(const Vec4& from, const Vec4& to);
 
         union {
             struct {

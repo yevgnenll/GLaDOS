@@ -116,7 +116,7 @@ namespace GLaDOS {
         static Vec3 reject(const Vec3& v, const UVec3& onNormal);
         static UVec3 normalize(const Vec3& v);
         static Deg angleBetween(const UVec3& from, const UVec3& to); // already normalized angle between two vector
-        static Deg angleBetween(const Vec3& a, const Vec3& b);
+        static Deg angleBetween(const Vec3& from, const Vec3& to);
         static Vec3 reflect(const Vec3& a, const Vec3& b);
         static Vec3 negate(const Vec3& v);
 

@@ -24,12 +24,12 @@ namespace GLaDOS {
         bool isOrthographic() const;
         void setOrthographic(bool orthographic);
 
-        real fieldOfView() const;
+        Deg fieldOfView() const;
         real nearClipPlane() const;
         real farClipPlane() const;
         Rect<real> getViewportRect() const;
         void setViewportRect(Rect<real> viewport);
-        void setFieldOfView(real fov);
+        void setFieldOfView(Deg fov);
         void setNearClipPlane(real near);
         void setFarClipPlane(real far);
         void setUnitSize(real unitSize);
@@ -44,7 +44,7 @@ namespace GLaDOS {
         void render() override;
 
       private:
-        real mFieldOfView{real(60.0)};
+        Deg mFieldOfView{real(60.0)};
         real mNearClipPlane{real(0.1)};
         real mFarClipPlane{real(1000.0)};
         bool mIsOrthographic{false};

@@ -90,8 +90,8 @@ class MainScene : public Scene {
             Vec3 mouseDelta = Input::mouseDeltaPosition();
             real rotationX = mouseDelta.y * sensitivity * deltaTime;
             real rotationY = mouseDelta.x * sensitivity * deltaTime;
-            planeTransform->rotate(planeTransform->right(), Math::toRadians(rotationX));
-            planeTransform->rotate(planeTransform->up(), Math::toRadians(-rotationY));
+            planeTransform->rotate(planeTransform->right(), Math::toRadians(Deg{rotationX}));
+            planeTransform->rotate(planeTransform->up(), Math::toRadians(Deg{-rotationY}));
         }
     }
 
