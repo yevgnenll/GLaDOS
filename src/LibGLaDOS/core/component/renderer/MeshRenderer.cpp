@@ -40,6 +40,9 @@ namespace GLaDOS {
     void MeshRenderer::render() {
         Scene* currentScene = mGameObject->scene();
         Camera* mainCamera = currentScene->getMainCamera();
-        Platform::getRenderer().render(mRenderable, mainCamera->getViewportRect());
+        BitMask* cullingMask = mainCamera->cullingMask();
+        if (cullingMask->isSet(mGameObject->getLayer())) {
+            Platform::getRenderer().render(mRenderable, mainCamera->getViewportRect());
+        }
     }
 }  // namespace GLaDOS

@@ -5,6 +5,7 @@
 #include "math/Mat4.hpp"
 #include "math/Ray.h"
 #include "math/Rect.hpp"
+#include "memory/BitMask.h"
 
 namespace GLaDOS {
     class Texture2D;
@@ -27,6 +28,7 @@ namespace GLaDOS {
         Deg fieldOfView() const;
         real nearClipPlane() const;
         real farClipPlane() const;
+        BitMask* cullingMask();
         Rect<real> getViewportRect() const;
         void setViewportRect(Rect<real> viewport);
         void setFieldOfView(Deg fov);
@@ -51,6 +53,7 @@ namespace GLaDOS {
         real mUnitSize{real(1)}; // only affect orthographic projection
         Rect<real> mViewportRect; // normalized viewport Rect default is (0, 0, 1, 1) bottom-left to top-right
         Texture2D* mTargetTexture{nullptr};
+        BitMask mCullingMask;
     };
 }  // namespace GLaDOS
 

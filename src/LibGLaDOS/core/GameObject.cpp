@@ -78,6 +78,19 @@ namespace GLaDOS {
         return mScene;
     }
 
+    uint32_t GameObject::getLayer() const {
+        return mLayer;
+    }
+
+    void GameObject::setLayer(uint32_t layer) {
+        if (layer >= 64) {
+            LOG_ERROR(logger, "Layer should not be greater than 64 but {0}", layer);
+            return;
+        }
+
+        mLayer = layer;
+    }
+
     void GameObject::update(real deltaTime) {
         for (auto& i : mComponents) {
             if (i.second->isActive()) {

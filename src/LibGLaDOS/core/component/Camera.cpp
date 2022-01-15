@@ -97,6 +97,10 @@ namespace GLaDOS {
         return mFarClipPlane;
     }
 
+    BitMask* Camera::cullingMask() {
+        return &mCullingMask;
+    }
+
     Rect<real> Camera::getViewportRect() const {
         return mViewportRect;
     }

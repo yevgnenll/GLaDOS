@@ -48,6 +48,8 @@ namespace GLaDOS {
         void broadcastMessage(Message& msg);
         Transform* transform();
         Scene* scene();
+        uint32_t getLayer() const;
+        void setLayer(uint32_t layer);
 
       private:
         static Logger* logger;
@@ -65,6 +67,7 @@ namespace GLaDOS {
         Set<Component*> mSubscriber[MessageType::size()];
         UnorderedMap<std::type_index, Component*> mComponents;
         Vector<GameObject*> mChildren;
+        uint32_t mLayer{0}; // default layer 0
     };
 
     template <typename T, typename, typename, typename... Ts>
