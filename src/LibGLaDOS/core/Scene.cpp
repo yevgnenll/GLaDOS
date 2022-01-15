@@ -2,6 +2,7 @@
 
 #include "GameObject.hpp"
 #include "core/component/Camera.h"
+#include "core/component/Transform.h"
 
 namespace GLaDOS {
     Logger* Scene::logger = LoggerRegistry::getInstance().makeAndGetLogger("Scene");
@@ -68,7 +69,9 @@ namespace GLaDOS {
     }
 
     GameObject* Scene::instantiate(GameObject* original, const Vec3& position) {
-        // TODO
+//        GameObject* newGameObject = original.clone();
+//        newGameObject->transform()->setPosition(position);
+//        return newGameObject;
         return nullptr;
     }
 

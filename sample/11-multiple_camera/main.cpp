@@ -46,15 +46,15 @@ class MainScene : public Scene {
 
         // camera translation
         Vec3 right = cameraTransform->right();
-        right *= Input::getAxis("Horizontal") * moveSensitivity * deltaTime;
+        right *= Input::getAxisRaw("Horizontal") * moveSensitivity * deltaTime;
         cameraTransform->translate(right);
 
         Vec3 up = cameraTransform->up();
-        up *= Input::getAxis("Forward") * moveSensitivity * deltaTime;
+        up *= Input::getAxisRaw("Forward") * moveSensitivity * deltaTime;
         cameraTransform->translate(up);
 
         Vec3 forward = cameraTransform->forward();
-        forward *= Input::getAxis("Vertical") * moveSensitivity * deltaTime;
+        forward *= Input::getAxisRaw("Vertical") * moveSensitivity * deltaTime;
         cameraTransform->translate(forward);
 
         // camera rotation
