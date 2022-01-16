@@ -2,12 +2,6 @@
 
 namespace GLaDOS {
     Logger* UploadBuffer::logger = LoggerRegistry::getInstance().makeAndGetLogger("UploadBuffer");
-    UploadBuffer::~UploadBuffer() {
-        if (mIsAllocated) {
-            FREE(mBufferData);
-        }
-    }
-
     std::size_t UploadBuffer::size() const {
         return mSize;
     }
@@ -21,20 +15,6 @@ namespace GLaDOS {
     }
 
     void* UploadBuffer::buffer() {
-        return mBufferData;
+        return mBufferData.pointer();
     }
-
-    void UploadBuffer::setBufferData(void* data) {
-        mBufferData = data;
-    }
-
-    void UploadBuffer::allocate() {
-        if (mSize > 0) {
-            mBufferData = MALLOC(mSize);
-            mIsAllocated = true;
-        } else {
-            LOG_ERROR(logger, "UploadBuffer size is 0.");
-        }
-    }
-
 }  // namespace GLaDOS

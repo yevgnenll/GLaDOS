@@ -3,7 +3,7 @@
 #include "VertexFormat.h"
 
 namespace GLaDOS {
-    VertexBuffer::VertexBuffer(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count, bool allocate) {
+    VertexBuffer::VertexBuffer(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) {
         mVertexFormatHolder = vertexFormatDescriptor.makeVertexFormatHolder();
         mVertexFormatDescriptor = vertexFormatDescriptor;  // should be assigned after makeVertexFormatHolder() call
         for (const auto& vertexFormat : *mVertexFormatHolder) {
@@ -11,10 +11,7 @@ namespace GLaDOS {
         }
 
         mSize = count * mStride;
-
-        if (allocate) {
-            this->allocate();
-        }
+        mBufferData.resize(mSize);
     }
 
     VertexBuffer::~VertexBuffer() {
@@ -25,114 +22,144 @@ namespace GLaDOS {
         return mVertexFormatHolder;
     }
 
+    VertexFormatDescriptor VertexBuffer::getVertexFormatDescriptor() const {
+        return mVertexFormatDescriptor;
+    }
+
+    void VertexBuffer::copyBufferData(void* data) {
+        mBufferData.copyFrom(reinterpret_cast<std::byte*>(data), mSize);
+    }
+
     Vec3 VertexBuffer::getPosition(std::size_t index) {
         assert(mVertexFormatDescriptor.mUsePosition);
-        return *reinterpret_cast<Vec3*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mPositionOffset));
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mPositionOffset);
+        return *reinterpret_cast<Vec3*>(mBufferData.pointer() + offset);
     }
 
     void VertexBuffer::setPosition(std::size_t index, const Vec3& position) {
         assert(mVertexFormatDescriptor.mUsePosition);
-        *reinterpret_cast<Vec3*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mPositionOffset)) = position;
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mPositionOffset);
+        mBufferData.copyFrom(offset, reinterpret_cast<const std::byte*>(&position), sizeof(position));
     }
 
     Vec3 VertexBuffer::getNormal(std::size_t index) {
         assert(mVertexFormatDescriptor.mUseNormal);
-        return *reinterpret_cast<Vec3*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mNormalOffset));
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mNormalOffset);
+        return *reinterpret_cast<Vec3*>(mBufferData.pointer() + offset);
     }
 
     void VertexBuffer::setNormal(std::size_t index, const Vec3& normal) {
         assert(mVertexFormatDescriptor.mUseNormal);
-        *reinterpret_cast<Vec3*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mNormalOffset)) = normal;
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mNormalOffset);
+        mBufferData.copyFrom(offset, reinterpret_cast<const std::byte*>(&normal), sizeof(normal));
     }
 
     Vec2 VertexBuffer::getTexCoord0(std::size_t index) {
         assert(mVertexFormatDescriptor.mUseTexCoord0);
-        return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord0Offset));
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mTexCoord0Offset);
+        return *reinterpret_cast<Vec2*>(mBufferData.pointer() + offset);
     }
 
     void VertexBuffer::setTexCoord0(std::size_t index, const Vec2& texCoord) {
         assert(mVertexFormatDescriptor.mUseTexCoord0);
-        *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord0Offset)) = texCoord;
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mTexCoord0Offset);
+        mBufferData.copyFrom(offset, reinterpret_cast<const std::byte*>(&texCoord), sizeof(texCoord));
     }
 
     Vec2 VertexBuffer::getTexCoord1(std::size_t index) {
         assert(mVertexFormatDescriptor.mUseTexCoord1);
-        return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord1Offset));
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mTexCoord1Offset);
+        return *reinterpret_cast<Vec2*>(mBufferData.pointer() + offset);
     }
 
     void VertexBuffer::setTexCoord1(std::size_t index, const Vec2& texCoord) {
         assert(mVertexFormatDescriptor.mUseTexCoord1);
-        *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord1Offset)) = texCoord;
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mTexCoord1Offset);
+        mBufferData.copyFrom(offset, reinterpret_cast<const std::byte*>(&texCoord), sizeof(texCoord));
     }
 
     Vec2 VertexBuffer::getTexCoord2(std::size_t index) {
         assert(mVertexFormatDescriptor.mUseTexCoord2);
-        return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord2Offset));
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mTexCoord2Offset);
+        return *reinterpret_cast<Vec2*>(mBufferData.pointer() + offset);
     }
 
     void VertexBuffer::setTexCoord2(std::size_t index, const Vec2& texCoord) {
         assert(mVertexFormatDescriptor.mUseTexCoord2);
-        *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord2Offset)) = texCoord;
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mTexCoord2Offset);
+        mBufferData.copyFrom(offset, reinterpret_cast<const std::byte*>(&texCoord), sizeof(texCoord));
     }
 
     Vec2 VertexBuffer::getTexCoord3(std::size_t index) {
         assert(mVertexFormatDescriptor.mUseTexCoord3);
-        return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord3Offset));
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mTexCoord3Offset);
+        return *reinterpret_cast<Vec2*>(mBufferData.pointer() + offset);
     }
 
     void VertexBuffer::setTexCoord3(std::size_t index, const Vec2& texCoord) {
         assert(mVertexFormatDescriptor.mUseTexCoord3);
-        *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord3Offset)) = texCoord;
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mTexCoord3Offset);
+        mBufferData.copyFrom(offset, reinterpret_cast<const std::byte*>(&texCoord), sizeof(texCoord));
     }
 
     Vec2 VertexBuffer::getTexCoord4(std::size_t index) {
         assert(mVertexFormatDescriptor.mUseTexCoord4);
-        return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord4Offset));
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mTexCoord4Offset);
+        return *reinterpret_cast<Vec2*>(mBufferData.pointer() + offset);
     }
 
     void VertexBuffer::setTexCoord4(std::size_t index, const Vec2& texCoord) {
         assert(mVertexFormatDescriptor.mUseTexCoord4);
-        *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord4Offset)) = texCoord;
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mTexCoord4Offset);
+        mBufferData.copyFrom(offset, reinterpret_cast<const std::byte*>(&texCoord), sizeof(texCoord));
     }
 
     Vec2 VertexBuffer::getTexCoord5(std::size_t index) {
         assert(mVertexFormatDescriptor.mUseTexCoord5);
-        return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord5Offset));
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mTexCoord5Offset);
+        return *reinterpret_cast<Vec2*>(mBufferData.pointer() + offset);
     }
 
     void VertexBuffer::setTexCoord5(std::size_t index, const Vec2& texCoord) {
         assert(mVertexFormatDescriptor.mUseTexCoord5);
-        *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord5Offset)) = texCoord;
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mTexCoord5Offset);
+        mBufferData.copyFrom(offset, reinterpret_cast<const std::byte*>(&texCoord), sizeof(texCoord));
     }
 
     Vec2 VertexBuffer::getTexCoord6(std::size_t index) {
         assert(mVertexFormatDescriptor.mUseTexCoord6);
-        return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord6Offset));
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mTexCoord6Offset);
+        return *reinterpret_cast<Vec2*>(mBufferData.pointer() + offset);
     }
 
     void VertexBuffer::setTexCoord6(std::size_t index, const Vec2& texCoord) {
         assert(mVertexFormatDescriptor.mUseTexCoord6);
-        *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord6Offset)) = texCoord;
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mTexCoord6Offset);
+        mBufferData.copyFrom(offset, reinterpret_cast<const std::byte*>(&texCoord), sizeof(texCoord));
     }
 
     Vec2 VertexBuffer::getTexCoord7(std::size_t index) {
         assert(mVertexFormatDescriptor.mUseTexCoord7);
-        return *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord7Offset));
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mTexCoord7Offset);
+        return *reinterpret_cast<Vec2*>(mBufferData.pointer() + offset);
     }
 
     void VertexBuffer::setTexCoord7(std::size_t index, const Vec2& texCoord) {
         assert(mVertexFormatDescriptor.mUseTexCoord7);
-        *reinterpret_cast<Vec2*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mTexCoord7Offset)) = texCoord;
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mTexCoord7Offset);
+        mBufferData.copyFrom(offset, reinterpret_cast<const std::byte*>(&texCoord), sizeof(texCoord));
     }
 
     Color VertexBuffer::getColor(std::size_t index) {
         assert(mVertexFormatDescriptor.mUseColor);
-        return *reinterpret_cast<Color*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mColorOffset));
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mColorOffset);
+        return *reinterpret_cast<Color*>(mBufferData.pointer() + offset);
     }
 
     void VertexBuffer::setColor(std::size_t index, const Color& color) {
         assert(mVertexFormatDescriptor.mUseColor);
-        *reinterpret_cast<Color*>(static_cast<char*>(mBufferData) + calcOffset(index, mVertexFormatDescriptor.mColorOffset)) = color;
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mColorOffset);
+        mBufferData.copyFrom(offset, reinterpret_cast<const std::byte*>(&color), sizeof(color));
     }
 
     void VertexBuffer::throwIfOverflow(std::size_t size) const {

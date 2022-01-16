@@ -19,31 +19,7 @@ namespace GLaDOS {
     Logger* CubemapRenderer::logger = LoggerRegistry::getInstance().makeAndGetLogger("CubemapRenderer");
     CubemapRenderer::CubemapRenderer() {
         mName = "CubemapRenderer";
-
-        Mesh* mesh = MeshGenerator::generateCube();
-        if (mesh == nullptr) {
-            LOG_ERROR(logger, "CubemapRenderer initialize failed!");
-            return;
-        }
-        ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgramFromFile("skyboxVertex", "skyboxFragment");
-        if (shaderProgram == nullptr) {
-            LOG_ERROR(logger, "CubemapRenderer initialize failed!");
-            return;
-        }
-        DepthStencilDescription depthStencilDesc{};
-        depthStencilDesc.mIsDepthWriteEnable = false;
-        depthStencilDesc.mDepthFunction = ComparisonFunction::LessEqual;
-        shaderProgram->setDepthStencilState(depthStencilDesc);
-
-        Material* material = NEW_T(Material);
-        material->setShaderProgram(shaderProgram);
-
-        Renderable* renderable = Platform::getRenderer().createRenderable(mesh, material);
-        if (renderable == nullptr) {
-            LOG_ERROR(logger, "CubemapRenderer initialize failed!");
-            return;
-        }
-        mRenderable = renderable;
+        mRenderable = CubemapRenderer::createRenderable();
     }
 
     CubemapRenderer::~CubemapRenderer() {
@@ -66,5 +42,41 @@ namespace GLaDOS {
                                                            mainCamera->aspectRatio(), mainCamera->nearClipPlane(), mainCamera->farClipPlane());
             shaderProgram->setUniform("viewProjection", viewProjection);
         }
+    }
+
+    Component* CubemapRenderer::clone() {
+        CubemapRenderer* cubemapRenderer = NEW_T(CubemapRenderer);
+        cubemapRenderer->mIsActive = mIsActive;
+        cubemapRenderer->mRenderable = createRenderable();
+        cubemapRenderer->setTextureCube(static_cast<TextureCube*>(mRenderable->getMaterial()->getTexture0()));
+        return cubemapRenderer;
+    }
+
+    Renderable* CubemapRenderer::createRenderable() {
+        Mesh* mesh = MeshGenerator::generateCube();
+        if (mesh == nullptr) {
+            LOG_ERROR(logger, "CubemapRenderer initialize failed: generate mesh");
+            return nullptr;
+        }
+        ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgramFromFile("skyboxVertex", "skyboxFragment");
+        if (shaderProgram == nullptr) {
+            LOG_ERROR(logger, "CubemapRenderer initialize failed: create shader program");
+            return nullptr;
+        }
+        DepthStencilDescription depthStencilDesc{};
+        depthStencilDesc.mIsDepthWriteEnable = false;
+        depthStencilDesc.mDepthFunction = ComparisonFunction::LessEqual;
+        shaderProgram->setDepthStencilState(depthStencilDesc);
+
+        Material* material = NEW_T(Material);
+        material->setShaderProgram(shaderProgram);
+
+        Renderable* renderable = Platform::getRenderer().createRenderable(mesh, material);
+        if (renderable == nullptr) {
+            LOG_ERROR(logger, "CubemapRenderer initialize failed: create renderable");
+            return nullptr;
+        }
+
+        return renderable;
     }
 }  // namespace GLaDOS

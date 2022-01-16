@@ -86,6 +86,8 @@ namespace GLaDOS {
 
         MetalShader* metalVertex = static_cast<MetalShader*>(vertex);
         MetalShader* metalFragment = static_cast<MetalShader*>(fragment);
+        mVertexShader = metalVertex;
+        mFragmentShader = metalFragment;
 
         if (!makePipelineDescriptor(metalVertex, metalFragment)) {
             mIsValid = false;

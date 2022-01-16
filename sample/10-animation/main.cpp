@@ -97,6 +97,7 @@ class MainScene : public Scene {
 
         player = createGameObject("player");
         spriteRenderer = player->addComponent<SpriteRenderer>(sprites[spriteIndex]);
+        instantiate(player, {100, 0, 0});
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));

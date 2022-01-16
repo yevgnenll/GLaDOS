@@ -192,8 +192,22 @@ namespace GLaDOS {
     }
 
     void Transform::update(real deltaTime) {
+        // Nothing to do here
     }
 
     void Transform::render() {
+        // Nothing to do here
+    }
+
+    Component* Transform::clone() {
+        Transform* transform = NEW_T(Transform);
+        transform->mIsActive = mIsActive;
+        transform->mPosition = mPosition;
+        transform->mRotation = mRotation;
+        transform->mLocalScale = mLossyScale;
+        transform->mLocalPosition = mLocalPosition;
+        transform->mLocalRotation = mLocalRotation;
+        transform->mLocalScale = mLocalScale;
+        return transform;
     }
 }  // namespace GLaDOS

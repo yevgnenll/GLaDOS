@@ -10,6 +10,9 @@ namespace GLaDOS {
         BitMask() = default;
         ~BitMask() = default;
 
+        BitMask(const BitMask& other);
+        BitMask& operator=(const BitMask& other);
+
         void set(uint32_t position);
         void clear(uint32_t position);
         bool isSet(uint32_t position) const;

@@ -1,20 +1,17 @@
 #ifndef GLADOS_MESHRENDERER_H
 #define GLADOS_MESHRENDERER_H
 
-#include "core/Component.h"
+#include "core/component/renderer/BasicRenderer.h"
 
 namespace GLaDOS {
     class Logger;
     class Mesh;
     class Material;
-    class Renderable;
-    class MeshRenderer : public Component {
+    class MeshRenderer : public BasicRenderer {
       public:
         MeshRenderer();
         MeshRenderer(Mesh* mesh, Material* material);
         ~MeshRenderer() override;
-
-        void setRenderable(Renderable* renderable);
 
       private:
         static Logger* logger;
@@ -22,8 +19,7 @@ namespace GLaDOS {
       protected:
         void update(real deltaTime) override;
         void render() override;
-
-        Renderable* mRenderable{nullptr};
+        Component* clone() override;
     };
 }  // namespace GLaDOS
 

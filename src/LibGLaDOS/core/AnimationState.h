@@ -12,6 +12,9 @@ namespace GLaDOS {
         AnimationState();
         ~AnimationState();
 
+        AnimationState(const AnimationState& other);
+        AnimationState& operator=(const AnimationState& other);
+
       private:
         AnimationClip* mClip{nullptr};
         std::string mName;

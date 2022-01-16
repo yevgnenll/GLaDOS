@@ -2,6 +2,9 @@
 
 #include "ShaderProgram.h"
 #include "Texture.h"
+#include "platform/Platform.h"
+#include "platform/render/Renderer.h"
+#include "platform/render/RenderState.h"
 
 namespace GLaDOS {
     Material::Material(ShaderProgram* shaderProgram) : mShaderProgram{shaderProgram} {
@@ -10,6 +13,24 @@ namespace GLaDOS {
 
     Material::~Material() {
         DELETE_T(mShaderProgram, ShaderProgram);
+    }
+
+    Material::Material(const Material& other) : mTextures{other.mTextures} {
+        mShaderProgram = Platform::getRenderer().createShaderProgram(other.mShaderProgram->getVertexShader(), other.mShaderProgram->getFragmentShader());
+        RasterizerDescription rasterizerDescription = other.mShaderProgram->rasterizerState()->mRasterizerDescription;
+        DepthStencilDescription depthStencilDescription = other.mShaderProgram->depthStencilState()->mDepthStencilDescription;
+        mShaderProgram->setRasterizerState(rasterizerDescription);
+        mShaderProgram->setDepthStencilState(depthStencilDescription);
+    }
+
+    Material& Material::operator=(const Material& other) {
+        mTextures = other.mTextures;
+        mShaderProgram = Platform::getRenderer().createShaderProgram(mShaderProgram->getVertexShader(), mShaderProgram->getFragmentShader());
+        RasterizerDescription rasterizerDescription = other.mShaderProgram->rasterizerState()->mRasterizerDescription;
+        DepthStencilDescription depthStencilDescription = other.mShaderProgram->depthStencilState()->mDepthStencilDescription;
+        mShaderProgram->setRasterizerState(rasterizerDescription);
+        mShaderProgram->setDepthStencilState(depthStencilDescription);
+        return *this;
     }
 
     ShaderProgram* Material::getShaderProgram() const {

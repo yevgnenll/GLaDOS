@@ -1,8 +1,20 @@
 #ifndef GLADOS_LIGHT_H
 #define GLADOS_LIGHT_H
 
+#include "core/Component.h"
+
 namespace GLaDOS {
-    class Light {
+    class Light : public Component {
+      public:
+        Light();
+        ~Light();
+
+      protected:
+        void update(real deltaTime) override;
+        void render() override;
+        Component* clone() override;
+
+      private:
     };
 }  // namespace GLaDOS
 

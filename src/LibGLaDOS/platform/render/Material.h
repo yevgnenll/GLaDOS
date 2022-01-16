@@ -12,6 +12,9 @@ namespace GLaDOS {
         explicit Material(ShaderProgram* shaderProgram);
         ~Material();
 
+        Material(const Material& other);
+        Material& operator=(const Material& other);
+
         ShaderProgram* getShaderProgram() const;
         void setShaderProgram(ShaderProgram* shaderProgram);
         Texture* getTexture0();

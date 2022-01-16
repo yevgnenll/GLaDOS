@@ -106,4 +106,19 @@ namespace GLaDOS {
 
         MeshRenderer::update(deltaTime);
     }
+
+    Component* SpriteRenderer::clone() {
+        SpriteRenderer* spriteRenderer = NEW_T(SpriteRenderer);
+        spriteRenderer->mIsActive = mIsActive;
+        spriteRenderer->mSprite = NEW_T(Sprite(*mSprite));
+        spriteRenderer->mRenderable = spriteRenderer->mSprite->getRenderable();
+        spriteRenderer->mColor = mColor;
+        spriteRenderer->mColorKey = mColorKey;
+        spriteRenderer->mFlipX = mFlipX;
+        spriteRenderer->mFlipY = mFlipY;
+        spriteRenderer->mUseColorKey = mUseColorKey;
+        spriteRenderer->mSortingOrder = mSortingOrder;
+        spriteRenderer->mSortingLayerName = mSortingLayerName;
+        return spriteRenderer;
+    }
 }  // namespace GLaDOS

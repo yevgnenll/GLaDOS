@@ -14,10 +14,14 @@ namespace GLaDOS {
 
         void setTextureCube(TextureCube* textureCube);
 
-      private:
+      protected:
         void update(real deltaTime) override;
+        Component* clone() override;
 
+      private:
         static Logger* logger;
+
+        static Renderable* createRenderable();
     };
 }  // namespace GLaDOS
 

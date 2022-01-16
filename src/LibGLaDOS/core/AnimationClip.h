@@ -7,6 +7,9 @@ namespace GLaDOS {
         AnimationClip();
         ~AnimationClip();
 
+        AnimationClip(const AnimationClip& other);
+        AnimationClip& operator=(const AnimationClip& other);
+
       private:
     };
 }

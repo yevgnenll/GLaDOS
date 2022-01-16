@@ -7,22 +7,23 @@ namespace GLaDOS {
     class Logger;
     class UploadBuffer {
       public:
-        virtual ~UploadBuffer();
+        virtual ~UploadBuffer() = default;
 
         std::size_t size() const;
         std::size_t count() const;
         std::size_t stride() const;
         void* buffer();
-        void setBufferData(void* data);
+        virtual void copyBufferData(void* data) = 0;
+
+        UploadBuffer(const UploadBuffer& other) = delete;
+        UploadBuffer& operator=(const UploadBuffer& other) = delete;
 
       protected:
         UploadBuffer() = default;
-        void allocate();
 
-        void* mBufferData{nullptr};
+        Blob mBufferData;
         std::size_t mSize{0};
         std::size_t mStride{0};
-        bool mIsAllocated{false};
 
       private:
         static Logger* logger;

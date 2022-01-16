@@ -64,20 +64,20 @@ namespace GLaDOS {
     }
 
     GameObject* Scene::instantiate(GameObject* original) {
-        // TODO
-        return nullptr;
+        return original->clone();
     }
 
     GameObject* Scene::instantiate(GameObject* original, const Vec3& position) {
-//        GameObject* newGameObject = original.clone();
-//        newGameObject->transform()->setPosition(position);
-//        return newGameObject;
-        return nullptr;
+        GameObject* newGameObject = original->clone();
+        newGameObject->transform()->setPosition(position);
+        return newGameObject;
     }
 
     GameObject* Scene::instantiate(GameObject* original, const Vec3& position, const Quat& rotation) {
-        // TODO
-        return nullptr;
+        GameObject* newGameObject = original->clone();
+        newGameObject->transform()->setPosition(position);
+        newGameObject->transform()->setRotation(rotation);
+        return newGameObject;
     }
 
     void Scene::update(real deltaTime) {

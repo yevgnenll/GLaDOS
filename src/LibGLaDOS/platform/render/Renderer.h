@@ -63,6 +63,7 @@ namespace GLaDOS {
         Mesh* createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer);
         Mesh* createMesh(const std::string& meshPath, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage);
         VertexBuffer* createVertexBuffer(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count);
+        IndexBuffer* createIndexBuffer(std::size_t stride, std::size_t count);
 
       private:
         static Logger* logger;

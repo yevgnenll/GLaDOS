@@ -148,4 +148,18 @@ namespace GLaDOS {
     void Camera::render() {
         // Nothing to do here
     }
+
+    Component* Camera::clone() {
+        Camera* camera = NEW_T(Camera);
+        camera->mIsActive = mIsActive;
+        camera->mFieldOfView = mFieldOfView;
+        camera->mNearClipPlane = mNearClipPlane;
+        camera->mFarClipPlane = mFarClipPlane;
+        camera->mIsOrthographic = mIsOrthographic;
+        camera->mUnitSize = mUnitSize;
+        camera->mViewportRect = mViewportRect;
+        camera->mTargetTexture = mTargetTexture;
+        camera->mCullingMask = mCullingMask;
+        return camera;
+    }
 }  // namespace GLaDOS

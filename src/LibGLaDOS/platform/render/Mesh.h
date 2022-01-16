@@ -2,7 +2,6 @@
 #define GLADOS_MESH_H
 
 #include "GPUBuffer.h"
-#include "resource/Resource.h"
 #include "utils/Enumeration.h"
 
 namespace GLaDOS {
@@ -11,11 +10,14 @@ namespace GLaDOS {
     class VertexBuffer;
     class IndexBuffer;
     class VertexFormatHolder;
-    class Mesh : public Resource {
+    class Mesh {
       public:
         Mesh();
         Mesh(PrimitiveTopology primitiveType, GPUBufferUsage vertexBufferUsage, GPUBufferUsage indexBufferUsage);
-        ~Mesh() override;
+        ~Mesh();
+
+        Mesh(const Mesh& other);
+        Mesh& operator=(const Mesh& other);
 
         PrimitiveTopology getPrimitiveType() const;
         void setPrimitiveType(PrimitiveTopology primitiveType);

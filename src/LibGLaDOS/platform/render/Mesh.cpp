@@ -2,19 +2,16 @@
 
 #include "IndexBuffer.h"
 #include "Renderer.h"
-#include "RootDir.h"
 #include "VertexBuffer.h"
 #include "platform/Platform.h"
 
 namespace GLaDOS {
     Logger* Mesh::logger = LoggerRegistry::getInstance().makeAndGetLogger("Mesh");
-    Mesh::Mesh() : Resource{ResourceType::Mesh} {
-        setResourceDir(RESOURCE_DIR);
+    Mesh::Mesh() {
     }
 
     Mesh::Mesh(PrimitiveTopology primitiveType, GPUBufferUsage vertexBufferUsage, GPUBufferUsage indexBufferUsage)
-        : Resource{ResourceType::Mesh}, mPrimitiveTopology{primitiveType}, mVertexBufferUsage{vertexBufferUsage}, mIndexBufferUsage{indexBufferUsage} {
-        setResourceDir(RESOURCE_DIR);
+        : mPrimitiveTopology{primitiveType}, mVertexBufferUsage{vertexBufferUsage}, mIndexBufferUsage{indexBufferUsage} {
     }
 
     Mesh::~Mesh() {
@@ -22,6 +19,36 @@ namespace GLaDOS {
         DELETE_T(mIndexBufferGPU, GPUBuffer);
         DELETE_T(mVertexBufferCPU, VertexBuffer);
         DELETE_T(mIndexBufferCPU, IndexBuffer);
+    }
+
+    Mesh::Mesh(const Mesh& other)
+        : mPrimitiveTopology{other.mPrimitiveTopology}, mVertexStartLocation{other.mVertexStartLocation}, mIndexStartLocation{other.mIndexStartLocation},
+            mVertexBufferUsage{other.mVertexBufferUsage}, mIndexBufferUsage{other.mIndexBufferUsage} {
+        VertexBuffer* vertexBuffer = Platform::getRenderer().createVertexBuffer(other.mVertexBufferCPU->getVertexFormatDescriptor(), other.mVertexBufferCPU->count());
+        vertexBuffer->copyBufferData(other.mVertexBufferCPU->buffer());
+        IndexBuffer* indexBuffer = nullptr;
+        if (other.mIndexBufferCPU != nullptr) {
+            indexBuffer = Platform::getRenderer().createIndexBuffer(other.mIndexBufferCPU->stride(), other.mIndexBufferCPU->count());
+            indexBuffer->copyBufferData(other.mIndexBufferCPU->buffer());
+        }
+        build(vertexBuffer, indexBuffer);
+    }
+
+    Mesh& Mesh::operator=(const Mesh& other) {
+        mPrimitiveTopology = other.mPrimitiveTopology;
+        mVertexStartLocation = other.mVertexStartLocation;
+        mIndexStartLocation = other.mIndexStartLocation;
+        mVertexBufferUsage = other.mVertexBufferUsage;
+        mIndexBufferUsage = other.mIndexBufferUsage;
+        VertexBuffer* vertexBuffer = Platform::getRenderer().createVertexBuffer(other.mVertexBufferCPU->getVertexFormatDescriptor(), other.mVertexBufferCPU->count());
+        vertexBuffer->copyBufferData(other.mVertexBufferCPU->buffer());
+        IndexBuffer* indexBuffer = nullptr;
+        if (other.mIndexBufferCPU != nullptr) {
+            indexBuffer = Platform::getRenderer().createIndexBuffer(other.mIndexBufferCPU->stride(), other.mIndexBufferCPU->count());
+            indexBuffer->copyBufferData(other.mIndexBufferCPU->buffer());
+        }
+        build(vertexBuffer, indexBuffer);
+        return *this;
     }
 
     PrimitiveTopology Mesh::getPrimitiveType() const {

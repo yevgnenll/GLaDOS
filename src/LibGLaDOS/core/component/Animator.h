@@ -39,6 +39,7 @@ namespace GLaDOS {
       protected:
         void update(real deltaTime) override;
         void render() override;
+        Component* clone() override;
 
       private:
         static Logger* logger;

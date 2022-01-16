@@ -10,11 +10,15 @@ namespace GLaDOS {
     class Logger;
     class Sprite {
       public:
+        Sprite();
         explicit Sprite(Texture2D* texture);
         Sprite(Texture2D* texture, const Rect<uint32_t>& rect);
         Sprite(Texture2D* texture, Point<real> anchorPoint);
         Sprite(Texture2D* texture, const Rect<uint32_t>& rect, Point<real> anchorPoint);
         ~Sprite() = default;
+
+        Sprite(const Sprite& other);
+        Sprite& operator=(const Sprite& other);
 
         Texture2D* getTexture() const;
         Rect<uint32_t> getRect() const;

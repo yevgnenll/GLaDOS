@@ -16,8 +16,8 @@ class MainScene : public Scene {
             -0.5,  0.5, 0.0,  0.0, 0.0, 1.0, 1.0,
         };
         // clang-format on
-        VertexBuffer* vertexData = NEW_T(VertexBuffer(VertexFormatDescriptor().position().color(), 6));
-        vertexData->setBufferData(quad);
+        VertexBuffer* vertexData = Platform::getRenderer().createVertexBuffer(VertexFormatDescriptor().position().color(), 6);
+        vertexData->copyBufferData(quad);
         Mesh* mesh = Platform::getRenderer().createMesh(vertexData, nullptr);
         if (mesh == nullptr) {
             return false;
@@ -34,11 +34,12 @@ class MainScene : public Scene {
 
         rectObject = createGameObject("rectObject");
         rectObject->addComponent<MeshRenderer>(mesh, material);
-        instantiate(rectObject, {3, 0, 0});
+        rectObject2 = instantiate(rectObject, {3, 0, 0});
+        shaderProgram2 = rectObject2->getComponent<MeshRenderer>()->getRenderable()->getMaterial()->getShaderProgram();
 
         camera = getMainCamera();
         cameraTransform = camera->gameObject()->transform();
-        cameraTransform->setLocalPosition({0, 0, 2});
+        cameraTransform->setLocalPosition({1.5, 0, 4});
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
@@ -58,6 +59,11 @@ class MainScene : public Scene {
         shaderProgram->setUniform("model", rectObject->transform()->localToWorldMatrix());
         shaderProgram->setUniform("view", camera->worldToCameraMatrix());
         shaderProgram->setUniform("projection", camera->projectionMatrix());
+
+        shaderProgram2->setUniform("brightness", 1.f);
+        shaderProgram2->setUniform("model", rectObject2->transform()->localToWorldMatrix());
+        shaderProgram2->setUniform("view", camera->worldToCameraMatrix());
+        shaderProgram2->setUniform("projection", camera->projectionMatrix());
 
         // camera translation
         Vec3 right = cameraTransform->right();
@@ -85,9 +91,11 @@ class MainScene : public Scene {
   private:
     real sensitivity = 5;
     ShaderProgram* shaderProgram = nullptr;
+    ShaderProgram* shaderProgram2 = nullptr;
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;
     GameObject* rectObject = nullptr;
+    GameObject* rectObject2 = nullptr;
 };
 
 bool init() {

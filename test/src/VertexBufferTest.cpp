@@ -19,46 +19,46 @@ std::size_t vertexCount = 6;
 std::size_t stride = 7;
 
 void testVertexBuffer(VertexBuffer& vd) {
-  for (std::size_t i = 0; i < vertexCount * stride; i += stride) {
-    std::size_t index = i / stride;
-    Vec3 pos{quad[i], quad[i + 1], quad[i + 2]};
-    REQUIRE(pos == vd.getPosition(index));
-    Color color{quad[i + 3], quad[i + 4], quad[i + 5], quad[i + 6]};
-    REQUIRE(color == vd.getColor(index));
-  }
+    for (std::size_t i = 0; i < vertexCount * stride; i += stride) {
+        std::size_t index = i / stride;
+        Vec3 pos{quad[i], quad[i + 1], quad[i + 2]};
+        REQUIRE(pos == vd.getPosition(index));
+        Color color{quad[i + 3], quad[i + 4], quad[i + 5], quad[i + 6]};
+        REQUIRE(color == vd.getColor(index));
+    }
 }
 
 TEST_CASE("VertexBuffer unit tests", "[VertexBuffer]") {
-  SECTION("Simple vertexBuffer serialize & deserialize test") {
-      VertexBuffer vd{VertexFormatDescriptor().position().color(), vertexCount, true};
-    REQUIRE(vd.count() == vertexCount);
-    REQUIRE(vd.stride() == stride * sizeof(float));
-    REQUIRE(vd.size() == vd.count() * vd.stride());
+    SECTION("Simple vertexBuffer serialize & deserialize test") {
+        VertexBuffer vd{VertexFormatDescriptor().position().color(), vertexCount};
+        REQUIRE(vd.count() == vertexCount);
+        REQUIRE(vd.stride() == stride * sizeof(float));
+        REQUIRE(vd.size() == vd.count() * vd.stride());
 
-    for (std::size_t i = 0; i < vertexCount * stride; i += stride) {
-      std::size_t index = i / stride;
-      vd.setPosition(index, Vec3{quad[i], quad[i + 1], quad[i + 2]});
-      vd.setColor(index, Color{quad[i + 3], quad[i + 4], quad[i + 5], quad[i + 6]});
+        for (std::size_t i = 0; i < vertexCount * stride; i += stride) {
+            std::size_t index = i / stride;
+            vd.setPosition(index, Vec3{quad[i], quad[i + 1], quad[i + 2]});
+            vd.setColor(index, Color{quad[i + 3], quad[i + 4], quad[i + 5], quad[i + 6]});
+        }
+        testVertexBuffer(vd);
     }
-    testVertexBuffer(vd);
-  }
 
-  SECTION("Bulk vertex buffer upload with Vector of bytes test") {
-      VertexBuffer vd{VertexFormatDescriptor().position().color(), vertexCount};
-    Vector<std::byte> vertex;
-    for (float i : quad) {
-      for (std::size_t j = 0; j < sizeof(float); j++) {
-        auto* bytes = reinterpret_cast<std::byte*>(&i);
-        vertex.push_back(bytes[j]);
-      }
+    SECTION("Bulk vertex buffer upload with Vector of bytes test") {
+        VertexBuffer vd{VertexFormatDescriptor().position().color(), vertexCount};
+        Vector<std::byte> vertex;
+        for (float i : quad) {
+            for (std::size_t j = 0; j < sizeof(float); j++) {
+                auto* bytes = reinterpret_cast<std::byte*>(&i);
+                vertex.push_back(bytes[j]);
+            }
+        }
+        vd.copyBufferData(vertex.data());
+        testVertexBuffer(vd);
     }
-    vd.setBufferData(vertex.data());
-    testVertexBuffer(vd);
-  }
 
-  SECTION("Bulk vertex buffer upload with raw pointer of bytes test") {
-      VertexBuffer vd{VertexFormatDescriptor().position().color(), vertexCount};
-    vd.setBufferData(quad);
-    testVertexBuffer(vd);
-  }
+    SECTION("Bulk vertex buffer upload with raw pointer of bytes test") {
+        VertexBuffer vd{VertexFormatDescriptor().position().color(), vertexCount};
+        vd.copyBufferData(quad);
+        testVertexBuffer(vd);
+    }
 }

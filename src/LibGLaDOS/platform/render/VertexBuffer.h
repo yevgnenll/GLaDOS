@@ -12,10 +12,13 @@ namespace GLaDOS {
     class VertexFormatHolder;
     class VertexBuffer : public UploadBuffer {
       public:
-        explicit VertexBuffer(const VertexFormatDescriptor& vertexFormatBuilder, std::size_t count, bool allocate = false);
+        explicit VertexBuffer(const VertexFormatDescriptor& vertexFormatBuilder, std::size_t count);
         ~VertexBuffer() override;
 
         VertexFormatHolder* getVertexFormatHolder() const;
+        VertexFormatDescriptor getVertexFormatDescriptor() const;
+
+        void copyBufferData(void *data) override;
 
         Vec3 getPosition(std::size_t index);
         void setPosition(std::size_t index, const Vec3& position);

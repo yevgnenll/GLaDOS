@@ -47,6 +47,9 @@ namespace GLaDOS {
         VertexFormatDescriptor() = default;
         ~VertexFormatDescriptor() = default;
 
+        VertexFormatDescriptor(const VertexFormatDescriptor& other) = default;
+        VertexFormatDescriptor& operator=(const VertexFormatDescriptor& other) = default;
+
         VertexFormatDescriptor position();
         VertexFormatDescriptor normal();
         VertexFormatDescriptor texCoord0();

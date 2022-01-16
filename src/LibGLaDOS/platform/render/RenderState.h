@@ -36,7 +36,7 @@ namespace GLaDOS {
         DepthStencilState(const DepthStencilDescription& desc);
         ~DepthStencilState() override = default;
 
-        DepthStencilDescription mDescription;
+        DepthStencilDescription mDepthStencilDescription;
     };
 
     struct SamplerDescription {

@@ -1,6 +1,14 @@
 #include "BitMask.h"
 
 namespace GLaDOS {
+    BitMask::BitMask(const BitMask& other) : mArrayOfBits{other.mArrayOfBits} {
+    }
+
+    BitMask& BitMask::operator=(const BitMask& other) {
+        mArrayOfBits = other.mArrayOfBits;
+        return *this;
+    }
+
     void BitMask::set(uint32_t position) {
         if (position >= 64) {
             return;

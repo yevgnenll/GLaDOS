@@ -10,6 +10,9 @@
 
 namespace GLaDOS {
     Logger* Sprite::logger = LoggerRegistry::getInstance().makeAndGetLogger("Sprite");
+    Sprite::Sprite() : mTexture{nullptr}, mRect{}, mAnchorPoint{}, mRenderable{nullptr} {
+    }
+
     Sprite::Sprite(Texture2D* texture) : mTexture{texture}, mRect{getFullRect(mTexture)}, mAnchorPoint{getCenterAnchorPoint(mRect)} {
         createRenderable();
     }
@@ -24,6 +27,18 @@ namespace GLaDOS {
 
     Sprite::Sprite(Texture2D* texture, const Rect<uint32_t>& rect, Point<real> anchorPoint) : mTexture{texture}, mRect{rect}, mAnchorPoint{anchorPoint} {
         createRenderable();
+    }
+
+    Sprite::Sprite(const Sprite& other) : mTexture{other.mTexture}, mRect{other.mRect}, mAnchorPoint{other.mAnchorPoint} {
+        createRenderable();
+    }
+
+    Sprite& Sprite::operator=(const Sprite& other) {
+        mTexture = other.mTexture;
+        mRect = other.mRect;
+        mAnchorPoint = other.mAnchorPoint;
+        createRenderable();
+        return *this;
     }
 
     Texture2D* Sprite::getTexture() const {

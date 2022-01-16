@@ -44,6 +44,7 @@ namespace GLaDOS {
       protected:
         void update(real deltaTime) override;
         void render() override;
+        Component* clone() override;
 
       private:
         Deg mFieldOfView{real(60.0)};

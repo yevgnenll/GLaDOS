@@ -66,6 +66,9 @@ namespace GLaDOS {
         RasterizerState* rasterizerState();
         void setRasterizerState(const RasterizerDescription& desc);
 
+        Shader* getVertexShader();
+        Shader* getFragmentShader();
+
       private:
         virtual bool createShaderProgram(Shader* vertex, Shader* fragment) = 0;
 
@@ -79,6 +82,8 @@ namespace GLaDOS {
         bool mIsValid{false};
         Blob mVertexUniformBuffer;
         Blob mFragmentUniformBuffer;
+        Shader* mVertexShader{nullptr};
+        Shader* mFragmentShader{nullptr};
     };
 }  // namespace GLaDOS
 

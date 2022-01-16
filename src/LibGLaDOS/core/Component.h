@@ -4,10 +4,11 @@
 #include "Message.h"
 #include "Object.h"
 #include "utils/Enumeration.h"
+#include "Cloneable.h"
 
 namespace GLaDOS {
     class GameObject;
-    class Component : public Object {
+    class Component : public Object, Cloneable<Component> {
         friend class GameObject;
 
       public:

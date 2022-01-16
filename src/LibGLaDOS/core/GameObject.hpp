@@ -9,13 +9,14 @@
 #include "Object.h"
 #include "utils/Enumeration.h"
 #include "utils/Utility.h"
+#include "Cloneable.h"
 
 namespace GLaDOS {
     class Logger;
     class Scene;
     class Transform;
     class Component;
-    class GameObject : public Object {
+    class GameObject : public Object, Cloneable<GameObject> {
         friend class Scene;
         friend class Transform;
 
@@ -51,8 +52,12 @@ namespace GLaDOS {
         uint32_t getLayer() const;
         void setLayer(uint32_t layer);
 
+      protected:
+        GameObject* clone() override;
+
       private:
         static Logger* logger;
+        GameObject(GameObject* parent, Scene* scene);
         void update(real deltaTime) override;
         void render() override;
 
@@ -72,7 +77,7 @@ namespace GLaDOS {
 
     template <typename T, typename, typename, typename... Ts>
     T* GameObject::addComponent(Ts... args) {
-        // duplicate key check
+        // duplicate key check by runtime RTTI
         if (mComponents.find(std::type_index(typeid(T))) != mComponents.end()) {
             return static_cast<T*>(nullptr);
         }
@@ -91,15 +96,19 @@ namespace GLaDOS {
     template <typename T>
     T* GameObject::getComponent() {
         auto iter = mComponents.find(std::type_index(typeid(T)));
-        if (iter == mComponents.end()) return static_cast<T*>(nullptr);
+        if (iter == mComponents.end()) {
+            return static_cast<T*>(nullptr);
+        }
         return static_cast<T*>(iter->second);
     }
 
     template <typename T>
     T* GameObject::getComponentInChildren() {
-        for (auto& i : mChildren) {
-            T* value = i->getComponent<T>();
-            if (value) return value;
+        for (auto& gameObject : mChildren) {
+            T* value = gameObject->getComponent<T>();
+            if (value) {
+                return value;
+            }
         }
 
         return static_cast<T*>(nullptr);
@@ -124,6 +133,7 @@ namespace GLaDOS {
     bool GameObject::removeComponent() {
         auto iter = mComponents.find(std::type_index(typeid(T)));
         if (iter == mComponents.end()) {
+            LOG_WARN(logger, "can't find component `{0}`", typeid(T).name());
             return false;
         }
 
@@ -139,9 +149,12 @@ namespace GLaDOS {
     template <typename T>
     bool GameObject::sendMessage(Message& msg) {
         auto ret = getComponent<T>();
-        if (!ret) return false;
+        if (!ret) {
+            LOG_WARN(logger, "failed to send message type `{0}` in game object `{1}`", msg.type(), mName);
+            return false;
+        }
         MessageType type = msg.type();
-        for (auto& component : mSubscriber[type]) {
+        for (const auto& component : mSubscriber[type]) {
             if (component == ret) {
                 component->handleMessage(msg);
                 break;
@@ -153,14 +166,20 @@ namespace GLaDOS {
     template <typename T>
     bool GameObject::subscribeToMessageType(MessageType type) {
         auto ret = getComponent<T>();
-        if (!ret) return false;
+        if (!ret) {
+            LOG_WARN(logger, "failed to subscribe message type `{0}` in game object `{1}`", type, mName);
+            return false;
+        }
         return mSubscriber[type].insert(ret).second;
     }
 
     template <typename T>
     bool GameObject::subscribeAllMessageType() {
         auto ret = getComponent<T>();
-        if (!ret) return false;
+        if (!ret) {
+            LOG_WARN(logger, "failed to subscribe all message in game object `{1}`", mName);
+            return false;
+        }
         for (auto& subscriber : mSubscriber) {
             subscriber.insert(ret);
         }

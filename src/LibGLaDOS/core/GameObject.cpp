@@ -5,29 +5,43 @@
 
 namespace GLaDOS {
     Logger* GameObject::logger = LoggerRegistry::getInstance().makeAndGetLogger("GameObject");
+    GameObject::GameObject(GameObject* parent, Scene* scene) : mParent{parent} {
+        // private constructor for easy to use in clone method (not for publicity)
+        if (mParent != nullptr) {
+            mParent->mChildren.emplace_back(this);
+        }
+        if (scene != nullptr) {
+            mScene = scene;
+            scene->addGameObject(this);
+        }
+    }
+
     GameObject::GameObject(std::string name, Scene* scene) {
         mName = name;
         mTransform = addComponent<Transform>();
         if (scene != nullptr) {
             mScene = scene;
             scene->addGameObject(this);
+            LOG_TRACE(logger, "GameObject `{0}` created in scene `{1}`.", mName, mScene->getName());
         }
-        LOG_TRACE(logger, "GameObject `{0}` created in scene `{1}`.", mName, mScene->getName());
     }
 
     GameObject::GameObject(std::string name, GameObject* parent, Scene* scene) : mParent{parent} {
         mName = name;
-        mParent->mChildren.emplace_back(this);
+        if (mParent != nullptr) {
+            mParent->mChildren.emplace_back(this);
+        }
         mTransform = addComponent<Transform>();
         if (scene != nullptr) {
             mScene = scene;
             scene->addGameObject(this);
+            LOG_TRACE(logger, "GameObject `{0}` created in scene `{1}`.", mName, mScene->getName());
         }
-        LOG_TRACE(logger, "GameObject `{0}` created in scene `{1}`.", mName, mScene->getName());
     }
 
     GameObject::~GameObject() {
         deallocValueInMap(mComponents);
+        deallocIterable(mChildren);
         mChildren.clear();
     }
 
@@ -91,18 +105,49 @@ namespace GLaDOS {
         mLayer = layer;
     }
 
+    GameObject* GameObject::clone() {
+        GameObject* clone = NEW_T(GameObject(mParent, mScene));
+        clone->mName = mName + " (duplicated)";
+        clone->mIsActive = mIsActive;
+
+        // clone components in game object
+        for (const auto& [key, value] : mComponents) {
+            Component* component = value->clone();
+            component->mGameObject = clone;
+            clone->mComponents.try_emplace(std::type_index(typeid(*value)), component);
+        }
+        clone->mTransform = clone->getComponent<Transform>();
+
+        // clone children of game object `recursively`
+        for (const auto& children : mChildren) {
+            clone->mChildren.emplace_back(children->clone());
+        }
+
+        // clone subscriber set
+//        for (std::size_t i = 0; i < MessageType::size(); i++) {
+//            for (const auto& comp : mSubscriber[i]) {
+//                clone->mSubscriber[i].insert(comp); // FIXME: comp is not correct
+//            }
+//        }
+
+        // and last copy layer value
+        clone->mLayer = mLayer;
+
+        return clone;
+    }
+
     void GameObject::update(real deltaTime) {
-        for (auto& i : mComponents) {
-            if (i.second->isActive()) {
-                i.second->update(deltaTime);
+        for (auto& comp : mComponents) {
+            if (comp.second->isActive()) {
+                comp.second->update(deltaTime);
             }
         }
     }
 
     void GameObject::render() {
-        for (auto& i : mComponents) {
-            if (i.second->isActive()) {
-                i.second->render();
+        for (auto& comp : mComponents) {
+            if (comp.second->isActive()) {
+                comp.second->render();
             }
         }
     }
