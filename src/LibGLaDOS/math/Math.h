@@ -49,7 +49,39 @@ namespace GLaDOS {
         static real smoothStep(real min, real max, real value);
         static real moveTowards(real current, real target, real maxDelta);
         static real moveTowardsAngle(real current, real target, real maxDelta);
-        static real easeIn();
+
+        // easing functions: https://easings.net/#
+        static real easeInSine(real a, real b, real t);
+        static real easeOutSine(real a, real b, real t);
+        static real easeInOutSine(real a, real b, real t);
+        static real easeInQuad(real a, real b, real t);
+        static real easeOutQuad(real a, real b, real t);
+        static real easeInOutQuad(real a, real b, real t);
+        static real easeInCubic(real a, real b, real t);
+        static real easeOutCubic(real a, real b, real t);
+        static real easeInOutCubic(real a, real b, real t);
+        static real easeInQuat(real a, real b, real t);
+        static real easeOutQuat(real a, real b, real t);
+        static real easeInOutQuat(real a, real b, real t);
+        static real easeInQuint(real a, real b, real t);
+        static real easeOutQuint(real a, real b, real t);
+        static real easeInOutQuint(real a, real b, real t);
+        static real easeInExpo(real a, real b, real t);
+        static real easeOutExpo(real a, real b, real t);
+        static real easeInOutExpo(real a, real b, real t);
+        static real easeInCirc(real a, real b, real t);
+        static real easeOutCirc(real a, real b, real t);
+        static real easeInOutCirc(real a, real b, real t);
+        static real easeInBack(real a, real b, real t);
+        static real easeOutBack(real a, real b, real t);
+        static real easeInOutBack(real a, real b, real t);
+        static real easeInElastic(real a, real b, real t);
+        static real easeOutElastic(real a, real b, real t);
+        static real easeInOutElastic(real a, real b, real t);
+        static real easeInBounce(real a, real b, real t);
+        static real easeOutBounce(real a, real b, real t);
+        static real easeInOutBounce(real a, real b, real t);
+
         constexpr static uint64_t kilobytes(uint32_t kb);
         constexpr static uint64_t megabytes(uint32_t mb);
         constexpr static uint64_t gigabytes(uint32_t gb);

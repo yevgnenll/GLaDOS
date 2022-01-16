@@ -124,11 +124,16 @@ namespace GLaDOS {
         }
 
         // clone subscriber set
-//        for (std::size_t i = 0; i < MessageType::size(); i++) {
-//            for (const auto& comp : mSubscriber[i]) {
-//                clone->mSubscriber[i].insert(comp); // FIXME: comp is not correct
-//            }
-//        }
+        for (std::size_t i = 0; i < MessageType::size(); i++) {
+            for (const auto& comp : mSubscriber[i]) {
+                auto iter = clone->mComponents.find(std::type_index(typeid(*comp)));
+                if (iter == clone->mComponents.end()) {
+                    LOG_WARN(logger, "miss out subscriber component `{0}`", iter->second->mName);
+                    continue;
+                }
+                clone->mSubscriber[i].insert(iter->second);
+            }
+        }
 
         // and last copy layer value
         clone->mLayer = mLayer;

@@ -103,9 +103,124 @@ namespace GLaDOS {
         return Math::moveTowards(current, target, maxDelta);
     }
 
-    real Math::easeIn() {
-        // TODO
-        return 0.f;
+    real Math::easeInSine(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeOutSine(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeInOutSine(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeInQuad(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeOutQuad(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeInOutQuad(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeInCubic(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeOutCubic(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeInOutCubic(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeInQuat(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeOutQuat(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeInOutQuat(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeInQuint(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeOutQuint(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeInOutQuint(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeInExpo(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeOutExpo(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeInOutExpo(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeInCirc(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeOutCirc(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeInOutCirc(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeInBack(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeOutBack(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeInOutBack(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeInElastic(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeOutElastic(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeInOutElastic(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeInBounce(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeOutBounce(real a, real b, real t) {
+        return 0;
+    }
+
+    real Math::easeInOutBounce(real a, real b, real t) {
+        return 0;
     }
 
     constexpr uint64_t Math::kilobytes(uint32_t kb) {
