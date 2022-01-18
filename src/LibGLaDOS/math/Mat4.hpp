@@ -646,6 +646,10 @@ namespace GLaDOS {
     template <typename T>
     std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::rotate(Rad angle, const UVec3& axis) {
         /*
+            desc: Build Euler rotation matrix (possibly, gimbal lock)
+            caution: multiplication order should be ZYX if matrix combination used.
+            usage: Mat4<real>::rotate(Math::toRadians(Deg{45.0f}), Vec3::backward);
+
              x = | 1  0    0   0 |
                  | 0 cos -sin  0 |
                  | 0 sin  cos  0 |

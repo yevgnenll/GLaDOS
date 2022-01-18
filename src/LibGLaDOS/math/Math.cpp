@@ -43,11 +43,11 @@ namespace GLaDOS {
 
     real Math::repeat(real t, real length) {
         /*
-      it is never larger than length and never smaller than 0.
-      Math::Reapeat(-100, 360) -> 260
-      Math::Reapeat(370, 360) -> 10
-      Math::Reapeat(250, 360) -> 250
-    */
+          it is never larger than length and never smaller than 0.
+          Math::Reapeat(-100, 360) -> 260
+          Math::Reapeat(370, 360) -> 10
+          Math::Reapeat(250, 360) -> 250
+        */
         return t - Math::floor(t / length) * length;
     }
 

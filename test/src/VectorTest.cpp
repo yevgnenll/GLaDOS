@@ -57,14 +57,14 @@ TEST_CASE("Vector unit tests", "[Vector]") {
       Vec2 v1 = {1, 0};
       Vec2 v2 = {0.5f, Math::sqrt(3.f)/2.f};
       Deg degree = Vec2::angleBetween(v1.makeNormalize(), v2.makeNormalize());
-      REQUIRE(degree.get() == 60);
+      REQUIRE(Math::equal(degree.get(), 60.f));
   }
 
   SECTION("Vec2 angle between two vector") {
       Vec2 v1 = {1, 0};
       Vec2 v2 = {0.5f, Math::sqrt(3.f)/2.f};
       Deg degree = Vec2::angleBetween(v1, v2);
-      REQUIRE(degree.get() == 60);
+      REQUIRE(Math::equal(degree.get(), 60.f));
   }
 
   SECTION("Vec2 slerp") {
@@ -79,5 +79,12 @@ TEST_CASE("Vector unit tests", "[Vector]") {
       Vec2 v2 = {0.5f, Math::sqrt(3.f)/2.f};
       Vec2 result = Vec2::slerp(v1, v2, 0.75f);
       REQUIRE(result == Vec2{Math::sqrt(2.f)/2.f, Math::sqrt(2.f)/2.f});
+  }
+
+  SECTION("Vec2 slerp3") {
+      Vec2 v1 = {1, 0};
+      Vec2 v2 = {0, 1};
+      Vec2 result = Vec2::slerp(v1, v2, 0.75f);
+      REQUIRE(result == Vec2{0.38268342, 0.92387950});
   }
 }
