@@ -141,6 +141,14 @@ namespace GLaDOS {
         return clone;
     }
 
+    void GameObject::fixedUpdate(real fixedDeltaTime) {
+        for (auto& comp : mComponents) {
+            if (comp.second->isActive()) {
+                comp.second->fixedUpdate(fixedDeltaTime);
+            }
+        }
+    }
+
     void GameObject::update(real deltaTime) {
         for (auto& comp : mComponents) {
             if (comp.second->isActive()) {

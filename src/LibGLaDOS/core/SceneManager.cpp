@@ -68,6 +68,12 @@ namespace GLaDOS {
         return (mCurrentScene != nullptr) && mCurrentScene->isActive();
     }
 
+    void SceneManager::fixedUpdate(real fixedDeltaTime) {
+        if (isValidScene()) {
+            mCurrentScene->fixedUpdate(fixedDeltaTime);
+        }
+    }
+
     void SceneManager::update(real deltaTime) {
         if (isValidScene()) {
             mCurrentScene->update(deltaTime);

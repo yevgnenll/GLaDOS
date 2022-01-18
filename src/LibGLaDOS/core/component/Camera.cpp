@@ -141,6 +141,10 @@ namespace GLaDOS {
         return static_cast<real>(Platform::getInstance().getDrawableWidth()) / static_cast<real>(Platform::getInstance().getDrawableHeight());
     }
 
+    void Camera::fixedUpdate(real fixedDeltaTime) {
+        // Nothing to do here
+    }
+
     void Camera::update(real deltaTime) {
         // Nothing to do here
     }

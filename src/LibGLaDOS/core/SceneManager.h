@@ -24,6 +24,7 @@ namespace GLaDOS {
         std::size_t sceneCount() const;
         bool isValidScene() const;
 
+        void fixedUpdate(real fixedDeltaTime);
         void update(real deltaTime);
         void render();
 

@@ -80,6 +80,15 @@ namespace GLaDOS {
         return newGameObject;
     }
 
+    void Scene::fixedUpdate(real fixedDeltaTime) {
+        onFixedUpdate(fixedDeltaTime);
+        for (auto& gameObject : mGameObjects) {
+            if (gameObject->isActive()) {
+                gameObject->fixedUpdate(fixedDeltaTime);
+            }
+        }
+    }
+
     void Scene::update(real deltaTime) {
         onUpdate(deltaTime);
         for (auto& gameObject : mGameObjects) {

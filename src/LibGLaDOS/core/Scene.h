@@ -31,8 +31,8 @@ namespace GLaDOS {
         virtual void onUpdate(real deltaTime) {}
         // last update every frame after OnUpdate called
         virtual void onLateUpdate(real deltaTime) {}
-        // fixed time update (TODO)
-        virtual void fixedUpdate() {}
+        // fixed time update
+        virtual void onFixedUpdate(real fixedDeltaTime) {}
         virtual void onPreRender() {}
         virtual void onPostRender() {}
 
@@ -44,10 +44,12 @@ namespace GLaDOS {
         GameObject* instantiate(GameObject* original, const Vec3& position);
         GameObject* instantiate(GameObject* original, const Vec3& position, const Quat& rotation);
 
-      private:
+      protected:
+        void fixedUpdate(real fixedDeltaTime) override;
         void update(real deltaTime) override;
         void render() override;
 
+      private:
         static Logger* logger;
 
         uint32_t mBuildIndex{0};

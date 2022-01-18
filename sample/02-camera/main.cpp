@@ -114,16 +114,8 @@ int main(int argc, char** argv) {
     }
 
     SceneManager::getInstance().setActiveScene(SceneManager::getInstance().createScene<MainScene>("testScene"));
-    static real limitFPS = 1.0 / 60.0;
-    real deltaTime = 0;
-
     while (Platform::getInstance().isRunning()) {
         Platform::getInstance().update();
-        deltaTime += Timer::getInstance().deltaTime() / limitFPS;
-        while (deltaTime >= 1.0) {
-            // fixedUpdate();
-            deltaTime--;
-        }
     }
 
     DestructionManager::getInstance().destroyObjects();

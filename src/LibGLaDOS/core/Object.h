@@ -24,11 +24,11 @@ namespace GLaDOS {
         // when object is destroyed
         virtual void onDestroy() {}
 
-      private:
+      protected:
+        virtual void fixedUpdate(real fixedDeltaTime) = 0;
         virtual void update(real deltaTime) = 0;
         virtual void render() = 0;
 
-      protected:
         std::string mName;
         bool mIsActive{true};
     };

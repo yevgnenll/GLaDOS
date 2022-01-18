@@ -9,6 +9,9 @@ namespace GLaDOS {
 
     }
 
+    void Light::fixedUpdate(real fixedDeltaTime) {
+    }
+
     void Light::update(real deltaTime) {
     }
 

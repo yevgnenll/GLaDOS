@@ -539,10 +539,10 @@ namespace GLaDOS {
     void Platform::render() {
         // vsync with timer, input update
         Input::getInstance().update();
-        Timer::getInstance().update();
 
         // actual rendering start
         mMainFrameBuffer->begin();
+        Timer::getInstance().update();
         SceneManager::getInstance().update(Timer::getInstance().deltaTime());  // should be here in scope of semaphore lock
         SceneManager::getInstance().render();
         mMainFrameBuffer->end();

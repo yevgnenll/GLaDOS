@@ -191,6 +191,10 @@ namespace GLaDOS {
         return mGameObject->mParent->mTransform->localMatrix() * mGameObject->mParent->mTransform->parentLocalMatrix();
     }
 
+    void Transform::fixedUpdate(real fixedDeltaTime) {
+        // Nothing to do here
+    }
+
     void Transform::update(real deltaTime) {
         // Nothing to do here
     }

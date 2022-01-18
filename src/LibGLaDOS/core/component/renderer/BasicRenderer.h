@@ -13,6 +13,8 @@ namespace GLaDOS {
         Renderable* getRenderable() { return mRenderable; }
 
       protected:
+        void fixedUpdate(real fixedDeltaTime) override {}
+
         Renderable* mRenderable{nullptr};
     };
 }

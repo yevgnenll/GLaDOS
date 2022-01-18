@@ -65,6 +65,7 @@ namespace GLaDOS {
         Vec3 transformVector(const Vec3& vector) const;
 
       protected:
+        void fixedUpdate(real fixedDeltaTime) override;
         void update(real deltaTime) override;
         void render() override;
         Component* clone() override;

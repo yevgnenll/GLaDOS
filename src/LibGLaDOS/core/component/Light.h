@@ -10,6 +10,7 @@ namespace GLaDOS {
         ~Light();
 
       protected:
+        void fixedUpdate(real fixedDeltaTime) override;
         void update(real deltaTime) override;
         void render() override;
         Component* clone() override;

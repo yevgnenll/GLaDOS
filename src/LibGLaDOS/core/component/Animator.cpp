@@ -75,6 +75,9 @@ namespace GLaDOS {
         return mAnimations.cend();
     }
 
+    void Animator::fixedUpdate(real fixedDeltaTime) {
+    }
+
     void Animator::update(real deltaTime) {
     }
 

@@ -19,7 +19,6 @@ namespace GLaDOS {
     using TimePoint = SystemClock::time_point;
     using HighResolutionClock = std::chrono::high_resolution_clock;
     using HighResolutionTimePoint = std::chrono::time_point<HighResolutionClock>;
-    using millisecond = std::chrono::duration<real, std::milli>;
     using OSVersion = float;
 
     template<typename T> using Underlying = typename std::underlying_type<T>::type;

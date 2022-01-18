@@ -54,12 +54,13 @@ namespace GLaDOS {
 
       protected:
         GameObject* clone() override;
+        void fixedUpdate(real fixedDeltaTime) override;
+        void update(real deltaTime) override;
+        void render() override;
 
       private:
         static Logger* logger;
         GameObject(GameObject* parent, Scene* scene);
-        void update(real deltaTime) override;
-        void render() override;
 
         template <typename T>
         bool subscribeToMessageType(MessageType type);
