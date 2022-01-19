@@ -3,6 +3,12 @@
 
 namespace GLaDOS {
     class Collider {
+      public:
+        Collider();
+        virtual ~Collider();
+
+      protected:
+
     };
 }  // namespace GLaDOS
 
