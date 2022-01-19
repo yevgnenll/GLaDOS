@@ -3,7 +3,7 @@
 
 using namespace GLaDOS;
 
-TEST_CASE("BitMask unit test", "[BitMask]") {
+TEST_CASE("BitMask unit tests", "[BitMask]") {
     SECTION("BitMask set test") {
         BitMask bitMask;
         bitMask.set(0);

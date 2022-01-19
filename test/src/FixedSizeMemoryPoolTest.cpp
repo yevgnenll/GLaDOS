@@ -6,7 +6,7 @@
 
 using namespace GLaDOS;
 
-TEST_CASE("FixedSizeMemoryPool unit test", "[FixedSizeMemoryPool]") {
+TEST_CASE("FixedSizeMemoryPool unit tests", "[FixedSizeMemoryPool]") {
   struct Person {
     Person(int age, std::string name, std::string haircolor) : mAge{age}, mName{std::move(name)}, mHairColor{std::move(haircolor)} {}
     ~Person() {}

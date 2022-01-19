@@ -5,7 +5,7 @@
 
 using namespace GLaDOS;
 
-TEST_CASE("Matrix unit test", "[Matrix]") {
+TEST_CASE("Matrix unit tests", "[Matrix]") {
   SECTION("default constructor test") {
     Mat4x m;
     REQUIRE(Mat4x::identity() == m);
@@ -126,7 +126,7 @@ TEST_CASE("Matrix unit test", "[Matrix]") {
     REQUIRE(v2 == Vec4{1,2,3,4});
   }
 
-  SECTION("inverse of matex test") {
+  SECTION("inverse of matrix test") {
     Mat4x m1{
         -3.F, -1.F, 2.F, -3.F,
         -3.F, 1.F, 2.F, -2.F,

@@ -4,7 +4,7 @@
 
 using namespace GLaDOS;
 
-TEST_CASE("SIMD unit test", "[SIMD]") {
+TEST_CASE("SIMD unit tests", "[SIMD]") {
   SIMDVec4 a = SIMD_load(1, 2, 3, 4);
   SIMDVec4 b = SIMD_load(5, 6, 7, 8);
 

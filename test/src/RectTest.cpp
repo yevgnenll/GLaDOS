@@ -6,7 +6,7 @@
 
 using namespace GLaDOS;
 
-TEST_CASE("Rect unit test", "[Rect]") {
+TEST_CASE("Rect unit tests", "[Rect]") {
     SECTION("Rect construct & copy") {
         Rect<real> r;
         REQUIRE(r.x == 0.f);

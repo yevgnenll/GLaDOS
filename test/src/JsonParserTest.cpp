@@ -20,7 +20,7 @@ std::string simpleJson = R"(
 }
 )";
 
-TEST_CASE("JsonParser unit test", "[JsonParser]") {
+TEST_CASE("JsonParser unit tests", "[JsonParser]") {
   SECTION("JsonParser basic deserialize") {
     JsonNode root;
     std::string errMessage;

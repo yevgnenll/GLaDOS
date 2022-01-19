@@ -3,7 +3,7 @@
 
 using namespace GLaDOS;
 
-TEST_CASE("Allocation unit test", "[Allocation]") {
+TEST_CASE("Allocation unit tests", "[Allocation]") {
   SECTION("calculate minimum size memory aligntment") {
     std::size_t aligned = alignment(sizeof(int32_t) + sizeof(MemBlockDList), _mem_alignment);
     REQUIRE(aligned == 64);

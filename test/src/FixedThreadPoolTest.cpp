@@ -12,7 +12,7 @@ void task1(int a, int b) {
   }
 };
 
-TEST_CASE("FixedThreadPool unit test", "[FixedThreadPool]") {
+TEST_CASE("FixedThreadPool unit tests", "[FixedThreadPool]") {
   SECTION("ThreadPool submit bool task with future test") {
     FixedThreadPool pool;
     std::vector<std::future<bool>> futures;

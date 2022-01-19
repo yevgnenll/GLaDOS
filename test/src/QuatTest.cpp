@@ -4,7 +4,7 @@
 
 using namespace GLaDOS;
 
-TEST_CASE("Quaternion unit test", "[Quaternion]") {
+TEST_CASE("Quaternion unit tests", "[Quaternion]") {
     SECTION("default constructor test") {
         Quat q;
         REQUIRE(Quat::identity == q);
