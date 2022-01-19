@@ -3,10 +3,11 @@
 
 #include "Math.h"
 #include "Size.hpp"
+#include "Point.hpp"
 
 namespace GLaDOS {
     /*
-                     (w,h)
+                     (x+w,y+h)
         +-------------+
         |             |
         |             |
@@ -15,7 +16,6 @@ namespace GLaDOS {
         +-------------+
       (x,y)
     */
-    class Vec2;
     template <typename T>
     class Rect {
       public:
@@ -23,8 +23,8 @@ namespace GLaDOS {
         Rect(const T& _x, const T& _y, const T& _w, const T& _h);
         Rect(const Rect<T>& other) = default;
         Rect(Rect<T>&& other) noexcept;
-
         Rect<T>& operator=(Rect<T> other);
+
         bool operator==(const Rect<T>& other) const;
         bool operator!=(const Rect<T>& other) const;
         Rect<T> operator+(const Rect<T>& other) const;
@@ -37,14 +37,10 @@ namespace GLaDOS {
         Rect<T>& operator/=(const Rect<T>& other);
 
         Size<T> toSize() const;
-        Size<T> toFullSize() const;
         Rect& makeMerge(const Rect<T>& other);
-        bool intersect(const Rect<T>& other) const;
-        bool contains(const Vec2& value) const;
-        bool contains(const Rect<T>& value) const;
-        Rect<T>& setRect(const T& _x, const T& _y, const T& _w, const T& _h);
+        bool contains(const Point<T>& other) const;
+        bool overlaps(const Rect<T>& other) const;
         T area() const;
-        void makeExpand(T to);
 
         // anonymous union
         union {
@@ -52,26 +48,31 @@ namespace GLaDOS {
                 T x, y;
                 T w, h;
             };
-            Size<T> origin;
+            Point<T> origin;
             Size<T> size;
         };
 
-        static Rect<T> expand(Rect<T>& rect, T to);
-        static Rect<T> fromPoints(const Vec2& p1, const Vec2& p2);
-        static Rect<T> merge(const Rect<T>& a, const Rect<T>& b);  // 합집합
-        static Rect<T> intersection(const Rect<T>& a, const Rect<T>& b);  // 교집합
+        static Rect<T> fromPointSize(const Point<T>& _point, const Size<T>& _size); // make Rect from point and size
+        static Rect<T> merge(const Rect<T>& a, const Rect<T>& b); // 합집합
+        static Rect<T> intersection(const Rect<T>& a, const Rect<T>& b); // 교집합
 
-        static const Rect<T> zero, one;
+        static const Rect<T> zero, one, unit;
 
       private:
         void swap(Rect<T>& first, Rect<T>& second);
+
+        static bool inRange(T value, T min, T max);
+        static bool inRange(T min0, T min1, T max0, T max1);
     };
 
     template <typename T>
-    const Rect<T> Rect<T>::zero = Rect<T>{};
+    const Rect<T> Rect<T>::zero = Rect<T>{(T)0, (T)0, (T)0, (T)0};
 
     template <typename T>
     const Rect<T> Rect<T>::one = Rect<T>{(T)1, (T)1, (T)1, (T)1};
+
+    template <typename T>
+    const Rect<T> Rect<T>::unit = Rect<T>{(T)0, (T)0, (T)1, (T)1};
 
     template <typename T>
     Rect<T>::Rect() : x{(T)0}, y{(T)0}, w{(T)1}, h{(T)1} {
@@ -162,96 +163,54 @@ namespace GLaDOS {
 
     template <typename T>
     Size<T> Rect<T>::toSize() const {
-        return Size<T>{w - x, h - y};
-    }
-
-    template <typename T>
-    Size<T> Rect<T>::toFullSize() const {
         return Size<T>{w, h};
     }
 
     template <typename T>
     Rect<T>& Rect<T>::makeMerge(const Rect<T>& other) {
-        x = Math::min(x, other.x);
-        y = Math::max(y, other.y);
-        w = Math::min(w, other.w);
-        h = Math::max(h, other.h);
-        return *this;
+        return *this = Rect<T>::merge(*this, other);
     }
 
     template <typename T>
-    bool Rect<T>::intersect(const Rect<T>& other) const {
-        Rect rect;
-        rect.x = Math::max(x, other.x);
-        rect.y = Math::max(y, other.y);
-        rect.w = Math::min(w, other.w);
-        rect.h = Math::min(h, other.h);
-        return !static_cast<bool>(rect.x > rect.w || rect.y > rect.h);
+    bool Rect<T>::contains(const Point<T>& other) const {
+        return Rect<T>::inRange(other.x, x, x + w) && Rect<T>::inRange(other.y, y, y + h);
     }
 
     template <typename T>
-    bool Rect<T>::contains(const Vec2& value) const {
-        return !static_cast<bool>(x > value.x || w < value.x || y > value.y || h < value.y);
-    }
-
-    template <typename T>
-    bool Rect<T>::contains(const Rect<T>& value) const {
-        Size<T> thisSize = toSize();
-        Size<T> otherSize = value.toSize();
-        return x <= value.x && otherSize.x <= thisSize.x && y <= value.y && otherSize.y <= thisSize.y;
-    }
-
-    template <typename T>
-    Rect<T>& Rect<T>::setRect(const T& _x, const T& _y, const T& _w, const T& _h) {
-        return *this = Rect<T>{_x, _y, _w, _h};
+    bool Rect<T>::overlaps(const Rect<T>& other) const {
+        return Rect<T>::inRange(x, other.x, x + w, other.x + other.w) && Rect<T>::inRange(y, other.y, y + h, other.y + other.h);
     }
 
     template <typename T>
     T Rect<T>::area() const {
         Size<T> size = toSize();
-        return size.x * size.y;
+        return size.w * size.h;
     }
 
     template <typename T>
-    void Rect<T>::makeExpand(T to) {
-        x -= to * 0.5;
-        y -= to * 0.5;
-        w += to;
-        h += to;
-    }
-
-    template <typename T>
-    Rect<T> Rect<T>::expand(Rect<T>& rect, T to) {
-        rect.x -= to * 0.5;
-        rect.y -= to * 0.5;
-        rect.w += to;
-        rect.h += to;
-    }
-
-    template <typename T>
-    Rect<T> Rect<T>::fromPoints(const Vec2& p1, const Vec2& p2) {
-        //    const Vec2 upperLeft = Vec2::min(p1, p2);
-        //    const Vec2 rightBottom = Vec2::max(p1, p2);
-        //    return Rect<T>(upperLeft, Math::Max(rightBottom - upperLeft, Vector2::Zero));
-        // TODO
+    Rect<T> Rect<T>::fromPointSize(const Point<T>& _point, const Size<T>& _size) {
+        return Rect<T>{_point.x, _point.y, _size.w, _size.h};
     }
 
     template <typename T>
     Rect<T> Rect<T>::merge(const Rect<T>& a, const Rect<T>& b) {
-        T newX = Math::min(a.x, b.x);
-        T newY = Math::min(a.y, b.y);
-        T newW = Math::max(a.w, b.w);
-        T newH = Math::max(a.h, b.h);
-        return Rect<T>{newX, newY, Math::max(newW, (T)0.0), Math::max(newH, (T)0.0)};
+        T newX = Math::min(Math::min(a.x, a.x + a.w), Math::min(b.x, b.x + b.w));
+        T newY = Math::min(Math::min(a.y, a.y + a.h), Math::min(b.y, b.y + b.h));
+        T newW = Math::max(Math::max(a.x, a.x + a.w), Math::max(b.x, b.x + b.w));
+        T newH = Math::max(Math::max(a.y, a.y + a.h), Math::max(b.y, b.y + b.h));
+        return Rect<T>{newX, newY, newW - newX, newH - newY};
     }
 
     template <typename T>
     Rect<T> Rect<T>::intersection(const Rect<T>& a, const Rect<T>& b) {
-        T newX = Math::max(a.x, b.x);
-        T newY = Math::max(a.y, b.y);
-        T newW = Math::min(a.w, b.w);
-        T newH = Math::min(a.h, b.h);
-        return Rect<T>{newX, newY, Math::max(newW, (T)0.0), Math::max(newH, (T)0.0)};
+        if (!a.overlaps(b)) {
+            return Rect<T>::zero;
+        }
+        T newX = Math::max(Math::min(a.x, a.x + a.w), Math::min(b.x, b.x + b.w));
+        T newY = Math::max(Math::min(a.y, a.y + a.h), Math::min(b.y, b.y + b.h));
+        T newW = Math::min(Math::max(a.x, a.x + a.w), Math::max(b.x, b.x + b.w));
+        T newH = Math::min(Math::max(a.y, a.y + a.h), Math::max(b.y, b.y + b.h));
+        return Rect<T>{newX, newY, newW - newX, newH - newY};
     }
 
     template <typename T>
@@ -262,6 +221,16 @@ namespace GLaDOS {
         swap(first.y, second.y);
         swap(first.w, second.w);
         swap(first.h, second.h);
+    }
+
+    template <typename T>
+    bool Rect<T>::inRange(T value, T min, T max) {
+        return value >= Math::min(min, max) && value <= Math::max(min, max); // handle min, max flip over
+    }
+
+    template <typename T>
+    bool Rect<T>::inRange(T min0, T min1, T max0, T max1) {
+        return Math::max(min0, max0) >= Math::min(min1, max1) && Math::min(min0, max0) <= Math::max(min1, max1); // handle min, max flip over
     }
 }  // namespace GLaDOS
 

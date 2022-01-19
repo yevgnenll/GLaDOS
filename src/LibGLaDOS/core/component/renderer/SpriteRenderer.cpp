@@ -90,7 +90,7 @@ namespace GLaDOS {
         Transform* transform = mGameObject->transform();
         Rect<real> textureRect = getSprite()->getRectNormalized();
         Point<real> anchorPoint = getSprite()->getAnchorPoint();
-        Size<uint32_t> size = getSprite()->getRect().toFullSize();
+        Size<uint32_t> size = getSprite()->getRect().toSize();
 
         shaderProgram->setUniform("model", transform->localToWorldMatrix());
         shaderProgram->setUniform("view", mainCamera->worldToCameraMatrix());

@@ -103,7 +103,7 @@ namespace GLaDOS {
     }
 
     Blob& Blob::operator<<(Size<int32_t>& value) {
-        writeBytes(reinterpret_cast<std::byte*>(&value.x), sizeof(value));
+        writeBytes(reinterpret_cast<std::byte*>(&value.w), sizeof(value));
         return *this;
     }
 
@@ -118,7 +118,7 @@ namespace GLaDOS {
     }
 
     Blob& Blob::operator<<(Size<uint32_t>& value) {
-        writeBytes(reinterpret_cast<std::byte*>(&value.x), sizeof(value));
+        writeBytes(reinterpret_cast<std::byte*>(&value.w), sizeof(value));
         return *this;
     }
 

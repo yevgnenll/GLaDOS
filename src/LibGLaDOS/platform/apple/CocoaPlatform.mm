@@ -317,7 +317,7 @@ namespace GLaDOS {
 
     Size<int32_t> CocoaPlatform::centerOfScreen() {
         const Size<int32_t> screenSize = CocoaPlatform::getScreenSize();
-        return Size<int32_t>{(screenSize.x - Platform::getInstance().mContentWidth) >> 1, (screenSize.y - Platform::getInstance().mContentHeight) >> 1};
+        return Size<int32_t>{(screenSize.w - Platform::getInstance().mContentWidth) >> 1, (screenSize.h - Platform::getInstance().mContentHeight) >> 1};
     }
 
     Size<int32_t> CocoaPlatform::getScreenSize() {
@@ -603,7 +603,7 @@ namespace GLaDOS {
             frame = [[NSScreen mainScreen] frame];
         } else {
             Size<int32_t> screenCoord = CocoaPlatform::centerOfScreen();
-            frame = NSMakeRect(screenCoord.x, screenCoord.y, mContentWidth, mContentHeight);
+            frame = NSMakeRect(screenCoord.w, screenCoord.h, mContentWidth, mContentHeight);
         }
         setContentRect(static_cast<int>(frame.size.width), static_cast<int>(frame.size.height));
 

@@ -9,7 +9,7 @@ namespace GLaDOS {
       public:
         Size();
         ~Size() = default;
-        Size(const T& _x, const T& _y);
+        Size(const T& _w, const T& _h);
         Size(const Size<T>& other) = default;
         Size(Size<T>&& other) noexcept;
 
@@ -17,18 +17,18 @@ namespace GLaDOS {
         bool operator==(const Size<T>& other) const;
         bool operator!=(const Size<T>& other) const;
 
-        T x, y;
+        T w, h;
 
       private:
         void swap(Size<T>& first, Size<T>& second);
     };
 
     template <typename T>
-    Size<T>::Size() : x{(T)0}, y{(T)0} {
+    Size<T>::Size() : w{(T)0}, h{(T)0} {
     }
 
     template <typename T>
-    Size<T>::Size(const T& _x, const T& _y) : x{(T)_x}, y{(T)_y} {
+    Size<T>::Size(const T& _w, const T& _h) : w{(T)_w}, h{(T)_h} {
     }
 
     template <typename T>
@@ -45,7 +45,7 @@ namespace GLaDOS {
 
     template <typename T>
     bool Size<T>::operator==(const Size<T>& other) const {
-        return x == other.x && y == other.y;
+        return w == other.w && h == other.h;
     }
 
     template <typename T>
@@ -57,12 +57,11 @@ namespace GLaDOS {
     void Size<T>::swap(Size<T>& first, Size<T>& second) {
         using std::swap;
 
-        swap(first.x, second.x);
-        swap(first.y, second.y);
+        swap(first.w, second.w);
+        swap(first.h, second.h);
     }
 
     using Sizei = Size<std::size_t>;
-    using Sizef = Size<float>;
 }  // namespace GLaDOS
 
 #endif  //GLADOS_SIZE_HPP

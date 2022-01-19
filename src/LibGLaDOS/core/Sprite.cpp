@@ -58,7 +58,7 @@ namespace GLaDOS {
     }
 
     Point<real> Sprite::getAnchorPointNormalized() const {
-        return Point<real>{mAnchorPoint.x() / static_cast<real>(mRect.w), mAnchorPoint.y() / static_cast<real>(mRect.h)};
+        return Point<real>{mAnchorPoint.x / static_cast<real>(mRect.w), mAnchorPoint.y / static_cast<real>(mRect.h)};
     }
 
     Renderable* Sprite::getRenderable() {

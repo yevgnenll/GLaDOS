@@ -18,8 +18,8 @@ namespace GLaDOS {
         //	0----------3
         //	|          |
         //	1----------2
-        real width = static_cast<real>(size.x);
-        real height = static_cast<real>(size.y);
+        real width = static_cast<real>(size.w);
+        real height = static_cast<real>(size.h);
 
         Vector<real> vertices = {
             0.f, height, 0.f,
