@@ -106,4 +106,14 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
         Quat q2 = {5,6,7,8};
         REQUIRE(Quat::inverse(q1 * q2) == Quat::inverse(q2) * Quat::inverse(q1));
     }
+
+    SECTION("Quat from to euler") {
+        Quat q = {3, 6, 2, 1};
+        Vec3 eulerAngle = Quat::toEuler(q);
+        REQUIRE(eulerAngle == Vec3{126.8698983, 0, 36.8698983});
+
+        Vec3 euler = {Math::toRadians(Deg{12}).get(), Math::toRadians(Deg{30}).get(), Math::toRadians(Deg{8}).get()};
+        Quat q2 = Quat::fromEuler(euler);
+        REQUIRE(q2 == Quat{0.96018159, 0.08276540, 0.26381728, 0.04002241});
+    }
 }

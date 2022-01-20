@@ -198,18 +198,19 @@ namespace GLaDOS {
     }
 
     Vec3 Quat::toEuler(const Quat& q) {
+        // ZYX order (degrees)
         return Vec3{Math::pitch(q).get(), Math::yaw(q).get(), Math::roll(q).get()};
     }
 
     Quat Quat::fromEuler(const Vec3& euler) {
         /*
-           Suppose euler is in radian unit.
+           from euler ZYX order (radian)
 
            Qx = [ cos(a/2), sin(a/2) ,    0    ,     0   ]
            Qy = [ cos(b/2),     0    , sin(b/2),     0   ]
            Qz = [ cos(c/2),     0    ,    0    , sin(c/2)]
 
-           Qx * Qy * Qz
+           Qz * Qy * Qx
         */
         real rzero = real(0.0);
         real divider = real(0.5);
@@ -217,7 +218,7 @@ namespace GLaDOS {
         Quat qy(Math::cos(euler.y * divider), rzero, Math::sin(euler.y * divider), rzero);
         Quat qz(Math::cos(euler.z * divider), rzero, rzero, Math::sin(euler.z * divider));
 
-        return qx * qy * qz;
+        return qz * qy * qx;
     }
 
     Quat Quat::angleAxis(Rad angle, const UVec3& axis) {
