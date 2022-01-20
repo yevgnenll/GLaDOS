@@ -51,7 +51,7 @@ class MainScene : public Scene {
 
         shaderProgram->setUniform("model", knotTransform->localToWorldMatrix());
         shaderProgram->setUniform("modelViewProj", knotTransform->localToWorldMatrix() * camera->worldToCameraMatrix() * camera->projectionMatrix());
-        shaderProgram->setUniform("normal", Mat4x::transpose(knotTransform->worldToLocalMatrix()));
+        shaderProgram->setUniform("normal", Mat4<real>::transpose(knotTransform->worldToLocalMatrix()));
         shaderProgram->setUniform("cameraPos", cameraTransform->position());
 
         // camera translation

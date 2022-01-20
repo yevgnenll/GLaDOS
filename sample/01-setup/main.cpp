@@ -48,8 +48,8 @@ class MainScene : public Scene {
         }
         shaderProgram->setUniform("brightness", 1.f);
         shaderProgram->setUniform("model", rectObject->transform()->localToWorldMatrix());
-        shaderProgram->setUniform("view", Mat4x::lookAt(cameraPosition, Vec3::normalize(cameraPosition + Vec3::forward), UVec3::up));
-        shaderProgram->setUniform("projection", Mat4x::perspective(Math::toRadians(Deg{60.f}), 1024 / 800, 0.1f, 5000.f));
+        shaderProgram->setUniform("view", Mat4<real>::lookAt(cameraPosition, Vec3::normalize(cameraPosition + Vec3::forward), UVec3::up));
+        shaderProgram->setUniform("projection", Mat4<real>::perspective(Math::toRadians(Deg{60.f}), 1024 / 800, 0.1f, 5000.f));
         Vec3 moveDir = Vec3{Input::getAxisRaw("Horizontal"), Input::getAxisRaw("Vertical")}.makeNormalize();
         rectObject->transform()->translate(moveDir * deltaTime);
         rectObject->transform()->rotate({0, deltaTime * 100, 0});

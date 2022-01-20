@@ -50,7 +50,7 @@ class MainScene : public Scene {
 
         shaderProgram->setUniform("model", planeTransform->localToWorldMatrix());
         shaderProgram->setUniform("modelViewProj", planeTransform->localToWorldMatrix() * camera->worldToCameraMatrix() * camera->projectionMatrix());
-        shaderProgram->setUniform("normal", Mat4x::transpose(planeTransform->worldToLocalMatrix()));
+        shaderProgram->setUniform("normal", Mat4<real>::transpose(planeTransform->worldToLocalMatrix()));
         shaderProgram->setUniform("cameraPos", cameraTransform->position());
 
         // camera translation

@@ -759,10 +759,6 @@ namespace GLaDOS {
             }
         }
     }
-
-    using Mat4x = Mat4<real>;
-    using Mat4i = Mat4<int>;
-    using Mat4l = Mat4<long>;
 }  // namespace GLaDOS
 
 #endif  //GLADOS_MAT4_HPP

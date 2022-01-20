@@ -37,7 +37,7 @@ namespace GLaDOS {
             Scene* currentScene = mGameObject->scene();
             Camera* mainCamera = currentScene->getMainCamera();
             // can not be affected by camera orthographic mode
-            Mat4x viewProjection = Mat4x::toMat3(mainCamera->worldToCameraMatrix()) *
+            Mat4<real> viewProjection = Mat4<real>::toMat3(mainCamera->worldToCameraMatrix()) *
                                    Mat4<real>::perspective(Math::toRadians(mainCamera->fieldOfView()),
                                                            mainCamera->aspectRatio(), mainCamera->nearClipPlane(), mainCamera->farClipPlane());
             shaderProgram->setUniform("viewProjection", viewProjection);
