@@ -183,8 +183,7 @@ namespace GLaDOS {
 
     template <typename T>
     T Rect<T>::area() const {
-        Size<T> size = toSize();
-        return size.w * size.h;
+        return toSize().area();
     }
 
     template <typename T>

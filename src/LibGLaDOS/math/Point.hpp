@@ -2,6 +2,7 @@
 #define GLADOS_POINT_H
 
 #include "Math.h"
+#include "Vec2.h"
 
 namespace GLaDOS {
     template <typename T>
@@ -21,10 +22,6 @@ namespace GLaDOS {
 
         bool operator==(const Point<T>& p) const;
         bool operator!=(const Point<T>& p) const;
-        Point<T>& operator+=(const Point<T>& p);
-        Point<T>& operator-=(const Point<T>& p);
-        Point<T>& operator*=(const Point<T>& p);
-        Point<T>& operator/=(const Point<T>& p);
 
         Point<T> operator-() const;
         Point<T> operator+(T scalar) const;
@@ -32,10 +29,12 @@ namespace GLaDOS {
         Point<T> operator*(T scalar) const;
         Point<T> operator/(T scalar) const;
 
-        Point<T> operator+(const Point<T>& p) const;
-        Point<T> operator-(const Point<T>& p) const;
-        Point<T> operator*(const Point<T>& p) const;
-        Point<T> operator/(Point<T> p) const;
+        Point<T> operator+(const Vec2& vector) const; // point + vector = point
+        Point<T> operator-(const Vec2& vector) const; // point - vector = point
+        Point<T>& operator+=(const Vec2& vector);
+        Point<T>& operator-=(const Vec2& vector);
+        // point + point = undefined
+        Vec2 operator-(const Point<T>& point) const; // point - point = vector
 
         union {
             struct {
@@ -100,34 +99,6 @@ namespace GLaDOS {
     }
 
     template <typename T>
-    Point<T>& Point<T>::operator+=(const Point<T>& p) {
-        x += p.x;
-        y += p.y;
-        return *this;
-    }
-
-    template <typename T>
-    Point<T>& Point<T>::operator-=(const Point<T>& p) {
-        x -= p.x;
-        y -= p.y;
-        return *this;
-    }
-
-    template <typename T>
-    Point<T>& Point<T>::operator*=(const Point<T>& p) {
-        x *= p.x;
-        y *= p.y;
-        return *this;
-    }
-
-    template <typename T>
-    Point<T>& Point<T>::operator/=(const Point<T>& p) {
-        x /= p.x;
-        y /= p.y;
-        return *this;
-    }
-
-    template <typename T>
     Point<T> Point<T>::operator-() const {
         return Point<T>{-x, -y};
     }
@@ -153,26 +124,32 @@ namespace GLaDOS {
     }
 
     template <typename T>
-    Point<T> Point<T>::operator+(const Point<T>& p) const {
-        return Point<T>{x + p.x, y + p.y};
+    Point<T> Point<T>::operator+(const Vec2& vector) const {
+        return Point<T>(x + vector.x, y + vector.y);
     }
 
     template <typename T>
-    Point<T> Point<T>::operator-(const Point<T>& p) const {
-        return Point<T>{x - p.x, y - p.y};
+    Point<T> Point<T>::operator-(const Vec2& vector) const {
+        return Point<T>(x - vector.x, y - vector.y);
     }
 
     template <typename T>
-    Point<T> Point<T>::operator*(const Point<T>& p) const {
-        return Point<T>{x / p.x, y / p.y};
+    Point<T>& Point<T>::operator+=(const Vec2& vector) {
+        x += vector.x;
+        y += vector.y;
+        return *this;
     }
 
     template <typename T>
-    Point<T> Point<T>::operator/(Point<T> p) const {
-        return Point<T>{
-            x / (p.x == 0 ? 1 : p.x),
-            y / (p.y == 0 ? 1 : p.y)
-        };
+    Point<T>& Point<T>::operator-=(const Vec2& vector) {
+        x -= vector.x;
+        y -= vector.y;
+        return *this;
+    }
+
+    template <typename T>
+    Vec2 Point<T>::operator-(const Point<T>& point) const {
+        return Vec2(x - point.x, y - point.y);
     }
 
     template <typename T>

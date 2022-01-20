@@ -16,6 +16,7 @@ namespace GLaDOS {
         Size<T>& operator=(Size<T> other);
         bool operator==(const Size<T>& other) const;
         bool operator!=(const Size<T>& other) const;
+        T area() const;
 
         T w, h;
 
@@ -51,6 +52,11 @@ namespace GLaDOS {
     template <typename T>
     bool Size<T>::operator!=(const Size<T>& other) const {
         return !(*this == other);
+    }
+
+    template <typename T>
+    T Size<T>::area() const {
+        return w * h;
     }
 
     template <typename T>
