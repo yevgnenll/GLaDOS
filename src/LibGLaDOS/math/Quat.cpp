@@ -9,7 +9,7 @@ namespace GLaDOS {
 
     Quat::Quat(real _w, real _x, real _y, real _z) : w{_w}, x{_x}, y{_y}, z{_z} {}
 
-    Quat::Quat(real _w, const Vec3& _v) : w{_w}, x{_v.x}, y{_v.y}, z{_v.z} {}
+    Quat::Quat(real scalar, const Vec3& vector) : w{scalar}, x{vector.x}, y{vector.y}, z{vector.z} {}
 
     Quat::Quat(Quat&& other) noexcept : Quat{} {
         Quat::swap(*this, other);
@@ -53,6 +53,7 @@ namespace GLaDOS {
     Quat& Quat::operator*=(const Quat& other) {
         Quat tmp;
 
+        // equal to
         // w * other.w - (Vec3::dot(vector, other.vector)) + w * other.vector + other.w * vector + (Vec3::cross(vector, other.vector)
         tmp.w = (w * other.w) - (x * other.x) - (y * other.y) - (z * other.z);
         tmp.x = (w * other.x) + (x * other.w) + (y * other.z) - (z * other.y);
@@ -143,11 +144,17 @@ namespace GLaDOS {
     }
 
     Quat& Quat::makeInverse() {
+        // zero quaternion does not have inverse
+        if (*this == Quat::zero) {
+            throw std::invalid_argument{"Quaternion is zero! Inverse does not exist."};
+        }
+        // equal to makeConjugate() /= (this->length() * this->length())
         return makeConjugate() /= Quat::dot(*this, *this);
     }
 
     real Quat::length() const {
-        return Math::sqrt(x * x + y * y + z * z + w * w);
+        // equal to sqrt(qq*)
+        return Math::sqrt(w * w + x * x + y * y + z * z);
     }
 
     Vec3 Quat::conjugate(const Vec3& v) const {

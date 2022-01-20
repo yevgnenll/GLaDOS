@@ -15,7 +15,7 @@ namespace GLaDOS {
         Quat();
         ~Quat() = default;
         Quat(real _w, real _x, real _y, real _z);
-        Quat(real _w, const Vec3& _v);
+        Quat(real scalar, const Vec3& vector);
         Quat(Quat&& other) noexcept;
         Quat(const Quat& other) = default;
         Quat& operator=(Quat other);  // copy and swap idiom
