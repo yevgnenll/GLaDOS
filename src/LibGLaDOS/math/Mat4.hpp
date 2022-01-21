@@ -14,6 +14,7 @@
 #include "platform/OSTypes.h"
 
 namespace GLaDOS {
+    // Row-major 4x4 matrix
     template <typename T>
     class Mat4 {
       public:

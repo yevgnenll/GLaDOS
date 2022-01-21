@@ -105,6 +105,14 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
         // (pq)-1 == q-1p-1
         Quat q2 = {5,6,7,8};
         REQUIRE(Quat::inverse(q1 * q2) == Quat::inverse(q2) * Quat::inverse(q1));
+
+        // qq-1 == (1,0,0,0)
+        Quat qq = q1 * Quat::inverse(q1);
+        REQUIRE(qq == Quat{1, 0, 0, 0});
+
+        // q-1q == (1,0,0,0)
+        Quat qq2 = Quat::inverse(q1) * q1;
+        REQUIRE(qq2 == Quat{1, 0, 0, 0});
     }
 
     SECTION("Quat from to euler") {
@@ -115,5 +123,20 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
         Vec3 euler = {Math::toRadians(Deg{12}).get(), Math::toRadians(Deg{30}).get(), Math::toRadians(Deg{8}).get()};
         Quat q2 = Quat::fromEuler(euler);
         REQUIRE(q2 == Quat{0.96018159, 0.08276540, 0.26381728, 0.04002241});
+    }
+
+    SECTION("Quat cross & dot product") {
+        Quat q1 = {1, 2, 3, 4};
+        Quat q2 = {5, 6, 7, 8};
+        real d = Quat::dot(q1, q2);
+        REQUIRE(d == 70.f);
+    }
+
+    SECTION("Quat from & to rotation matrix") {
+
+    }
+
+    SECTION("Quat linear interpolation & spherical linear interpolation") {
+
     }
 }

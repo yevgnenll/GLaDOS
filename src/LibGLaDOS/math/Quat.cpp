@@ -158,12 +158,7 @@ namespace GLaDOS {
     }
 
     Vec3 Quat::conjugate(const Vec3& v) const {
-        Quat q2{0.F, v.x, v.y, v.z};
-        Quat q = *this;
-        Quat qinv = q;
-        q.makeConjugate();
-
-        q = q * q2 * qinv;
+        Quat q = *this * Quat{0.F, v.x, v.y, v.z} * Quat::inverse(*this);
         return Vec3{q.x, q.y, q.z};
     }
 
@@ -258,12 +253,18 @@ namespace GLaDOS {
 
     Mat4<real> Quat::toRotationMat(const Quat& q) {
         /*
-           1-2y^2-2z^2		2xy-2wz		 2xz+2wy		0
-           2xy+2wz			1-2x^2-2z^2	 2yz-2wx		0
-           2xz-2wy			2yz+2wx		 1-2x^2-2y^2	0
-           0				0			 0				1
+           row-major vector (v)
+
+                    | 1-2y^2-2z^2		2xy+2wz		 2xz-2wy		0 |
+                    | 2xy-2wz			1-2x^2-2z^2	 2yz+2wx		0 |
+          (x,y,z,0)*| 2xz+2wy			2yz-2wx		 1-2x^2-2y^2	0 |
+                    | 0				    0			 0				1 |
         */
         Mat4<real> result;
+
+        static real zero = real(0.0);
+        static real one = real(1.0);
+        static real two = real(2.0);
 
         real xx = q.x * q.x;
         real yy = q.y * q.y;
@@ -275,25 +276,25 @@ namespace GLaDOS {
         real wy = q.w * q.y;
         real wz = q.w * q.z;
 
-        result._m44[0][0] = real(1.0) - real(2.0) * (yy + zz);
-        result._m44[0][1] = real(2.0) * (xy - wz);
-        result._m44[0][2] = real(2.0) * (xz + wy);
-        result._m44[0][3] = real(0.0);
+        result._m44[0][0] = one - two * (yy + zz);
+        result._m44[0][1] = two * (xy - wz);
+        result._m44[0][2] = two * (xz + wy);
+        result._m44[0][3] = zero;
 
-        result._m44[1][0] = real(2.0) * (xy + wz);
-        result._m44[1][1] = real(1.0) - real(2.0) * (xx + zz);
-        result._m44[1][2] = real(2.0) * (yz - wx);
-        result._m44[1][3] = real(0.0);
+        result._m44[1][0] = two * (xy + wz);
+        result._m44[1][1] = one - two * (xx + zz);
+        result._m44[1][2] = two * (yz - wx);
+        result._m44[1][3] = zero;
 
-        result._m44[2][0] = real(2.0) * (xz - wy);
-        result._m44[2][1] = real(2.0) * (yz + wx);
-        result._m44[2][2] = real(1.0) - real(2.0) * (xx + yy);
-        result._m44[2][3] = real(0.0);
+        result._m44[2][0] = two * (xz - wy);
+        result._m44[2][1] = two * (yz + wx);
+        result._m44[2][2] = one - two * (xx + yy);
+        result._m44[2][3] = zero;
 
-        result._m44[3][0] = real(0.0);
-        result._m44[3][1] = real(0.0);
-        result._m44[3][2] = real(0.0);
-        result._m44[3][3] = real(1.0);
+        result._m44[3][0] = zero;
+        result._m44[3][1] = zero;
+        result._m44[3][2] = zero;
+        result._m44[3][3] = one;
 
         return result;
     }
@@ -305,6 +306,11 @@ namespace GLaDOS {
         real z = (m._m44[1][0] - m._m44[0][1]) / (4 * w);
 
         return Quat{w, x, y, z};
+    }
+
+    real Quat::angleBetween(const Quat& q, const Quat& p) {
+//        return Math::acos(Quat::dot(q, p) / (q.length() * p.length()));
+        return 0.f;
     }
 
     Quat Quat::lerp(const Quat& a, const Quat& b, real t) {

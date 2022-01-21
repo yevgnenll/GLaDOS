@@ -29,8 +29,8 @@ namespace GLaDOS {
         Quat operator*(const Quat& other) const;
         Quat& operator*=(const Quat& other);
 
-        Vec3 operator*(const Vec3& other) const;
-        Vec4 operator*(const Vec4& other) const;
+        Vec3 operator*(const Vec3& other) const; // TODO: testme
+        Vec4 operator*(const Vec4& other) const; // TODO: testme
 
         Quat operator*(const real& scalar) const;
         Quat& operator*=(const real& scalar);
@@ -48,10 +48,10 @@ namespace GLaDOS {
         Quat& makeNormalize();
         Quat& makeInverse();
         real length() const;
-        Vec3 conjugate(const Vec3& v) const;
+        Vec3 conjugate(const Vec3& v) const; // TODO: testme
 
-        static Vec3 cross(const Vec3& v, const Quat& q);
-        static Vec3 cross(const Quat& q, const Vec3& v);
+        static Vec3 cross(const Vec3& v, const Quat& q); // TODO: testme
+        static Vec3 cross(const Quat& q, const Vec3& v); // TODO: testme
         static real dot(const Quat& a, const Quat& b);
         static Quat normalize(const Quat& q);
         static Quat inverse(const Quat& q);
@@ -59,12 +59,14 @@ namespace GLaDOS {
         static Vec3 toEuler(const Quat& q); // return Vec3 of degree component (ZYX order)
         static Quat fromEuler(const Vec3& euler); // radian unit euler vector (ZYX order)
         static Quat angleAxis(Rad angle, const UVec3& axis);
-        static Quat fromToRotation(const Vec3& from, const Vec3& to);
+        static Quat fromToRotation(const Vec3& from, const Vec3& to); // TODO: testme
         static Mat4<real> toRotationMat(const Quat& q);
-        static Quat fromRotationMat(const Mat4<real>& m);
+        static Quat fromRotationMat(const Mat4<real>& m); // TODO: testme
+        static real angleBetween(const Quat& q, const Quat& p); // TODO: testme
+
         // Quaternion nlerp is not defined because it's same as lerp.
-        static Quat lerp(const Quat& a, const Quat& b, real t);
-        static Quat slerp(const Quat& a, const Quat& b, real t);
+        static Quat lerp(const Quat& a, const Quat& b, real t); // TODO: testme
+        static Quat slerp(const Quat& a, const Quat& b, real t); // TODO: testme
 
         // real part, vector(imaginary) part
         union {
