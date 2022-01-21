@@ -57,10 +57,10 @@ namespace GLaDOS {
         static Quat inverse(const Quat& q);
         static Quat conjugate(const Quat& q);
         static Vec3 toEuler(const Quat& q); // return Vec3 of degree component (ZYX order)
-        static Quat fromEuler(const Vec3& euler); // radian unit euler vector (ZYX order)
+        static Quat fromEuler(const Vec3& euler); // degree euler vector (ZYX order)
         static Quat angleAxis(Rad angle, const UVec3& axis);
         static Quat fromToRotation(const Vec3& from, const Vec3& to); // TODO: testme
-        static Mat4<real> toRotationMat(const Quat& q);
+        static Mat4<real> toRotationMat(const Quat& q); // TODO: testme
         static Quat fromRotationMat(const Mat4<real>& m); // TODO: testme
         static real angleBetween(const Quat& q, const Quat& p); // TODO: testme
 

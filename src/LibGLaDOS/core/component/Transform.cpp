@@ -27,7 +27,7 @@ namespace GLaDOS {
     }
 
     void Transform::rotate(const Vec3& eulerAngles, Space relativeTo) {
-        Quat euler = Quat::fromEuler(Math::toRadians(eulerAngles));
+        Quat euler = Quat::fromEuler(eulerAngles);
         if (relativeTo == Space::Self) {
             mLocalRotation = euler * mLocalRotation;
             mLocalRotation.makeNormalize();
@@ -118,7 +118,7 @@ namespace GLaDOS {
     }
 
     void Transform::setEulerAngles(const Vec3& euler) {
-        mRotation = Quat::fromEuler(Math::toRadians(euler)).makeNormalize();
+        mRotation = Quat::fromEuler(euler).makeNormalize();
     }
 
     void Transform::setRotation(const Quat& quat) {
@@ -134,7 +134,7 @@ namespace GLaDOS {
     }
 
     void Transform::setLocalEulerAngles(const Vec3& euler) {
-        mLocalRotation = Quat::fromEuler(Math::toRadians(euler)).makeNormalize();
+        mLocalRotation = Quat::fromEuler(euler).makeNormalize();
     }
 
     void Transform::setLocalRotation(const Quat& quat) {

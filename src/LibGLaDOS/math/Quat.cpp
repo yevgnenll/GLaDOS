@@ -199,7 +199,7 @@ namespace GLaDOS {
 
     Quat Quat::fromEuler(const Vec3& euler) {
         /*
-           from euler ZYX order (radian)
+           from euler ZYX order (degree)
 
            Qx = [ cos(a/2), sin(a/2) ,    0    ,     0   ]
            Qy = [ cos(b/2),     0    , sin(b/2),     0   ]
@@ -209,9 +209,11 @@ namespace GLaDOS {
         */
         real rzero = real(0.0);
         real divider = real(0.5);
-        Quat qx(Math::cos(euler.x * divider), Math::sin(euler.x * divider), rzero, rzero);
-        Quat qy(Math::cos(euler.y * divider), rzero, Math::sin(euler.y * divider), rzero);
-        Quat qz(Math::cos(euler.z * divider), rzero, rzero, Math::sin(euler.z * divider));
+        Vec3 angleInRad = Math::toRadians(euler);
+
+        Quat qx(Math::cos(angleInRad.x * divider), Math::sin(angleInRad.x * divider), rzero, rzero);
+        Quat qy(Math::cos(angleInRad.y * divider), rzero, Math::sin(angleInRad.y * divider), rzero);
+        Quat qz(Math::cos(angleInRad.z * divider), rzero, rzero, Math::sin(angleInRad.z * divider));
 
         return qz * qy * qx;
     }
@@ -277,17 +279,17 @@ namespace GLaDOS {
         real wz = q.w * q.z;
 
         result._m44[0][0] = one - two * (yy + zz);
-        result._m44[0][1] = two * (xy - wz);
-        result._m44[0][2] = two * (xz + wy);
+        result._m44[0][1] = two * (xy + wz);
+        result._m44[0][2] = two * (xz - wy);
         result._m44[0][3] = zero;
 
-        result._m44[1][0] = two * (xy + wz);
+        result._m44[1][0] = two * (xy - wz);
         result._m44[1][1] = one - two * (xx + zz);
-        result._m44[1][2] = two * (yz - wx);
+        result._m44[1][2] = two * (yz + wx);
         result._m44[1][3] = zero;
 
-        result._m44[2][0] = two * (xz - wy);
-        result._m44[2][1] = two * (yz + wx);
+        result._m44[2][0] = two * (xz + wy);
+        result._m44[2][1] = two * (yz - wx);
         result._m44[2][2] = one - two * (xx + yy);
         result._m44[2][3] = zero;
 

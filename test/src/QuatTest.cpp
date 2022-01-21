@@ -120,7 +120,7 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
         Vec3 eulerAngle = Quat::toEuler(q);
         REQUIRE(eulerAngle == Vec3{126.8698983, 0, 36.8698983});
 
-        Vec3 euler = {Math::toRadians(Deg{12}).get(), Math::toRadians(Deg{30}).get(), Math::toRadians(Deg{8}).get()};
+        Vec3 euler = {Deg{12}.get(), Deg{30}.get(), Deg{8}.get()};
         Quat q2 = Quat::fromEuler(euler);
         REQUIRE(q2 == Quat{0.96018159, 0.08276540, 0.26381728, 0.04002241});
     }
