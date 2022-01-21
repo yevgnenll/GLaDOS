@@ -29,6 +29,8 @@ namespace GLaDOS {
         Quat operator*(const Quat& other) const;
         Quat& operator*=(const Quat& other);
 
+        // operator/(const Quat&) is not defined. because it is same as Quat * Quat-1 (inverse)
+
         Vec3 operator*(const Vec3& other) const; // rotated Vec3 with quaternion multiplication
         Vec4 operator*(const Vec4& other) const; // rotated Vec4 with quaternion multiplication
 

@@ -124,7 +124,7 @@ namespace GLaDOS {
     }
 
     Quat& Quat::makeInverse() {
-        // zero quaternion does not have inverse
+        // zero quaternion does not have inverse (the only case)
         if (*this == Quat::zero) {
             throw std::invalid_argument{"Quaternion is zero! Inverse does not exist."};
         }

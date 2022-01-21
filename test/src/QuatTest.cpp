@@ -163,10 +163,11 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
     }
 
     SECTION("Angle between two Quaternion") {
-        Quat q1 = {4,1,2,3};
-        Quat q2 = {5,6,7,8};
+        Deg anlge = Deg{60};
+        Quat q1 = {1, 0, 0, 0};
+        Quat q2 = Quat::angleAxis(anlge, Vec3::normalize(Vec3{1, 0, 0}));
         Deg deg = Quat::angleBetween(q1, q2);
-        REQUIRE(deg.get() == 0.f);
+        REQUIRE(Math::equal(deg.get(), anlge.get()));
     }
 
     SECTION("Quat linear interpolation & spherical linear interpolation") {
