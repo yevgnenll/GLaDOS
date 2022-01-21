@@ -29,8 +29,8 @@ namespace GLaDOS {
         Quat operator*(const Quat& other) const;
         Quat& operator*=(const Quat& other);
 
-        Vec3 operator*(const Vec3& other) const; // TODO: testme
-        Vec4 operator*(const Vec4& other) const; // TODO: testme
+        Vec3 operator*(const Vec3& other) const; // rotated Vec3 with quaternion multiplication
+        Vec4 operator*(const Vec4& other) const; // rotated Vec4 with quaternion multiplication
 
         Quat operator*(const real& scalar) const;
         Quat& operator*=(const real& scalar);
@@ -48,7 +48,6 @@ namespace GLaDOS {
         Quat& makeNormalize();
         Quat& makeInverse();
         real length() const;
-        Vec3 conjugate(const Vec3& v) const; // TODO: testme
 
         static Vec3 cross(const Vec3& v, const Quat& q); // TODO: testme
         static Vec3 cross(const Quat& q, const Vec3& v); // TODO: testme
@@ -56,12 +55,12 @@ namespace GLaDOS {
         static Quat normalize(const Quat& q);
         static Quat inverse(const Quat& q);
         static Quat conjugate(const Quat& q);
-        static Vec3 toEuler(const Quat& q); // return Vec3 of degree component (ZYX order)
+        static Vec3 toEuler(const Quat& q); // return to Vec3 of degree component (ZYX order)
         static Quat fromEuler(const Vec3& euler); // degree euler vector (ZYX order)
-        static Quat angleAxis(Rad angle, const UVec3& axis);
+        static Quat angleAxis(Deg angle, const UVec3& axis);
+
+        static Quat fromRotationMat(const Mat4<real>& m);
         static Quat fromToRotation(const Vec3& from, const Vec3& to); // TODO: testme
-        static Mat4<real> toRotationMat(const Quat& q); // TODO: testme
-        static Quat fromRotationMat(const Mat4<real>& m); // TODO: testme
         static real angleBetween(const Quat& q, const Quat& p); // TODO: testme
 
         // Quaternion nlerp is not defined because it's same as lerp.

@@ -65,8 +65,8 @@ class MainScene : public Scene {
             Vec3 mouseDelta = Input::mouseDeltaPosition();
             real rotationX = mouseDelta.y * sensitivity * deltaTime;
             real rotationY = mouseDelta.x * sensitivity * deltaTime;
-            planeTransform->rotate(planeTransform->right(), Math::toRadians(Deg{rotationX}));
-            planeTransform->rotate(planeTransform->up(), Math::toRadians(Deg{-rotationY}));
+            planeTransform->rotate(planeTransform->right(), Deg{rotationX});
+            planeTransform->rotate(planeTransform->up(), Deg{-rotationY});
         }
 
         if (Input::isKeyPress(KeyCode::KEY_Q)) {

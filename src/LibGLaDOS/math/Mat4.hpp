@@ -78,6 +78,7 @@ namespace GLaDOS {
         static std::enable_if_t<is_real_v<T>, Mat4<T>> translate(const Vec3& trans);
         static std::enable_if_t<is_real_v<T>, Mat4<T>> scale(const Vec3& scale);
         static std::enable_if_t<is_real_v<T>, Mat4<T>> rotate(Rad angle, const UVec3& axis);
+        static std::enable_if_t<is_real_v<T>, Mat4<T>> rotate(const Quat& q);
         static std::enable_if_t<is_real_v<T>, Mat4<T>> normalizeComponents(const Mat4<T>& matrix);
         static std::enable_if_t<is_real_v<T>, Vec3> decomposeTranslation(const Mat4<T>& matrix);
         static std::enable_if_t<is_real_v<T>, Vec3> decomposeRotation(const Mat4<T>& matrix);
@@ -688,6 +689,55 @@ namespace GLaDOS {
     }
 
     template <typename T>
+    std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::rotate(const Quat& q) {
+        /*
+           row-major vector (v)
+
+                      | 1-2y^2-2z^2		2xy+2wz		 2xz-2wy		0 |
+                      | 2xy-2wz			1-2x^2-2z^2	 2yz+2wx		0 |
+            (x,y,z,0) | 2xz+2wy			2yz-2wx		 1-2x^2-2y^2	0 |
+                      | 0				    0			 0			1 |
+        */
+        Mat4<real> result;
+
+        static real zero = real(0.0);
+        static real one = real(1.0);
+        static real two = real(2.0);
+
+        real xx = q.x * q.x;
+        real yy = q.y * q.y;
+        real zz = q.z * q.z;
+        real xz = q.x * q.z;
+        real xy = q.x * q.y;
+        real yz = q.y * q.z;
+        real wx = q.w * q.x;
+        real wy = q.w * q.y;
+        real wz = q.w * q.z;
+
+        result._m44[0][0] = one - two * (yy + zz);
+        result._m44[0][1] = two * (xy + wz);
+        result._m44[0][2] = two * (xz - wy);
+        result._m44[0][3] = zero;
+
+        result._m44[1][0] = two * (xy - wz);
+        result._m44[1][1] = one - two * (xx + zz);
+        result._m44[1][2] = two * (yz + wx);
+        result._m44[1][3] = zero;
+
+        result._m44[2][0] = two * (xz + wy);
+        result._m44[2][1] = two * (yz - wx);
+        result._m44[2][2] = one - two * (xx + yy);
+        result._m44[2][3] = zero;
+
+        result._m44[3][0] = zero;
+        result._m44[3][1] = zero;
+        result._m44[3][2] = zero;
+        result._m44[3][3] = one;
+
+        return result;
+    }
+
+    template <typename T>
     std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::normalizeComponents(const Mat4<T>& matrix) {
         UVec4 first = Vec4::normalize(Vec4{matrix._11, matrix._12, matrix._13, matrix._14});
         UVec4 second = Vec4::normalize(Vec4{matrix._21, matrix._22, matrix._23, matrix._24});
@@ -708,8 +758,10 @@ namespace GLaDOS {
     std::enable_if_t<is_real_v<T>, Vec3> Mat4<T>::decomposeRotation(const Mat4<T>& matrix) {
         Mat4<T> components = Mat4<T>::normalizeComponents(matrix);
 
-        // In radian unit
-        return Vec3{Math::atan2(components._23, components._33), -Math::sin(components._13), Math::atan2(components._12, components._11)};
+        // return to degree of vec3
+        return Vec3{Math::toDegrees(Rad{Math::atan2(components._23, components._33)}).get(),
+                    Math::toDegrees(Rad{-Math::sin(components._13)}).get(),
+                    Math::toDegrees(Rad{Math::atan2(components._12, components._11)}).get()};
     }
 
     template <typename T>
@@ -729,7 +781,7 @@ namespace GLaDOS {
           else if using row vectors
           M := S * R * T
         */
-        return Mat4<real>::scale(s) * Quat::toRotationMat(q) * Mat4<real>::translate(p);
+        return Mat4<real>::scale(s) * Mat4<real>::rotate(q) * Mat4<real>::translate(p);
     }
 
     template <typename T>

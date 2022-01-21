@@ -21,19 +21,14 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
 
     SECTION("Quat AngleAxis") {
         UVec3 norm = Vec3{0, 1, 1}.makeNormalize();
-        Deg angle = Deg{60};
-        Quat q1 = Quat::angleAxis(Rad{angle}, norm);
+        Quat q1 = Quat::angleAxis(Deg{60}, norm);
         REQUIRE(q1 == Quat{0.8660254, 0, 0.3535534, 0.3535534});
 
         UVec3 norm2 = Vec3{1,0,0}.makeNormalize();
-        Quat q2 = Quat::angleAxis(Rad{Deg{180}}, norm2);
+        Quat q2 = Quat::angleAxis(Deg{180}, norm2);
         REQUIRE(q2 == Quat{0, 1, 0, 0});
 
-        // same but radian (180 degree == pi)
-        Quat q3 = Quat::angleAxis(Rad{Math::pi}, norm2);
-        REQUIRE(q3 == Quat{0, 1, 0, 0});
-
-        Mat4<real> rot = Quat::toRotationMat(q2);
+        Mat4<real> rot = Mat4<real>::rotate(q2);
         Mat4<real> rotResult = {1,0,0,0,
                                 0,-1,0,0,
                                 0,0,-1,0,
@@ -132,8 +127,39 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
         REQUIRE(d == 70.f);
     }
 
-    SECTION("Quat from & to rotation matrix") {
+    SECTION("Quat multiplication with Vector") {
+        Vec3 v1 = {-1, -1, 0};
+        Vec3 v2 = {1, -1, 0};
+        Vec3 v3 = {0, 1, 0};
+        Quat q = Quat::angleAxis(Deg{5}, Vec3::normalize(Vec3::backward));
+        REQUIRE(q == Quat{0.99904820, 0, 0, 0.04361939});
 
+        Vec3 r1 = q * v1;
+        REQUIRE(r1 == Vec3{-0.90903896, -1.08335042, 0});
+
+        Vec3 r2 = q * v2;
+        REQUIRE(r2 == Vec3{1.08335042, -0.90903896, 0});
+
+        Vec3 r3 = q * v3;
+        REQUIRE(r3 == Vec3{-0.08715575, 0.99619470, 0});
+    }
+
+    SECTION("Quat from & to rotation matrix") {
+        Quat q1 = Quat::fromEuler(Vec3{180, 90, 60});
+        REQUIRE(q1 == Quat{0.35355338, 0.61237239, 0.35355335, -0.61237245});
+
+        // TODO: from quat to mat4
+        Mat4<real> m = Mat4<real>::rotate(q1);
+        Mat4<real> result = {
+            0,  0.8660254, -0.5, 0,
+            0, -0.5, -0.8660254, 0,
+            -1,  0, 0, 0,
+            0, 0, 0, 1
+        };
+        REQUIRE(m == result);
+
+        // TODO: from mat4 to quat
+        Quat q2 = Quat::fromRotationMat(result);
     }
 
     SECTION("Quat linear interpolation & spherical linear interpolation") {

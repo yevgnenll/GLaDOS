@@ -15,7 +15,7 @@ namespace GLaDOS {
         }
     }
 
-    void Transform::rotate(const UVec3& axis, Rad angle, Space relativeTo) {
+    void Transform::rotate(const UVec3& axis, Deg angle, Space relativeTo) {
         Quat angleAxis = Quat::angleAxis(angle, axis);
         if (relativeTo == Space::Self) {
             mLocalRotation = angleAxis * mLocalRotation;
@@ -176,11 +176,11 @@ namespace GLaDOS {
     }
 
     Mat4<real> Transform::worldMatrix() const {
-        return Mat4<real>::scale(mLossyScale) * Quat::toRotationMat(mRotation) * Mat4<real>::translate(mPosition);
+        return Mat4<real>::scale(mLossyScale) * Mat4<real>::rotate(mRotation) * Mat4<real>::translate(mPosition);
     }
 
     Mat4<real> Transform::localMatrix() const {
-        return Mat4<real>::scale(mLocalScale) * Quat::toRotationMat(mLocalRotation) * Mat4<real>::translate(mLocalPosition);
+        return Mat4<real>::scale(mLocalScale) * Mat4<real>::rotate(mLocalRotation) * Mat4<real>::translate(mLocalPosition);
     }
 
     Mat4<real> Transform::parentLocalMatrix() const {

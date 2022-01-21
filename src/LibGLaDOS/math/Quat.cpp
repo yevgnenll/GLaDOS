@@ -64,28 +64,8 @@ namespace GLaDOS {
     }
 
     Vec3 Quat::operator*(const Vec3& other) const {
-        // https://answers.unity.com/questions/372371/multiply-quaternion-by-vector3-how-is-done.html
-        static real one = real(1.0);
-        static real two = real(2.0);
-        real num = x * two;
-        real num2 = y * two;
-        real num3 = z * two;
-        real num4 = x * num;
-        real num5 = y * num2;
-        real num6 = z * num3;
-        real num7 = x * num2;
-        real num8 = x * num3;
-        real num9 = y * num3;
-        real num10 = w * num;
-        real num11 = w * num2;
-        real num12 = w * num3;
-
-        Vec3 result;
-        result.x = (one - (num5 + num6)) * other.x + (num7 - num12) * other.y + (num8 + num11) * other.z;
-        result.y = (num7 + num12) * other.x + (one - (num4 + num6)) * other.y + (num9 - num10) * other.z;
-        result.z = (num8 - num11) * other.x + (num9 + num10) * other.y + (one - (num4 + num5)) * other.z;
-
-        return result;
+        Quat q = *this * Quat{0.F, other.x, other.y, other.z} * Quat::inverse(*this);
+        return Vec3{q.x, q.y, q.z};
     }
 
     Vec4 Quat::operator*(const Vec4& other) const {
@@ -157,11 +137,6 @@ namespace GLaDOS {
         return Math::sqrt(w * w + x * x + y * y + z * z);
     }
 
-    Vec3 Quat::conjugate(const Vec3& v) const {
-        Quat q = *this * Quat{0.F, v.x, v.y, v.z} * Quat::inverse(*this);
-        return Vec3{q.x, q.y, q.z};
-    }
-
     Vec3 Quat::cross(const Vec3& v, const Quat& q) {
         return Quat::inverse(q) * v;
     }
@@ -218,8 +193,8 @@ namespace GLaDOS {
         return qz * qy * qx;
     }
 
-    Quat Quat::angleAxis(Rad angle, const UVec3& axis) {
-        auto halfAngle = angle * real(0.5);
+    Quat Quat::angleAxis(Deg angle, const UVec3& axis) {
+        auto halfAngle = Math::toRadians(angle) * real(0.5);
         auto halfSin = Math::sin(halfAngle.get());
 
         return Quat{
@@ -227,6 +202,15 @@ namespace GLaDOS {
             halfSin * axis->x,
             halfSin * axis->y,
             halfSin * axis->z};
+    }
+
+    Quat Quat::fromRotationMat(const Mat4<real>& m) {
+        real w = Math::sqrt(m._m44[0][0] + m._m44[1][1] + m._m44[2][2] + 1.0F) * real(0.5);
+        real x = (m._m44[2][1] - m._m44[1][2]) / (4 * w);
+        real y = (m._m44[0][2] - m._m44[2][0]) / (4 * w);
+        real z = (m._m44[1][0] - m._m44[0][1]) / (4 * w);
+
+        return Quat{w, x, y, z};
     }
 
     Quat Quat::fromToRotation(const Vec3& from, const Vec3& to) {
@@ -253,64 +237,8 @@ namespace GLaDOS {
         return Quat{s * real(0.5), v3.x, v3.y, v3.z}.makeNormalize();
     }
 
-    Mat4<real> Quat::toRotationMat(const Quat& q) {
-        /*
-           row-major vector (v)
-
-                    | 1-2y^2-2z^2		2xy+2wz		 2xz-2wy		0 |
-                    | 2xy-2wz			1-2x^2-2z^2	 2yz+2wx		0 |
-          (x,y,z,0)*| 2xz+2wy			2yz-2wx		 1-2x^2-2y^2	0 |
-                    | 0				    0			 0				1 |
-        */
-        Mat4<real> result;
-
-        static real zero = real(0.0);
-        static real one = real(1.0);
-        static real two = real(2.0);
-
-        real xx = q.x * q.x;
-        real yy = q.y * q.y;
-        real zz = q.z * q.z;
-        real xz = q.x * q.z;
-        real xy = q.x * q.y;
-        real yz = q.y * q.z;
-        real wx = q.w * q.x;
-        real wy = q.w * q.y;
-        real wz = q.w * q.z;
-
-        result._m44[0][0] = one - two * (yy + zz);
-        result._m44[0][1] = two * (xy + wz);
-        result._m44[0][2] = two * (xz - wy);
-        result._m44[0][3] = zero;
-
-        result._m44[1][0] = two * (xy - wz);
-        result._m44[1][1] = one - two * (xx + zz);
-        result._m44[1][2] = two * (yz + wx);
-        result._m44[1][3] = zero;
-
-        result._m44[2][0] = two * (xz + wy);
-        result._m44[2][1] = two * (yz - wx);
-        result._m44[2][2] = one - two * (xx + yy);
-        result._m44[2][3] = zero;
-
-        result._m44[3][0] = zero;
-        result._m44[3][1] = zero;
-        result._m44[3][2] = zero;
-        result._m44[3][3] = one;
-
-        return result;
-    }
-
-    Quat Quat::fromRotationMat(const Mat4<real>& m) {
-        real w = Math::sqrt(m._m44[0][0] + m._m44[1][1] + m._m44[2][2] + 1.0F) * real(0.5);
-        real x = (m._m44[2][1] - m._m44[1][2]) / (4 * w);
-        real y = (m._m44[0][2] - m._m44[2][0]) / (4 * w);
-        real z = (m._m44[1][0] - m._m44[0][1]) / (4 * w);
-
-        return Quat{w, x, y, z};
-    }
-
     real Quat::angleBetween(const Quat& q, const Quat& p) {
+        // TODO
 //        return Math::acos(Quat::dot(q, p) / (q.length() * p.length()));
         return 0.f;
     }
