@@ -159,7 +159,14 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
         REQUIRE(m == result);
 
         // TODO: from mat4 to quat
-        Quat q2 = Quat::fromRotationMat(result);
+        Quat q2 = Quat::fromRotation(result);
+    }
+
+    SECTION("Angle between two Quaternion") {
+        Quat q1 = {4,1,2,3};
+        Quat q2 = {5,6,7,8};
+        Deg deg = Quat::angleBetween(q1, q2);
+        REQUIRE(deg.get() == 0.f);
     }
 
     SECTION("Quat linear interpolation & spherical linear interpolation") {

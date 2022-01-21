@@ -55,13 +55,13 @@ namespace GLaDOS {
         static Quat normalize(const Quat& q);
         static Quat inverse(const Quat& q);
         static Quat conjugate(const Quat& q);
-        static Vec3 toEuler(const Quat& q); // return to Vec3 of degree component (ZYX order)
+        static Vec3 toEuler(const Quat& q); // returns Vec3 of degrees (ZYX order)
         static Quat fromEuler(const Vec3& euler); // degree euler vector (ZYX order)
         static Quat angleAxis(Deg angle, const UVec3& axis);
 
-        static Quat fromRotationMat(const Mat4<real>& m);
+        static Quat fromRotation(const Mat4<real>& m);
         static Quat fromToRotation(const Vec3& from, const Vec3& to); // TODO: testme
-        static real angleBetween(const Quat& q, const Quat& p); // TODO: testme
+        static Deg angleBetween(const Quat& q, const Quat& p); // returns the angle in degrees between two Quat q and p.
 
         // Quaternion nlerp is not defined because it's same as lerp.
         static Quat lerp(const Quat& a, const Quat& b, real t); // TODO: testme

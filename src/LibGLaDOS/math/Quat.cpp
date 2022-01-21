@@ -204,7 +204,7 @@ namespace GLaDOS {
             halfSin * axis->z};
     }
 
-    Quat Quat::fromRotationMat(const Mat4<real>& m) {
+    Quat Quat::fromRotation(const Mat4<real>& m) {
         real w = Math::sqrt(m._m44[0][0] + m._m44[1][1] + m._m44[2][2] + 1.0F) * real(0.5);
         real x = (m._m44[2][1] - m._m44[1][2]) / (4 * w);
         real y = (m._m44[0][2] - m._m44[2][0]) / (4 * w);
@@ -237,10 +237,10 @@ namespace GLaDOS {
         return Quat{s * real(0.5), v3.x, v3.y, v3.z}.makeNormalize();
     }
 
-    real Quat::angleBetween(const Quat& q, const Quat& p) {
-        // TODO
-//        return Math::acos(Quat::dot(q, p) / (q.length() * p.length()));
-        return 0.f;
+    Deg Quat::angleBetween(const Quat& q, const Quat& p) {
+        // calculate the shortest angle between two Quaternion.
+        real d = Math::min(Math::abs(Quat::dot(q, p)), (real)1.f);
+        return Math::toDegrees(Rad{2.f * Math::acos(d)});
     }
 
     Quat Quat::lerp(const Quat& a, const Quat& b, real t) {
