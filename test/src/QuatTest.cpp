@@ -131,7 +131,7 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
         Vec3 v1 = {-1, -1, 0};
         Vec3 v2 = {1, -1, 0};
         Vec3 v3 = {0, 1, 0};
-        Quat q = Quat::angleAxis(Deg{5}, Vec3::normalize(Vec3::backward));
+        Quat q = Quat::angleAxis(Deg{5}, UVec3::backward);
         REQUIRE(q == Quat{0.99904820, 0, 0, 0.04361939});
 
         Vec3 r1 = q * v1;
@@ -165,7 +165,7 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
     SECTION("Angle between two Quaternion") {
         Deg anlge = Deg{60};
         Quat q1 = {1, 0, 0, 0};
-        Quat q2 = Quat::angleAxis(anlge, Vec3::normalize(Vec3{1, 0, 0}));
+        Quat q2 = Quat::angleAxis(anlge, UVec3::right);
         Deg deg = Quat::angleBetween(q1, q2);
         REQUIRE(Math::equal(deg.get(), anlge.get()));
     }
