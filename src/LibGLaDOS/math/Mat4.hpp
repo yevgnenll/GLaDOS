@@ -77,7 +77,7 @@ namespace GLaDOS {
         static std::enable_if_t<is_real_v<T>, Mat4<T>> lookAt(const Vec3& eye, const Vec3& forward, const UVec3& up);
         static std::enable_if_t<is_real_v<T>, Mat4<T>> translate(const Vec3& trans);
         static std::enable_if_t<is_real_v<T>, Mat4<T>> scale(const Vec3& scale);
-        static std::enable_if_t<is_real_v<T>, Mat4<T>> rotate(Rad angle, const UVec3& axis);
+        static std::enable_if_t<is_real_v<T>, Mat4<T>> rotate(Deg angle, const UVec3& axis);
         static std::enable_if_t<is_real_v<T>, Mat4<T>> rotate(const Quat& q);
         static std::enable_if_t<is_real_v<T>, Mat4<T>> normalizeComponents(const Mat4<T>& matrix);
         static std::enable_if_t<is_real_v<T>, Vec3> decomposeTranslation(const Mat4<T>& matrix);
@@ -646,11 +646,11 @@ namespace GLaDOS {
     }
 
     template <typename T>
-    std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::rotate(Rad angle, const UVec3& axis) {
+    std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::rotate(Deg angle, const UVec3& axis) {
         /*
-            desc: Build Euler rotation matrix (possibly, gimbal lock)
-            caution: multiplication order should be ZYX if matrix combination used.
-            usage: Mat4<real>::rotate(Math::toRadians(Deg{45.0f}), Vec3::backward);
+            Desc: Build Euler rotation matrix (possibly, gimbal lock)
+            Caution: multiplication order should be ZYX if matrix combination used.
+            Usage: Mat4<real>::rotate(Deg{45.0f}, Vec3::backward);
 
              x = | 1  0    0   0 |
                  | 0 cos -sin  0 |
@@ -667,8 +667,8 @@ namespace GLaDOS {
                  |  0    0   1  0 |
                  |  0    0   0  1 |
         */
-        T c = Math::cos(static_cast<T>(angle));
-        T s = Math::sin(static_cast<T>(angle));
+        T c = Math::cos(static_cast<T>(Math::toRadians(angle)));
+        T s = Math::sin(static_cast<T>(Math::toRadians(angle)));
         T t = 1.F - c;
 
         T tx = t * axis->x;
