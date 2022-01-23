@@ -47,8 +47,10 @@ namespace GLaDOS {
     void MetalFrameBuffer::end() {
         [mCommandEncoder endEncoding];
         [mCommandBuffer presentDrawable:mNextDrawable];
+        retain();
         [mCommandBuffer addCompletedHandler:^(id<MTLCommandBuffer> _) {
           mSemaphore.notify();
+          release();
         }];
         [mCommandBuffer commit];
     }

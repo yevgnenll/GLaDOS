@@ -1,6 +1,7 @@
 #ifndef GLADOS_ALLOCATION_H
 #define GLADOS_ALLOCATION_H
 
+#include <cstdlib>
 #include "Config.h"
 #include "utils/SpinLock.h"
 
@@ -28,7 +29,7 @@ namespace GLaDOS {
     extern void dumpMemory();
 }  // namespace GLaDOS
 
-#ifdef MEMORY_TRACE_ALLOCATION
+#if MEMORY_TRACE_ALLOCATION == 1
 #define MALLOC(bytes) GLaDOS::mmalloc(bytes, __FILE__, __LINE__, __FUNCTION__)
 #define FREE(ptr) GLaDOS::mfree(static_cast<void*>(ptr))
 #define NEW_T(T) new (MALLOC(sizeof(T))) T

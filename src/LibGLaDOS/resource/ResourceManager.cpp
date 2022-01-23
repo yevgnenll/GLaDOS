@@ -4,7 +4,7 @@ namespace GLaDOS {
     Logger* ResourceManager::logger = LoggerRegistry::getInstance().makeAndGetLogger("ResourceManager");
 
     ResourceManager::ResourceManager() {
-        this->setDestructionPhase(1);
+        setDestructionPhase(1);
     }
 
     ResourceManager::~ResourceManager() {

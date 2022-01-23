@@ -258,7 +258,9 @@ namespace GLaDOS {
 
     void CocoaPlatform::windowShouldClose() {
         // 윈도우의 빨간색 x 버튼을 클릭시 호출되는 콜백
-        Platform::getInstance().quit();
+        if (Platform::getInstance().isRunning()) {
+            Platform::getInstance().quit();
+        }
     }
 
     void CocoaPlatform::windowWillClose() {
@@ -384,7 +386,6 @@ namespace GLaDOS {
 
     Platform::~Platform() {
         DELETE_T(CocoaPlatform::cocoaPlatformInstance, CocoaPlatform);
-        DELETE_T(mMainFrameBuffer, FrameBuffer);
     }
 
     void Platform::registerKeyMap() {

@@ -17,7 +17,10 @@
 
 namespace GLaDOS {
     Logger* Platform::logger = LoggerRegistry::getInstance().makeAndGetLogger("Platform");
-    void Platform::quit() { mIsRunning = false; }
+    void Platform::quit() {
+        mMainFrameBuffer->release();
+        mIsRunning = false;
+    }
 
     int Platform::getContentWidth() const { return mContentWidth; }
 

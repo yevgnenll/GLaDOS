@@ -83,7 +83,7 @@ namespace GLaDOS {
         KeyCode mLocalKeymap[static_cast<int>(KeyCode::KEY_MAX)];
         bool mMouseButtons[static_cast<int>(MouseButton::MOUSE_BUTTON_MAX)];
         Vec3 mMousePosition;
-        FrameBuffer* mMainFrameBuffer{nullptr};
+        FrameBuffer* mMainFrameBuffer{nullptr}; // don't destroy this because framebuffer is tracked by atomic reference counting.
         real mContentScale{1};
         CursorMode mCursorMode;
     };

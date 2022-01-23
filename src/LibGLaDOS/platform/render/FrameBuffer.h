@@ -2,12 +2,13 @@
 #define GLADOS_FRAMEBUFFER_H
 
 #include "math/Color.h"
+#include "utils/ReferenceCountingMixin.h"
 
 namespace GLaDOS {
-    class FrameBuffer {
+    class FrameBuffer : public ReferenceCountingMixin {
       public:
         FrameBuffer() = default;
-        virtual ~FrameBuffer() = default;
+        ~FrameBuffer() override = default;
 
         virtual void begin() = 0;
         virtual void end() = 0;
