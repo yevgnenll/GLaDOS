@@ -158,8 +158,8 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
         };
         REQUIRE(m == result);
 
-        // TODO: from mat4 to quat
-        Quat q2 = Quat::fromRotation(result);
+        Quat q2 = Quat::fromRotation(m);
+        REQUIRE(q2 == q1);
     }
 
     SECTION("Angle between two Quaternion") {
