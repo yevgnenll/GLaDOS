@@ -148,7 +148,6 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
         Quat q1 = Quat::fromEuler(Vec3{180, 90, 60});
         REQUIRE(q1 == Quat{0.35355338, 0.61237239, 0.35355335, -0.61237245});
 
-        // TODO: from quat to mat4
         Mat4<real> m = Mat4<real>::rotate(q1);
         Mat4<real> result = {
             0,  0.8660254, -0.5, 0,
@@ -160,6 +159,10 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
 
         Quat q2 = Quat::fromRotation(m);
         REQUIRE(q2 == q1);
+
+        Quat q3 = Quat::fromToRotation(Vec3::up, Vec3::right);
+        Vec3 euler = Quat::toEuler(q3);
+        REQUIRE(euler.z == -90.f);
     }
 
     SECTION("Angle between two Quaternion") {

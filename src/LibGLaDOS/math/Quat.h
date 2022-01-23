@@ -63,7 +63,7 @@ namespace GLaDOS {
         static Quat angleAxis(Deg angle, const UVec3& axis);
 
         static Quat fromRotation(const Mat4<real>& m);
-        static Quat fromToRotation(const Vec3& from, const Vec3& to); // TODO: testme
+        static Quat fromToRotation(const Vec3& from, const Vec3& to);
         static Deg angleBetween(const Quat& q, const Quat& p); // returns the angle in degrees between two Quat q and p.
 
         // Quaternion nlerp is not defined because it's same as lerp.
