@@ -693,9 +693,9 @@ namespace GLaDOS {
         /*
            row-major vector (v)
 
-                      | 1-2y^2-2z^2		2xy+2wz		 2xz-2wy		0 |
-                      | 2xy-2wz			1-2x^2-2z^2	 2yz+2wx		0 |
-            (x,y,z,0) | 2xz+2wy			2yz-2wx		 1-2x^2-2y^2	0 |
+                      | 1-2y^2-2z^2		2xy-2wz		 2xz+2wy		0 |
+                      | 2xy+2wz			1-2x^2-2z^2	 2yz-2wx		0 |
+            (x,y,z,0) | 2xz-2wy			2yz+2wx		 1-2x^2-2y^2	0 |
                       | 0				    0			 0			1 |
         */
         Mat4<real> result;
@@ -715,17 +715,17 @@ namespace GLaDOS {
         real wz = q.w * q.z;
 
         result._m44[0][0] = one - two * (yy + zz);
-        result._m44[0][1] = two * (xy + wz);
-        result._m44[0][2] = two * (xz - wy);
+        result._m44[0][1] = two * (xy - wz);
+        result._m44[0][2] = two * (xz + wy);
         result._m44[0][3] = zero;
 
-        result._m44[1][0] = two * (xy - wz);
+        result._m44[1][0] = two * (xy + wz);
         result._m44[1][1] = one - two * (xx + zz);
-        result._m44[1][2] = two * (yz + wx);
+        result._m44[1][2] = two * (yz - wx);
         result._m44[1][3] = zero;
 
-        result._m44[2][0] = two * (xz + wy);
-        result._m44[2][1] = two * (yz - wx);
+        result._m44[2][0] = two * (xz - wy);
+        result._m44[2][1] = two * (yz + wx);
         result._m44[2][2] = one - two * (xx + yy);
         result._m44[2][3] = zero;
 

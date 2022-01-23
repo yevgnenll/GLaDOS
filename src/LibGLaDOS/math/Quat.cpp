@@ -124,17 +124,16 @@ namespace GLaDOS {
     }
 
     Quat& Quat::makeInverse() {
-        // zero quaternion does not have inverse (the only case)
-        if (*this == Quat::zero) {
-            throw std::invalid_argument{"Quaternion is zero! Inverse does not exist."};
-        }
-        // equal to makeConjugate() /= (this->length() * this->length())
-        return makeConjugate() /= Quat::dot(*this, *this);
+        return *this = Quat::inverse(*this);
     }
 
     real Quat::length() const {
         // equal to sqrt(qq*)
         return Math::sqrt(w * w + x * x + y * y + z * z);
+    }
+
+    real Quat::squaredLength() const {
+        return w * w + x * x + y * y + z * z;
     }
 
     Vec3 Quat::cross(const Vec3& v, const Quat& q) {
@@ -150,17 +149,24 @@ namespace GLaDOS {
     }
 
     Quat Quat::normalize(const Quat& q) {
-        real n = q.length();
-        if (n <= real(0.0)) {
+        real n = q.squaredLength();
+        if (n <= Math::realEpsilon) {
             return Quat::identity;
         }
 
-        real inv = real(1.0) / n;
+        real inv = real(1.0) / Math::sqrt(n);
         return Quat{q.w * inv, q.x * inv, q.y * inv, q.z * inv};
     }
 
     Quat Quat::inverse(const Quat& q) {
-        return Quat{q}.makeInverse();
+        // zero quaternion does not have inverse (the only case)
+        real n = q.squaredLength();
+        if (n <= Math::realEpsilon) {
+            return Quat::identity;
+        }
+
+        // equal to makeConjugate() /= (this->length() * this->length())
+        return Quat::conjugate(q) / Quat::dot(q, q);
     }
 
     Quat Quat::conjugate(const Quat& q) {
@@ -205,10 +211,11 @@ namespace GLaDOS {
     }
 
     Quat Quat::fromRotation(const Mat4<real>& m) {
-        real w = Math::sqrt(m._m44[0][0] + m._m44[1][1] + m._m44[2][2] + 1.0F) * real(0.5);
-        real x = (m._m44[2][1] - m._m44[1][2]) / (4 * w);
-        real y = (m._m44[0][2] - m._m44[2][0]) / (4 * w);
-        real z = (m._m44[1][0] - m._m44[0][1]) / (4 * w);
+        real w = Math::sqrt(m._m44[0][0] + m._m44[1][1] + m._m44[2][2] + real(1)) * real(0.5);
+        real invw4 = real(1) / (real(4) * w);
+        real x = (m._m44[2][1] - m._m44[1][2]) * invw4;
+        real y = (m._m44[0][2] - m._m44[2][0]) * invw4;
+        real z = (m._m44[1][0] - m._m44[0][1]) * invw4;
 
         return Quat{w, x, y, z};
     }

@@ -50,6 +50,7 @@ namespace GLaDOS {
         Quat& makeNormalize();
         Quat& makeInverse();
         real length() const;
+        real squaredLength() const;
 
         static Vec3 cross(const Vec3& v, const Quat& q); // TODO: testme
         static Vec3 cross(const Quat& q, const Vec3& v); // TODO: testme
