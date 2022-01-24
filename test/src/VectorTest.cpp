@@ -39,6 +39,25 @@ TEST_CASE("Vector unit tests", "[Vector]") {
     REQUIRE(v2.z == 3);
   }
 
+  SECTION("Vec3 cross product") {
+      Vec3 v1 = {5, 6, 7};
+      Vec3 v2 = {8, 9, 10};
+      Vec3 cross = Vec3::cross(v1, v2);
+      REQUIRE(cross == Vec3{-3, 6, -3});
+  }
+
+  SECTION("Vec3 dot product") {
+      Vec3 v1 = {1, 2, 3};
+      Vec3 v2 = {4, 5, 6};
+      real dot = Vec3::dot(v1, v2);
+      REQUIRE(dot == 32);
+
+      Vec3 v3 = {5, 6, 7};
+      Vec3 v4 = {8, 9, 10};
+      real dot2 = Vec3::dot(v3, v4);
+      REQUIRE(dot2 == 164);
+  }
+
   SECTION("Vec3 angle between two normalized vector") {
       Vec3 v1 = {4, 3, 0};
       Vec3 v2 = {3, 5, 0};

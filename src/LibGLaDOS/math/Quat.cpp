@@ -136,14 +136,6 @@ namespace GLaDOS {
         return w * w + x * x + y * y + z * z;
     }
 
-    Vec3 Quat::cross(const Vec3& v, const Quat& q) {
-        return Quat::inverse(q) * v;
-    }
-
-    Vec3 Quat::cross(const Quat& q, const Vec3& v) {
-        return q * v;
-    }
-
     real Quat::dot(const Quat& a, const Quat& b) {
         return (a.x * b.x) + (a.y * b.y) + (a.z * b.z) + (a.w * b.w);
     }

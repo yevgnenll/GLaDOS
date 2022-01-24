@@ -52,8 +52,6 @@ namespace GLaDOS {
         real length() const;
         real squaredLength() const;
 
-        static Vec3 cross(const Vec3& v, const Quat& q); // TODO: testme
-        static Vec3 cross(const Quat& q, const Vec3& v); // TODO: testme
         static real dot(const Quat& a, const Quat& b);
         static Quat normalize(const Quat& q);
         static Quat inverse(const Quat& q);
@@ -67,8 +65,8 @@ namespace GLaDOS {
         static Deg angleBetween(const Quat& q, const Quat& p); // returns the angle in degrees between two Quat q and p.
 
         // Quaternion nlerp is not defined because it's same as lerp.
-        static Quat lerp(const Quat& a, const Quat& b, real t); // TODO: testme
-        static Quat slerp(const Quat& a, const Quat& b, real t); // TODO: testme
+        static Quat lerp(const Quat& a, const Quat& b, real t);
+        static Quat slerp(const Quat& a, const Quat& b, real t);
 
         // real part, vector(imaginary) part
         union {

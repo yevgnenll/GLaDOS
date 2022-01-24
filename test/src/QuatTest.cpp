@@ -120,7 +120,7 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
         REQUIRE(q2 == Quat{0.96018159, 0.08276540, 0.26381728, 0.04002241});
     }
 
-    SECTION("Quat cross & dot product") {
+    SECTION("Quat dot product") {
         Quat q1 = {1, 2, 3, 4};
         Quat q2 = {5, 6, 7, 8};
         real d = Quat::dot(q1, q2);
@@ -173,7 +173,17 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
         REQUIRE(Math::equal(deg.get(), anlge.get()));
     }
 
-    SECTION("Quat linear interpolation & spherical linear interpolation") {
+    SECTION("Quat linear interpolation") {
+        Quat pn = Quat::normalize({1, 0, 1, 0});
+        Quat qn = Quat::normalize({-1, 0, 1, 0});
+        Quat qi = Quat::lerp(pn, qn, 0.5);
+        REQUIRE(qi == Quat{0, 0, 0.70710676, 0});
+    }
 
+    SECTION("Quat spherical linear interpolation") {
+        Quat q1 = Quat::fromEuler(Vec3{45, -20, -60});
+        Quat q2 = Quat::fromEuler(Vec3{-45, 20, 30});
+        Quat result = Quat::slerp(q1, q2, 0.75f);
+        REQUIRE(result == Quat{0.95631980, -0.25865560, -0.05189760, 0.12592124});
     }
 }
