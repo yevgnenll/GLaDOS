@@ -26,8 +26,8 @@ int main(int argc, char** argv) {
         LOG_INFO(logger, "{0}", v1);
         LOG_INFO(logger, "{0}", v2);
         LOG_INFO(logger, "{0}", v3);
-//        Mat4<real> m1 = Mat4<real>::identity();
-//        LOG_INFO(logger, "{0}", m1);
+        Mat4<real> m1 = Mat4<real>::identity();
+        LOG_INFO(logger, "{0}", m1);
 
         while (Platform::getInstance().isRunning()) {
             Platform::getInstance().update();

@@ -52,6 +52,8 @@ namespace GLaDOS {
         static int lastIndex(const std::string& str, const std::string& substr);
         static std::string repeat(const std::string& str, int count);
         static int count(const std::string& str, const std::string& substr, bool ignore_case = false);
+        template <typename T>
+        static std::size_t digits(T n);
 
         static std::pair<std::string, std::string> splitFileName(const std::string& fullPath);
     };
