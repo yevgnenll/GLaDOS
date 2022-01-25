@@ -23,6 +23,7 @@ namespace GLaDOS {
         Quat operator+(const Quat& other) const;
         Quat& operator+=(const Quat& other);
 
+        Quat operator-() const;
         Quat operator-(const Quat& other) const;
         Quat& operator-=(const Quat& other);
 
@@ -64,8 +65,8 @@ namespace GLaDOS {
         static Quat fromToRotation(const Vec3& from, const Vec3& to);
         static Deg angleBetween(const Quat& q, const Quat& p); // returns the angle in degrees between two Quat q and p.
 
-        // Quaternion nlerp is not defined because it's same as lerp.
         static Quat lerp(const Quat& a, const Quat& b, real t);
+        static Quat nlerp(const Quat& a, const Quat& b, real t);
         static Quat slerp(const Quat& a, const Quat& b, real t);
 
         // real part, vector(imaginary) part

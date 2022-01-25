@@ -34,6 +34,10 @@ namespace GLaDOS {
         return *this;
     }
 
+    Quat Quat::operator-() const {
+        return Quat{-w, -x, -y, -z};
+    }
+
     Quat Quat::operator-(const Quat& other) const {
         return Quat{*this} -= other;
     }
@@ -253,12 +257,17 @@ namespace GLaDOS {
         return ((a * s) + (b * t));
     }
 
+    Quat Quat::nlerp(const Quat& a, const Quat& b, real t) {
+        // nlerp between quaternions is a fast and good approximation for spherical interpolation.
+        return Quat::normalize(lerp(a, b, t));
+    }
+
     Quat Quat::slerp(const Quat& a, const Quat& b, real t) {
         Quat c{b};
         real angle = dot(a, b);
 
         // If cosTheta < 0, the interpolation will take the long way around the sphere.
-        // To fix this, one quat must be negated.
+        // To fix this, one quat must be negated. (neighborhooding)
         if (angle < Math::realEpsilon) {
             c = b * -1.F;
             angle *= -1.F;
