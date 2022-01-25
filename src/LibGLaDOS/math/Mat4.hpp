@@ -83,7 +83,7 @@ namespace GLaDOS {
         static std::enable_if_t<is_real_v<T>, Vec3> decomposeTranslation(const Mat4<T>& matrix);
         static std::enable_if_t<is_real_v<T>, Vec3> decomposeRotation(const Mat4<T>& matrix);
         static std::enable_if_t<is_real_v<T>, Vec3> decomposeScale(const Mat4<T>& matrix);
-        static std::enable_if_t<is_real_v<T>, Mat4<T>> buildTRS(const Vec3& p, const Quat& q, const Vec3& s);
+        static std::enable_if_t<is_real_v<T>, Mat4<T>> buildSRT(const Vec3& p, const Quat& q, const Vec3& s);
 
         union {
             struct {
@@ -774,7 +774,7 @@ namespace GLaDOS {
     }
 
     template <typename T>
-    std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::buildTRS(const Vec3& p, const Quat& q, const Vec3& s) {
+    std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::buildSRT(const Vec3& p, const Quat& q, const Vec3& s) {
         /*
           if using column vectors
           M := T * R * S

@@ -183,4 +183,18 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
         Quat result = Quat::slerp(q1, q2, 0.75f);
         REQUIRE(result == Quat{0.95631980, -0.25865560, -0.05189760, 0.12592124});
     }
+
+    SECTION("Quat normalized linear interpolation") {
+        Quat q1 = Quat::fromEuler(Vec3{45, -20, -60});
+        Quat q2 = Quat::fromEuler(Vec3{-45, 20, 30});
+        Quat result = Quat::nlerp(q1, q2, 0.75f);
+        REQUIRE(result == Quat{0.951325535, -0.271057576, -0.043320599, 0.140109956});
+    }
+
+    SECTION("Quat LookRotation") {
+        Vec3 direction = Vec3{1, 1, 0};
+        Quat rotation = Quat::lookRotation(direction);
+        Vec3 euler = Quat::toEuler(rotation);
+        REQUIRE(euler == Vec3{90, -45, -90});
+    }
 }

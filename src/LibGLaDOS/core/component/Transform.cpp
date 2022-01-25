@@ -146,33 +146,22 @@ namespace GLaDOS {
         parent->mChildren.emplace_back(mGameObject);
     }
 
-    Vec3 Transform::inverseTransformDirection(const Vec3& direction) const {
-        return Quat::fromEuler(Mat4<real>::decomposeRotation(worldToLocalMatrix())) * direction;
-    }
-
-    Vec3 Transform::inverseTransformPoint(const Vec3& position) const {
-        Mat4<real> localMat = worldToLocalMatrix();
-        return Quat::fromEuler(Mat4<real>::decomposeRotation(localMat)) * (position * Mat4<real>::decomposeScale(localMat)) + Mat4<real>::decomposeTranslation(localMat);
-    }
-
-    Vec3 Transform::inverseTransformVector(const Vec3& vector) const {
-        Mat4<real> localMat = worldToLocalMatrix();
-        return Quat::fromEuler(Mat4<real>::decomposeRotation(localMat)) * (vector * Mat4<real>::decomposeScale(localMat));
-    }
-
     Vec3 Transform::transformDirection(const Vec3& direction) const {
-        Mat4<real> localMat = localToWorldMatrix();
-        return Quat::fromEuler(Mat4<real>::decomposeRotation(localMat)) * direction;
     }
 
     Vec3 Transform::transformPoint(const Vec3& position) const {
-        Mat4<real> localMat = localToWorldMatrix();
-        return Quat::fromEuler(Mat4<real>::decomposeRotation(localMat)) * (position * Mat4<real>::decomposeScale(localMat)) + Mat4<real>::decomposeTranslation(localMat);
     }
 
     Vec3 Transform::transformVector(const Vec3& vector) const {
-        Mat4<real> localMat = localToWorldMatrix();
-        return Quat::fromEuler(Mat4<real>::decomposeRotation(localMat)) * (vector * Mat4<real>::decomposeScale(localMat));
+    }
+
+    Vec3 Transform::inverseTransformDirection(const Vec3& direction) const {
+    }
+
+    Vec3 Transform::inverseTransformPoint(const Vec3& position) const {
+    }
+
+    Vec3 Transform::inverseTransformVector(const Vec3& vector) const {
     }
 
     Mat4<real> Transform::worldMatrix() const {

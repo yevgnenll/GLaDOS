@@ -63,6 +63,7 @@ namespace GLaDOS {
 
         static Quat fromRotation(const Mat4<real>& m);
         static Quat fromToRotation(const Vec3& from, const Vec3& to);
+        static Quat lookRotation(const Vec3& direction, const Vec3& up = Vec3::up);
         static Deg angleBetween(const Quat& q, const Quat& p); // returns the angle in degrees between two Quat q and p.
 
         static Quat lerp(const Quat& a, const Quat& b, real t);

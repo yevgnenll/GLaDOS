@@ -246,6 +246,24 @@ namespace GLaDOS {
         return Quat{s * real(0.5), v3.x, v3.y, v3.z}.makeNormalize();
     }
 
+    Quat Quat::lookRotation(const Vec3& direction, const Vec3& up) {
+        // find orthonormal basis vectors
+        UVec3 forward = Vec3::normalize(direction); // object forward
+        Vec3 upward = Vec3::normalize(up); // desired up
+        Vec3 right = Vec3::cross(upward, forward); // object right
+        upward = Vec3::cross(forward, right); // object upward
+
+        // from world forward to object forward
+        Quat worldToObject = Quat::fromToRotation(Vec3::forward, forward);
+        Vec3 objectUp = worldToObject * Vec3::up;
+
+        // from object up to desired up
+        Quat upRot = Quat::fromToRotation(objectUp, upward);
+        Quat result = worldToObject * upRot;
+
+        return Quat::normalize(result);
+    }
+
     Deg Quat::angleBetween(const Quat& q, const Quat& p) {
         // calculate the shortest angle between two Quaternion.
         real d = Math::min(Math::abs(Quat::dot(q, p)), (real)1.f);
