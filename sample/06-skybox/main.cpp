@@ -54,6 +54,14 @@ class MainScene : public Scene {
         shaderProgram->setUniform("normal", Mat4<real>::transpose(knotTransform->worldToLocalMatrix()));
         shaderProgram->setUniform("cameraPos", cameraTransform->position());
 
+        if (Input::isKeyDown(GLaDOS::KeyCode::KEY_F)) {
+            auto* uniform = shaderProgram->getUniform("modelViewProj");
+            auto* byte = uniform->pointer();
+            Mat4<real> mvp;
+            std::copy(byte, byte + uniform->size(), reinterpret_cast<std::byte*>(mvp.pointer()));
+            LOG_INFO(LoggerRegistry::getInstance().getDefaultLogger(), "mvp: {0}", mvp);
+        }
+
         // camera translation
         Vec3 right = cameraTransform->right();
         right *= Input::getAxisRaw("Horizontal") * sensitivity * deltaTime;

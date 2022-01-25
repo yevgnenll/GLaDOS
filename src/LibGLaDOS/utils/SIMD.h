@@ -13,7 +13,6 @@
 #endif
 
 namespace GLaDOS {
-    // TODO
 #if defined(PLATFORM_SIMD_SSE2)
     using SIMDVec4 = __m128;
 

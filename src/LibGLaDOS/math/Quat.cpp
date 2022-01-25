@@ -64,8 +64,9 @@ namespace GLaDOS {
     }
 
     Vec3 Quat::operator*(const Vec3& other) const {
-        Quat q = *this * Quat{0.F, other.x, other.y, other.z} * Quat::inverse(*this);
-        return Vec3{q.x, q.y, q.z};
+        // equal to qvq-1 but simplified version
+        real two = real(2.0);
+        return vector * two * Vec3::dot(vector, other) + other * (scalar * scalar - Vec3::dot(vector, vector)) + Vec3::cross(vector, other) * two * scalar;
     }
 
     Vec4 Quat::operator*(const Vec4& other) const {
@@ -129,7 +130,11 @@ namespace GLaDOS {
 
     real Quat::length() const {
         // equal to sqrt(qq*)
-        return Math::sqrt(w * w + x * x + y * y + z * z);
+        real lenSq = squaredLength();
+        if (lenSq <= Math::realEpsilon) {
+            return real(0);
+        }
+        return Math::sqrt(lenSq);
     }
 
     real Quat::squaredLength() const {
@@ -141,24 +146,25 @@ namespace GLaDOS {
     }
 
     Quat Quat::normalize(const Quat& q) {
-        real n = q.squaredLength();
-        if (n <= Math::realEpsilon) {
+        real lenSq = q.squaredLength();
+        if (lenSq <= Math::realEpsilon) {
             return Quat::identity;
         }
 
-        real inv = real(1.0) / Math::sqrt(n);
+        real inv = real(1.0) / Math::sqrt(lenSq);
         return Quat{q.w * inv, q.x * inv, q.y * inv, q.z * inv};
     }
 
     Quat Quat::inverse(const Quat& q) {
         // zero quaternion does not have inverse (the only case)
-        real n = q.squaredLength();
-        if (n <= Math::realEpsilon) {
+        real lenSq = q.squaredLength();
+        if (lenSq <= Math::realEpsilon) {
             return Quat::identity;
         }
 
-        // equal to makeConjugate() /= (this->length() * this->length())
-        return Quat::conjugate(q) / Quat::dot(q, q);
+        // equal to makeConjugate() / (this->length() * this->length())
+        real inv = real(1.0) / lenSq;
+        return Quat::conjugate(q) * inv;
     }
 
     Quat Quat::conjugate(const Quat& q) {
@@ -253,7 +259,7 @@ namespace GLaDOS {
 
         // If cosTheta < 0, the interpolation will take the long way around the sphere.
         // To fix this, one quat must be negated.
-        if (angle < 0.F) {
+        if (angle < Math::realEpsilon) {
             c = b * -1.F;
             angle *= -1.F;
         }

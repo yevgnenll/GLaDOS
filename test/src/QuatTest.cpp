@@ -86,15 +86,12 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
         // q-1 == q*/||q||^2
         Quat q1 = {1,2,3,4};
         Quat qinv = Quat::inverse(q1);
-        REQUIRE(qinv == Quat::conjugate(q1) / (q1.length() * q1.length()));
+        Quat result = Quat::conjugate(q1) / (q1.length() * q1.length());
+        REQUIRE(qinv == result);
 
         // (q-1)-1 == q
         // compensate floating point precision
         Quat qiinv = Quat::inverse(qinv);
-        qiinv.w = Math::round(qiinv.w);
-        qiinv.x = Math::round(qiinv.x);
-        qiinv.y = Math::round(qiinv.y);
-        qiinv.z = Math::round(qiinv.z);
         REQUIRE(qiinv == q1);
 
         // (pq)-1 == q-1p-1
