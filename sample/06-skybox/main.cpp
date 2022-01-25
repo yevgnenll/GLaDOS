@@ -103,7 +103,6 @@ bool init() {
     }
 
     Platform::getInstance().setClearColor(Color{0, 0, 0, 1});
-    LoggerRegistry::getInstance().registerNewLogger(NEW_T(Logger("skybox")));
     return true;
 }
 

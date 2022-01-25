@@ -1,42 +1,10 @@
 #ifndef GLADOS_STRINGFORMATTER_H
 #define GLADOS_STRINGFORMATTER_H
 
-#include <string>
-
 #include "StringUtils.h"
+#include "Argument.hpp"
 
 namespace GLaDOS {
-    class Argument {
-      public:
-        Argument() = default;
-        virtual ~Argument() = default;
-        virtual void append(std::string& dest) const = 0;
-    };
-
-    template <typename T>
-    class ArgumentType : public Argument {
-      public:
-        explicit ArgumentType(T const& t) : mData(t) {}
-        void append(std::string& dest) const override {
-            dest.append(StringUtils::normalize(mData));
-        }
-
-      private:
-        T const& mData;
-    };
-
-    template <>
-    class ArgumentType<bool> : public Argument {
-      public:
-        explicit ArgumentType(bool const& t) : mData(t) {}
-        void append(std::string& dest) const override {
-            dest.append(mData ? "true" : "false");
-        }
-
-      private:
-        bool const& mData;
-    };
-
     class StringFormatter {
       public:
         StringFormatter() = delete;
