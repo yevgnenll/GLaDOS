@@ -1,12 +1,11 @@
 #ifndef GLADOS_ARGUMENT_HPP
 #define GLADOS_ARGUMENT_HPP
 
-#include "math/Mat4.hpp"
+#include "math/Math.h"
 #include "math/Quat.h"
 #include "math/Vec2.h"
 #include "math/Vec3.h"
 #include "math/Vec4.h"
-#include "math/Mat4.hpp"
 
 namespace GLaDOS {
     class Argument {
@@ -117,6 +116,7 @@ namespace GLaDOS {
             }
 
             std::stringstream sstream;
+            sstream << '\n';
             for (std::size_t i = 0; i < 4; ++i) {
                 for (std::size_t j = 0; j < 4; ++j) {
                     sstream << std::setw(maxLengthPerColumn[j]) << mData._m44[i][j] << "   ";

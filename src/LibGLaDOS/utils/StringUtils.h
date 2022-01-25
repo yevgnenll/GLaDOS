@@ -81,6 +81,13 @@ namespace GLaDOS {
         std::string result = prefix;
         return result.append(join(delimiter, start, end)).append(suffix);
     }
+
+    template <typename T>
+    std::size_t StringUtils::digits(T n) {
+        std::ostringstream strs;
+        strs << n;
+        return strs.str().size();
+    }
 }  // namespace GLaDOS
 
 #endif

@@ -218,13 +218,6 @@ namespace GLaDOS {
         return str.length() + 1;
     }
 
-    template <typename T>
-    std::size_t StringUtils::digits(T n) {
-        std::ostringstream strs;
-        strs << n;
-        return strs.str().size();
-    }
-
     std::pair<std::string, std::string> StringUtils::splitFileName(const std::string& fullPath) {
         const std::size_t lastPathSeparatorIndex = fullPath.find_last_of(PATH_SEPARATOR);
         if (std::string::npos != lastPathSeparatorIndex) {
