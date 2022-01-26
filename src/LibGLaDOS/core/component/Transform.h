@@ -44,26 +44,15 @@ namespace GLaDOS {
         void setLocalRotation(const Quat& quat);
         void setParent(GameObject* parent);
 
-        // Transforms direction from local space to world space.
-        // This operation is not affected by scale or position but only affected by rotate of the transform.
-        Vec3 transformDirection(const Vec3& direction) const;
-        // Transforms position from local space to world space.
-        // This operation is affected by rotate, scale and position of the transform.
-        Vec3 transformPoint(const Vec3& position) const;
-        // Transforms vector from local space to world space.
-        // This operation is affected by rotate and scale of the transform.
-        Vec3 transformVector(const Vec3& vector) const;
+        // local space to world space
+        Vec3 transformDirection(const Vec3& direction) const; // rotation only
+        Vec3 transformPoint(const Vec3& position) const; // position, rotation, and scale
+        Vec3 transformVector(const Vec3& vector) const; // rotation and scale only
 
-        // Transforms direction from world space to local space.
-        // This operation is not affected by scale or position but only affected by rotate of the transform.
+        // world space to local space
         Vec3 inverseTransformDirection(const Vec3& direction) const;
-        // Transforms position from world space to local space.
-        // This operation is affected by rotate, scale and position of the transform.
         Vec3 inverseTransformPoint(const Vec3& position) const;
-        // Transforms vector from world space to local space.
-        // This operation is affected by rotate and scale of the transform.
         Vec3 inverseTransformVector(const Vec3& vector) const;
-
 
       protected:
         void fixedUpdate(real fixedDeltaTime) override;

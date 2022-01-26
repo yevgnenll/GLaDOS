@@ -147,12 +147,30 @@ namespace GLaDOS {
     }
 
     Vec3 Transform::transformDirection(const Vec3& direction) const {
+        Vec3 out;
+
+        out = rotation() * direction;
+
+        return out;
     }
 
     Vec3 Transform::transformPoint(const Vec3& position) const {
+        Vec3 out;
+
+        // SRT order
+        out = rotation() * (scale() * position);
+        out = this->position() + out;
+
+        return out;
     }
 
     Vec3 Transform::transformVector(const Vec3& vector) const {
+        Vec3 out;
+
+        // SR order
+        out = rotation() * (scale() * vector);
+
+        return out;
     }
 
     Vec3 Transform::inverseTransformDirection(const Vec3& direction) const {

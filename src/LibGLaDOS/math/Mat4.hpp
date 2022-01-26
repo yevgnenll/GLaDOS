@@ -731,22 +731,14 @@ namespace GLaDOS {
         result._m44[0][0] = one - two * (yy + zz);
         result._m44[0][1] = two * (xy - wz);
         result._m44[0][2] = two * (xz + wy);
-        result._m44[0][3] = zero;
 
         result._m44[1][0] = two * (xy + wz);
         result._m44[1][1] = one - two * (xx + zz);
         result._m44[1][2] = two * (yz - wx);
-        result._m44[1][3] = zero;
 
         result._m44[2][0] = two * (xz - wy);
         result._m44[2][1] = two * (yz + wx);
         result._m44[2][2] = one - two * (xx + yy);
-        result._m44[2][3] = zero;
-
-        result._m44[3][0] = zero;
-        result._m44[3][1] = zero;
-        result._m44[3][2] = zero;
-        result._m44[3][3] = one;
 
         return result;
     }
