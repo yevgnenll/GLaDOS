@@ -5,14 +5,6 @@
 namespace GLaDOS {
     real Math::clamp01(real value) { return value < real(0.0) ? real(0.0) : (value > real(1.0) ? real(1.0) : value); }
 
-    real Math::lerp(real a, real b, real t) {
-        return a + (b - a) * Math::clamp01(t);
-    }
-
-    real Math::lerpUnclamped(real a, real b, real t) {
-        return a + (b - a) * t;
-    }
-
     real Math::lerpAngle(real a, real b, real t) {
         real num = Math::deltaAngle(b - a, static_cast<real>(degrees));
         return a + num * Math::clamp01(t);

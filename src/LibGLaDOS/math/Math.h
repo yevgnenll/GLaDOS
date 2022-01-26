@@ -32,8 +32,11 @@ namespace GLaDOS {
         template <typename T>
         static T clamp(const T& x, const T& min, const T& max);
         static real clamp01(real value);
-        static real lerp(real a, real b, real t);
-        static real lerpUnclamped(real a, real b, real t);
+        template <typename T>
+        static T lerp(T a, T b, real t);
+        template <typename T>
+        static T lerpUnclamped(T a, T b, real t);
+
         static real lerpAngle(real a, real b, real t);
         static real inverseLerp(real a, real b, real value);
         static Rad toRadians(Deg deg);
@@ -161,6 +164,16 @@ namespace GLaDOS {
     template <typename T>
     T Math::clamp(const T& x, const T& min, const T& max) {
         return x < min ? min : (x > max ? max : x);
+    }
+
+    template <typename T>
+    T Math::lerp(T a, T b, real t) {
+        return a + (b - a) * Math::clamp(t, real(0), real(1));
+    }
+
+    template <typename T>
+    T Math::lerpUnclamped(T a, T b, real t) {
+        return a + (b - a) * t;
     }
 
     template <typename T>
