@@ -14,6 +14,7 @@
 #include "Vec2.h"
 #include "Vec3.h"
 #include "utils/Enumeration.h"
+#include "FloatingPoint.h"
 
 namespace GLaDOS {
     class Quat;
@@ -149,14 +150,7 @@ namespace GLaDOS {
 
     template <typename T>
     std::enable_if_t<std::is_floating_point_v<T>, bool> Math::equal(const T& a, const T& b) {
-        //Threshold denominator so we don't divide by zero
-        static constexpr T tolerance = std::numeric_limits<T>::epsilon();
-        static constexpr T threshold = (std::numeric_limits<T>::min)();  //A very small nonzero number!
-        T min = Math::min(Math::abs(a), Math::abs(b));
-        if (Math::abs(min) == real(0.0)) {
-            return Math::abs(a - b) < tolerance;
-        }
-        return (Math::abs(a - b) / Math::max(threshold, min)) < tolerance;
+        return Real<T>(a) == Real<T>(b);
     }
 
     template <typename T>

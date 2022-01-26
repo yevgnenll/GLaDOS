@@ -38,7 +38,13 @@ namespace GLaDOS {
     }
 
     void Transform::rotateAround(const Vec3& point, const UVec3& axis, Deg angle) {
-        // TODO
+        // TODO: testme
+        Vec3 worldPos = position();
+        Quat rotation = Quat::angleAxis(angle, axis);
+        Vec3 diff = worldPos - point;
+        diff = rotation * diff;
+        worldPos = point + diff;
+        mPosition = worldPos;
     }
 
     void Transform::scale(const Vec3& axis, Space relativeTo) {

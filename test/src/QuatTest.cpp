@@ -149,7 +149,7 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
         Mat4<real> result = {
             0,  0.8660254, -0.5, 0,
             0, -0.5, -0.8660254, 0,
-            -1,  0, 0, 0,
+            -1,  0, 1.78813934E-7, 0,
             0, 0, 0, 1
         };
         REQUIRE(m == result);
