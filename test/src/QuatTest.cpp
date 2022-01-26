@@ -197,4 +197,13 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
         Vec3 euler = Quat::toEuler(rotation);
         REQUIRE(euler == Vec3{90, -45, -90});
     }
+
+    SECTION("Quat euler rotation is same as euler rotation in matrix") {
+        Mat4<real> eulerRotation = Mat4<real>::rotate(Vec3{60, 90, 45});
+
+        Quat rotation = Quat::fromEuler(Vec3{60, 90, 45});
+        Mat4<real> quatRotation = Mat4<real>::rotate(rotation);
+
+        REQUIRE(eulerRotation == quatRotation);
+    }
 }
