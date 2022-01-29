@@ -199,6 +199,10 @@ namespace GLaDOS {
             Unknown = -1,
             Position,
             Normal,
+            Tangent,
+            BiTangent,
+            BoneWeight,
+            BoneIndex,
             Color,
             TexCoord0,
             TexCoord1,
@@ -208,8 +212,6 @@ namespace GLaDOS {
             TexCoord5,
             TexCoord6,
             TexCoord7,
-            Tangent,
-            BiTangent,
             TheNumberOfSemantic
         };
 

@@ -54,6 +54,54 @@ namespace GLaDOS {
         mBufferData.copyFrom(offset, reinterpret_cast<const std::byte*>(&normal), sizeof(normal));
     }
 
+    Vec3 VertexBuffer::getTangent(std::size_t index) {
+        assert(mVertexFormatDescriptor.mUseTangent);
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mTangentOffset);
+        return *reinterpret_cast<Vec3*>(mBufferData.pointer() + offset);
+    }
+
+    void VertexBuffer::setTangent(std::size_t index, const Vec3& tangent) {
+        assert(mVertexFormatDescriptor.mUseTangent);
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mNormalOffset);
+        mBufferData.copyFrom(offset, reinterpret_cast<const std::byte*>(&tangent), sizeof(tangent));
+    }
+
+    Vec3 VertexBuffer::getBiTangent(std::size_t index) {
+        assert(mVertexFormatDescriptor.mUseBiTangent);
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mBiTangentOffset);
+        return *reinterpret_cast<Vec3*>(mBufferData.pointer() + offset);
+    }
+
+    void VertexBuffer::setBiTangent(std::size_t index, const Vec3& biTangent) {
+        assert(mVertexFormatDescriptor.mUseBiTangent);
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mBiTangentOffset);
+        mBufferData.copyFrom(offset, reinterpret_cast<const std::byte*>(&biTangent), sizeof(biTangent));
+    }
+
+    Vec4 VertexBuffer::getBoneWeight(std::size_t index) {
+        assert(mVertexFormatDescriptor.mUseBoneWeight);
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mBoneWeightOffset);
+        return *reinterpret_cast<Vec4*>(mBufferData.pointer() + offset);
+    }
+
+    void VertexBuffer::setBoneWeight(std::size_t index, const Vec4& boneWeight) {
+        assert(mVertexFormatDescriptor.mUseBoneWeight);
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mBoneWeightOffset);
+        mBufferData.copyFrom(offset, reinterpret_cast<const std::byte*>(&boneWeight), sizeof(boneWeight));
+    }
+
+    uint32_t* VertexBuffer::getBoneIndex(std::size_t index) {
+        assert(mVertexFormatDescriptor.mUseBoneIndex);
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mBoneIndexOffset);
+        return reinterpret_cast<uint32_t*>(mBufferData.pointer() + offset);
+    }
+
+    void VertexBuffer::setBoneIndex(std::size_t index, uint32_t* boneIndex) {
+        assert(mVertexFormatDescriptor.mUseBoneIndex);
+        std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mBoneIndexOffset);
+        mBufferData.copyFrom(offset, reinterpret_cast<const std::byte*>(boneIndex), sizeof(uint32_t) * 4);
+    }
+
     Vec2 VertexBuffer::getTexCoord0(std::size_t index) {
         assert(mVertexFormatDescriptor.mUseTexCoord0);
         std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mTexCoord0Offset);

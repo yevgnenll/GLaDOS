@@ -68,6 +68,26 @@ namespace GLaDOS {
         return *this;
     }
 
+    VertexFormatDescriptor VertexFormatDescriptor::tangent() {
+        mUseTangent = true;
+        return *this;
+    }
+
+    VertexFormatDescriptor VertexFormatDescriptor::biTangent() {
+        mUseBiTangent = true;
+        return *this;
+    }
+
+    VertexFormatDescriptor VertexFormatDescriptor::boneWeight() {
+        mUseBoneWeight = true;
+        return *this;
+    }
+
+    VertexFormatDescriptor VertexFormatDescriptor::boneIndex() {
+        mUseBoneIndex = true;
+        return *this;
+    }
+
     VertexFormatDescriptor VertexFormatDescriptor::texCoord0() {
         mUseTexCoord0 = true;
         return *this;
@@ -124,6 +144,26 @@ namespace GLaDOS {
         if (mUseNormal) {
             mNormalOffset = VertexFormatDescriptor::sumOfPreviousOffset(vertexFormats);
             vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::Normal, VertexAttributeType::Float3)));
+        }
+
+        if (mUseTangent) {
+            mTangentOffset = VertexFormatDescriptor::sumOfPreviousOffset(vertexFormats);
+            vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::Tangent, VertexAttributeType::Float3)));
+        }
+
+        if (mUseBiTangent) {
+            mBiTangentOffset = VertexFormatDescriptor::sumOfPreviousOffset(vertexFormats);
+            vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::BiTangent, VertexAttributeType::Float3)));
+        }
+
+        if (mUseBoneWeight) {
+            mBoneWeightOffset = VertexFormatDescriptor::sumOfPreviousOffset(vertexFormats);
+            vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::BoneWeight, VertexAttributeType::Float4))); // maximum 4 bone weight
+        }
+
+        if (mUseBoneIndex) {
+            mBoneIndexOffset = VertexFormatDescriptor::sumOfPreviousOffset(vertexFormats);
+            vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::BoneIndex, VertexAttributeType::UInt4))); // maximum 4 bone index
         }
 
         if (mUseTexCoord0) {

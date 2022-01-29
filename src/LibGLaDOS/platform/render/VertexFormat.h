@@ -52,6 +52,10 @@ namespace GLaDOS {
 
         VertexFormatDescriptor position();
         VertexFormatDescriptor normal();
+        VertexFormatDescriptor tangent();
+        VertexFormatDescriptor biTangent();
+        VertexFormatDescriptor boneWeight();
+        VertexFormatDescriptor boneIndex();
         VertexFormatDescriptor texCoord0();
         VertexFormatDescriptor texCoord1();
         VertexFormatDescriptor texCoord2();
@@ -70,6 +74,14 @@ namespace GLaDOS {
         mutable std::size_t mPositionOffset{0};
         bool mUseNormal{false};
         mutable std::size_t mNormalOffset{0};
+        bool mUseTangent{false};
+        mutable std::size_t mTangentOffset{0};
+        bool mUseBiTangent{false};
+        mutable std::size_t mBiTangentOffset{0};
+        bool mUseBoneWeight{false};
+        mutable std::size_t mBoneWeightOffset{0};
+        bool mUseBoneIndex{false};
+        mutable std::size_t mBoneIndexOffset{0};
         bool mUseTexCoord0{false};
         mutable std::size_t mTexCoord0Offset{0};
         bool mUseTexCoord1{false};

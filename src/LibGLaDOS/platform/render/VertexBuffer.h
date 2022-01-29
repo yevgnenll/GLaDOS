@@ -24,6 +24,14 @@ namespace GLaDOS {
         void setPosition(std::size_t index, const Vec3& position);
         Vec3 getNormal(std::size_t index);
         void setNormal(std::size_t index, const Vec3& normal);
+        Vec3 getTangent(std::size_t index);
+        void setTangent(std::size_t index, const Vec3& tangent);
+        Vec3 getBiTangent(std::size_t index);
+        void setBiTangent(std::size_t index, const Vec3& biTangent);
+        Vec4 getBoneWeight(std::size_t index);
+        void setBoneWeight(std::size_t index, const Vec4& boneWeight);
+        uint32_t* getBoneIndex(std::size_t index);
+        void setBoneIndex(std::size_t index, uint32_t* boneIndex);
         Vec2 getTexCoord0(std::size_t index);
         void setTexCoord0(std::size_t index, const Vec2& texCoord);
         Vec2 getTexCoord1(std::size_t index);
