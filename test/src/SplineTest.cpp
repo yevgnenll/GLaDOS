@@ -1,10 +1,10 @@
 #include <catch2/catch.hpp>
-#include "math/curve/BezierSpline.hpp"
+#include "math/BezierSpline.hpp"
 #include "math/Vec3.h"
 
 using namespace GLaDOS;
 
-TEST_CASE("Spline unit tests", "[BezierSpline]") {
+TEST_CASE("Spline unit tests", "[Spline]") {
     SECTION("BezierSpline Vec3 test") {
         BezierSpline<Vec3> curve{
             Vec3{-5, 0, 0}, Vec3{-2, 1, 0},
