@@ -101,6 +101,12 @@ else()
   message(SEND_ERROR "Not supported platform!")
 endif()
 
+find_package(assimp REQUIRED)
+if (assimp_FOUND)
+  list(APPEND LINK_LIBRARIES "${assimp_LIBRARIES}")
+  list(APPEND INCLUDE_LIBRARIES "${assimp_INCLUDE_DIRS}")
+endif()
+
 # LibGLaDOS
 file(GLOB_RECURSE LIB_GLADOS_SOURCE_FILES
         "${LIB_GLADOS_SOURCE_DIR}/*.h"

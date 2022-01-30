@@ -1,7 +1,7 @@
 #ifndef GLADOS_MESHRENDERER_H
 #define GLADOS_MESHRENDERER_H
 
-#include "core/component/renderer/BasicRenderer.h"
+#include "BasicRenderer.h"
 
 namespace GLaDOS {
     class Logger;
