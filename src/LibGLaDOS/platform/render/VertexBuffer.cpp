@@ -90,16 +90,25 @@ namespace GLaDOS {
         mBufferData.copyFrom(offset, reinterpret_cast<const std::byte*>(&boneWeight), sizeof(boneWeight));
     }
 
-    uint32_t* VertexBuffer::getBoneIndex(std::size_t index) {
+    Array<uint8_t, 4> VertexBuffer::getBoneIndex(std::size_t index) {
         assert(mVertexFormatDescriptor.mUseBoneIndex);
         std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mBoneIndexOffset);
-        return reinterpret_cast<uint32_t*>(mBufferData.pointer() + offset);
+        // unpack boneIndex from int32 to int8
+        Array<uint8_t, 4> boneIndices;
+        uint32_t packedInt = *reinterpret_cast<uint32_t*>(mBufferData.pointer() + offset);
+        boneIndices[0] = static_cast<uint8_t>(packedInt & 0xFF);
+        boneIndices[1] = static_cast<uint8_t>((packedInt >> 8) & 0xFF);
+        boneIndices[2] = static_cast<uint8_t>((packedInt >> 16) & 0xFF);
+        boneIndices[3] = static_cast<uint8_t>((packedInt >> 24) & 0xFF);
+        return boneIndices;
     }
 
-    void VertexBuffer::setBoneIndex(std::size_t index, uint32_t* boneIndex) {
+    void VertexBuffer::setBoneIndex(std::size_t index, uint8_t boneIndex0, uint8_t boneIndex1, uint8_t boneIndex2, uint8_t boneIndex3) {
         assert(mVertexFormatDescriptor.mUseBoneIndex);
         std::size_t offset = calcOffset(index, mVertexFormatDescriptor.mBoneIndexOffset);
-        mBufferData.copyFrom(offset, reinterpret_cast<const std::byte*>(boneIndex), sizeof(uint32_t) * 4);
+        // pack boneIndex into int32
+        uint32_t boneIndex = static_cast<uint32_t>(boneIndex0 | (boneIndex1 << 8) | (boneIndex2 << 16) | (boneIndex3 << 24));
+        mBufferData.copyFrom(offset, reinterpret_cast<const std::byte*>(boneIndex), sizeof(uint32_t));
     }
 
     Vec2 VertexBuffer::getTexCoord0(std::size_t index) {

@@ -163,7 +163,7 @@ namespace GLaDOS {
 
         if (mUseBoneIndex) {
             mBoneIndexOffset = VertexFormatDescriptor::sumOfPreviousOffset(vertexFormats);
-            vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::BoneIndex, VertexAttributeType::UInt4))); // maximum 4 bone index
+            vertexFormats.emplace_back(NEW_T(VertexFormat(VertexSemantic::BoneIndex, VertexAttributeType::UInt))); // maximum 4 bone index
         }
 
         if (mUseTexCoord0) {
