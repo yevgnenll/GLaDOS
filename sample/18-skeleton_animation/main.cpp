@@ -5,20 +5,34 @@ using namespace GLaDOS;
 class MainScene : public Scene {
   public:
     bool onInit() override {
+        TextureCube* cubemap = Platform::getRenderer().createTextureCube(
+            "test", {"grid.png", "grid.png", "grid.png", "grid.png", "grid.png", "grid.png"}, PixelFormat::RGBA32
+        );
+
+        GameObject* cubemapObject = createGameObject("cubemap");
+        CubemapRenderer* cubemapRenderer = cubemapObject->addComponent<CubemapRenderer>();
+        cubemapRenderer->setTextureCube(cubemap);
+
         camera = getMainCamera();
         cameraTransform = camera->gameObject()->transform();
         cameraTransform->setLocalPosition({0, 0, 5});
 
-        shaderProgram = Platform::getRenderer().createShaderProgramFromFile("normalVertex", "normalFragment");
-        if (shaderProgram == nullptr) {
-            return false;
-        }
+        shaderProgram = Platform::getRenderer().createShaderProgramFromFile("boneVertex", "boneFragment");
+        shaderProgram->setRasterizerState(rasterizerDesc);
+
+        Material* material = NEW_T(Material);
+        material->setShaderProgram(shaderProgram);
 
         target = createGameObject("target");
         AssimpLoader loader;
-        if (!loader.loadFromFile("fox/source/fox.FBX")) {
+        if (!loader.loadFromFile("dragon.obj")) {
             return false;
         }
+
+        Mesh* mesh = loader.getMesh()[0];
+        target->addComponent<MeshRenderer>(mesh, material);
+        transform = target->transform();
+        transform->setLocalScale(Vec3{0.2, 0.2, 0.2});
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
@@ -32,6 +46,8 @@ class MainScene : public Scene {
             Platform::getInstance().quit();
         }
 
+        shaderProgram->setUniform("invModelView", Mat4<real>::inverse(transform->localToWorldMatrix() * camera->worldToCameraMatrix()));
+        shaderProgram->setUniform("viewPos", cameraTransform->localPosition());
         shaderProgram->setUniform("model", target->transform()->localToWorldMatrix());
         shaderProgram->setUniform("view", camera->worldToCameraMatrix());
         shaderProgram->setUniform("projection", camera->projectionMatrix());
@@ -57,6 +73,11 @@ class MainScene : public Scene {
             cameraTransform->rotate(cameraTransform->right(), Deg{rotationX});
             cameraTransform->rotate(UVec3::up, Deg{-rotationY});
         }
+
+        if (Input::isKeyDown(KeyCode::KEY_TAB)) {
+            rasterizerDesc.mFillMode = (rasterizerDesc.mFillMode == FillMode::Lines) ? FillMode::Fill : FillMode::Lines;
+            shaderProgram->setRasterizerState(rasterizerDesc);
+        }
     }
 
   private:
@@ -65,6 +86,8 @@ class MainScene : public Scene {
     ShaderProgram* shaderProgram = nullptr;
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;
+    Transform* transform = nullptr;
+    RasterizerDescription rasterizerDesc{};
 };
 
 int main(int argc, char** argv) {

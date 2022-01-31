@@ -138,8 +138,14 @@ namespace GLaDOS {
                 return "_position";
             case VertexSemantic::Normal:
                 return "_normal";
-            case VertexSemantic::Color:
-                return "_color";
+            case VertexSemantic::Tangent:
+                return "_tangent";
+            case VertexSemantic::BiTangent:
+                return "_biTangent";
+            case VertexSemantic::BoneWeight:
+                return "_boneWeight";
+            case VertexSemantic::BoneIndex:
+                return "_boneIndex";
             case VertexSemantic::TexCoord0:
                 return "_texCoord0";
             case VertexSemantic::TexCoord1:
@@ -156,10 +162,8 @@ namespace GLaDOS {
                 return "_texCoord6";
             case VertexSemantic::TexCoord7:
                 return "_texCoord7";
-            case VertexSemantic::Tangent:
-                return "_tangent";
-            case VertexSemantic::BiTangent:
-                return "_biTangent";
+            case VertexSemantic::Color:
+                return "_color";
             default:
                 LOG_WARN(logger, "Not supported vertex semantic type");
                 break;

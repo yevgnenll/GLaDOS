@@ -22,7 +22,7 @@ namespace GLaDOS {
     bool AssimpLoader::loadFromFile(const std::string& filePath) {
         Assimp::Importer importer;
         std::string fileDirectory = std::string(RESOURCE_DIR) + filePath;
-        const aiScene* scene = importer.ReadFile(fileDirectory, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+        const aiScene* scene = importer.ReadFile(fileDirectory, aiProcessPreset_TargetRealtime_Quality);
         if (scene == nullptr || ((scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) != 0u) || scene->mRootNode == nullptr) {
             LOG_ERROR(logger, "Load from file error: {0}", importer.GetErrorString());
             return false;
@@ -79,7 +79,7 @@ namespace GLaDOS {
 
     Mesh* AssimpLoader::loadMesh(aiMesh* mesh) {
         Vector<Vertex> vertices(mesh->mNumVertices);
-        VertexFormatDescriptor vertexDesc = generateVertexFormatDesc(mesh);
+        VertexFormatDescriptor vertexDesc = VertexFormatDescriptor().position().normal().tangent().biTangent().boneWeight().boneIndex().texCoord0();
 
         // process mesh's vertices
         for (uint32_t i = 0; i < mesh->mNumVertices; i++) {
