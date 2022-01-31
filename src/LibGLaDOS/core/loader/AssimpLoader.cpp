@@ -127,7 +127,7 @@ namespace GLaDOS {
     }
 
     void AssimpLoader::parseBoneWeight(Vector<Vertex>& vertices, aiBone* bone) {
-        uint32_t boneID = findOrInsertJoint(bone->mName.C_Str(), bone);
+        uint32_t boneID = findOrCacheBone(bone->mName.C_Str(), bone);
         aiVertexWeight* weights = bone->mWeights;
         uint32_t numWeights = bone->mNumWeights;
 
@@ -151,8 +151,8 @@ namespace GLaDOS {
         }
     }
 
-    uint32_t AssimpLoader::findOrInsertJoint(const std::string& name, aiBone* bone) {
-        // already exists in joint map
+    uint32_t AssimpLoader::findOrCacheBone(const std::string& name, aiBone* bone) {
+        // already exists in bone map
         if (mBoneMap.find(name) != mBoneMap.end()) {
             return mBoneMap[name].id;
         }

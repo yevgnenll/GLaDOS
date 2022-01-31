@@ -50,7 +50,7 @@ namespace GLaDOS {
         bool loadNode(aiNode* node, const aiScene* scene);
         Mesh* loadMesh(aiMesh* mesh);
         void parseBoneWeight(Vector<Vertex>& vertices, aiBone* bone);
-        uint32_t findOrInsertJoint(const std::string& name, aiBone* bone);
+        uint32_t findOrCacheBone(const std::string& name, aiBone* bone);
         Texture* loadTexture(aiMaterial* material, aiTextureType textureType);
         AnimationClip* loadAnimation(aiAnimation* animation);
 
