@@ -19,7 +19,6 @@ typedef float ai_real;
 typedef aiMatrix4x4t<ai_real> aiMatrix4x4;
 
 namespace GLaDOS {
-    static const uint32_t MAX_BONE_INFLUENCE = 4;
     struct BoneInfo {
         uint32_t id;
         std::string name;
@@ -44,6 +43,8 @@ namespace GLaDOS {
     class AssimpLoader {
       public:
         bool loadFromFile(const std::string& filePath);
+        Vector<Mesh*> getMesh() const;
+        Vector<Texture*> getTexture() const;
 
       private:
         bool loadNode(aiNode* node, const aiScene* scene);
@@ -54,9 +55,13 @@ namespace GLaDOS {
         AnimationClip* loadAnimation(aiAnimation* animation);
 
         static Mat4<real> toMat4(const aiMatrix4x4& mat);
+        static Vec3 toVec3(const aiVector3D& vec3);
+        static Vec2 toVec2(const aiVector3D& vec3);
         static VertexFormatDescriptor generateVertexFormatDesc(aiMesh* mesh);
 
         static Logger* logger;
+        static const uint32_t MAX_BONE_INFLUENCE;
+
         UnorderedMap<std::string, BoneInfo> mBoneMap;
         Vector<Mesh*> mMeshes;
         Vector<Texture*> mTextures;

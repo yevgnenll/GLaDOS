@@ -111,6 +111,7 @@ namespace GLaDOS {
         static real rsqrt(real a);
         static real rsqrtEst(real a);
         static real pow(real a, real exp);
+        static real mod(real a, real b);
         static bool isPowerOfTwo(uint32_t a);
 
         static real dot(const Vec3& v1, const Vec3& v2);

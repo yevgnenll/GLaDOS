@@ -334,6 +334,12 @@ namespace GLaDOS {
         PingPong
     };
 
+    enum class Interpolation {
+        Constant = 0,
+        Linear,
+        Cubic
+    };
+
     enum class AnimationBlendMode {
         Blend = 0,
         Additive

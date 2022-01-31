@@ -8,6 +8,7 @@
 
 namespace GLaDOS {
     class Transform : public Component {
+        friend class TransformCurve;
       public:
         Transform();
         ~Transform() override = default;

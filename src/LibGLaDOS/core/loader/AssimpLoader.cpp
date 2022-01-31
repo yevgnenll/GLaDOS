@@ -17,6 +17,7 @@
 
 namespace GLaDOS {
     Logger* AssimpLoader::logger = LoggerRegistry::getInstance().makeAndGetLogger("AssimpLoader");
+    const uint32_t AssimpLoader::MAX_BONE_INFLUENCE = 4;
 
     bool AssimpLoader::loadFromFile(const std::string& filePath) {
         Assimp::Importer importer;
@@ -34,6 +35,14 @@ namespace GLaDOS {
         }
 
         return loadNode(scene->mRootNode, scene);
+    }
+
+    Vector<Mesh*> AssimpLoader::getMesh() const {
+        return mMeshes;
+    }
+
+    Vector<Texture*> AssimpLoader::getTexture() const {
+        return mTextures;
     }
 
     bool AssimpLoader::loadNode(aiNode* node, const aiScene* scene) {
@@ -75,19 +84,19 @@ namespace GLaDOS {
         // process mesh's vertices
         for (uint32_t i = 0; i < mesh->mNumVertices; i++) {
             Vertex vertex;
-            vertex.position = Vec3{mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z};
+            vertex.position = toVec3(mesh->mVertices[i]);
 
             if (mesh->HasNormals()) {
-                vertex.normal = Vec3{mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
+                vertex.normal = toVec3(mesh->mNormals[i]);
             }
 
             if (mesh->HasTangentsAndBitangents()) {
-                vertex.tangent = Vec3{mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
-                vertex.biTangent = Vec3{mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z};
+                vertex.tangent = toVec3(mesh->mTangents[i]);
+                vertex.biTangent = toVec3(mesh->mBitangents[i]);
             }
 
             if (mesh->HasTextureCoords(0)) {
-                vertex.texcoord = Vec2{mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y};
+                vertex.texcoord = toVec2(mesh->mTextureCoords[0][i]);
             }
             vertex.boneIndex = 0;
 
@@ -179,6 +188,14 @@ namespace GLaDOS {
             mat.c1, mat.c2, mat.c3, mat.c4,
             mat.d1, mat.d2, mat.d3, mat.d4
         };
+    }
+
+    Vec3 AssimpLoader::toVec3(const aiVector3D& vec3) {
+        return Vec3{vec3.x, vec3.y, vec3.z};
+    }
+
+    Vec2 AssimpLoader::toVec2(const aiVector3D& vec3) {
+        return Vec2{vec3.x, vec3.y};
     }
 
     VertexFormatDescriptor AssimpLoader::generateVertexFormatDesc(aiMesh* mesh) {

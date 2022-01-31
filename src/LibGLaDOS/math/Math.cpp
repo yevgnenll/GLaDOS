@@ -283,6 +283,10 @@ namespace GLaDOS {
         return std::pow(a, exp);
     }
 
+    real Math::mod(real a, real b) {
+        return fmodf(a, b);
+    }
+
     bool Math::isPowerOfTwo(uint32_t a) {
         return !(a == 0) && !(a & (a - 1));
     }
