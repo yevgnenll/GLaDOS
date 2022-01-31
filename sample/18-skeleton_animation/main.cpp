@@ -20,19 +20,31 @@ class MainScene : public Scene {
         shaderProgram = Platform::getRenderer().createShaderProgramFromFile("boneVertex", "boneFragment");
         shaderProgram->setRasterizerState(rasterizerDesc);
 
+        shaderProgram2 = Platform::getRenderer().createShaderProgramFromFile("boneVertex", "boneFragment");
+        shaderProgram2->setRasterizerState(rasterizerDesc);
+
+        AssimpLoader loader;
+        if (!loader.loadFromFile("xbot@Idle.fbx")) {
+            return false;
+        }
+
+        Mesh* mesh1 = loader.getMesh()[0];
+        Mesh* mesh2 = loader.getMesh()[1];
+
         Material* material = NEW_T(Material);
         material->setShaderProgram(shaderProgram);
 
         target = createGameObject("target");
-        AssimpLoader loader;
-        if (!loader.loadFromFile("dragon.obj")) {
-            return false;
-        }
+        target->addComponent<MeshRenderer>(mesh1, material);
+        transform1 = target->transform();
+        transform1->setLocalScale(Vec3{0.01, 0.01, 0.01});
 
-        Mesh* mesh = loader.getMesh()[0];
-        target->addComponent<MeshRenderer>(mesh, material);
-        transform = target->transform();
-        transform->setLocalScale(Vec3{0.2, 0.2, 0.2});
+        Material* material2 = NEW_T(Material);
+        material2->setShaderProgram(shaderProgram2);
+
+        target2 = createGameObject("target2", target);
+        target2->addComponent<MeshRenderer>(mesh2, material2);
+        transform2 = target2->transform();
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
@@ -46,11 +58,19 @@ class MainScene : public Scene {
             Platform::getInstance().quit();
         }
 
-        shaderProgram->setUniform("invModelView", Mat4<real>::inverse(transform->localToWorldMatrix() * camera->worldToCameraMatrix()));
+        transform1->rotate(Vec3{0, deltaTime * 50, 0});
+
+        shaderProgram->setUniform("invModelView", Mat4<real>::inverse(transform1->localToWorldMatrix() * camera->worldToCameraMatrix()));
         shaderProgram->setUniform("viewPos", cameraTransform->localPosition());
-        shaderProgram->setUniform("model", target->transform()->localToWorldMatrix());
+        shaderProgram->setUniform("model", transform1->localToWorldMatrix());
         shaderProgram->setUniform("view", camera->worldToCameraMatrix());
         shaderProgram->setUniform("projection", camera->projectionMatrix());
+
+        shaderProgram2->setUniform("invModelView", Mat4<real>::inverse(transform2->localToWorldMatrix() * camera->worldToCameraMatrix()));
+        shaderProgram2->setUniform("viewPos", cameraTransform->localPosition());
+        shaderProgram2->setUniform("model", transform2->localToWorldMatrix());
+        shaderProgram2->setUniform("view", camera->worldToCameraMatrix());
+        shaderProgram2->setUniform("projection", camera->projectionMatrix());
 
         // camera translation
         Vec3 right = cameraTransform->right();
@@ -65,6 +85,12 @@ class MainScene : public Scene {
         forward *= Input::getAxisRaw("Vertical") * sensitivity * deltaTime;
         cameraTransform->translate(forward);
 
+        if (Input::isKeyPress(KeyCode::KEY_RIGHT)) {
+            transform1->translate(Vec3{0.02, 0, 0});
+        } else if (Input::isKeyPress(KeyCode::KEY_LEFT)) {
+            transform1->translate(Vec3{-0.02, 0, 0});
+        }
+
         // camera rotation
         if (Input::isMousePress(MouseButton::MOUSE_RIGHT)) {
             Vec3 mouseDelta = Input::mouseDeltaPosition();
@@ -77,16 +103,20 @@ class MainScene : public Scene {
         if (Input::isKeyDown(KeyCode::KEY_TAB)) {
             rasterizerDesc.mFillMode = (rasterizerDesc.mFillMode == FillMode::Lines) ? FillMode::Fill : FillMode::Lines;
             shaderProgram->setRasterizerState(rasterizerDesc);
+            shaderProgram2->setRasterizerState(rasterizerDesc);
         }
     }
 
   private:
     real sensitivity = 5;
     GameObject* target = nullptr;
+    GameObject* target2 = nullptr;
     ShaderProgram* shaderProgram = nullptr;
+    ShaderProgram* shaderProgram2 = nullptr;
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;
-    Transform* transform = nullptr;
+    Transform* transform1 = nullptr;
+    Transform* transform2 = nullptr;
     RasterizerDescription rasterizerDesc{};
 };
 
