@@ -38,6 +38,7 @@ class MainScene : public Scene {
         target->addComponent<MeshRenderer>(mesh1, material);
         transform1 = target->transform();
         transform1->setLocalScale(Vec3{0.01, 0.01, 0.01});
+        transform1->setLocalPosition(Vec3{0, -1, 3});
 
         Material* material2 = NEW_T(Material);
         material2->setShaderProgram(shaderProgram2);

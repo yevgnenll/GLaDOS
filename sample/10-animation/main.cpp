@@ -150,25 +150,11 @@ class MainScene : public Scene {
             spriteRenderer->setFlipY(!spriteRenderer->getFlipY());
         }
 
-        if (Input::isKeyDown(KeyCode::KEY_M)) {
-            rasterizerDesc.mFillMode = FillMode::Lines;
+        if (Input::isKeyDown(KeyCode::KEY_TAB)) {
+            rasterizerDesc.mFillMode = (rasterizerDesc.mFillMode == FillMode::Lines) ? FillMode::Fill : FillMode::Lines;
             for (auto* sprite : sprites) {
                 sprite->getRenderable()->getMaterial()->getShaderProgram()->setRasterizerState(rasterizerDesc);
             }
-        }
-        if (Input::isKeyDown(KeyCode::KEY_N)) {
-            rasterizerDesc.mFillMode = FillMode::Fill;
-            for (auto* sprite : sprites) {
-                sprite->getRenderable()->getMaterial()->getShaderProgram()->setRasterizerState(rasterizerDesc);
-            }
-        }
-
-        if (Input::isKeyDown(KeyCode::KEY_BACKSPACE)) {
-            Blob blob = static_cast<Texture2D*>(spriteRenderer->getSprite()->getRenderable()->getMaterial()->getTexture0())->encodeToPNG();
-            std::string filename = std::string(RESOURCE_DIR) + "test.png";
-            FileSystem file{filename, OpenMode::WriteBinary};
-            file.writeBytes(blob.pointer(), blob.size(), 1);
-            file.close();
         }
 
         // camera translation
