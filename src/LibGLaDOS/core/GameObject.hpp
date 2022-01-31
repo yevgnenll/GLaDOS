@@ -23,7 +23,7 @@ namespace GLaDOS {
       public:
         GameObject(std::string name, Scene* scene);
         GameObject(std::string name, GameObject* parent, Scene* scene);
-        ~GameObject();
+        ~GameObject() override;
 
         GameObject(const GameObject& other) = delete;
         GameObject& operator=(const GameObject& other) = delete;

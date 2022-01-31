@@ -40,8 +40,8 @@ namespace GLaDOS {
     }
 
     GameObject::~GameObject() {
+        // don't dealloc children here. because they are freed in scene destructor.
         deallocValueInMap(mComponents);
-        deallocIterable(mChildren);
         mChildren.clear();
     }
 
