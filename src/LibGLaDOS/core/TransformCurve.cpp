@@ -11,9 +11,9 @@ namespace GLaDOS {
     }
 
     Transform* TransformCurve::sample(Transform* targetTransform, real time, bool loop) {
-        targetTransform->mLocalPosition = mTranslation.sample(time, loop);
-        targetTransform->mLocalRotation = mRotation.sample(time, loop);
-        targetTransform->mLocalScale = mScale.sample(time, loop);
+        targetTransform->mLocalPosition = mTranslation.evaluate(time, loop);
+        targetTransform->mLocalRotation = mRotation.evaluate(time, loop);
+        targetTransform->mLocalScale = mScale.evaluate(time, loop);
         return targetTransform;
     }
 }

@@ -21,15 +21,18 @@ namespace GLaDOS {
         void setInterpolation(Interpolation interpolation);
         real getStartTime() const;
         real getEndTime() const;
-        T sample(real time, bool loop);
+        real getDuration() const;
+        T evaluate(real time, bool loop);
         KeyFrame<N> operator[](std::size_t index) const;
 
       protected:
         real clampTimeInCurve(real time, bool loop);
-        std::size_t getKeyFrameIndex(real time, bool loop) const;
+        int getKeyFrameIndex(real time, bool loop) const;
+
         T constant(real time, bool loop);
         T linear(real time, bool loop);
         T cubic(real time, bool loop);
+
         T cast(real* value);
 
       private:
@@ -78,7 +81,12 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t N>
-    T AnimationCurve<T, N>::sample(real time, bool loop) {
+    real AnimationCurve<T, N>::getDuration() const {
+        return getEndTime() - getStartTime();
+    }
+
+    template <typename T, std::size_t N>
+    T AnimationCurve<T, N>::evaluate(real time, bool loop) {
         if (mInterpolation == Interpolation::Constant) {
             return constant(time, loop);
         }
@@ -103,7 +111,7 @@ namespace GLaDOS {
 
         real startTime = getStartTime();
         real endTime = getEndTime();
-        real duration = endTime - startTime;
+        real duration = getDuration();
         if (duration <= real(0)) {
             return real(0);
         }
@@ -122,15 +130,14 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t N>
-    std::size_t AnimationCurve<T, N>::getKeyFrameIndex(real time, bool loop) const {
+    int AnimationCurve<T, N>::getKeyFrameIndex(real time, bool loop) const {
         if (length() <= 1) {
             return -1;
         }
 
         real startTime = getStartTime();
-        real endTime = getEndTime();
         if (loop) {
-            real duration = endTime - startTime;
+            real duration = getDuration();
             time = Math::mod(time - startTime, duration);
             if (time < real(0)) {
                 time += duration;
@@ -156,7 +163,7 @@ namespace GLaDOS {
 
     template <typename T, std::size_t N>
     T AnimationCurve<T, N>::constant(real time, bool loop) {
-        std::size_t index = getKeyFrameIndex(time, loop);
+        int index = getKeyFrameIndex(time, loop);
         if (index < 0 || index >= length()) {
             return T();
         }
@@ -166,19 +173,19 @@ namespace GLaDOS {
 
     template <typename T, std::size_t N>
     T AnimationCurve<T, N>::linear(real time, bool loop) {
-        std::size_t thisKeyFrameIndex = getKeyFrameIndex(time, loop);
-        if (thisKeyFrameIndex < 0 || thisKeyFrameIndex >= length() - 1) {
+        int currentKeyFrameIndex = getKeyFrameIndex(time, loop);
+        if (currentKeyFrameIndex < 0 || currentKeyFrameIndex >= length() - 1) {
             return T();
         }
-        std::size_t nextKeyFrameIndex = thisKeyFrameIndex + 1;
+        std::size_t nextKeyFrameIndex = static_cast<size_t>(currentKeyFrameIndex + 1);
         real currentTime = clampTimeInCurve(time, loop);
-        real keyFrameDelta = mKeyFrames[nextKeyFrameIndex].time - mKeyFrames[thisKeyFrameIndex].time;
+        real keyFrameDelta = mKeyFrames[nextKeyFrameIndex].time - mKeyFrames[currentKeyFrameIndex].time;
         if (keyFrameDelta < real(0)) {
             return T();
         }
-        real sampleTime = (currentTime - mKeyFrames[thisKeyFrameIndex].time) / keyFrameDelta;
+        real sampleTime = (currentTime - mKeyFrames[currentKeyFrameIndex].time) / keyFrameDelta;
 
-        T start = cast(&mKeyFrames[thisKeyFrameIndex].value[0]);
+        T start = cast(&mKeyFrames[currentKeyFrameIndex].value[0]);
         T end = cast(&mKeyFrames[nextKeyFrameIndex].value[0]);
 
         return Math::lerpUnclamped(start, end, sampleTime);
@@ -193,6 +200,10 @@ namespace GLaDOS {
         return value[0];
     }
 
+    template<> Vec2 AnimationCurve<Vec2, 2>::cast(real* value) {
+        return Vec2{value[0], value[1]};
+    }
+
     template<> Vec3 AnimationCurve<Vec3, 3>::cast(real* value) {
         return Vec3{value[0], value[1], value[2]};
     }
@@ -201,8 +212,8 @@ namespace GLaDOS {
         return Quat{value[0], value[1], value[2], value[3]};
     }
 
-
     typedef AnimationCurve<real, 1> ScalarCurve;
+    typedef AnimationCurve<Vec2, 2> Vec2Curve;
     typedef AnimationCurve<Vec3, 3> Vec3Curve;
     typedef AnimationCurve<Quat, 4> QuatCurve;
 }

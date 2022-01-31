@@ -226,8 +226,14 @@ namespace GLaDOS {
                     return "Position";
                 case Normal:
                     return "Normal";
-                case Color:
-                    return "Color";
+                case Tangent:
+                    return "Tangent";
+                case BiTangent:
+                    return "BiTangent";
+                case BoneWeight:
+                    return "BoneWeight";
+                case BoneIndex:
+                    return "BoneIndex";
                 case TexCoord0:
                     return "TexCoord0";
                 case TexCoord1:
@@ -244,10 +250,8 @@ namespace GLaDOS {
                     return "TexCoord6";
                 case TexCoord7:
                     return "TexCoord7";
-                case Tangent:
-                    return "Tangent";
-                case BiTangent:
-                    return "BiTangent";
+                case Color:
+                    return "Color";
                 default:
                     return "Unknown";
             }
