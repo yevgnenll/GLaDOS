@@ -88,6 +88,36 @@ namespace GLaDOS {
         return *this;
     }
 
+    VertexFormatDescriptor VertexFormatDescriptor::texCoord(uint32_t index) {
+        switch (index) {
+            case 0:
+                mUseTexCoord0 = true;
+                break;
+            case 1:
+                mUseTexCoord1 = true;
+                break;
+            case 2:
+                mUseTexCoord2 = true;
+                break;
+            case 3:
+                mUseTexCoord3 = true;
+                break;
+            case 4:
+                mUseTexCoord4 = true;
+                break;
+            case 5:
+                mUseTexCoord5 = true;
+                break;
+            case 6:
+                mUseTexCoord6 = true;
+                break;
+            case 7:
+                mUseTexCoord7 = true;
+                break;
+        }
+        return *this;
+    }
+
     VertexFormatDescriptor VertexFormatDescriptor::texCoord0() {
         mUseTexCoord0 = true;
         return *this;

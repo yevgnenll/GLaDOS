@@ -35,6 +35,7 @@ namespace GLaDOS {
         void setTexture7(Texture* texture);
 
         Texture* getTextureFromIndex(std::size_t index);
+        void setTextureFromIndex(Texture* texture, std::size_t index);
 
       private:
         ShaderProgram* mShaderProgram{nullptr};

@@ -15,13 +15,10 @@ class MainScene : public Scene {
         }
 
         target = createGameObject("target");
-        SkinnedMeshRenderer* rend = target->addComponent<SkinnedMeshRenderer>();
-        Animator* anim = target->addComponent<Animator>();
-
-//        Mesh* mesh = Platform::getRenderer().createMesh()
-
-        Material* material = NEW_T(Material);
-        material->setShaderProgram(shaderProgram);
+        AssimpLoader loader;
+        if (!loader.loadFromFile("fox/source/fox.FBX")) {
+            return false;
+        }
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));

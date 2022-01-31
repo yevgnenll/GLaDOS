@@ -111,4 +111,10 @@ namespace GLaDOS {
         }
         return mTextures[index];
     }
+
+    void Material::setTextureFromIndex(Texture* texture, std::size_t index) {
+        if (index >= 0 || index <= 7) {
+            mTextures[index] = texture;
+        }
+    }
 }  // namespace GLaDOS

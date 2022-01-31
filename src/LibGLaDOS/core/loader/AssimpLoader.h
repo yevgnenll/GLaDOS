@@ -1,0 +1,68 @@
+#ifndef GLADOS_ASSIMPLOADER_H
+#define GLADOS_ASSIMPLOADER_H
+
+#include <string>
+#include <assimp/material.h>
+#include "utils/Stl.h"
+#include "math/Mat4.hpp"
+#include "platform/render/VertexFormat.h"
+
+struct aiNode;
+struct aiScene;
+struct aiMesh;
+struct aiBone;
+struct aiMaterial;
+struct aiAnimation;
+template<typename TReal>
+class aiMatrix4x4t;
+typedef float ai_real;
+typedef aiMatrix4x4t<ai_real> aiMatrix4x4;
+
+namespace GLaDOS {
+    static const uint32_t MAX_BONE_INFLUENCE = 4;
+    struct BoneInfo {
+        uint32_t id;
+        std::string name;
+        Mat4<real> offset;
+    };
+    struct Vertex {
+        Vec3 position;
+        Vec3 normal;
+        Vec3 tangent;
+        Vec3 biTangent;
+        Vec4 boneWeight;
+        uint32_t boneIndex;
+        Vec2 texcoord;
+    };
+
+    class Texture;
+    class Mesh;
+    class Material;
+    class Renderable;
+    class AnimationClip;
+    class Logger;
+    class AssimpLoader {
+      public:
+        bool loadFromFile(const std::string& filePath);
+
+      private:
+        bool loadNode(aiNode* node, const aiScene* scene);
+        Mesh* loadMesh(aiMesh* mesh);
+        void parseBoneWeight(Vector<Vertex>& vertices, aiBone* bone);
+        uint32_t findOrInsertJoint(const std::string& name, aiBone* bone);
+        Texture* loadTexture(aiMaterial* material, aiTextureType textureType);
+        AnimationClip* loadAnimation(aiAnimation* animation);
+
+        static Mat4<real> toMat4(const aiMatrix4x4& mat);
+        static VertexFormatDescriptor generateVertexFormatDesc(aiMesh* mesh);
+
+        static Logger* logger;
+        UnorderedMap<std::string, BoneInfo> mBoneMap;
+        Vector<Mesh*> mMeshes;
+        Vector<Texture*> mTextures;
+        Vector<AnimationClip*> mAnimationClips;
+        std::string mDirectoryPath;
+    };
+}
+
+#endif  // GLADOS_ASSIMPLOADER_H

@@ -16,6 +16,7 @@
 #include "core/component/renderer/TilemapRenderer.h"
 #include "core/component/Transform.h"
 #include "core/component/Animator.h"
+#include "core/loader/AssimpLoader.h"
 #include "math/Color.h"
 #include "platform/Input.h"
 #include "platform/InputHandler.h"

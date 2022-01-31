@@ -56,6 +56,7 @@ namespace GLaDOS {
         VertexFormatDescriptor biTangent();
         VertexFormatDescriptor boneWeight();
         VertexFormatDescriptor boneIndex();
+        VertexFormatDescriptor texCoord(uint32_t index);
         VertexFormatDescriptor texCoord0();
         VertexFormatDescriptor texCoord1();
         VertexFormatDescriptor texCoord2();

@@ -143,6 +143,7 @@ namespace GLaDOS {
         static constexpr real rad2Deg = real(180) / Math::pi;
         static constexpr real realEpsilon = std::numeric_limits<real>::epsilon();
         static constexpr real realInfinity = std::numeric_limits<real>::infinity();
+        static constexpr uint16_t shortMax = std::numeric_limits<uint16_t>::max();
         static constexpr uint16_t maxNumberStringSize = 32;
     };
 

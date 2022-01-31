@@ -4,7 +4,7 @@
 #include "UVec4.h"
 
 namespace GLaDOS {
-    Vec4::Vec4() : x{0.0}, y{0.0}, z{0.0}, w{1.0} {}
+    Vec4::Vec4() : x{0.0}, y{0.0}, z{0.0}, w{0.0} {}
 
     Vec4::Vec4(real _x, real _y, real _z, real _w) : x{_x}, y{_y}, z{_z}, w{_w} {}
 

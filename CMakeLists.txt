@@ -124,7 +124,7 @@ target_link_libraries(${PROJECT_NAME}
         ${LINK_LIBRARIES}
         project_options
         project_warnings)
-target_include_directories(${PROJECT_NAME} PRIVATE ${LIB_GLADOS_SOURCE_DIR} ${INCLUDE_LIBRARIES})
+target_include_directories(${PROJECT_NAME} PUBLIC ${LIB_GLADOS_SOURCE_DIR} ${INCLUDE_LIBRARIES})
 configure_file("${CMAKE_SOURCE_DIR}/cmake/RootDir.h.in" "${LIB_GLADOS_SOURCE_DIR}/RootDir.h")
 configure_file("${CMAKE_SOURCE_DIR}/cmake/Config.h.in" "${LIB_GLADOS_SOURCE_DIR}/Config.h")
 
