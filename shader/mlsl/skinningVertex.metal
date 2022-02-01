@@ -33,34 +33,25 @@ typedef struct {
 
 vertex VertexOut main0(VertexIn verts [[stage_in]], constant VertexUniforms &uniforms [[buffer(0)]]) {
     VertexOut out;
-    /*
-    float4 weightedPosition = float4(0, 0, 0, 0);
-    float3 weightedNormal = float3(0, 0, 0);
-    float3 weightedTangent = float3(0, 0, 0);
+    float4 skinnedPosition = 0.f;
+    float3 skinnedNormal = 0.f;
+    float3 skinnedTangent = 0.f;
 
     for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
         int8_t boneIndex = ((verts._boneIndex >> (8 * i)) & 0xFF);
         if (boneIndex <= -1 || boneIndex > MAX_BONES) {
             continue;
         }
-        float4 localPosition = uniforms.boneTransform[boneIndex] * float4(verts._position, 1.0f);
-        weightedPosition += localPosition * verts._boneWeight[i];
-        float3 localNormal = float3(uniforms.boneTransform[boneIndex] * float4(verts._normal, 0));
-        weightedNormal += localNormal * verts._boneWeight[i];
-        float3 localTangent = float3(uniforms.boneTransform[boneIndex] * float4(verts._tangent, 0));
-        weightedTangent += localTangent * verts._boneWeight[i];
+        skinnedPosition += uniforms.boneTransform[boneIndex] * float4(verts._position, 1.0f) * verts._boneWeight[i];
+        skinnedNormal += float3(uniforms.boneTransform[boneIndex] * float4(verts._normal, 0.f)) * verts._boneWeight[i];
+        skinnedTangent += float3(uniforms.boneTransform[boneIndex] * float4(verts._tangent, 0.f)) * verts._boneWeight[i];
     }
-    */
 
-    float4 weightedPosition = uniforms.boneTransform[0] * float4(verts._position, 1.0f);
-    float3 weightedNormal = verts._normal;
-    float3 weightedTangent = verts._tangent;
-
-    out._position = uniforms.projection * uniforms.view * uniforms.model * weightedPosition;
-    out._normal = float3(transpose(uniforms.invModelView) * float4(weightedNormal, 0));
-    out._tangent = float3(transpose(uniforms.invModelView) * float4(weightedTangent, 0));
+    out._position = uniforms.projection * uniforms.view * uniforms.model * skinnedPosition;
+    out._normal = float3(transpose(uniforms.invModelView) * float4(skinnedNormal, 0.f));
+    out._tangent = float3(transpose(uniforms.invModelView) * float4(skinnedTangent, 0.f));
     out._texCoord0 = verts._texCoord0;
-    out._fragPos = float3(uniforms.model * weightedPosition);
+    out._fragPos = float3(uniforms.model * skinnedPosition);
 
     return out;
 }
