@@ -46,12 +46,12 @@ namespace GLaDOS {
         void setUniform(const std::string& name, const Point<uint32_t>& value);
         void setUniform(const std::string& name, const Size<uint32_t>& value);
         void setUniform(const std::string& name, const Rect<uint32_t>& value);
-        void setUniform(const std::string& name, float* values, int count);
-        void setUniform(const std::string& name, Vec2* values, int count);
-        void setUniform(const std::string& name, Vec3* values, int count);
-        void setUniform(const std::string& name, Vec4* values, int count);
-        void setUniform(const std::string& name, Color* values, int count);
-        void setUniform(const std::string& name, Mat4<real>* values, int count);
+        void setUniform(const std::string& name, float* values, std::size_t count);
+        void setUniform(const std::string& name, Vec2* values, std::size_t count);
+        void setUniform(const std::string& name, Vec3* values, std::size_t count);
+        void setUniform(const std::string& name, Vec4* values, std::size_t count);
+        void setUniform(const std::string& name, Color* values, std::size_t count);
+        void setUniform(const std::string& name, Mat4<real>* values, std::size_t count);
         void setUniform(const std::string& name, const Mat4<real>& value);
         void setUniform(const std::string& name, bool value);
 

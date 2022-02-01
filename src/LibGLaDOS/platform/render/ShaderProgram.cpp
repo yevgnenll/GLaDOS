@@ -154,76 +154,64 @@ namespace GLaDOS {
         (*it->second) << const_cast<Rect<uint32_t>&>(value);
     }
 
-    void ShaderProgram::setUniform(const std::string& name, float* values, int count) {
+    void ShaderProgram::setUniform(const std::string& name, float* values, std::size_t count) {
         auto iter = mUniforms.find(name);
         if (iter == mUniforms.end()) {
             LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
-        for (int i = 0; i < count; ++i) {
-            (*iter->second) << values[i];
-        }
+        iter->second->copyFrom(reinterpret_cast<std::byte*>(values), count * sizeof(float));
     }
 
-    void ShaderProgram::setUniform(const std::string& name, Vec2* values, int count) {
+    void ShaderProgram::setUniform(const std::string& name, Vec2* values, std::size_t count) {
         auto iter = mUniforms.find(name);
         if (iter == mUniforms.end()) {
             LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
-        for (int i = 0; i < count; ++i) {
-            (*iter->second) << values[i];
-        }
+        iter->second->copyFrom(reinterpret_cast<std::byte*>(values), count * sizeof(Vec2));
     }
 
-    void ShaderProgram::setUniform(const std::string& name, Vec3* values, int count) {
+    void ShaderProgram::setUniform(const std::string& name, Vec3* values, std::size_t count) {
         auto iter = mUniforms.find(name);
         if (iter == mUniforms.end()) {
             LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
-        for (int i = 0; i < count; ++i) {
-            (*iter->second) << values[i];
-        }
+        iter->second->copyFrom(reinterpret_cast<std::byte*>(values), count * sizeof(Vec3));
     }
 
-    void ShaderProgram::setUniform(const std::string& name, Vec4* values, int count) {
+    void ShaderProgram::setUniform(const std::string& name, Vec4* values, std::size_t count) {
         auto iter = mUniforms.find(name);
         if (iter == mUniforms.end()) {
             LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
-        for (int i = 0; i < count; ++i) {
-            (*iter->second) << values[i];
-        }
+        iter->second->copyFrom(reinterpret_cast<std::byte*>(values), count * sizeof(Vec4));
     }
 
-    void ShaderProgram::setUniform(const std::string& name, Color* values, int count) {
+    void ShaderProgram::setUniform(const std::string& name, Color* values, std::size_t count) {
         auto iter = mUniforms.find(name);
         if (iter == mUniforms.end()) {
             LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
-        for (int i = 0; i < count; ++i) {
-            (*iter->second) << values[i];
-        }
+        iter->second->copyFrom(reinterpret_cast<std::byte*>(values), count * sizeof(Color));
     }
 
-    void ShaderProgram::setUniform(const std::string& name, Mat4<real>* values, int count) {
+    void ShaderProgram::setUniform(const std::string& name, Mat4<real>* values, std::size_t count) {
         auto iter = mUniforms.find(name);
         if (iter == mUniforms.end()) {
             LOG_WARN(logger, "uniform `{0}` not exist", name);
             return;
         }
 
-        for (int i = 0; i < count; ++i) {
-            (*iter->second) << values[i];
-        }
+        iter->second->copyFrom(reinterpret_cast<std::byte*>(values), count * values->size());
     }
 
     void ShaderProgram::setUniform(const std::string& name, const Mat4<real>& value) {
