@@ -78,10 +78,10 @@ namespace GLaDOS {
     }
 
     Mesh* AssimpLoader::loadMesh(aiMesh* mesh) {
-        Vector<Vertex> vertices(mesh->mNumVertices);
         VertexFormatDescriptor vertexDesc = VertexFormatDescriptor().position().normal().tangent().biTangent().boneWeight().boneIndex().texCoord0();
 
         // process mesh's vertices
+        Vector<Vertex> vertices(mesh->mNumVertices);
         for (uint32_t i = 0; i < mesh->mNumVertices; i++) {
             Vertex vertex;
             vertex.position = toVec3(mesh->mVertices[i]);
@@ -107,8 +107,8 @@ namespace GLaDOS {
             parseBoneWeight(vertices, mesh->mBones[i]);
         }
 
-        Vector<uint32_t> indices;
         // process mesh's face
+        Vector<uint32_t> indices;
         for (uint32_t i = 0; i < mesh->mNumFaces; i++) {
             aiFace face = mesh->mFaces[i];
             if (face.mNumIndices != 3) {
@@ -116,6 +116,14 @@ namespace GLaDOS {
             }
             for (uint32_t j = 0; j < face.mNumIndices; j++) {
                 indices.emplace_back(face.mIndices[j]);
+            }
+        }
+
+        // normalize vertex bone weights to make all weights sum 1
+        for (uint32_t i = 0; i < vertices.size(); i++) {
+            real totalWeight = vertices[i].boneWeight.x + vertices[i].boneWeight.y + vertices[i].boneWeight.z + vertices[i].boneWeight.w;
+            if (totalWeight > real(0)) {
+                vertices[i].boneWeight /= totalWeight;
             }
         }
 
@@ -127,7 +135,7 @@ namespace GLaDOS {
     }
 
     void AssimpLoader::parseBoneWeight(Vector<Vertex>& vertices, aiBone* bone) {
-        int8_t boneID = findOrCacheBone(bone->mName.C_Str(), bone);
+        int32_t boneID = findOrCacheBone(bone->mName.C_Str(), bone);
         aiVertexWeight* weights = bone->mWeights;
         uint32_t numWeights = bone->mNumWeights;
 
@@ -151,14 +159,14 @@ namespace GLaDOS {
         }
     }
 
-    int8_t AssimpLoader::findOrCacheBone(const std::string& name, aiBone* bone) {
+    int32_t AssimpLoader::findOrCacheBone(const std::string& name, aiBone* bone) {
         // already exists in bone map
         if (mBoneMap.find(name) != mBoneMap.end()) {
             return mBoneMap[name].id;
         }
 
         BoneInfo boneInfo{};
-        boneInfo.id = static_cast<int8_t>(mBoneMap.size() + 1);
+        boneInfo.id = static_cast<int32_t>(mBoneMap.size() + 1);
         boneInfo.name = name;
         boneInfo.offset = toMat4(bone->mOffsetMatrix);
 
@@ -183,10 +191,10 @@ namespace GLaDOS {
 
     Mat4<real> AssimpLoader::toMat4(const aiMatrix4x4& mat) {
         return Mat4<real>{
-            mat.a1, mat.a2, mat.a3, mat.a4,
-            mat.b1, mat.b2, mat.b3, mat.b4,
-            mat.c1, mat.c2, mat.c3, mat.c4,
-            mat.d1, mat.d2, mat.d3, mat.d4
+            mat.a1, mat.b1, mat.c1, mat.d1,
+            mat.a2, mat.b2, mat.c2, mat.d2,
+            mat.a3, mat.b3, mat.c3, mat.d3,
+            mat.a4, mat.b4, mat.c4, mat.d4
         };
     }
 

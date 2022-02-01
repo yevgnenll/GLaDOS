@@ -11,7 +11,7 @@ typedef struct {
   float3 _tangent [[attribute(2)]];
   float3 _biTangent [[attribute(3)]];
   float4 _boneWeight [[attribute(4)]];
-  int _boneIndex [[attribute(5)]];
+  int32_t _boneIndex [[attribute(5)]];
   float2 _texCoord0 [[attribute(6)]];
 } VertexIn;
 
@@ -33,13 +33,14 @@ typedef struct {
 
 vertex VertexOut main0(VertexIn verts [[stage_in]], constant VertexUniforms &uniforms [[buffer(0)]]) {
     VertexOut out;
-    float4 weightedPosition = float4(0);
-    float3 weightedNormal = float3(0);
-    float3 weightedTangent = float3(0);
+    /*
+    float4 weightedPosition = float4(0, 0, 0, 0);
+    float3 weightedNormal = float3(0, 0, 0);
+    float3 weightedTangent = float3(0, 0, 0);
 
     for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
         int8_t boneIndex = ((verts._boneIndex >> (8 * i)) & 0xFF);
-        if (boneIndex == -1 || boneIndex > MAX_BONES) {
+        if (boneIndex <= -1 || boneIndex > MAX_BONES) {
             continue;
         }
         float4 localPosition = uniforms.boneTransform[boneIndex] * float4(verts._position, 1.0f);
@@ -49,6 +50,11 @@ vertex VertexOut main0(VertexIn verts [[stage_in]], constant VertexUniforms &uni
         float3 localTangent = float3(uniforms.boneTransform[boneIndex] * float4(verts._tangent, 0));
         weightedTangent += localTangent * verts._boneWeight[i];
     }
+    */
+
+    float4 weightedPosition = uniforms.boneTransform[0] * float4(verts._position, 1.0f);
+    float3 weightedNormal = verts._normal;
+    float3 weightedTangent = verts._tangent;
 
     out._position = uniforms.projection * uniforms.view * uniforms.model * weightedPosition;
     out._normal = float3(transpose(uniforms.invModelView) * float4(weightedNormal, 0));
