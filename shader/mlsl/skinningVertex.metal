@@ -37,9 +37,9 @@ vertex VertexOut main0(VertexIn verts [[stage_in]], constant VertexUniforms &uni
     float3 weightedNormal = float3(0);
     float3 weightedTangent = float3(0);
 
-    for (int i = 0 ; i < MAX_BONE_INFLUENCE ; i++) {
+    for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
         int8_t boneIndex = ((verts._boneIndex >> (8 * i)) & 0xFF);
-        if (boneIndex == -1) {
+        if (boneIndex == -1 || boneIndex > MAX_BONES) {
             continue;
         }
         float4 localPosition = uniforms.boneTransform[boneIndex] * float4(verts._position, 1.0f);

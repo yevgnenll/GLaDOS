@@ -199,21 +199,25 @@ namespace GLaDOS {
     void MetalShaderProgram::parseUniform(MTLArgument* argument, ShaderType type) {
         switch (argument.type) {
             case MTLArgumentTypeBuffer: {
+                // TODO: support flat argument type? something like, argument.bufferDataType
                 MTLStructType* structType = argument.bufferStructType;
-                if (structType != nullptr) {
-                    for (MTLStructMember* member in structType.members) {
-                        std::string name = [member.name UTF8String];
-                        Uniform* uniform = NEW_T(Uniform);
-                        uniform->mShaderType = type;
-                        uniform->mUniformType = MetalTypes::metalDataTypeToUniformType(member.dataType);
-                        uniform->mName = name;
-                        uniform->mCount = member.arrayType != nullptr ? member.arrayType.arrayLength : 1;
-                        uniform->mOffset = member.offset;
-                        uniform->resize(uniform->mCount * CommonTypes::uniformTypeToSize(uniform->mUniformType));
+                if (structType == nullptr) {
+                    break;
+                }
+                for (MTLStructMember* member in structType.members) {
+                    std::string name = [member.name UTF8String];
+                    Uniform* uniform = NEW_T(Uniform);
+                    uniform->mShaderType = type;
+                    // TODO: support array of struct type
+                    MTLDataType dataType = (member.arrayType != nullptr) ? member.arrayType.elementType : member.dataType;
+                    uniform->mUniformType = MetalTypes::metalDataTypeToUniformType(dataType);
+                    uniform->mName = name;
+                    uniform->mCount = (member.arrayType != nullptr) ? member.arrayType.arrayLength : 1;
+                    uniform->mOffset = member.offset;
+                    uniform->resize(uniform->mCount * CommonTypes::uniformTypeToSize(uniform->mUniformType));
 
-                        if (!addUniform(name, uniform)) {
-                            DELETE_T(uniform, Uniform);
-                        }
+                    if (!addUniform(name, uniform)) {
+                        DELETE_T(uniform, Uniform);
                     }
                 }
                 break;
@@ -232,6 +236,9 @@ namespace GLaDOS {
                 }
                 break;
             }
+            case MTLArgumentTypeSampler:
+                // nothing to do here
+                break;
             default:
                 LOG_WARN(logger, "Not supported variable type: {0}", argument.type);
                 break;

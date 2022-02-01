@@ -72,12 +72,14 @@ class MainScene : public Scene {
         shaderProgram->setUniform("model", transform1->localToWorldMatrix());
         shaderProgram->setUniform("view", camera->worldToCameraMatrix());
         shaderProgram->setUniform("projection", camera->projectionMatrix());
+        shaderProgram->setUniform("boneTransform", matrixPalette.data(), 96);
 
         shaderProgram2->setUniform("invModelView", Mat4<real>::inverse(transform2->localToWorldMatrix() * camera->worldToCameraMatrix()));
         shaderProgram2->setUniform("viewPos", cameraTransform->localPosition());
         shaderProgram2->setUniform("model", transform2->localToWorldMatrix());
         shaderProgram2->setUniform("view", camera->worldToCameraMatrix());
         shaderProgram2->setUniform("projection", camera->projectionMatrix());
+        shaderProgram2->setUniform("boneTransform", matrixPalette.data(), 96);
 
         // camera translation
         Vec3 right = cameraTransform->right();
@@ -125,6 +127,7 @@ class MainScene : public Scene {
     Transform* transform1 = nullptr;
     Transform* transform2 = nullptr;
     RasterizerDescription rasterizerDesc{};
+    Array<Mat4<real>, 96> matrixPalette;
 };
 
 int main(int argc, char** argv) {

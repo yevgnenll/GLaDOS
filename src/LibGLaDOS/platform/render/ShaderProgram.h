@@ -51,12 +51,13 @@ namespace GLaDOS {
         void setUniform(const std::string& name, Vec3* values, int count);
         void setUniform(const std::string& name, Vec4* values, int count);
         void setUniform(const std::string& name, Color* values, int count);
+        void setUniform(const std::string& name, Mat4<real>* values, int count);
         void setUniform(const std::string& name, const Mat4<real>& value);
         void setUniform(const std::string& name, bool value);
 
         bool addUniform(const std::string& name, Uniform* uniform);
         Uniform* getUniform(const std::string& name);
-        Map<std::string, Uniform*>& getUniforms();
+        UnorderedMap<std::string, Uniform*>& getUniforms();
         std::size_t uniformSize() const;
 
         bool isValid() const;
@@ -76,7 +77,7 @@ namespace GLaDOS {
         void reserveUniformMemory();
 
         static Logger* logger;
-        Map<std::string, Uniform*> mUniforms;
+        UnorderedMap<std::string, Uniform*> mUniforms;
         DepthStencilState* mDepthStencilState{nullptr};
         RasterizerState* mRasterizerState{nullptr};
         bool mIsValid{false};

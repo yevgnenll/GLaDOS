@@ -3,6 +3,7 @@
 #include "Renderer.h"
 #include "Uniform.h"
 #include "math/Color.h"
+#include "math/Mat4.hpp"
 #include "platform/Platform.h"
 
 namespace GLaDOS {
@@ -213,6 +214,18 @@ namespace GLaDOS {
         }
     }
 
+    void ShaderProgram::setUniform(const std::string& name, Mat4<real>* values, int count) {
+        auto iter = mUniforms.find(name);
+        if (iter == mUniforms.end()) {
+            LOG_WARN(logger, "uniform `{0}` not exist", name);
+            return;
+        }
+
+        for (int i = 0; i < count; ++i) {
+            (*iter->second) << values[i];
+        }
+    }
+
     void ShaderProgram::setUniform(const std::string& name, const Mat4<real>& value) {
         auto iter = mUniforms.find(name);
         if (iter == mUniforms.end()) {
@@ -256,7 +269,7 @@ namespace GLaDOS {
         return iter->second;
     }
 
-    Map<std::string, Uniform*>& ShaderProgram::getUniforms() {
+    UnorderedMap<std::string, Uniform*>& ShaderProgram::getUniforms() {
         return mUniforms;
     }
 
