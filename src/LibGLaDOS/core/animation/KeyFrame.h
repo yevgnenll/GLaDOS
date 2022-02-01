@@ -1,7 +1,7 @@
 #ifndef GLADOS_KEYFRAME_H
 #define GLADOS_KEYFRAME_H
 
-#include <utils/Enumeration.h>
+#include "utils/Enumeration.h"
 
 namespace GLaDOS {
     template <std::size_t N>

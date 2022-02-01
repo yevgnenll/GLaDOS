@@ -1,15 +1,19 @@
 #include "AnimationClip.h"
 
 namespace GLaDOS {
-    AnimationClip::AnimationClip(const std::string& name) {
+    AnimationClip::AnimationClip(const std::string& name) : mName{name} {
     }
 
     std::string AnimationClip::getName() const {
-        return std::string();
+        return mName;
+    }
+
+    void AnimationClip::setName(const std::string& name) {
+        mName = name;
     }
 
     std::size_t AnimationClip::length() const {
-        return 0;
+        return mCurves.size();
     }
 
     real AnimationClip::getDuration() const {
@@ -25,9 +29,18 @@ namespace GLaDOS {
     }
 
     bool AnimationClip::isLooping() const {
-        return false;
+        return mIsLoop;
     }
 
     void AnimationClip::setLooping(bool loop) {
+        mIsLoop = loop;
+    }
+
+    real AnimationClip::sampleAnimation(GameObject* gameObject, real time) const {
+        if (Math::equal(getDuration(), real(0))) {
+            return real(0);
+        }
+
+        return time;
     }
 }

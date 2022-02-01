@@ -2,7 +2,7 @@
 #define GLADOS_TRANSFORMCURVE_H
 
 #include "AnimationCurve.hpp"
-#include "component/Transform.h"
+#include "core/component/Transform.h"
 
 namespace GLaDOS {
     class TransformCurve {

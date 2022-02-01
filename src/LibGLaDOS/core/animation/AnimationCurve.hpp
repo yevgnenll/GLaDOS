@@ -12,7 +12,8 @@ namespace GLaDOS {
     template <typename T, std::size_t N>
     class AnimationCurve {
       public:
-        AnimationCurve();
+        AnimationCurve() = default;
+        AnimationCurve(std::initializer_list<KeyFrame<N>> initializerList);
         ~AnimationCurve() = default;
 
         void resize(std::size_t size);
@@ -24,6 +25,9 @@ namespace GLaDOS {
         real getDuration() const;
         T evaluate(real time, bool loop);
         KeyFrame<N> operator[](std::size_t index) const;
+
+        // addKeyFrame();
+        // removeKeyFrame();
 
       protected:
         real clampTimeInCurve(real time, bool loop);
@@ -37,11 +41,14 @@ namespace GLaDOS {
 
       private:
         Vector<KeyFrame<N>> mKeyFrames;
-        Interpolation mInterpolation;
+        Interpolation mInterpolation{Interpolation::Linear};
     };
 
     template <typename T, std::size_t N>
-    AnimationCurve<T, N>::AnimationCurve() : mInterpolation{Interpolation::Linear} {
+    AnimationCurve<T, N>::AnimationCurve(std::initializer_list<KeyFrame<N>> initializerList) {
+        for (const auto& keyFrame : initializerList) {
+            mKeyFrames.template emplace_back(keyFrame);
+        }
     }
 
     template <typename T, std::size_t N>

@@ -1,6 +1,6 @@
 #include "Animator.h"
-#include "core/AnimationState.h"
-#include "core/AnimationClip.h"
+#include "core/animation/AnimationState.h"
+#include "core/animation/AnimationClip.h"
 
 namespace GLaDOS {
     Logger* Animator::logger = LoggerRegistry::getInstance().makeAndGetLogger("Animator");

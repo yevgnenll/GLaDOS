@@ -7,24 +7,27 @@
 #include "TransformCurve.h"
 
 namespace GLaDOS {
+    class GameObject;
     class AnimationClip {
       public:
         AnimationClip(const std::string& name);
         ~AnimationClip() = default;
 
         std::string getName() const;
+        void setName(const std::string& name);
         std::size_t length() const;
         real getDuration() const;
         real getStartTime() const;
         real getEndTime() const;
         bool isLooping() const;
         void setLooping(bool loop);
+        real sampleAnimation(GameObject* gameObject, real time) const;
 
       private:
         std::string mName;
         real mStartTime;
         real mEndTime;
-        bool isLoop;
+        bool mIsLoop;
         Vector<TransformCurve> mCurves;
     };
 }
