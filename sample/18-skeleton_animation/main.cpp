@@ -17,10 +17,16 @@ class MainScene : public Scene {
         cameraTransform = camera->gameObject()->transform();
         cameraTransform->setLocalPosition({0, 0, 5});
 
-        shaderProgram = Platform::getRenderer().createShaderProgramFromFile("boneVertex", "boneFragment");
+        shaderProgram = Platform::getRenderer().createShaderProgramFromFile("skinningVertex", "skinningFragment");
+        if (shaderProgram == nullptr) {
+            return false;
+        }
         shaderProgram->setRasterizerState(rasterizerDesc);
 
-        shaderProgram2 = Platform::getRenderer().createShaderProgramFromFile("boneVertex", "boneFragment");
+        shaderProgram2 = Platform::getRenderer().createShaderProgramFromFile("skinningVertex", "skinningFragment");
+        if (shaderProgram2 == nullptr) {
+            return false;
+        }
         shaderProgram2->setRasterizerState(rasterizerDesc);
 
         AssimpLoader loader;

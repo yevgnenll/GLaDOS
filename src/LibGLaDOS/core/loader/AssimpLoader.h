@@ -20,7 +20,7 @@ typedef aiMatrix4x4t<ai_real> aiMatrix4x4;
 
 namespace GLaDOS {
     struct BoneInfo {
-        uint32_t id;
+        int8_t id;
         std::string name;
         Mat4<real> offset;
     };
@@ -30,7 +30,7 @@ namespace GLaDOS {
         Vec3 tangent;
         Vec3 biTangent;
         Vec4 boneWeight;
-        uint32_t boneIndex;
+        int32_t boneIndex;
         Vec2 texcoord;
     };
 
@@ -50,7 +50,7 @@ namespace GLaDOS {
         bool loadNode(aiNode* node, const aiScene* scene);
         Mesh* loadMesh(aiMesh* mesh);
         void parseBoneWeight(Vector<Vertex>& vertices, aiBone* bone);
-        uint32_t findOrCacheBone(const std::string& name, aiBone* bone);
+        int8_t findOrCacheBone(const std::string& name, aiBone* bone);
         Texture* loadTexture(aiMaterial* material, aiTextureType textureType);
         AnimationClip* loadAnimation(aiAnimation* animation);
 

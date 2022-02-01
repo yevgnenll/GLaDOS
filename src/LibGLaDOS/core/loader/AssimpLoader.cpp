@@ -127,7 +127,7 @@ namespace GLaDOS {
     }
 
     void AssimpLoader::parseBoneWeight(Vector<Vertex>& vertices, aiBone* bone) {
-        uint32_t boneID = findOrCacheBone(bone->mName.C_Str(), bone);
+        int8_t boneID = findOrCacheBone(bone->mName.C_Str(), bone);
         aiVertexWeight* weights = bone->mWeights;
         uint32_t numWeights = bone->mNumWeights;
 
@@ -142,7 +142,7 @@ namespace GLaDOS {
 
             // packing boneIndex
             for (uint32_t k = 0; k < MAX_BONE_INFLUENCE; k++) {
-                uint8_t boneIndex = static_cast<uint8_t>((vertex.boneIndex >> (8 * k)) & 0xFF);
+                int8_t boneIndex = static_cast<int8_t>((vertex.boneIndex >> (8 * k)) & 0xFF);
                 if (boneIndex <= 0) {
                     vertex.boneWeight[k] = weight;
                     vertex.boneIndex |= boneID << (8 * k);
@@ -151,14 +151,14 @@ namespace GLaDOS {
         }
     }
 
-    uint32_t AssimpLoader::findOrCacheBone(const std::string& name, aiBone* bone) {
+    int8_t AssimpLoader::findOrCacheBone(const std::string& name, aiBone* bone) {
         // already exists in bone map
         if (mBoneMap.find(name) != mBoneMap.end()) {
             return mBoneMap[name].id;
         }
 
         BoneInfo boneInfo{};
-        boneInfo.id = static_cast<uint32_t>(mBoneMap.size() + 1);
+        boneInfo.id = static_cast<int8_t>(mBoneMap.size() + 1);
         boneInfo.name = name;
         boneInfo.offset = toMat4(bone->mOffsetMatrix);
 

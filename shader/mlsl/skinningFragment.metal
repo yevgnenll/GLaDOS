@@ -5,6 +5,7 @@ using namespace metal;
 typedef struct {
   float4 _position [[position]];
   float3 _normal;
+  float3 _tangent;
   float2 _texCoord0;
   float3 _fragPos;
 } VertexOut;
