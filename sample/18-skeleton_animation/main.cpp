@@ -127,7 +127,7 @@ class MainScene : public Scene {
     Transform* transform1 = nullptr;
     Transform* transform2 = nullptr;
     RasterizerDescription rasterizerDesc{};
-    Array<Mat4<real>, 96> matrixPalette;
+    Array<Mat4<real>, 52> matrixPalette;
 };
 
 int main(int argc, char** argv) {

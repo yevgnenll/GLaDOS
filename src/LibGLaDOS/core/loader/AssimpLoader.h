@@ -57,7 +57,6 @@ namespace GLaDOS {
         static Mat4<real> toMat4(const aiMatrix4x4& mat);
         static Vec3 toVec3(const aiVector3D& vec3);
         static Vec2 toVec2(const aiVector3D& vec3);
-        static VertexFormatDescriptor generateVertexFormatDesc(aiMesh* mesh);
 
         static Logger* logger;
         static const uint32_t MAX_BONE_INFLUENCE;
@@ -67,6 +66,7 @@ namespace GLaDOS {
         Vector<Texture*> mTextures;
         Vector<AnimationClip*> mAnimationClips;
         std::string mDirectoryPath;
+        int32_t mNumBoneCount{0};
     };
 }
 

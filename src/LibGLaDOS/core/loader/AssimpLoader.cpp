@@ -166,7 +166,7 @@ namespace GLaDOS {
         }
 
         BoneInfo boneInfo{};
-        boneInfo.id = static_cast<int32_t>(mBoneMap.size() + 1);
+        boneInfo.id = mNumBoneCount++;
         boneInfo.name = name;
         boneInfo.offset = toMat4(bone->mOffsetMatrix);
 
@@ -204,31 +204,5 @@ namespace GLaDOS {
 
     Vec2 AssimpLoader::toVec2(const aiVector3D& vec3) {
         return Vec2{vec3.x, vec3.y};
-    }
-
-    VertexFormatDescriptor AssimpLoader::generateVertexFormatDesc(aiMesh* mesh) {
-        VertexFormatDescriptor vertexDesc;
-        vertexDesc.position();
-
-        if (mesh->HasNormals()) {
-            vertexDesc.normal();
-        }
-        if (mesh->HasTangentsAndBitangents()) {
-            vertexDesc.tangent();
-            vertexDesc.biTangent();
-        }
-
-        for (uint32_t i = 0; i < 8; i++) {
-            if (mesh->HasTextureCoords(i)) {
-                vertexDesc.texCoord(i);
-            }
-        }
-
-        if (mesh->HasBones()) {
-            vertexDesc.boneWeight();
-            vertexDesc.boneIndex();
-        }
-
-        return vertexDesc;
     }
 }
