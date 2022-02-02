@@ -33,6 +33,7 @@ class MainScene : public Scene {
         if (!loader.loadFromFile("xbot@Idle.fbx")) {
             return false;
         }
+        matrixPalette.resize(loader.getNodeCount());
 
         parent = createGameObject("parent");
         parent->transform()->setLocalScale(Vec3{0.01, 0.01, 0.01});
@@ -139,7 +140,7 @@ class MainScene : public Scene {
     Transform* transform1 = nullptr;
     Transform* transform2 = nullptr;
     RasterizerDescription rasterizerDesc{};
-    Array<Mat4<real>, 52> matrixPalette;
+    Vector<Mat4<real>> matrixPalette;
 };
 
 int main(int argc, char** argv) {

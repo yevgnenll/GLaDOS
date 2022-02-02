@@ -68,6 +68,10 @@ namespace GLaDOS {
         return &mRootBone;
     }
 
+    int32_t AssimpLoader::getNodeCount() {
+        return mNumNodes;
+    }
+
     void AssimpLoader::loadNodeData(aiNode* node, const aiScene* scene) {
         static const Array<aiTextureType, 4> textureTypes = { aiTextureType_DIFFUSE, aiTextureType_SPECULAR, aiTextureType_AMBIENT, aiTextureType_NORMALS };
 
@@ -226,7 +230,7 @@ namespace GLaDOS {
 
     void AssimpLoader::buildBoneHierarchy(const aiNode* node, Bone& targetBone) {
         SceneNode* sceneNode = findNode(node->mName.C_Str());
-        if (sceneNode == nullptr || !sceneNode->isBone) {
+        if (sceneNode == nullptr || !sceneNode->isBone) { // FIXME: bug may appear here
             return;
         }
         targetBone.id = sceneNode->id;
