@@ -14,6 +14,8 @@ namespace GLaDOS {
         ~AnimationClip() = default;
 
         void addCurve(const TransformCurve& curve);
+        void sampleAnimation(GameObject* gameObject, real time) const;
+
         std::string getName() const;
         void setName(const std::string& name);
         std::size_t length() const;
@@ -22,9 +24,10 @@ namespace GLaDOS {
         real getEndTime() const;
         bool isLooping() const;
         void setLooping(bool loop);
-        void sampleAnimation(GameObject* gameObject, real time) const;
 
       private:
+        real clampTimeInCurve(real time) const;
+
         std::string mName;
         real mStartTime;
         real mEndTime;

@@ -59,22 +59,6 @@ namespace GLaDOS {
         return animationState->second;
     }
 
-    Animator::iterator Animator::begin() {
-        return mAnimations.begin();
-    }
-
-    Animator::const_iterator Animator::begin() const {
-        return mAnimations.cbegin();
-    }
-
-    Animator::iterator Animator::end() {
-        return mAnimations.end();
-    }
-
-    Animator::const_iterator Animator::end() const {
-        return mAnimations.cend();
-    }
-
     void Animator::fixedUpdate(real fixedDeltaTime) {
     }
 

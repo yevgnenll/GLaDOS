@@ -16,13 +16,13 @@ namespace GLaDOS {
         AnimationCurve(std::initializer_list<KeyFrame<N>> initializerList);
         ~AnimationCurve() = default;
 
-        void resize(std::size_t size);
         std::size_t length() const;
         Interpolation getInterpolation() const;
         void setInterpolation(Interpolation interpolation);
         real getStartTime() const;
         real getEndTime() const;
         real getDuration() const;
+
         T evaluate(real time, bool loop);
         KeyFrame<N> operator[](std::size_t index) const;
 
@@ -30,7 +30,7 @@ namespace GLaDOS {
          bool removeKeyFrame(std::size_t index); // remove a keyframe at index
          int moveKeyFrame(std::size_t index, const KeyFrame<N>& keyFrame); // move a keyframe into the index
 
-      protected:
+       private:
         real clampTimeInCurve(real time, bool loop);
         int getKeyFrameIndex(real time, bool loop) const;
 
@@ -40,7 +40,6 @@ namespace GLaDOS {
 
         inline T cast(real* value);
 
-      private:
         Vector<KeyFrame<N>> mKeyFrames;
         Interpolation mInterpolation{Interpolation::Linear};
     };
@@ -48,13 +47,8 @@ namespace GLaDOS {
     template <typename T, std::size_t N>
     AnimationCurve<T, N>::AnimationCurve(std::initializer_list<KeyFrame<N>> initializerList) {
         for (const auto& keyFrame : initializerList) {
-            mKeyFrames.template emplace_back(keyFrame);
+            mKeyFrames.emplace_back(keyFrame);
         }
-    }
-
-    template <typename T, std::size_t N>
-    void AnimationCurve<T, N>::resize(std::size_t size) {
-        mKeyFrames.resize(size);
     }
 
     template <typename T, std::size_t N>

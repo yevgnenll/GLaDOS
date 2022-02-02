@@ -9,9 +9,6 @@ namespace GLaDOS {
     class AnimationState;
     class AnimationClip;
     class Animator : public Component {
-        typedef Map<std::string, AnimationState*>::iterator iterator;
-        typedef Map<std::string, AnimationState*>::const_iterator const_iterator;
-
       public:
         Animator();
         ~Animator() override = default;
@@ -31,10 +28,6 @@ namespace GLaDOS {
 
         std::size_t length() const;
         AnimationState* operator [](const std::string& name) const;
-        Animator::iterator begin();
-        Animator::const_iterator begin() const;
-        Animator::iterator end();
-        Animator::const_iterator end() const;
 
       protected:
         void fixedUpdate(real fixedDeltaTime) override;
