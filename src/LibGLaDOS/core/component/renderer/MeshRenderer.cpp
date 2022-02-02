@@ -9,6 +9,7 @@
 #include "platform/render/RenderState.h"
 #include "core/GameObject.hpp"
 #include "core/component/Camera.h"
+#include "core/component/Transform.h"
 #include "core/Scene.h"
 
 namespace GLaDOS {
@@ -32,8 +33,14 @@ namespace GLaDOS {
 
     void MeshRenderer::update(real deltaTime) {
         ShaderProgram* shaderProgram = mRenderable->getMaterial()->getShaderProgram();
+        Camera* mainCamera = mGameObject->scene()->getMainCamera();
         FillMode fillMode = mRenderable->getMaterial()->getShaderProgram()->rasterizerState()->mRasterizerDescription.mFillMode;
         shaderProgram->setUniform("isWireFrameMode", fillMode == FillMode::Lines);
+        shaderProgram->setUniform("model", mGameObject->transform()->localToWorldMatrix());
+        Mat4<real> modelView = mGameObject->transform()->localToWorldMatrix() * mainCamera->worldToCameraMatrix();
+        shaderProgram->setUniform("modelViewProj", modelView * mainCamera->projectionMatrix());
+        shaderProgram->setUniform("transInvModelView", Mat4<real>::transpose(Mat4<real>::inverse(modelView)));
+        shaderProgram->setUniform("viewPos", mainCamera->gameObject()->transform()->position());
     }
 
     void MeshRenderer::render() {

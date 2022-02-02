@@ -25,9 +25,8 @@ typedef struct {
 
 typedef struct {
   float4x4 model;
-  float4x4 view;
-  float4x4 projection;
-  float4x4 invModelView;
+  float4x4 modelViewProj;
+  float4x4 transInvModelView;
   float4x4 boneTransform[MAX_BONES];
 } VertexUniforms;
 
@@ -47,9 +46,9 @@ vertex VertexOut main0(VertexIn verts [[stage_in]], constant VertexUniforms &uni
         skinnedTangent += float3(uniforms.boneTransform[boneIndex] * float4(verts._tangent, 0.f)) * verts._boneWeight[i];
     }
 
-    out._position = uniforms.projection * uniforms.view * uniforms.model * skinnedPosition;
-    out._normal = float3(transpose(uniforms.invModelView) * float4(skinnedNormal, 0.f));
-    out._tangent = float3(transpose(uniforms.invModelView) * float4(skinnedTangent, 0.f));
+    out._position = uniforms.modelViewProj * skinnedPosition;
+    out._normal = float3(uniforms.transInvModelView * float4(skinnedNormal, 0.f));
+    out._tangent = float3(uniforms.transInvModelView * float4(skinnedTangent, 0.f));
     out._texCoord0 = verts._texCoord0;
     out._fragPos = float3(uniforms.model * skinnedPosition);
 

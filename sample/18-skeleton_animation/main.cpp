@@ -49,14 +49,12 @@ class MainScene : public Scene {
 
         GameObject* target = createGameObject("target", parent);
         target->addComponent<SkinnedMeshRenderer>(mesh1, material1, rootBone);
-        transform1 = target->transform();
 
         Material* material2 = NEW_T(Material);
         material2->setShaderProgram(shaderProgram2);
 
         GameObject* target2 = createGameObject("target2", parent);
         target2->addComponent<SkinnedMeshRenderer>(mesh2, material2, rootBone);
-        transform2 = target2->transform();
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
@@ -81,18 +79,7 @@ class MainScene : public Scene {
 
         parent->transform()->rotate(Vec3{0, deltaTime * 50, 0});
 
-        shaderProgram->setUniform("invModelView", Mat4<real>::inverse(transform1->localToWorldMatrix() * camera->worldToCameraMatrix()));
-        shaderProgram->setUniform("viewPos", cameraTransform->localPosition());
-        shaderProgram->setUniform("model", transform1->localToWorldMatrix());
-        shaderProgram->setUniform("view", camera->worldToCameraMatrix());
-        shaderProgram->setUniform("projection", camera->projectionMatrix());
         shaderProgram->setUniform("boneTransform", matrixPalette.data(), matrixPalette.size());
-
-        shaderProgram2->setUniform("invModelView", Mat4<real>::inverse(transform2->localToWorldMatrix() * camera->worldToCameraMatrix()));
-        shaderProgram2->setUniform("viewPos", cameraTransform->localPosition());
-        shaderProgram2->setUniform("model", transform2->localToWorldMatrix());
-        shaderProgram2->setUniform("view", camera->worldToCameraMatrix());
-        shaderProgram2->setUniform("projection", camera->projectionMatrix());
         shaderProgram2->setUniform("boneTransform", matrixPalette.data(), matrixPalette.size());
 
         // camera translation
@@ -137,8 +124,6 @@ class MainScene : public Scene {
     ShaderProgram* shaderProgram2 = nullptr;
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;
-    Transform* transform1 = nullptr;
-    Transform* transform2 = nullptr;
     RasterizerDescription rasterizerDesc{};
     Vector<Mat4<real>> matrixPalette;
 };

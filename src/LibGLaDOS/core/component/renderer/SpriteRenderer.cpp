@@ -9,6 +9,7 @@
 #include "platform/render/ShaderProgram.h"
 #include "platform/render/Texture2D.h"
 #include "platform/render/VertexBuffer.h"
+#include "platform/render/RenderState.h"
 #include "core/Sprite.h"
 #include "core/GameObject.hpp"
 #include "core/component/Transform.h"
@@ -88,10 +89,12 @@ namespace GLaDOS {
         Scene* currentScene = mGameObject->scene();
         Camera* mainCamera = currentScene->getMainCamera();
         Transform* transform = mGameObject->transform();
+        FillMode fillMode = shaderProgram->rasterizerState()->mRasterizerDescription.mFillMode;
         Rect<real> textureRect = getSprite()->getRectNormalized();
         Point<real> anchorPoint = getSprite()->getAnchorPoint();
         Size<uint32_t> size = getSprite()->getRect().toSize();
 
+        shaderProgram->setUniform("isWireFrameMode", fillMode == FillMode::Lines);
         shaderProgram->setUniform("model", transform->localToWorldMatrix());
         shaderProgram->setUniform("view", mainCamera->worldToCameraMatrix());
         shaderProgram->setUniform("projection", mainCamera->projectionMatrix());
@@ -103,8 +106,6 @@ namespace GLaDOS {
         shaderProgram->setUniform("flipOffset", Vec2{textureRect.x + textureRect.w, textureRect.y + textureRect.h});
         shaderProgram->setUniform("anchorPoint", anchorPoint);
         shaderProgram->setUniform("size", size);
-
-        MeshRenderer::update(deltaTime);
     }
 
     Component* SpriteRenderer::clone() {

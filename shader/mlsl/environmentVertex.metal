@@ -15,8 +15,9 @@ typedef struct {
 typedef struct {
   float4x4 model;
   float4x4 modelViewProj;
+  float4x4 transInvModelView;
   float4x4 normal;
-  float3 cameraPos;
+  float3 viewPos;
 } VertexUniforms;
 
 // some common indices of refraction
@@ -29,7 +30,7 @@ vertex VertexOut main0(VertexIn verts [[stage_in]], constant VertexUniforms &uni
     float4 modelPosition = float4(verts._position, 1);
     float4 modelNormal = float4(verts._normal, 0);
 
-    float4 worldCameraPosition = float4(uniforms.cameraPos, 1);
+    float4 worldCameraPosition = float4(uniforms.viewPos, 1);
     float4 worldPosition = uniforms.model * modelPosition;
     float4 worldNormal = normalize(uniforms.normal * modelNormal);
     float4 worldEyeDirection = normalize(worldPosition - worldCameraPosition);

@@ -49,10 +49,7 @@ class MainScene : public Scene {
 
         knotTransform->rotate(Vec3{0, deltaTime * 50, 0});
 
-        shaderProgram->setUniform("model", knotTransform->localToWorldMatrix());
-        shaderProgram->setUniform("modelViewProj", knotTransform->localToWorldMatrix() * camera->worldToCameraMatrix() * camera->projectionMatrix());
         shaderProgram->setUniform("normal", Mat4<real>::transpose(knotTransform->worldToLocalMatrix()));
-        shaderProgram->setUniform("cameraPos", cameraTransform->position());
 
         // camera translation
         Vec3 right = cameraTransform->right();

@@ -33,9 +33,7 @@ namespace GLaDOS {
         DepthStencilState* createDepthStencilState(const DepthStencilDescription& desc) override;
         SamplerState* createSamplerState(const SamplerDescription& desc) override;
         RasterizerState* createRasterizerState(const RasterizerDescription& desc) override;
-        Texture2D* createTexture2D(const std::string& name, PixelFormat format, const Color& colorKey) override;
         Texture2D* createTexture2D(const std::string& name, PixelFormat format) override;
-        Texture2D* createTexture2D(PixelFormat format, Blob& data, const Color& colorKey) override;
         Texture2D* createTexture2D(PixelFormat format, Blob& data) override;
         Texture2D* createTexture2D(uint32_t width, uint32_t height, PixelFormat format, unsigned char* data) override;
         Texture3D* createTexture3D(const std::string& name) override;

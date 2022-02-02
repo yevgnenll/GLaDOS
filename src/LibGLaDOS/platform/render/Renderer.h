@@ -50,9 +50,7 @@ namespace GLaDOS {
         virtual DepthStencilState* createDepthStencilState(const DepthStencilDescription& desc) = 0;
         virtual SamplerState* createSamplerState(const SamplerDescription& desc) = 0;
         virtual RasterizerState* createRasterizerState(const RasterizerDescription& desc) = 0;
-        virtual Texture2D* createTexture2D(const std::string& name, PixelFormat format, const Color& colorKey) = 0;
         virtual Texture2D* createTexture2D(const std::string& name, PixelFormat format) = 0;
-        virtual Texture2D* createTexture2D(PixelFormat format, Blob& data, const Color& colorKey) = 0;
         virtual Texture2D* createTexture2D(PixelFormat format, Blob& data) = 0;
         virtual Texture2D* createTexture2D(uint32_t width, uint32_t height, PixelFormat format, unsigned char* data) = 0;
         virtual Texture3D* createTexture3D(const std::string& name) = 0;
