@@ -11,7 +11,7 @@ typedef struct {
   float3 _tangent [[attribute(2)]];
   float3 _biTangent [[attribute(3)]];
   float4 _boneWeight [[attribute(4)]];
-  int32_t _boneIndex [[attribute(5)]];
+  int4 _boneIndex [[attribute(5)]];
   float2 _texCoord0 [[attribute(6)]];
 } VertexIn;
 
@@ -38,7 +38,7 @@ vertex VertexOut main0(VertexIn verts [[stage_in]], constant VertexUniforms &uni
     float3 skinnedTangent = 0.f;
 
     for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
-        int8_t boneIndex = ((verts._boneIndex >> (8 * i)) & 0xFF);
+        int boneIndex = verts._boneIndex[i];
         if (boneIndex <= -1 || boneIndex > MAX_BONES) {
             continue;
         }
