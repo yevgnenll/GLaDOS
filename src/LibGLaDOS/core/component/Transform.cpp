@@ -1,7 +1,8 @@
 #include "Transform.h"
-
 #include "core/GameObject.hpp"
 #include "math/Mat4.hpp"
+#include "math/Vec3.h"
+#include "math/Quat.h"
 
 namespace GLaDOS {
     Transform::Transform() : Component{"Transform"} {
@@ -150,6 +151,26 @@ namespace GLaDOS {
     void Transform::setParent(GameObject* parent) {
         mGameObject->mParent = parent;
         parent->mChildren.emplace_back(mGameObject);
+    }
+
+    void Transform::fromMat4(const Mat4<real>& transform) {
+        Vec3 translation{transform._m44[3][0], transform._m44[3][1], transform._m44[3][2]};
+        Quat rotation = Quat::fromRotation(transform);
+
+        Mat4<real> rotScaleMat(
+            transform._m44[0][0], transform._m44[0][1], transform._m44[0][2], 0,
+            transform._m44[1][0], transform._m44[1][1], transform._m44[1][2], 0,
+            transform._m44[2][0], transform._m44[2][1], transform._m44[2][2], 0,
+            0, 0, 0, 1
+        );
+        Mat4<real> invRotMat = Mat4<real>::rotate(Quat::inverse(rotation));
+        Mat4<real> scaleSkewMat = rotScaleMat * invRotMat; // cancel rotation
+
+        Vec3 scale = Vec3{scaleSkewMat._m44[0][0], scaleSkewMat._m44[1][1], scaleSkewMat._m44[2][2]};
+
+        mLocalPosition = translation;
+        mLocalRotation = rotation;
+        mLocalScale = scale;
     }
 
     Vec3 Transform::transformDirection(const Vec3& direction) const {

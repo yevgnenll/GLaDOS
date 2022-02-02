@@ -32,11 +32,19 @@ namespace GLaDOS {
             return false;
         }
 
+        // first build all node in scene
+        aiNode* rootNode = scene->mRootNode;
+        for (uint32_t i = 0; i < rootNode->mNumChildren; i++) {
+            buildNodeTable(rootNode->mChildren[i]);
+        }
+
         // load node mesh and material
-        loadNode(scene->mRootNode, scene);
+        loadNodeData(rootNode, scene);
 
         // load bone hierarchy
-        loadBone(mRootBone, scene->mRootNode);
+        for (uint32_t i = 0; i < rootNode->mNumChildren; i++) {
+            buildBoneHierarchy(rootNode->mChildren[i], mRootBone);
+        }
 
         // load animations
         loadAnimation(scene);
@@ -60,7 +68,7 @@ namespace GLaDOS {
         return &mRootBone;
     }
 
-    void AssimpLoader::loadNode(aiNode* node, const aiScene* scene) {
+    void AssimpLoader::loadNodeData(aiNode* node, const aiScene* scene) {
         static const Array<aiTextureType, 4> textureTypes = { aiTextureType_DIFFUSE, aiTextureType_SPECULAR, aiTextureType_AMBIENT, aiTextureType_NORMALS };
 
         // load mesh at the current node
@@ -84,7 +92,7 @@ namespace GLaDOS {
 
         // recursively load all the child node
         for (uint32_t j = 0; j < node->mNumChildren; j++) {
-            loadNode(node->mChildren[j], scene);
+            loadNodeData(node->mChildren[j], scene);
         }
     }
 
@@ -118,18 +126,18 @@ namespace GLaDOS {
         }
 
         for (uint32_t i = 0; i < mesh->mNumBones; i++) {
-            parseBoneWeight(vertices, mesh->mBones[i]);
+            loadBoneWeight(vertices, mesh->mBones[i]);
         }
 
         // process mesh's face
-        Vector<uint32_t> indices;
+        Vector<uint32_t> indices(mesh->mNumFaces * 3);
         for (uint32_t i = 0; i < mesh->mNumFaces; i++) {
             aiFace face = mesh->mFaces[i];
             if (face.mNumIndices != 3) {
                 LOG_ERROR(logger, "vertex face is not triangluated! mesh triangle may be not rendered correctly.");
             }
             for (uint32_t j = 0; j < face.mNumIndices; j++) {
-                indices.emplace_back(face.mIndices[j]);
+                indices[(i * 3) + j] = face.mIndices[j];
             }
         }
 
@@ -148,55 +156,44 @@ namespace GLaDOS {
         return Platform::getRenderer().createMesh(vertexBuffer, indexBuffer);
     }
 
-    void AssimpLoader::parseBoneWeight(Vector<Vertex>& vertices, aiBone* bone) {
-        int32_t boneID = findOrCacheBone(bone->mName.C_Str(), bone);
+    void AssimpLoader::loadBoneWeight(Vector<Vertex>& vertices, aiBone* bone) {
+        SceneNode* node = findNode(bone->mName.C_Str());
+        if (node == nullptr || !node->isBone) {
+            LOG_ERROR(logger, "Can't find `{0}` node in node table", bone->mName.C_Str());
+            return;
+        }
         aiVertexWeight* weights = bone->mWeights;
         uint32_t numWeights = bone->mNumWeights;
 
-        for (uint32_t j = 0; j < numWeights; j++) {
-            uint32_t vertexID = weights[j].mVertexId;
-            real weight = weights[j].mWeight;
+        for (uint32_t i = 0; i < numWeights; i++) {
+            uint32_t vertexID = weights[i].mVertexId;
+            real weight = weights[i].mWeight;
             if (vertexID > vertices.size()) {
                 LOG_ERROR(logger, "Failed to parse bone weight! vertexID(`{0}`) should not be greater than vertices size (`{1}`)", vertexID, vertices.size());
                 return;
             }
             Vertex& vertex = vertices[vertexID];
 
-            for (uint32_t k = 0; k < MAX_BONE_INFLUENCE; k++) {
-                if (vertex.boneIndex[k] < 0) {
-                    vertex.boneWeight[k] = weight;
-                    vertex.boneIndex[k] = boneID;
+            for (uint32_t j = 0; j < MAX_BONE_INFLUENCE; j++) {
+                if (vertex.boneIndex[j] < 0) {
+                    vertex.boneWeight[j] = weight;
+                    vertex.boneIndex[j] = node->id;
                 }
             }
         }
     }
 
-    BoneInfo* AssimpLoader::findBone(const std::string& name) {
-        if (mBoneMap.find(name) != mBoneMap.end()) {
-            return &mBoneMap[name];
+    SceneNode* AssimpLoader::findNode(const std::string& name) {
+        if (mNodeTable.find(name) != mNodeTable.end()) {
+            return &mNodeTable[name];
         }
         return nullptr;
-    }
-
-    int32_t AssimpLoader::findOrCacheBone(const std::string& name, aiBone* bone) {
-        // already exists in bone map
-        BoneInfo* foundBone = findBone(name);
-        if (foundBone != nullptr) {
-            return foundBone->id;
-        }
-
-        BoneInfo boneInfo{};
-        boneInfo.id = mNumBoneCount++;
-        boneInfo.name = name;
-        boneInfo.offset = toMat4(bone->mOffsetMatrix);
-
-        return mBoneMap.insert(std::make_pair(name, boneInfo)).first->second.id;
     }
 
     Texture* AssimpLoader::loadTexture(aiMaterial* material, aiTextureType textureType) {
         aiString name;
         if (material->GetTexture(textureType, 0, &name) != AI_SUCCESS) {
-            LOG_ERROR(logger, "failed to load texture (type `{0}`)", textureType);
+            LOG_ERROR(logger, "Failed to load texture (type `{0}`)", textureType);
             return nullptr;
         }
         // replace windows specific path separators
@@ -204,24 +201,42 @@ namespace GLaDOS {
         return Platform::getRenderer().createTexture2D(texturePath, PixelFormat::RGBA32); // FIXME: format? automatic
     }
 
-    void AssimpLoader::loadBone(Bone& targetBone, const aiNode* node) {
-        std::string boneName = node->mName.C_Str();
-        BoneInfo* boneInfo = findBone(boneName);
+    void AssimpLoader::buildNodeTable(const aiNode* node) {
+        std::string nodeName = node->mName.C_Str();
+        SceneNode* sceneNode = findNode(nodeName);
 
-        // filtering mesh node (we only care about bone node)
-        if (boneInfo == nullptr) {
-            for (uint32_t i = 0; i < node->mNumChildren; i++) {
-                loadBone(targetBone, node->mChildren[i]);
-            }
-        } else {
-            targetBone.name = boneName;
-            targetBone.boneTransformation = toMat4(node->mTransformation);
+        // there is no sceneNode in node table yet.
+        if (sceneNode == nullptr) {
+            SceneNode newNode;
+            newNode.id = mNumNodes++;
+            newNode.name = nodeName;
+            newNode.isBone = (node->mNumMeshes == 0);
+            addNode(newNode);
+        }
 
-            for (uint32_t i = 0; i < node->mNumChildren; i++) {
-                Bone childBone;
-                loadBone(childBone, node->mChildren[i]);
-                targetBone.children.emplace_back(childBone);
-            }
+        // recursively load all the child node
+        for (uint32_t i = 0; i < node->mNumChildren; i++) {
+            buildNodeTable(node->mChildren[i]);
+        }
+    }
+
+    int32_t AssimpLoader::addNode(const SceneNode& node) {
+        return mNodeTable.insert(std::make_pair(node.name, node)).first->second.id;
+    }
+
+    void AssimpLoader::buildBoneHierarchy(const aiNode* node, Bone& targetBone) {
+        SceneNode* sceneNode = findNode(node->mName.C_Str());
+        if (sceneNode == nullptr || !sceneNode->isBone) {
+            return;
+        }
+        targetBone.id = sceneNode->id;
+        targetBone.name = sceneNode->name;
+        targetBone.boneTransformation = toMat4(node->mTransformation);
+
+        for (uint32_t i = 0; i < node->mNumChildren; i++) {
+            Bone childBone;
+            buildBoneHierarchy(node->mChildren[i], childBone);
+            targetBone.children.emplace_back(childBone);
         }
     }
 
@@ -237,7 +252,12 @@ namespace GLaDOS {
             for (uint32_t j = 0; j < animation->mNumChannels; j++) {
                 aiNodeAnim* channel = animation->mChannels[j];
                 TransformCurve transformCurve;
-                transformCurve.mBoneName = channel->mNodeName.C_Str();
+                SceneNode* sceneNode = findNode(channel->mNodeName.C_Str());
+                if (sceneNode == nullptr || !sceneNode->isBone) {
+                    LOG_ERROR(logger, "Can't find bone in animation");
+                    return;
+                }
+                transformCurve.mBoneID = sceneNode->id;
 
                 // load position keyframe
                 for (uint32_t k = 0; k < channel->mNumPositionKeys; k++) {

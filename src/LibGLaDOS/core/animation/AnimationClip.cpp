@@ -15,7 +15,6 @@ namespace GLaDOS {
 
         time = clampTimeInCurve(time);
         for (uint32_t i = 0; i < length(); i++) {
-            std::string boneName = mCurves[i].mBoneName;
 
         }
     }

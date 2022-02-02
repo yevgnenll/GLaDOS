@@ -19,10 +19,10 @@ typedef aiMatrix4x4t<ai_real> aiMatrix4x4;
 
 namespace GLaDOS {
     class AnimationClip;
-    struct BoneInfo {
+    struct SceneNode {
         int32_t id;
         std::string name;
-        Mat4<real> offset;
+        bool isBone;
     };
     struct Vertex {
         Vec3 position;
@@ -34,6 +34,7 @@ namespace GLaDOS {
         Vec2 texcoord;
     };
     struct Bone {
+        int32_t id;
         std::string name;
         Mat4<real> boneTransformation;
         Vector<Bone> children;
@@ -61,13 +62,14 @@ namespace GLaDOS {
         Bone* getBone();
 
       private:
-        void loadNode(aiNode* node, const aiScene* scene);
+        void loadNodeData(aiNode* node, const aiScene* scene);
         Mesh* loadMesh(aiMesh* mesh);
-        void parseBoneWeight(Vector<Vertex>& vertices, aiBone* bone);
-        BoneInfo* findBone(const std::string& name);
-        int32_t findOrCacheBone(const std::string& name, aiBone* bone);
+        void loadBoneWeight(Vector<Vertex>& vertices, aiBone* bone);
+        SceneNode* findNode(const std::string& name);
         Texture* loadTexture(aiMaterial* material, aiTextureType textureType);
-        void loadBone(Bone& targetBone, const aiNode* node);
+        void buildNodeTable(const aiNode* node);
+        int32_t addNode(const SceneNode& node);
+        void buildBoneHierarchy(const aiNode* node, Bone& targetBone);
         void loadAnimation(const aiScene* scene);
 
         static Mat4<real> toMat4(const aiMatrix4x4& mat);
@@ -77,13 +79,13 @@ namespace GLaDOS {
         static Logger* logger;
         static const uint32_t MAX_BONE_INFLUENCE;
 
-        UnorderedMap<std::string, BoneInfo> mBoneMap;
+        UnorderedMap<std::string, SceneNode> mNodeTable;
         Vector<Mesh*> mMeshes;
         Vector<Texture*> mTextures;
         Vector<Animation*> mAnimations;
         Bone mRootBone;
         std::string mDirectoryPath;
-        int32_t mNumBoneCount{0};
+        int32_t mNumNodes{0};
     };
 }
 

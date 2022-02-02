@@ -34,23 +34,27 @@ class MainScene : public Scene {
             return false;
         }
 
+        parent = createGameObject("parent");
+        parent->transform()->setLocalScale(Vec3{0.01, 0.01, 0.01});
+        parent->transform()->setLocalPosition(Vec3{0, -1, 3});
+
         Mesh* mesh1 = loader.getMesh()[0];
         Mesh* mesh2 = loader.getMesh()[1];
 
-        Material* material = NEW_T(Material);
-        material->setShaderProgram(shaderProgram);
+        GameObject* rootBone = createBoneObject(*loader.getBone(), parent);
 
-        target = createGameObject("target");
-        target->addComponent<MeshRenderer>(mesh1, material);
+        Material* material1 = NEW_T(Material);
+        material1->setShaderProgram(shaderProgram);
+
+        GameObject* target = createGameObject("target", parent);
+        target->addComponent<SkinnedMeshRenderer>(mesh1, material1, rootBone);
         transform1 = target->transform();
-        transform1->setLocalScale(Vec3{0.01, 0.01, 0.01});
-        transform1->setLocalPosition(Vec3{0, -1, 3});
 
         Material* material2 = NEW_T(Material);
         material2->setShaderProgram(shaderProgram2);
 
-        target2 = createGameObject("target2", target);
-        target2->addComponent<MeshRenderer>(mesh2, material2);
+        GameObject* target2 = createGameObject("target2", parent);
+        target2->addComponent<SkinnedMeshRenderer>(mesh2, material2, rootBone);
         transform2 = target2->transform();
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
@@ -60,12 +64,21 @@ class MainScene : public Scene {
         return true;
     }
 
+    GameObject* createBoneObject(Bone bone, GameObject* parentGameObject) {
+        GameObject* gameObject = createGameObject(bone.name, parentGameObject);
+        gameObject->transform()->fromMat4(bone.boneTransformation);
+        for (Bone& child : bone.children) {
+            createBoneObject(child, gameObject);
+        }
+        return gameObject;
+    }
+
     void onUpdate(real deltaTime) override {
         if (Input::isKeyDown(KeyCode::KEY_ESCAPE)) {
             Platform::getInstance().quit();
         }
 
-        transform1->rotate(Vec3{0, deltaTime * 50, 0});
+        parent->transform()->rotate(Vec3{0, deltaTime * 50, 0});
 
         shaderProgram->setUniform("invModelView", Mat4<real>::inverse(transform1->localToWorldMatrix() * camera->worldToCameraMatrix()));
         shaderProgram->setUniform("viewPos", cameraTransform->localPosition());
@@ -95,9 +108,9 @@ class MainScene : public Scene {
         cameraTransform->translate(forward);
 
         if (Input::isKeyPress(KeyCode::KEY_RIGHT)) {
-            transform1->translate(Vec3{0.02, 0, 0});
+            parent->transform()->translate(Vec3{0.02, 0, 0});
         } else if (Input::isKeyPress(KeyCode::KEY_LEFT)) {
-            transform1->translate(Vec3{-0.02, 0, 0});
+            parent->transform()->translate(Vec3{-0.02, 0, 0});
         }
 
         // camera rotation
@@ -118,8 +131,7 @@ class MainScene : public Scene {
 
   private:
     real sensitivity = 5;
-    GameObject* target = nullptr;
-    GameObject* target2 = nullptr;
+    GameObject* parent = nullptr;
     ShaderProgram* shaderProgram = nullptr;
     ShaderProgram* shaderProgram2 = nullptr;
     Camera* camera = nullptr;

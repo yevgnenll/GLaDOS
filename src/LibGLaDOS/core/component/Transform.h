@@ -7,6 +7,8 @@
 #include "math/Vec3.h"
 
 namespace GLaDOS {
+    template <typename T>
+    class Mat4;
     class Transform : public Component {
         friend class TransformCurve;
       public:
@@ -44,6 +46,7 @@ namespace GLaDOS {
         void setLocalEulerAngles(const Vec3& euler);
         void setLocalRotation(const Quat& quat);
         void setParent(GameObject* parent);
+        void fromMat4(const Mat4<real>& transform);
 
         // local space to world space
         Vec3 transformDirection(const Vec3& direction) const; // rotation only
