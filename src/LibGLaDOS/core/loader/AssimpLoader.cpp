@@ -10,6 +10,8 @@
 #include "platform/render/Renderer.h"
 #include "platform/render/VertexBuffer.h"
 #include "platform/render/Texture2D.h"
+#include "core/animation/TransformCurve.h"
+#include "core/animation/AnimationClip.h"
 #include "RootDir.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -20,21 +22,26 @@ namespace GLaDOS {
     const uint32_t AssimpLoader::MAX_BONE_INFLUENCE = 4;
 
     bool AssimpLoader::loadFromFile(const std::string& filePath) {
-        Assimp::Importer importer;
+        mDirectoryPath = StringUtils::splitFileName(filePath).first;
         std::string fileDirectory = std::string(RESOURCE_DIR) + filePath;
+
+        Assimp::Importer importer;
         const aiScene* scene = importer.ReadFile(fileDirectory, aiProcessPreset_TargetRealtime_Quality);
         if (scene == nullptr || ((scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) != 0u) || scene->mRootNode == nullptr) {
             LOG_ERROR(logger, "Load from file error: {0}", importer.GetErrorString());
             return false;
         }
 
-        mDirectoryPath = StringUtils::splitFileName(filePath).first;
-        // load animations
-        for (uint32_t i = 0; i < scene->mNumAnimations; i++) {
-            mAnimationClips.emplace_back(loadAnimation(scene->mAnimations[i]));
-        }
+        // load node mesh and material
+        loadNode(scene->mRootNode, scene);
 
-        return loadNode(scene->mRootNode, scene);
+        // load bone hierarchy
+        loadBone(mRootBone, scene->mRootNode);
+
+        // load animations
+        loadAnimation(scene);
+
+        return true;
     }
 
     Vector<Mesh*> AssimpLoader::getMesh() const {
@@ -45,8 +52,17 @@ namespace GLaDOS {
         return mTextures;
     }
 
-    bool AssimpLoader::loadNode(aiNode* node, const aiScene* scene) {
+    Vector<Animation*> AssimpLoader::getAnimation() const {
+        return mAnimations;
+    }
+
+    Bone* AssimpLoader::getBone() {
+        return &mRootBone;
+    }
+
+    void AssimpLoader::loadNode(aiNode* node, const aiScene* scene) {
         static const Array<aiTextureType, 4> textureTypes = { aiTextureType_DIFFUSE, aiTextureType_SPECULAR, aiTextureType_AMBIENT, aiTextureType_NORMALS };
+
         // load mesh at the current node
         for (uint32_t i = 0; i < node->mNumMeshes; i++) {
             aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
@@ -68,13 +84,8 @@ namespace GLaDOS {
 
         // recursively load all the child node
         for (uint32_t j = 0; j < node->mNumChildren; j++) {
-            if (!loadNode(node->mChildren[j], scene)) {
-                LOG_ERROR(logger, "failed to load node.");
-                return false;
-            }
+            loadNode(node->mChildren[j], scene);
         }
-
-        return true;
     }
 
     Mesh* AssimpLoader::loadMesh(aiMesh* mesh) {
@@ -151,7 +162,6 @@ namespace GLaDOS {
             }
             Vertex& vertex = vertices[vertexID];
 
-            // packing boneIndex
             for (uint32_t k = 0; k < MAX_BONE_INFLUENCE; k++) {
                 if (vertex.boneIndex[k] < 0) {
                     vertex.boneWeight[k] = weight;
@@ -161,18 +171,26 @@ namespace GLaDOS {
         }
     }
 
+    BoneInfo* AssimpLoader::findBone(const std::string& name) {
+        if (mBoneMap.find(name) != mBoneMap.end()) {
+            return &mBoneMap[name];
+        }
+        return nullptr;
+    }
+
     int32_t AssimpLoader::findOrCacheBone(const std::string& name, aiBone* bone) {
         // already exists in bone map
-        if (mBoneMap.find(name) != mBoneMap.end()) {
-            return mBoneMap[name]->id;
+        BoneInfo* foundBone = findBone(name);
+        if (foundBone != nullptr) {
+            return foundBone->id;
         }
 
-        BoneInfo* boneInfo = NEW_T(BoneInfo);
-        boneInfo->id = mNumBoneCount++;
-        boneInfo->name = name;
-        boneInfo->offset = toMat4(bone->mOffsetMatrix);
+        BoneInfo boneInfo{};
+        boneInfo.id = mNumBoneCount++;
+        boneInfo.name = name;
+        boneInfo.offset = toMat4(bone->mOffsetMatrix);
 
-        return mBoneMap.insert(std::make_pair(name, boneInfo)).first->second->id;
+        return mBoneMap.insert(std::make_pair(name, boneInfo)).first->second.id;
     }
 
     Texture* AssimpLoader::loadTexture(aiMaterial* material, aiTextureType textureType) {
@@ -186,9 +204,72 @@ namespace GLaDOS {
         return Platform::getRenderer().createTexture2D(texturePath, PixelFormat::RGBA32); // FIXME: format? automatic
     }
 
-    AnimationClip* AssimpLoader::loadAnimation(aiAnimation* animation) {
+    void AssimpLoader::loadBone(Bone& targetBone, const aiNode* node) {
+        std::string boneName = node->mName.C_Str();
+        BoneInfo* boneInfo = findBone(boneName);
 
-        return nullptr;
+        // filtering mesh node (we only care about bone node)
+        if (boneInfo == nullptr) {
+            for (uint32_t i = 0; i < node->mNumChildren; i++) {
+                loadBone(targetBone, node->mChildren[i]);
+            }
+        } else {
+            targetBone.name = boneName;
+            targetBone.boneTransformation = toMat4(node->mTransformation);
+
+            for (uint32_t i = 0; i < node->mNumChildren; i++) {
+                Bone childBone;
+                loadBone(childBone, node->mChildren[i]);
+                targetBone.children.emplace_back(childBone);
+            }
+        }
+    }
+
+    void AssimpLoader::loadAnimation(const aiScene* scene) {
+        for (uint32_t i = 0; i < scene->mNumAnimations; i++) {
+            aiAnimation* animation = scene->mAnimations[i];
+
+            Animation* anim = NEW_T(Animation);
+            anim->duration = static_cast<real>(animation->mDuration);
+            anim->ticksPerSecond = static_cast<real>(animation->mTicksPerSecond);
+            anim->clip = NEW_T(AnimationClip(animation->mName.C_Str()));
+
+            for (uint32_t j = 0; j < animation->mNumChannels; j++) {
+                aiNodeAnim* channel = animation->mChannels[j];
+                TransformCurve transformCurve;
+                transformCurve.mBoneName = channel->mNodeName.C_Str();
+
+                // load position keyframe
+                for (uint32_t k = 0; k < channel->mNumPositionKeys; k++) {
+                    aiVector3D vec = channel->mPositionKeys[k].mValue;
+                    real value[3] = {vec.x, vec.y, vec.z};
+                    transformCurve.mTranslation.addKeyFrame(KeyFrame<3>{
+                        static_cast<real>(channel->mPositionKeys[k].mTime), value
+                    });
+                }
+
+                // load rotation keyframe
+                for (uint32_t k = 0; k < channel->mNumRotationKeys; k++) {
+                    aiQuaternion quat = channel->mRotationKeys[k].mValue;
+                    real value[4] = {quat.w, quat.x, quat.y, quat.z};
+                    transformCurve.mRotation.addKeyFrame(KeyFrame<4>{
+                        static_cast<real>(channel->mRotationKeys[k].mTime), value
+                    });
+                }
+
+                // load scale keyframe
+                for (uint32_t k = 0; k < channel->mNumScalingKeys; k++) {
+                    aiVector3D vec = channel->mScalingKeys[k].mValue;
+                    real value[3] = {vec.x, vec.y, vec.z};
+                    transformCurve.mScale.addKeyFrame(KeyFrame<3>{
+                        static_cast<real>(channel->mScalingKeys[k].mTime), value
+                    });
+                }
+
+                anim->clip->addCurve(transformCurve);
+            }
+            mAnimations.emplace_back(anim);
+        }
     }
 
     Mat4<real> AssimpLoader::toMat4(const aiMatrix4x4& mat) {

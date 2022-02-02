@@ -26,8 +26,9 @@ namespace GLaDOS {
         T evaluate(real time, bool loop);
         KeyFrame<N> operator[](std::size_t index) const;
 
-        // addKeyFrame();
-        // removeKeyFrame();
+         void addKeyFrame(const KeyFrame<N>& keyFrame); // add a new keyframe at the end
+         bool removeKeyFrame(std::size_t index); // remove a keyframe at index
+         int moveKeyFrame(std::size_t index, const KeyFrame<N>& keyFrame); // move a keyframe into the index
 
       protected:
         real clampTimeInCurve(real time, bool loop);
@@ -37,7 +38,7 @@ namespace GLaDOS {
         T linear(real time, bool loop);
         T cubic(real time, bool loop);
 
-        T cast(real* value);
+        inline T cast(real* value);
 
       private:
         Vector<KeyFrame<N>> mKeyFrames;
@@ -108,6 +109,29 @@ namespace GLaDOS {
     template <typename T, std::size_t N>
     KeyFrame<N> AnimationCurve<T, N>::operator[](std::size_t index) const {
         return mKeyFrames[index];
+    }
+
+    template <typename T, std::size_t N>
+    void AnimationCurve<T, N>::addKeyFrame(const KeyFrame<N>& keyFrame) {
+        mKeyFrames.emplace_back(keyFrame);
+    }
+
+    template <typename T, std::size_t N>
+    bool AnimationCurve<T, N>::removeKeyFrame(std::size_t index) {
+        if (index < 0 || index > mKeyFrames.size() - 1) {
+            return false;
+        }
+        mKeyFrames.erase(mKeyFrames.begin() + index);
+        return true;
+    }
+
+    template <typename T, std::size_t N>
+    int AnimationCurve<T, N>::moveKeyFrame(std::size_t index, const KeyFrame<N>& keyFrame) {
+        if (index < 0 || index > mKeyFrames.size() - 1) {
+            return -1;
+        }
+        // TODO
+        return 0;
     }
 
     template <typename T, std::size_t N>
@@ -203,19 +227,23 @@ namespace GLaDOS {
         return T(); // TODO
     }
 
-    template<> real AnimationCurve<real, 1>::cast(real* value) {
+    template<>
+    inline real AnimationCurve<real, 1>::cast(real* value) {
         return value[0];
     }
 
-    template<> Vec2 AnimationCurve<Vec2, 2>::cast(real* value) {
+    template<>
+    inline Vec2 AnimationCurve<Vec2, 2>::cast(real* value) {
         return Vec2{value[0], value[1]};
     }
 
-    template<> Vec3 AnimationCurve<Vec3, 3>::cast(real* value) {
+    template<>
+    inline Vec3 AnimationCurve<Vec3, 3>::cast(real* value) {
         return Vec3{value[0], value[1], value[2]};
     }
 
-    template<> Quat AnimationCurve<Quat, 4>::cast(real* value) {
+    template<>
+    inline Quat AnimationCurve<Quat, 4>::cast(real* value) {
         return Quat{value[0], value[1], value[2], value[3]};
     }
 

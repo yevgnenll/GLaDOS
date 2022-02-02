@@ -1,7 +1,11 @@
 #include "AnimationClip.h"
 
 namespace GLaDOS {
-    AnimationClip::AnimationClip(const std::string& name) : mName{name} {
+    AnimationClip::AnimationClip(const std::string& name) : mName{name}, mStartTime{0}, mEndTime{0}, mIsLoop{false} {
+    }
+
+    void AnimationClip::addCurve(const TransformCurve& curve) {
+        mCurves.emplace_back(curve);
     }
 
     std::string AnimationClip::getName() const {
@@ -36,11 +40,11 @@ namespace GLaDOS {
         mIsLoop = loop;
     }
 
-    real AnimationClip::sampleAnimation(GameObject* gameObject, real time) const {
+    void AnimationClip::sampleAnimation(GameObject* gameObject, real time) const {
         if (Math::equal(getDuration(), real(0))) {
-            return real(0);
+            return;
         }
 
-        return time;
+
     }
 }

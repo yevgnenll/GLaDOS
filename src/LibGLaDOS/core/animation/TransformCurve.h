@@ -14,7 +14,7 @@ namespace GLaDOS {
         real getEndTime() const;
         Transform* sample(Transform* targetTransform, real time, bool loop);
 
-        uint32_t mID{0};
+        std::string mBoneName;
         Vec3Curve mTranslation;
         QuatCurve mRotation;
         Vec3Curve mScale;
