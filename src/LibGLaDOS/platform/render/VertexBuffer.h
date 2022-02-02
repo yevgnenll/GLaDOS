@@ -30,8 +30,8 @@ namespace GLaDOS {
         void setBiTangent(std::size_t index, const Vec3& biTangent);
         Vec4 getBoneWeight(std::size_t index);
         void setBoneWeight(std::size_t index, const Vec4& boneWeight);
-        Array<int8_t, 4> getBoneIndex(std::size_t index);
-        void setBoneIndex(std::size_t index, int8_t boneIndex0, int8_t boneIndex1, int8_t boneIndex2, int8_t boneIndex3);
+        uint32_t* getBoneIndex(std::size_t index);
+        void setBoneIndex(std::size_t index, uint32_t* boneIndex);
         Vec2 getTexCoord0(std::size_t index);
         void setTexCoord0(std::size_t index, const Vec2& texCoord);
         Vec2 getTexCoord1(std::size_t index);

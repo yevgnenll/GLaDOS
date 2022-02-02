@@ -30,7 +30,7 @@ namespace GLaDOS {
         Vec3 tangent;
         Vec3 biTangent;
         Vec4 boneWeight;
-        int32_t boneIndex;
+        int32_t boneIndex[4];
         Vec2 texcoord;
     };
 
@@ -61,7 +61,7 @@ namespace GLaDOS {
         static Logger* logger;
         static const uint32_t MAX_BONE_INFLUENCE;
 
-        UnorderedMap<std::string, BoneInfo> mBoneMap;
+        UnorderedMap<std::string, BoneInfo*> mBoneMap;
         Vector<Mesh*> mMeshes;
         Vector<Texture*> mTextures;
         Vector<AnimationClip*> mAnimationClips;

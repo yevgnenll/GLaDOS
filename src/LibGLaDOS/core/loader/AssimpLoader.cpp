@@ -98,7 +98,10 @@ namespace GLaDOS {
             if (mesh->HasTextureCoords(0)) {
                 vertex.texcoord = toVec2(mesh->mTextureCoords[0][i]);
             }
-            vertex.boneIndex = 0;
+
+            for (uint32_t j = 0; j < MAX_BONE_INFLUENCE; j++) {
+                vertex.boneIndex[j] = -1;
+            }
 
             vertices[i] = std::move(vertex);
         }
@@ -150,10 +153,9 @@ namespace GLaDOS {
 
             // packing boneIndex
             for (uint32_t k = 0; k < MAX_BONE_INFLUENCE; k++) {
-                int8_t boneIndex = static_cast<int8_t>((vertex.boneIndex >> (8 * k)) & 0xFF);
-                if (boneIndex <= 0) {
+                if (vertex.boneIndex[k] < 0) {
                     vertex.boneWeight[k] = weight;
-                    vertex.boneIndex |= boneID << (8 * k);
+                    vertex.boneIndex[k] = boneID;
                 }
             }
         }
@@ -162,15 +164,15 @@ namespace GLaDOS {
     int32_t AssimpLoader::findOrCacheBone(const std::string& name, aiBone* bone) {
         // already exists in bone map
         if (mBoneMap.find(name) != mBoneMap.end()) {
-            return mBoneMap[name].id;
+            return mBoneMap[name]->id;
         }
 
-        BoneInfo boneInfo{};
-        boneInfo.id = mNumBoneCount++;
-        boneInfo.name = name;
-        boneInfo.offset = toMat4(bone->mOffsetMatrix);
+        BoneInfo* boneInfo = NEW_T(BoneInfo);
+        boneInfo->id = mNumBoneCount++;
+        boneInfo->name = name;
+        boneInfo->offset = toMat4(bone->mOffsetMatrix);
 
-        return mBoneMap.insert(std::make_pair(name, std::move(boneInfo))).first->second.id;
+        return mBoneMap.insert(std::make_pair(name, boneInfo)).first->second->id;
     }
 
     Texture* AssimpLoader::loadTexture(aiMaterial* material, aiTextureType textureType) {
