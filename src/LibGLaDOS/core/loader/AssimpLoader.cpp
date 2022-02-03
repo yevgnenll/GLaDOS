@@ -32,8 +32,10 @@ namespace GLaDOS {
             return false;
         }
 
-        // first build all node in scene
         aiNode* rootNode = scene->mRootNode;
+        mRootTransform = Mat4<real>::inverse(toMat4(rootNode->mTransformation));
+
+        // first build all node in scene
         for (uint32_t i = 0; i < rootNode->mNumChildren; i++) {
             buildNodeTable(rootNode->mChildren[i]);
         }
@@ -70,6 +72,10 @@ namespace GLaDOS {
 
     int32_t AssimpLoader::getNodeCount() const {
         return mNumNodes;
+    }
+
+    Mat4<real> AssimpLoader::getRootTransform() const {
+        return mRootTransform;
     }
 
     void AssimpLoader::loadNodeData(aiNode* node, const aiScene* scene) {

@@ -61,6 +61,7 @@ namespace GLaDOS {
         Vector<Animation*> getAnimation() const;
         Bone* getBone();
         int32_t getNodeCount() const;
+        Mat4<real> getRootTransform() const;
 
       private:
         void loadNodeData(aiNode* node, const aiScene* scene);
@@ -87,6 +88,7 @@ namespace GLaDOS {
         Bone mRootBone;
         std::string mDirectoryPath;
         int32_t mNumNodes{0};
+        Mat4<real> mRootTransform;
     };
 }
 

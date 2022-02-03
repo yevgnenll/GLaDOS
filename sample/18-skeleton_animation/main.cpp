@@ -35,7 +35,7 @@ class MainScene : public Scene {
         }
 
         parent = createGameObject("parent");
-        parent->transform()->setLocalScale(Vec3{0.01, 0.01, 0.01});
+        parent->transform()->setLocalScale(Vec3{0.1, 0.1, 0.1});
         parent->transform()->setLocalPosition(Vec3{0, -1, 3});
 
         Mesh* mesh1 = loader.getMesh()[0];

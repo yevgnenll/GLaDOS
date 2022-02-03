@@ -51,6 +51,7 @@ namespace GLaDOS {
         Scene* scene();
         uint32_t getLayer() const;
         void setLayer(uint32_t layer);
+        Vector<GameObject*> getChildren() const;
 
       protected:
         GameObject* clone() override;

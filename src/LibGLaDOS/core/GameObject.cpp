@@ -105,6 +105,10 @@ namespace GLaDOS {
         mLayer = layer;
     }
 
+    Vector<GameObject*> GameObject::getChildren() const {
+        return mChildren;
+    }
+
     GameObject* GameObject::clone() {
         GameObject* clone = NEW_T(GameObject(mParent, mScene));
         clone->mName = mName + " (duplicated)";
