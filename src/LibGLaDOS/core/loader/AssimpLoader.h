@@ -33,12 +33,6 @@ namespace GLaDOS {
         int32_t boneIndex[4];
         Vec2 texcoord;
     };
-    struct Bone {
-        int32_t id;
-        std::string name;
-        Mat4<real> boneTransformation;
-        Vector<Bone> children;
-    };
     struct Animation {
         real duration{0};
         real ticksPerSecond{1};
@@ -55,25 +49,22 @@ namespace GLaDOS {
     class Logger;
     class AssimpLoader {
       public:
-        bool loadFromFile(const std::string& filePath);
-        Vector<Mesh*> getMesh() const;
+        bool loadFromFile(const std::string& fileName, Scene* scene, GameObject* parent);
         Vector<Texture*> getTexture() const;
         Vector<Animation*> getAnimation() const;
-        Bone* getBone();
-        int32_t getNodeCount() const;
-        Mat4<real> getRootTransform() const;
 
       private:
-        void loadNodeData(aiNode* node, const aiScene* scene);
+        void loadNodeMeshAndMaterial(aiNode* node, const aiScene* aiscene, Scene* scene, GameObject* parent, GameObject* rootBone);
         Mesh* loadMesh(aiMesh* mesh);
         void loadBoneWeight(Vector<Vertex>& vertices, aiBone* bone);
         SceneNode* findNode(const std::string& name);
         Texture* loadTexture(aiMaterial* material, aiTextureType textureType);
         void buildNodeTable(const aiNode* node);
         int32_t addNode(const SceneNode& node);
-        void buildBoneHierarchy(const aiNode* node, Bone& targetBone);
+        GameObject* buildBoneHierarchy(const aiNode* node, Scene* scene, GameObject* parent);
         void loadAnimation(const aiScene* scene);
 
+        static void makeGameObject(const std::string& name, Mesh* mesh, Scene* scene, GameObject* parent, GameObject* rootBone);
         static Mat4<real> toMat4(const aiMatrix4x4& mat);
         static Vec3 toVec3(const aiVector3D& vec3);
         static Vec2 toVec2(const aiVector3D& vec3);
@@ -82,13 +73,10 @@ namespace GLaDOS {
         static const uint32_t MAX_BONE_INFLUENCE;
 
         UnorderedMap<std::string, SceneNode> mNodeTable;
-        Vector<Mesh*> mMeshes;
         Vector<Texture*> mTextures;
         Vector<Animation*> mAnimations;
-        Bone mRootBone;
         std::string mDirectoryPath;
         int32_t mNumNodes{0};
-        Mat4<real> mRootTransform;
     };
 }
 

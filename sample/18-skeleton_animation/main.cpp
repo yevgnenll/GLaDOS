@@ -17,43 +17,14 @@ class MainScene : public Scene {
         cameraTransform = camera->gameObject()->transform();
         cameraTransform->setLocalPosition({0, 0, 5});
 
-        shaderProgram = Platform::getRenderer().createShaderProgramFromFile("skinningVertex", "skinningFragment");
-        if (shaderProgram == nullptr) {
-            return false;
-        }
-        shaderProgram->setRasterizerState(rasterizerDesc);
-
-        shaderProgram2 = Platform::getRenderer().createShaderProgramFromFile("skinningVertex", "skinningFragment");
-        if (shaderProgram2 == nullptr) {
-            return false;
-        }
-        shaderProgram2->setRasterizerState(rasterizerDesc);
-
-        AssimpLoader loader;
-        if (!loader.loadFromFile("xbot@Idle.fbx")) {
-            return false;
-        }
-
         parent = createGameObject("parent");
         parent->transform()->setLocalScale(Vec3{0.1, 0.1, 0.1});
         parent->transform()->setLocalPosition(Vec3{0, -1, 3});
 
-        Mesh* mesh1 = loader.getMesh()[0];
-        Mesh* mesh2 = loader.getMesh()[1];
-
-        GameObject* rootBone = createBoneObject(*loader.getBone(), parent);
-
-        Material* material1 = NEW_T(Material);
-        material1->setShaderProgram(shaderProgram);
-
-        GameObject* target = createGameObject("target", parent);
-        target->addComponent<SkinnedMeshRenderer>(mesh1, material1, rootBone);
-
-        Material* material2 = NEW_T(Material);
-        material2->setShaderProgram(shaderProgram2);
-
-        GameObject* target2 = createGameObject("target2", parent);
-        target2->addComponent<SkinnedMeshRenderer>(mesh2, material2, rootBone);
+        AssimpLoader loader;
+        if (!loader.loadFromFile("xbot@Idle.fbx", this, parent)) {
+            return false;
+        }
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
@@ -62,15 +33,6 @@ class MainScene : public Scene {
         Input::addAxis("MovementY", NEW_T(InputHandler(KeyCode::KEY_UP, KeyCode::KEY_DOWN, 0.1)));
 
         return true;
-    }
-
-    GameObject* createBoneObject(Bone bone, GameObject* parentGameObject) {
-        GameObject* gameObject = createGameObject(bone.name, parentGameObject);
-        gameObject->transform()->fromMat4(bone.boneTransformation);
-        for (Bone& child : bone.children) {
-            createBoneObject(child, gameObject);
-        }
-        return gameObject;
     }
 
     void onUpdate(real deltaTime) override {
@@ -111,18 +73,16 @@ class MainScene : public Scene {
             cameraTransform->rotate(UVec3::up, Deg{-rotationY});
         }
 
-        if (Input::isKeyDown(KeyCode::KEY_TAB)) {
-            rasterizerDesc.mFillMode = (rasterizerDesc.mFillMode == FillMode::Lines) ? FillMode::Fill : FillMode::Lines;
-            shaderProgram->setRasterizerState(rasterizerDesc);
-            shaderProgram2->setRasterizerState(rasterizerDesc);
-        }
+//        if (Input::isKeyDown(KeyCode::KEY_TAB)) {
+//            rasterizerDesc.mFillMode = (rasterizerDesc.mFillMode == FillMode::Lines) ? FillMode::Fill : FillMode::Lines;
+//            shaderProgram->setRasterizerState(rasterizerDesc);
+//            shaderProgram2->setRasterizerState(rasterizerDesc);
+//        }
     }
 
   private:
     real sensitivity = 5;
     GameObject* parent = nullptr;
-    ShaderProgram* shaderProgram = nullptr;
-    ShaderProgram* shaderProgram2 = nullptr;
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;
     RasterizerDescription rasterizerDesc{};

@@ -12,6 +12,10 @@
 #include "platform/render/Texture2D.h"
 #include "core/animation/TransformCurve.h"
 #include "core/animation/AnimationClip.h"
+#include "core/component/renderer/SkinnedMeshRenderer.h"
+#include "core/component/renderer/MeshRenderer.h"
+#include "core/GameObject.hpp"
+#include "core/Scene.h"
 #include "RootDir.h"
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -21,41 +25,42 @@ namespace GLaDOS {
     Logger* AssimpLoader::logger = LoggerRegistry::getInstance().makeAndGetLogger("AssimpLoader");
     const uint32_t AssimpLoader::MAX_BONE_INFLUENCE = 4;
 
-    bool AssimpLoader::loadFromFile(const std::string& filePath) {
-        mDirectoryPath = StringUtils::splitFileName(filePath).first;
-        std::string fileDirectory = std::string(RESOURCE_DIR) + filePath;
+    bool AssimpLoader::loadFromFile(const std::string& fileName, Scene* scene, GameObject* parent) {
+        mDirectoryPath = StringUtils::splitFileName(fileName).first;
+        std::string filePath = std::string(RESOURCE_DIR) + fileName;
 
         Assimp::Importer importer;
-        const aiScene* scene = importer.ReadFile(fileDirectory, aiProcessPreset_TargetRealtime_Quality);
-        if (scene == nullptr || ((scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) != 0u) || scene->mRootNode == nullptr) {
+        const aiScene* aiscene = importer.ReadFile(filePath, aiProcessPreset_TargetRealtime_Quality);
+        if (aiscene == nullptr || ((aiscene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) != 0u) || aiscene->mRootNode == nullptr) {
             LOG_ERROR(logger, "Load from file error: {0}", importer.GetErrorString());
             return false;
         }
 
-        aiNode* rootNode = scene->mRootNode;
-        mRootTransform = Mat4<real>::inverse(toMat4(rootNode->mTransformation));
-
+        aiNode* rootNode = aiscene->mRootNode;
         // first build all node in scene
         for (uint32_t i = 0; i < rootNode->mNumChildren; i++) {
             buildNodeTable(rootNode->mChildren[i]);
         }
 
-        // load node mesh and material
-        loadNodeData(rootNode, scene);
-
         // load bone hierarchy
         for (uint32_t i = 0; i < rootNode->mNumChildren; i++) {
-            buildBoneHierarchy(rootNode->mChildren[i], mRootBone);
+            GameObject* boneNode = buildBoneHierarchy(rootNode->mChildren[i], scene, parent);
+            if (boneNode != nullptr) {
+                parent->getChildren().emplace_back(boneNode);
+            }
         }
 
+        // load node mesh and material
+        GameObject* rootBoneNode = nullptr;
+        if (!parent->getChildren().empty()) {
+            rootBoneNode = parent->getChildren().front();
+        }
+        loadNodeMeshAndMaterial(rootNode, aiscene, scene, parent, rootBoneNode);
+
         // load animations
-        loadAnimation(scene);
+        loadAnimation(aiscene);
 
         return true;
-    }
-
-    Vector<Mesh*> AssimpLoader::getMesh() const {
-        return mMeshes;
     }
 
     Vector<Texture*> AssimpLoader::getTexture() const {
@@ -66,30 +71,18 @@ namespace GLaDOS {
         return mAnimations;
     }
 
-    Bone* AssimpLoader::getBone() {
-        return &mRootBone;
-    }
-
-    int32_t AssimpLoader::getNodeCount() const {
-        return mNumNodes;
-    }
-
-    Mat4<real> AssimpLoader::getRootTransform() const {
-        return mRootTransform;
-    }
-
-    void AssimpLoader::loadNodeData(aiNode* node, const aiScene* scene) {
+    void AssimpLoader::loadNodeMeshAndMaterial(aiNode* node, const aiScene* aiscene, Scene* scene, GameObject* parent, GameObject* rootBone) {
         static const Array<aiTextureType, 4> textureTypes = { aiTextureType_DIFFUSE, aiTextureType_SPECULAR, aiTextureType_AMBIENT, aiTextureType_NORMALS };
 
         // load mesh at the current node
         for (uint32_t i = 0; i < node->mNumMeshes; i++) {
-            aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+            aiMesh* mesh = aiscene->mMeshes[node->mMeshes[i]];
             Mesh* currentMesh = loadMesh(mesh);
             if (currentMesh != nullptr) {
-                mMeshes.emplace_back(currentMesh);
+                makeGameObject(mesh->mName.C_Str(), currentMesh, scene, parent, rootBone);
             }
 
-            aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+            aiMaterial* material = aiscene->mMaterials[mesh->mMaterialIndex];
             for (const auto textureType : textureTypes) {
                 if (material->GetTextureCount(textureType) > 0) {
                     Texture* texture = loadTexture(material, textureType);
@@ -102,7 +95,7 @@ namespace GLaDOS {
 
         // recursively load all the child node
         for (uint32_t j = 0; j < node->mNumChildren; j++) {
-            loadNodeData(node->mChildren[j], scene);
+            loadNodeMeshAndMaterial(node->mChildren[j], aiscene, scene, parent, rootBone);
         }
     }
 
@@ -213,16 +206,11 @@ namespace GLaDOS {
 
     void AssimpLoader::buildNodeTable(const aiNode* node) {
         std::string nodeName = node->mName.C_Str();
-        SceneNode* sceneNode = findNode(nodeName);
-
-        // there is no sceneNode in node table yet.
-        if (sceneNode == nullptr) {
-            SceneNode newNode;
-            newNode.id = mNumNodes++;
-            newNode.name = nodeName;
-            newNode.isBone = (node->mNumMeshes == 0);
-            addNode(newNode);
-        }
+        SceneNode newNode;
+        newNode.id = mNumNodes++;
+        newNode.name = nodeName;
+        newNode.isBone = (node->mNumMeshes == 0);
+        addNode(newNode);
 
         // recursively load all the child node
         for (uint32_t i = 0; i < node->mNumChildren; i++) {
@@ -234,20 +222,20 @@ namespace GLaDOS {
         return mNodeTable.insert(std::make_pair(node.name, node)).first->second.id;
     }
 
-    void AssimpLoader::buildBoneHierarchy(const aiNode* node, Bone& targetBone) {
+    GameObject* AssimpLoader::buildBoneHierarchy(const aiNode* node, Scene* scene, GameObject* parent) {
         SceneNode* sceneNode = findNode(node->mName.C_Str());
         if (sceneNode == nullptr || !sceneNode->isBone) { // FIXME: bug may appear here
-            return;
+            return nullptr;
         }
-        targetBone.id = sceneNode->id;
-        targetBone.name = sceneNode->name;
-        targetBone.boneTransformation = toMat4(node->mTransformation);
+        GameObject* boneNode = scene->createGameObject(sceneNode->name, parent);
+        boneNode->transform()->fromMat4(toMat4(node->mTransformation));
 
         for (uint32_t i = 0; i < node->mNumChildren; i++) {
-            Bone childBone;
-            buildBoneHierarchy(node->mChildren[i], childBone);
-            targetBone.children.emplace_back(childBone);
+            GameObject* childRigGameObject = buildBoneHierarchy(node->mChildren[i], scene, boneNode);
+            boneNode->getChildren().emplace_back(childRigGameObject);
         }
+
+        return boneNode;
     }
 
     void AssimpLoader::loadAnimation(const aiScene* scene) {
@@ -300,6 +288,22 @@ namespace GLaDOS {
             }
             mAnimations.emplace_back(anim);
         }
+    }
+
+    void AssimpLoader::makeGameObject(const std::string& name, Mesh* mesh, Scene* scene, GameObject* parent, GameObject* rootBone) {
+        GameObject* node = scene->createGameObject(name, parent);
+        ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgramFromFile("skinningVertex", "skinningFragment");
+        if (shaderProgram == nullptr) {
+            return;
+        }
+        Material* material = NEW_T(Material);
+        material->setShaderProgram(shaderProgram);
+
+        if (rootBone != nullptr) {
+            node->addComponent<SkinnedMeshRenderer>(mesh, material, rootBone);
+            return;
+        }
+        node->addComponent<MeshRenderer>(mesh, material);
     }
 
     Mat4<real> AssimpLoader::toMat4(const aiMatrix4x4& mat) {
