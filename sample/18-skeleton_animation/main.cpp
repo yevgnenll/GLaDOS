@@ -33,7 +33,6 @@ class MainScene : public Scene {
         if (!loader.loadFromFile("xbot@Idle.fbx")) {
             return false;
         }
-        matrixPalette.resize(loader.getNodeCount());
 
         parent = createGameObject("parent");
         parent->transform()->setLocalScale(Vec3{0.01, 0.01, 0.01});
@@ -59,6 +58,8 @@ class MainScene : public Scene {
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
         Input::addAxis("Vertical", NEW_T(InputHandler(KeyCode::KEY_W, KeyCode::KEY_S, 0.1)));
+        Input::addAxis("MovementX", NEW_T(InputHandler(KeyCode::KEY_RIGHT, KeyCode::KEY_LEFT, 0.1)));
+        Input::addAxis("MovementY", NEW_T(InputHandler(KeyCode::KEY_UP, KeyCode::KEY_DOWN, 0.1)));
 
         return true;
     }
@@ -79,8 +80,14 @@ class MainScene : public Scene {
 
         parent->transform()->rotate(Vec3{0, deltaTime * 50, 0});
 
-        shaderProgram->setUniform("boneTransform", matrixPalette.data(), matrixPalette.size());
-        shaderProgram2->setUniform("boneTransform", matrixPalette.data(), matrixPalette.size());
+        // character movement
+        Vec3 rightMove = Vec3::right;
+        rightMove *= Input::getAxisRaw("MovementX") * sensitivity * deltaTime;
+        parent->transform()->translate(rightMove);
+
+        Vec3 upMove = Vec3::up;
+        upMove *= Input::getAxisRaw("MovementY") * sensitivity * deltaTime;
+        parent->transform()->translate(upMove);
 
         // camera translation
         Vec3 right = cameraTransform->right();
@@ -94,12 +101,6 @@ class MainScene : public Scene {
         Vec3 forward = cameraTransform->forward();
         forward *= Input::getAxisRaw("Vertical") * sensitivity * deltaTime;
         cameraTransform->translate(forward);
-
-        if (Input::isKeyPress(KeyCode::KEY_RIGHT)) {
-            parent->transform()->translate(Vec3{0.02, 0, 0});
-        } else if (Input::isKeyPress(KeyCode::KEY_LEFT)) {
-            parent->transform()->translate(Vec3{-0.02, 0, 0});
-        }
 
         // camera rotation
         if (Input::isMousePress(MouseButton::MOUSE_RIGHT)) {
@@ -125,7 +126,6 @@ class MainScene : public Scene {
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;
     RasterizerDescription rasterizerDesc{};
-    Vector<Mat4<real>> matrixPalette;
 };
 
 int main(int argc, char** argv) {

@@ -2,6 +2,8 @@
 #define GLADOS_SKINNEDMESHRENDERER_H
 
 #include "MeshRenderer.h"
+#include "utils/Stl.h"
+#include "math/Mat4.hpp"
 
 namespace GLaDOS {
     class GameObject;
@@ -22,6 +24,7 @@ namespace GLaDOS {
         static Logger* logger;
 
         GameObject* mRootBone;
+        Vector<Mat4<real>> mMatrixPalette;
     };
 }  // namespace GLaDOS
 
