@@ -22,6 +22,7 @@ namespace GLaDOS {
     struct SceneNode {
         int32_t id;
         std::string name;
+        Mat4<real> offsetMatrix;
         bool isBone;
     };
     struct Vertex {

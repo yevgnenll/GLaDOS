@@ -37,6 +37,8 @@ namespace GLaDOS {
         }
 
         aiNode* rootNode = aiscene->mRootNode;
+        Mat4<real> rootTransform = Mat4<real>::inverse(toMat4(rootNode->mTransformation));
+        parent->transform()->fromMat4(rootTransform);
         // first build all node in scene
         for (uint32_t i = 0; i < rootNode->mNumChildren; i++) {
             buildNodeTable(rootNode->mChildren[i]);
@@ -209,6 +211,7 @@ namespace GLaDOS {
         SceneNode newNode;
         newNode.id = mNumNodes++;
         newNode.name = nodeName;
+        newNode.offsetMatrix = Mat4<real>::identity(); // TODO
         newNode.isBone = (node->mNumMeshes == 0);
         addNode(newNode);
 
@@ -228,7 +231,7 @@ namespace GLaDOS {
             return nullptr;
         }
         GameObject* boneNode = scene->createGameObject(sceneNode->name, parent);
-        boneNode->transform()->fromMat4(toMat4(node->mTransformation));
+        boneNode->transform()->fromMat4(sceneNode->offsetMatrix);
 
         for (uint32_t i = 0; i < node->mNumChildren; i++) {
             GameObject* childRigGameObject = buildBoneHierarchy(node->mChildren[i], scene, boneNode);

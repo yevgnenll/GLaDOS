@@ -18,13 +18,14 @@ class MainScene : public Scene {
         cameraTransform->setLocalPosition({0, 0, 5});
 
         parent = createGameObject("parent");
-        parent->transform()->setLocalScale(Vec3{0.1, 0.1, 0.1});
-        parent->transform()->setLocalPosition(Vec3{0, -1, 3});
+
 
         AssimpLoader loader;
         if (!loader.loadFromFile("xbot@Idle.fbx", this, parent)) {
             return false;
         }
+        parent->transform()->setLocalScale(Vec3{0.1, 0.1, 0.1});
+        parent->transform()->setLocalPosition(Vec3{0, -1, 3});
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));

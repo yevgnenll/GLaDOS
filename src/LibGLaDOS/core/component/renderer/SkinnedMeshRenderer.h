@@ -16,7 +16,7 @@ namespace GLaDOS {
         void setRootBone(GameObject* gameObject);
 
       protected:
-        void preOrderTraversal(Vector<Mat4<real>>& matrixPalette, GameObject* node, std::size_t& matrixIndex);
+        void buildBoneTransform(Vector<Mat4<real>>& matrixPalette, GameObject* node, std::size_t& matrixIndex);
         void update(real deltaTime) override;
         void render() override;
         Component* clone() override;

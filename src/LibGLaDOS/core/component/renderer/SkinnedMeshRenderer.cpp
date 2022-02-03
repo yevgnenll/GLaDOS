@@ -27,21 +27,22 @@ namespace GLaDOS {
         mRootBone = gameObject;
     }
 
-    void SkinnedMeshRenderer::preOrderTraversal(Vector<Mat4<real>>& matrixPalette, GameObject* node, std::size_t& matrixIndex) {
+    void SkinnedMeshRenderer::buildBoneTransform(Vector<Mat4<real>>& matrixPalette, GameObject* node, std::size_t& matrixIndex) {
+        // Pre Order Traversal in children nodes
         if (node == nullptr) {
             return;
         }
         matrixPalette[matrixIndex++] = node->transform()->localToWorldMatrix();
         Vector<GameObject*> children = node->getChildren();
         for (uint32_t i = 0; i < children.size(); i++) {
-            preOrderTraversal(matrixPalette, children[i], matrixIndex);
+            buildBoneTransform(matrixPalette, children[i], matrixIndex);
         }
     }
 
     void SkinnedMeshRenderer::update(real deltaTime) {
         ShaderProgram* shaderProgram = mRenderable->getMaterial()->getShaderProgram();
         std::size_t matrixIndex = 0;
-        preOrderTraversal(mMatrixPalette, mRootBone, matrixIndex);
+        buildBoneTransform(mMatrixPalette, mRootBone, matrixIndex);
         shaderProgram->setUniform("boneTransform", mMatrixPalette.data(), mMatrixPalette.size());
         MeshRenderer::update(deltaTime);
     }
