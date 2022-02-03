@@ -22,6 +22,7 @@ namespace GLaDOS {
 
       private:
         static Logger* logger;
+        static constexpr std::size_t MAX_BONE_MATRIX = 96;
 
         GameObject* mRootBone;
         Vector<Mat4<real>> mMatrixPalette;

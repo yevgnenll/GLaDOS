@@ -12,7 +12,7 @@ namespace GLaDOS {
       public:
         Vec3();
         ~Vec3() = default;
-        explicit Vec3(real _x);
+        explicit Vec3(real _xyz);
         Vec3(real _x, real _y);
         Vec3(real _x, real _y, real _z);
         explicit Vec3(const Vec2& other);

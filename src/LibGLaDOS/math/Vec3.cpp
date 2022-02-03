@@ -7,7 +7,7 @@
 namespace GLaDOS {
     Vec3::Vec3() : x{0.0}, y{0.0}, z{0.0} {}
 
-    Vec3::Vec3(real _x) : x{_x}, y{0.0}, z{0.0} {}
+    Vec3::Vec3(real _xyz) : x{_xyz}, y{_xyz}, z{_xyz} {}
 
     Vec3::Vec3(const real _x, const real _y) : x{_x}, y{_y}, z{0.0} {}
 

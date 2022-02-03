@@ -166,7 +166,7 @@ namespace GLaDOS {
         Mat4<real> invRotMat = Mat4<real>::rotate(Quat::inverse(rotation));
         Mat4<real> scaleSkewMat = rotScaleMat * invRotMat; // cancel rotation
 
-        Vec3 scale = Vec3{scaleSkewMat._m44[0][0], scaleSkewMat._m44[1][1], scaleSkewMat._m44[2][2]};
+        Vec3 scale = Vec4::toVec3(Mat4<real>::diagonal(scaleSkewMat));
 
         mLocalPosition = translation;
         mLocalRotation = rotation;

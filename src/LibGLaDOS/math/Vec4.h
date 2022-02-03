@@ -11,6 +11,7 @@ namespace GLaDOS {
       public:
         Vec4();
         ~Vec4() = default;
+        explicit Vec4(real _xyzw);
         Vec4(real _x, real _y, real _z, real _w);
         explicit Vec4(const Vec2& other);
         explicit Vec4(const Vec3& other);

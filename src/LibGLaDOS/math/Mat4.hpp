@@ -63,6 +63,7 @@ namespace GLaDOS {
         std::size_t size() const;
 
         static constexpr Mat4<T> identity();
+        static Vec4 diagonal(const Mat4<T>& other);
         static Mat4<T> transpose(const Mat4<T>& other);
         static T minor(const Mat4<T>& other, std::size_t row, std::size_t col);
         static T cofactor(const Mat4<T>& other, std::size_t row, std::size_t col);
@@ -397,6 +398,11 @@ namespace GLaDOS {
     }
 
     template <typename T>
+    Vec4 Mat4<T>::diagonal(const Mat4<T>& other) {
+        return Vec4(other._m44[0][0], other._m44[1][1], other._m44[2][2], other._m44[3][3]);
+    }
+
+    template <typename T>
     Mat4<T> Mat4<T>::transpose(const Mat4<T>& other) {
         Mat4<T> mat = other;
         for (unsigned c = 0; c < 4; c++) {
@@ -464,13 +470,14 @@ namespace GLaDOS {
 
     template <typename T>
     Mat4<T> Mat4<T>::inverse(const Mat4<T>& other) {
-        real determinant = Mat4<T>::determinant(other);
-        if (determinant == 0.f) {
+        T determinant = Mat4<T>::determinant(other);
+        if (determinant == T(0)) {
             LOG_ERROR(logger, "Matrix determinant is zero! Inverse does not exist.");
             return Mat4<T>::identity();
         }
+        determinant = T(1) / determinant;
 
-        return Mat4<T>::adjugate(other) * (1.f / determinant);
+        return Mat4<T>::adjugate(other) * determinant;
     }
 
     template <typename T>

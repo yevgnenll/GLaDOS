@@ -10,12 +10,12 @@ namespace GLaDOS {
     Logger* SkinnedMeshRenderer::logger = LoggerRegistry::getInstance().makeAndGetLogger("SkinnedMeshRenderer");
     SkinnedMeshRenderer::SkinnedMeshRenderer() {
         mName = "SkinnedMeshRenderer";
-        mMatrixPalette.resize(96);
+        mMatrixPalette.resize(MAX_BONE_MATRIX);
     }
 
     SkinnedMeshRenderer::SkinnedMeshRenderer(Mesh *mesh, Material *material, GameObject* rootBone)
         : MeshRenderer(mesh, material), mRootBone{rootBone} {
-        mMatrixPalette.resize(96);
+        mMatrixPalette.resize(MAX_BONE_MATRIX);
     }
 
     SkinnedMeshRenderer::~SkinnedMeshRenderer() {

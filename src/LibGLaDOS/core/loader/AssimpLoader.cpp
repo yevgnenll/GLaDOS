@@ -68,7 +68,7 @@ namespace GLaDOS {
         return &mRootBone;
     }
 
-    int32_t AssimpLoader::getNodeCount() {
+    int32_t AssimpLoader::getNodeCount() const {
         return mNumNodes;
     }
 

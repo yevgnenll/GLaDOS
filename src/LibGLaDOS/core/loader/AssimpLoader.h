@@ -60,7 +60,7 @@ namespace GLaDOS {
         Vector<Texture*> getTexture() const;
         Vector<Animation*> getAnimation() const;
         Bone* getBone();
-        int32_t getNodeCount();
+        int32_t getNodeCount() const;
 
       private:
         void loadNodeData(aiNode* node, const aiScene* scene);
