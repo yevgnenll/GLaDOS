@@ -188,13 +188,6 @@ namespace GLaDOS {
         }
     }
 
-    SceneNode* AssimpLoader::findNode(const std::string& name) {
-        if (mNodeTable.find(name) != mNodeTable.end()) {
-            return &mNodeTable[name];
-        }
-        return nullptr;
-    }
-
     Texture* AssimpLoader::loadTexture(aiMaterial* material, aiTextureType textureType) {
         aiString name;
         if (material->GetTexture(textureType, 0, &name) != AI_SUCCESS) {
@@ -211,7 +204,6 @@ namespace GLaDOS {
         SceneNode newNode;
         newNode.id = mNumNodes++;
         newNode.name = nodeName;
-        newNode.offsetMatrix = Mat4<real>::identity(); // TODO
         newNode.isBone = (node->mNumMeshes == 0);
         addNode(newNode);
 
@@ -221,17 +213,13 @@ namespace GLaDOS {
         }
     }
 
-    int32_t AssimpLoader::addNode(const SceneNode& node) {
-        return mNodeTable.insert(std::make_pair(node.name, node)).first->second.id;
-    }
-
     GameObject* AssimpLoader::buildBoneHierarchy(const aiNode* node, Scene* scene, GameObject* parent) {
         SceneNode* sceneNode = findNode(node->mName.C_Str());
         if (sceneNode == nullptr || !sceneNode->isBone) { // FIXME: bug may appear here
             return nullptr;
         }
         GameObject* boneNode = scene->createGameObject(sceneNode->name, parent);
-        boneNode->transform()->fromMat4(sceneNode->offsetMatrix);
+        boneNode->transform()->fromMat4(toMat4(node->mTransformation));
 
         for (uint32_t i = 0; i < node->mNumChildren; i++) {
             GameObject* childRigGameObject = buildBoneHierarchy(node->mChildren[i], scene, boneNode);
@@ -291,6 +279,17 @@ namespace GLaDOS {
             }
             mAnimations.emplace_back(anim);
         }
+    }
+
+    SceneNode* AssimpLoader::findNode(const std::string& name) {
+        if (mNodeTable.find(name) != mNodeTable.end()) {
+            return &mNodeTable[name];
+        }
+        return nullptr;
+    }
+
+    int32_t AssimpLoader::addNode(const SceneNode& node) {
+        return mNodeTable.insert(std::make_pair(node.name, node)).first->second.id;
     }
 
     void AssimpLoader::makeGameObject(const std::string& name, Mesh* mesh, Scene* scene, GameObject* parent, GameObject* rootBone) {

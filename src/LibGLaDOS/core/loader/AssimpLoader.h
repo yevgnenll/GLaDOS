@@ -19,10 +19,15 @@ typedef aiMatrix4x4t<ai_real> aiMatrix4x4;
 
 namespace GLaDOS {
     class AnimationClip;
+    class Scene;
+    class GameObject;
+    class Texture;
+    class Mesh;
+    class Logger;
+
     struct SceneNode {
         int32_t id;
         std::string name;
-        Mat4<real> offsetMatrix;
         bool isBone;
     };
     struct Vertex {
@@ -40,14 +45,6 @@ namespace GLaDOS {
         AnimationClip* clip;
     };
 
-    class Scene;
-    class GameObject;
-    class Texture;
-    class Mesh;
-    class Material;
-    class Renderable;
-    class AnimationClip;
-    class Logger;
     class AssimpLoader {
       public:
         bool loadFromFile(const std::string& fileName, Scene* scene, GameObject* parent);
@@ -58,13 +55,13 @@ namespace GLaDOS {
         void loadNodeMeshAndMaterial(aiNode* node, const aiScene* aiscene, Scene* scene, GameObject* parent, GameObject* rootBone);
         Mesh* loadMesh(aiMesh* mesh);
         void loadBoneWeight(Vector<Vertex>& vertices, aiBone* bone);
-        SceneNode* findNode(const std::string& name);
         Texture* loadTexture(aiMaterial* material, aiTextureType textureType);
         void buildNodeTable(const aiNode* node);
-        int32_t addNode(const SceneNode& node);
         GameObject* buildBoneHierarchy(const aiNode* node, Scene* scene, GameObject* parent);
         void loadAnimation(const aiScene* scene);
 
+        SceneNode* findNode(const std::string& name);
+        int32_t addNode(const SceneNode& node);
         static void makeGameObject(const std::string& name, Mesh* mesh, Scene* scene, GameObject* parent, GameObject* rootBone);
         static Mat4<real> toMat4(const aiMatrix4x4& mat);
         static Vec3 toVec3(const aiVector3D& vec3);

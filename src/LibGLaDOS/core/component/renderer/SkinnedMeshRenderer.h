@@ -16,7 +16,6 @@ namespace GLaDOS {
         void setRootBone(GameObject* gameObject);
 
       protected:
-        void buildBoneTransform(Vector<Mat4<real>>& matrixPalette, GameObject* node, std::size_t& matrixIndex);
         void update(real deltaTime) override;
         void render() override;
         Component* clone() override;
@@ -25,8 +24,10 @@ namespace GLaDOS {
         static Logger* logger;
         static constexpr std::size_t MAX_BONE_MATRIX = 96;
 
+        void buildMatrixPalette(const Mat4<real>& parentMatrix, GameObject* node, std::size_t& matrixIndex);
+
         GameObject* mRootBone;
-        Vector<Mat4<real>> mMatrixPalette;
+        Vector<Mat4<real>> mMatrixPalette{MAX_BONE_MATRIX};
     };
 }  // namespace GLaDOS
 

@@ -12,12 +12,10 @@ namespace GLaDOS {
     Logger* SkinnedMeshRenderer::logger = LoggerRegistry::getInstance().makeAndGetLogger("SkinnedMeshRenderer");
     SkinnedMeshRenderer::SkinnedMeshRenderer() {
         mName = "SkinnedMeshRenderer";
-        mMatrixPalette.resize(MAX_BONE_MATRIX); // fixed size maximum bone transform matrix
     }
 
     SkinnedMeshRenderer::SkinnedMeshRenderer(Mesh *mesh, Material *material, GameObject* rootBone)
         : MeshRenderer(mesh, material), mRootBone{rootBone} {
-        mMatrixPalette.resize(MAX_BONE_MATRIX); // fixed size maximum bone transform matrix
     }
 
     SkinnedMeshRenderer::~SkinnedMeshRenderer() {
@@ -27,22 +25,24 @@ namespace GLaDOS {
         mRootBone = gameObject;
     }
 
-    void SkinnedMeshRenderer::buildBoneTransform(Vector<Mat4<real>>& matrixPalette, GameObject* node, std::size_t& matrixIndex) {
+    void SkinnedMeshRenderer::buildMatrixPalette(const Mat4<real>& parentMatrix, GameObject* node, std::size_t& matrixIndex) {
         // Pre Order Traversal in children nodes
         if (node == nullptr) {
             return;
         }
-        matrixPalette[matrixIndex++] = node->transform()->localToWorldMatrix();
+        // inverse bine pose matrix * bone transformation
+        mMatrixPalette[matrixIndex++] = node->transform()->worldToLocalMatrix() * parentMatrix;
         Vector<GameObject*> children = node->getChildren();
         for (uint32_t i = 0; i < children.size(); i++) {
-            buildBoneTransform(matrixPalette, children[i], matrixIndex);
+            buildMatrixPalette(parentMatrix, children[i], matrixIndex);
         }
     }
 
     void SkinnedMeshRenderer::update(real deltaTime) {
         ShaderProgram* shaderProgram = mRenderable->getMaterial()->getShaderProgram();
+        Transform* transform = gameObject()->transform();
         std::size_t matrixIndex = 0;
-        buildBoneTransform(mMatrixPalette, mRootBone, matrixIndex);
+        buildMatrixPalette(transform->localToWorldMatrix(), mRootBone, matrixIndex);
         shaderProgram->setUniform("boneTransform", mMatrixPalette.data(), mMatrixPalette.size());
         MeshRenderer::update(deltaTime);
     }

@@ -19,12 +19,11 @@ class MainScene : public Scene {
 
         parent = createGameObject("parent");
 
-
         AssimpLoader loader;
         if (!loader.loadFromFile("xbot@Idle.fbx", this, parent)) {
             return false;
         }
-        parent->transform()->setLocalScale(Vec3{0.1, 0.1, 0.1});
+        parent->transform()->setLocalScale(Vec3{0.01, 0.01, 0.01});
         parent->transform()->setLocalPosition(Vec3{0, -1, 3});
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
@@ -32,6 +31,13 @@ class MainScene : public Scene {
         Input::addAxis("Vertical", NEW_T(InputHandler(KeyCode::KEY_W, KeyCode::KEY_S, 0.1)));
         Input::addAxis("MovementX", NEW_T(InputHandler(KeyCode::KEY_RIGHT, KeyCode::KEY_LEFT, 0.1)));
         Input::addAxis("MovementY", NEW_T(InputHandler(KeyCode::KEY_UP, KeyCode::KEY_DOWN, 0.1)));
+
+        for (GameObject* gameObject : parent->getChildren()) {
+            SkinnedMeshRenderer* skinnedMeshRenderer = gameObject->getComponent<SkinnedMeshRenderer>();
+            if (skinnedMeshRenderer != nullptr) {
+                shaderPrograms.emplace_back(skinnedMeshRenderer->getRenderable()->getMaterial()->getShaderProgram());
+            }
+        }
 
         return true;
     }
@@ -74,11 +80,12 @@ class MainScene : public Scene {
             cameraTransform->rotate(UVec3::up, Deg{-rotationY});
         }
 
-//        if (Input::isKeyDown(KeyCode::KEY_TAB)) {
-//            rasterizerDesc.mFillMode = (rasterizerDesc.mFillMode == FillMode::Lines) ? FillMode::Fill : FillMode::Lines;
-//            shaderProgram->setRasterizerState(rasterizerDesc);
-//            shaderProgram2->setRasterizerState(rasterizerDesc);
-//        }
+        if (Input::isKeyDown(KeyCode::KEY_TAB)) {
+            rasterizerDesc.mFillMode = (rasterizerDesc.mFillMode == FillMode::Lines) ? FillMode::Fill : FillMode::Lines;
+            for (ShaderProgram* shaderProgram : shaderPrograms) {
+                shaderProgram->setRasterizerState(rasterizerDesc);
+            }
+        }
     }
 
   private:
@@ -87,6 +94,7 @@ class MainScene : public Scene {
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;
     RasterizerDescription rasterizerDesc{};
+    Vector<ShaderProgram*> shaderPrograms;
 };
 
 int main(int argc, char** argv) {
