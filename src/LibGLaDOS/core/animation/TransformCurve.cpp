@@ -1,4 +1,5 @@
 #include "TransformCurve.h"
+#include "core/GameObject.hpp"
 #include "core/component/Transform.h"
 #include "math/Math.h"
 
@@ -11,9 +12,9 @@ namespace GLaDOS {
         return Math::max(mTranslation.getEndTime(), mRotation.getEndTime(), mScale.getEndTime());
     }
 
-    void TransformCurve::sample(Transform* targetTransform, real time, bool loop) const {
-        targetTransform->mLocalPosition = mTranslation.evaluate(time, loop);
-        targetTransform->mLocalRotation = mRotation.evaluate(time, loop);
-        targetTransform->mLocalScale = mScale.evaluate(time, loop);
+    void TransformCurve::sample(real time, bool loop) const {
+        mTargetBone->transform()->mLocalPosition = mTranslation.evaluate(time, loop);
+        mTargetBone->transform()->mLocalRotation = mRotation.evaluate(time, loop);
+        mTargetBone->transform()->mLocalScale = mScale.evaluate(time, loop);
     }
 }

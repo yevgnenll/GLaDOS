@@ -10,16 +10,17 @@ namespace GLaDOS {
         mCurves.emplace_back(curve);
     }
 
-    void AnimationClip::sampleAnimation(GameObject* gameObject, real time) const {
+    real AnimationClip::sampleAnimation(real time) const {
         if (Math::equal(getDuration(), real(0))) {
-            return;
+            return real(0);
         }
 
         time = clampTimeInCurve(time);
         for (uint32_t i = 0; i < length(); i++) {
-            GameObject* targetBone = mCurves[i].mTargetBone;
-            mCurves[i].sample(targetBone->transform(), time, mIsLoop);
+            mCurves[i].sample(time, mIsLoop);
         }
+
+        return time;
     }
 
     std::string AnimationClip::getName() const {
@@ -42,8 +43,16 @@ namespace GLaDOS {
         return mStartTime;
     }
 
+    void AnimationClip::setStartTime(real startTime) {
+        mStartTime = startTime;
+    }
+
     real AnimationClip::getEndTime() const {
         return mEndTime;
+    }
+
+    void AnimationClip::setEndTime(real endTime) {
+        mEndTime = endTime;
     }
 
     bool AnimationClip::isLooping() const {

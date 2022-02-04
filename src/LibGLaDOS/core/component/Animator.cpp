@@ -5,13 +5,20 @@
 namespace GLaDOS {
     Logger* Animator::logger = LoggerRegistry::getInstance().makeAndGetLogger("Animator");
 
-    Animator::Animator() : Component{"Animator"} {
+    Animator::Animator() : Component{"Animator"}, mCurrentState{mAnimations.end()} {
     }
 
-    Animator::Animator(AnimationController* animationController) : Component{"Animator"}, mAnimationController{animationController} {
+    Animator::~Animator() {
+        deallocValueInMap(mAnimations);
     }
 
     void Animator::play(const std::string& name) {
+        auto animationState = mAnimations.find(name);
+        if (animationState == mAnimations.end()) {
+            LOG_ERROR(logger, "AnimationState `{0}` is not exist", name);
+            return;
+        }
+        mCurrentState = animationState;
     }
 
     void Animator::rewind(const std::string& name) {
@@ -20,43 +27,45 @@ namespace GLaDOS {
     void Animator::stop(const std::string& name) {
     }
 
-    std::size_t Animator::getClipCount() const {
-        return 0;
+    void Animator::addClip(AnimationClip* clip, const std::string& name) {
+        auto iter = mAnimations.find(name);
+        if (iter != mAnimations.end()) {
+            LOG_ERROR(logger, "AnimationState `{0}` already exist", name);
+            return;
+        }
+        AnimationState* newState = NEW_T(AnimationState);
+        newState->setName(name);
+        newState->setClip(clip);
+        newState->setSpeed(30); // TODO: fix it customizable
+        mAnimations.insert(std::make_pair(name, newState));
     }
 
-    void Animator::addClip(const AnimationClip& clip, const std::string& name) {
-        // TODO
-    }
-
-    void Animator::addClip(const AnimationClip& clip, const std::string& name, int firstFrame, int lastFrame) {
-        // TODO
-    }
-
-    void Animator::removeClip(const std::string& name) {
-        // TODO
+    bool Animator::removeClip(const std::string& name) {
+        auto iter = mAnimations.find(name);
+        if (iter == mAnimations.end()) {
+            return false;
+        }
+        mAnimations.erase(iter);
+        return true;
     }
 
     bool Animator::isPlaying() const {
-        return mIsPlaying;
+        return mCurrentState != mAnimations.end();
     }
 
     std::size_t Animator::length() const {
         return mAnimations.size();
     }
 
-    AnimationState* Animator::operator [](const std::string& name) const {
-        auto animationState = mAnimations.find(name);
-        if (animationState == mAnimations.end()) {
-            LOG_ERROR(logger, "AnimationState `{0}` is not exist", name);
-            return nullptr;
-        }
-        return animationState->second;
-    }
-
     void Animator::fixedUpdate(real fixedDeltaTime) {
+        // Nothing to do here
     }
 
     void Animator::update(real deltaTime) {
+        if (mCurrentState == mAnimations.end()) {
+            return;
+        }
+        mCurrentState->second->update(deltaTime);
     }
 
     void Animator::render() {
@@ -69,9 +78,7 @@ namespace GLaDOS {
         for (const auto& pair : mAnimations) {
             animator->mAnimations.insert(std::make_pair(pair.first, NEW_T(AnimationState(*pair.second))));
         }
-        animator->mWrapMode = mWrapMode;
-        animator->mIsPlaying = mIsPlaying;
-        animator->mAnimationController = mAnimationController;
+        animator->mCurrentState = mCurrentState;
         return animator;
     }
 }

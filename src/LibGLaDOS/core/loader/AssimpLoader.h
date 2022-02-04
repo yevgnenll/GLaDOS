@@ -39,17 +39,11 @@ namespace GLaDOS {
         int32_t boneIndex[4];
         Vec2 texcoord;
     };
-    struct Animation {
-        real duration{0};
-        real ticksPerSecond{1};
-        AnimationClip* clip;
-    };
 
     class AssimpLoader {
       public:
         bool loadFromFile(const std::string& fileName, Scene* scene, GameObject* parent);
         Vector<Texture*> getTexture() const;
-        Vector<Animation*> getAnimation() const;
 
       private:
         void loadNodeMeshAndMaterial(aiNode* node, const aiScene* aiscene, Scene* scene, GameObject* parent, GameObject* rootBone);
@@ -58,7 +52,7 @@ namespace GLaDOS {
         Texture* loadTexture(aiMaterial* material, aiTextureType textureType);
         void buildNodeTable(const aiNode* node);
         GameObject* buildBoneHierarchy(const aiNode* node, Scene* scene, GameObject* parent);
-        void loadAnimation(const aiScene* scene, GameObject* rootNode);
+        Vector<AnimationClip*> loadAnimation(const aiScene* scene, GameObject* rootNode);
 
         SceneNode* findNode(const std::string& name);
         int32_t addNode(const SceneNode& node);
@@ -73,7 +67,6 @@ namespace GLaDOS {
 
         UnorderedMap<std::string, SceneNode> mNodeTable;
         Vector<Texture*> mTextures;
-        Vector<Animation*> mAnimations;
         std::string mDirectoryPath;
         int32_t mNumNodes{0};
     };

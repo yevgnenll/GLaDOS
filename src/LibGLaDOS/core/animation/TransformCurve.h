@@ -14,7 +14,7 @@ namespace GLaDOS {
         real getStartTime() const;
         real getEndTime() const;
 
-        void sample(Transform* targetTransform, real time, bool loop) const;
+        void sample(real time, bool loop) const;
 
         GameObject* mTargetBone;
         Vec3Curve mTranslation;

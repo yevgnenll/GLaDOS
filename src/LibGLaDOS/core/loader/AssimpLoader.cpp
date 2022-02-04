@@ -1,12 +1,12 @@
 #include "AssimpLoader.h"
+#include "math/Vec3.h"
 #include "utils/LoggerRegistry.h"
 #include "utils/Utility.h"
 #include "utils/StringUtils.h"
-#include "math/Vec3.h"
+#include "platform/Platform.h"
 #include "platform/render/IndexBuffer.h"
 #include "platform/render/Material.h"
 #include "platform/render/Mesh.h"
-#include "platform/Platform.h"
 #include "platform/render/Renderer.h"
 #include "platform/render/VertexBuffer.h"
 #include "platform/render/Texture2D.h"
@@ -14,8 +14,9 @@
 #include "core/animation/AnimationClip.h"
 #include "core/component/renderer/SkinnedMeshRenderer.h"
 #include "core/component/renderer/MeshRenderer.h"
-#include "core/GameObject.hpp"
 #include "core/component/Transform.h"
+#include "core/component/Animator.h"
+#include "core/GameObject.hpp"
 #include "core/Scene.h"
 #include "RootDir.h"
 #include <assimp/Importer.hpp>
@@ -38,8 +39,9 @@ namespace GLaDOS {
         }
 
         aiNode* rootNode = aiscene->mRootNode;
-        Mat4<real> rootTransform = Mat4<real>::inverse(toMat4(rootNode->mTransformation));
-        parent->transform()->fromMat4(rootTransform);
+        Mat4<real> invRootTransform = Mat4<real>::inverse(toMat4(rootNode->mTransformation));
+        parent->transform()->fromMat4(invRootTransform);
+
         // first build all node in scene
         for (uint32_t i = 0; i < rootNode->mNumChildren; i++) {
             buildNodeTable(rootNode->mChildren[i]);
@@ -62,7 +64,13 @@ namespace GLaDOS {
 
         // load animations
         if (rootBoneNode != nullptr) {
-            loadAnimation(aiscene, rootBoneNode);
+            Vector<AnimationClip*> animationClips = loadAnimation(aiscene, rootBoneNode);
+            if (!animationClips.empty()) {
+                Animator* animator = parent->addComponent<Animator>();
+                for (AnimationClip* clip : animationClips) {
+                    animator->addClip(clip, clip->getName());
+                }
+            }
         }
 
         return true;
@@ -70,10 +78,6 @@ namespace GLaDOS {
 
     Vector<Texture*> AssimpLoader::getTexture() const {
         return mTextures;
-    }
-
-    Vector<Animation*> AssimpLoader::getAnimation() const {
-        return mAnimations;
     }
 
     void AssimpLoader::loadNodeMeshAndMaterial(aiNode* node, const aiScene* aiscene, Scene* scene, GameObject* parent, GameObject* rootBone) {
@@ -232,23 +236,23 @@ namespace GLaDOS {
         return boneNode;
     }
 
-    void AssimpLoader::loadAnimation(const aiScene* scene, GameObject* rootNode) {
+    Vector<AnimationClip*> AssimpLoader::loadAnimation(const aiScene* scene, GameObject* rootNode) {
+        Vector<AnimationClip*> clips;
         for (uint32_t i = 0; i < scene->mNumAnimations; i++) {
             aiAnimation* animation = scene->mAnimations[i];
-
-            Animation* anim = NEW_T(Animation);
-            anim->duration = static_cast<real>(animation->mDuration);
-            anim->ticksPerSecond = static_cast<real>(animation->mTicksPerSecond);
-            anim->clip = NEW_T(AnimationClip(animation->mName.C_Str()));
+            AnimationClip* clip = NEW_T(AnimationClip(animation->mName.C_Str()));
+            clip->setStartTime(0);
+            clip->setEndTime(static_cast<real>(animation->mDuration));
 
             for (uint32_t j = 0; j < animation->mNumChannels; j++) {
                 aiNodeAnim* channel = animation->mChannels[j];
-                TransformCurve transformCurve;
                 SceneNode* sceneNode = findNode(channel->mNodeName.C_Str());
                 if (sceneNode == nullptr || !sceneNode->isBone) {
-                    LOG_ERROR(logger, "Can't find bone in animation");
-                    return;
+                    LOG_ERROR(logger, "Can't find bone in animation: `{0}`", channel->mNodeName.C_Str());
+                    return clips;
                 }
+
+                TransformCurve transformCurve;
                 transformCurve.mTargetBone = retrieveTargetBone(sceneNode->name, rootNode);
 
                 // load position keyframe
@@ -278,10 +282,12 @@ namespace GLaDOS {
                     });
                 }
 
-                anim->clip->addCurve(transformCurve);
+                clip->addCurve(transformCurve);
             }
-            mAnimations.emplace_back(anim);
+            clips.emplace_back(clip);
         }
+
+        return clips;
     }
 
     SceneNode* AssimpLoader::findNode(const std::string& name) {

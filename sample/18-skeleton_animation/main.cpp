@@ -25,8 +25,6 @@ class MainScene : public Scene {
         }
         parent->transform()->setLocalScale(Vec3{0.01, 0.01, 0.01});
         parent->transform()->setLocalPosition(Vec3{0, -1, 3});
-        AnimationController* animationController = NEW_T(AnimationController);
-        parent->addComponent<Animator>(animationController);
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
@@ -41,6 +39,8 @@ class MainScene : public Scene {
             }
         }
 
+        animator = parent->getComponent<Animator>();
+
         return true;
     }
 
@@ -49,7 +49,7 @@ class MainScene : public Scene {
             Platform::getInstance().quit();
         }
 
-        parent->transform()->rotate(Vec3{0, deltaTime * 50, 0});
+        animator->play("mixamo.com");
 
         // character movement
         Vec3 rightMove = Vec3::right;
@@ -97,6 +97,7 @@ class MainScene : public Scene {
     Transform* cameraTransform = nullptr;
     RasterizerDescription rasterizerDesc{};
     Vector<ShaderProgram*> shaderPrograms;
+    Animator* animator;
 };
 
 int main(int argc, char** argv) {
