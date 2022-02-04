@@ -1,7 +1,5 @@
 #include "TextureCube.h"
-
 #include <stb_image.h>
-
 #include <algorithm>
 
 namespace GLaDOS {

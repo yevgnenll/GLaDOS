@@ -254,6 +254,7 @@ namespace GLaDOS {
 
                 TransformCurve transformCurve;
                 transformCurve.mTargetBone = retrieveTargetBone(sceneNode->name, rootNode);
+                // TODO: customize interpolation type in aiNodeAnim
 
                 // load position keyframe
                 for (uint32_t k = 0; k < channel->mNumPositionKeys; k++) {

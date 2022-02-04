@@ -7,8 +7,7 @@ namespace GLaDOS {
     }
 
     AnimationState::AnimationState(const AnimationState& other)
-        : mClip{other.mClip}, mSpeed{other.mSpeed}, mTime{other.mTime},
-          mWrapMode{other.mWrapMode}, mBlendMode{other.mBlendMode} {
+        : mClip{other.mClip}, mSpeed{other.mSpeed}, mTime{other.mTime}, mWrapMode{other.mWrapMode}, mBlendMode{other.mBlendMode} {
         mName = other.mName;
     }
 

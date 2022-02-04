@@ -3,7 +3,7 @@
 #include "core/component/Transform.h"
 
 namespace GLaDOS {
-    AnimationClip::AnimationClip(const std::string& name) : mName{name}, mStartTime{0}, mEndTime{0}, mIsLoop{false} {
+    AnimationClip::AnimationClip(const std::string& name) : mName{name}, mStartTime{0}, mEndTime{0}, mIsLoop{true} {
     }
 
     void AnimationClip::addCurve(const TransformCurve& curve) {
@@ -65,7 +65,16 @@ namespace GLaDOS {
 
     real AnimationClip::clampTimeInCurve(real time) const {
         if (mIsLoop) {
-            // TODO
+            real duration = getDuration();
+            if (getDuration() <= real(0)) {
+                return real(0);
+            }
+
+            time = Math::mod(time - mStartTime, duration);
+            if (time < real(0)) {
+                time += duration;
+            }
+            time = time + mStartTime;
         } else {
             time = Math::clamp(time, mStartTime, mEndTime);
         }
