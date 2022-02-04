@@ -6,7 +6,9 @@ namespace GLaDOS {
     Logger* Animator::logger = LoggerRegistry::getInstance().makeAndGetLogger("Animator");
 
     Animator::Animator() : Component{"Animator"} {
+    }
 
+    Animator::Animator(AnimationController* animationController) : Component{"Animator"}, mAnimationController{animationController} {
     }
 
     void Animator::play(const std::string& name) {
@@ -36,14 +38,6 @@ namespace GLaDOS {
 
     bool Animator::isPlaying() const {
         return mIsPlaying;
-    }
-
-    bool Animator::playAutomatically() const {
-        return mPlayAutomatically;
-    }
-
-    void Animator::setPlayAutomatically(bool playAutomatically) {
-        mPlayAutomatically = playAutomatically;
     }
 
     std::size_t Animator::length() const {
@@ -77,7 +71,7 @@ namespace GLaDOS {
         }
         animator->mWrapMode = mWrapMode;
         animator->mIsPlaying = mIsPlaying;
-        animator->mPlayAutomatically = mPlayAutomatically;
+        animator->mAnimationController = mAnimationController;
         return animator;
     }
 }

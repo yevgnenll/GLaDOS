@@ -15,6 +15,7 @@
 #include "core/component/renderer/SkinnedMeshRenderer.h"
 #include "core/component/renderer/MeshRenderer.h"
 #include "core/GameObject.hpp"
+#include "core/component/Transform.h"
 #include "core/Scene.h"
 #include "RootDir.h"
 #include <assimp/Importer.hpp>
@@ -60,7 +61,9 @@ namespace GLaDOS {
         loadNodeMeshAndMaterial(rootNode, aiscene, scene, parent, rootBoneNode);
 
         // load animations
-        loadAnimation(aiscene);
+        if (rootBoneNode != nullptr) {
+            loadAnimation(aiscene, rootBoneNode);
+        }
 
         return true;
     }
@@ -229,7 +232,7 @@ namespace GLaDOS {
         return boneNode;
     }
 
-    void AssimpLoader::loadAnimation(const aiScene* scene) {
+    void AssimpLoader::loadAnimation(const aiScene* scene, GameObject* rootNode) {
         for (uint32_t i = 0; i < scene->mNumAnimations; i++) {
             aiAnimation* animation = scene->mAnimations[i];
 
@@ -246,7 +249,7 @@ namespace GLaDOS {
                     LOG_ERROR(logger, "Can't find bone in animation");
                     return;
                 }
-                transformCurve.mBoneID = sceneNode->id;
+                transformCurve.mTargetBone = retrieveTargetBone(sceneNode->name, rootNode);
 
                 // load position keyframe
                 for (uint32_t k = 0; k < channel->mNumPositionKeys; k++) {
@@ -290,6 +293,22 @@ namespace GLaDOS {
 
     int32_t AssimpLoader::addNode(const SceneNode& node) {
         return mNodeTable.insert(std::make_pair(node.name, node)).first->second.id;
+    }
+
+    GameObject* AssimpLoader::retrieveTargetBone(const std::string& name, GameObject* rootNode) {
+        if (rootNode == nullptr) {
+            return nullptr;
+        }
+        if (rootNode->getName() == name) {
+            return rootNode;
+        }
+        for (uint32_t i = 0; i < rootNode->getChildren().size(); i++) {
+            GameObject* node = retrieveTargetBone(name, rootNode->getChildren()[i]);
+            if (node != nullptr) {
+                return node;
+            }
+        }
+        return nullptr;
     }
 
     void AssimpLoader::makeGameObject(const std::string& name, Mesh* mesh, Scene* scene, GameObject* parent, GameObject* rootBone) {

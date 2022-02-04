@@ -58,10 +58,11 @@ namespace GLaDOS {
         Texture* loadTexture(aiMaterial* material, aiTextureType textureType);
         void buildNodeTable(const aiNode* node);
         GameObject* buildBoneHierarchy(const aiNode* node, Scene* scene, GameObject* parent);
-        void loadAnimation(const aiScene* scene);
+        void loadAnimation(const aiScene* scene, GameObject* rootNode);
 
         SceneNode* findNode(const std::string& name);
         int32_t addNode(const SceneNode& node);
+        static GameObject* retrieveTargetBone(const std::string& name, GameObject* rootNode);
         static void makeGameObject(const std::string& name, Mesh* mesh, Scene* scene, GameObject* parent, GameObject* rootBone);
         static Mat4<real> toMat4(const aiMatrix4x4& mat);
         static Vec3 toVec3(const aiVector3D& vec3);

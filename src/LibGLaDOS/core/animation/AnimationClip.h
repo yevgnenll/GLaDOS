@@ -28,11 +28,11 @@ namespace GLaDOS {
       private:
         real clampTimeInCurve(real time) const;
 
+        Vector<TransformCurve> mCurves;
         std::string mName;
         real mStartTime;
         real mEndTime;
         bool mIsLoop;
-        Vector<TransformCurve> mCurves;
     };
 }
 

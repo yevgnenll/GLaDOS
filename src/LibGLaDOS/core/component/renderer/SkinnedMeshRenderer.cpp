@@ -39,12 +39,14 @@ namespace GLaDOS {
     }
 
     void SkinnedMeshRenderer::update(real deltaTime) {
-        ShaderProgram* shaderProgram = mRenderable->getMaterial()->getShaderProgram();
-        Transform* transform = gameObject()->transform();
-        std::size_t matrixIndex = 0;
-        buildMatrixPalette(transform->localToWorldMatrix(), mRootBone, matrixIndex);
-        shaderProgram->setUniform("boneTransform", mMatrixPalette.data(), mMatrixPalette.size());
-        MeshRenderer::update(deltaTime);
+        if (mRenderable != nullptr) {
+            ShaderProgram* shaderProgram = mRenderable->getMaterial()->getShaderProgram();
+            Transform* transform = gameObject()->transform();
+            std::size_t matrixIndex = 0;
+            buildMatrixPalette(transform->localToWorldMatrix(), mRootBone, matrixIndex);
+            shaderProgram->setUniform("boneTransform", mMatrixPalette.data(), mMatrixPalette.size());
+            MeshRenderer::update(deltaTime);
+        }
     }
 
     void SkinnedMeshRenderer::render() {

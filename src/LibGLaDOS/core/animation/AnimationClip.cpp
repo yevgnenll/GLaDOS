@@ -1,4 +1,6 @@
 #include "AnimationClip.h"
+#include "core/GameObject.hpp"
+#include "core/component/Transform.h"
 
 namespace GLaDOS {
     AnimationClip::AnimationClip(const std::string& name) : mName{name}, mStartTime{0}, mEndTime{0}, mIsLoop{false} {
@@ -15,7 +17,8 @@ namespace GLaDOS {
 
         time = clampTimeInCurve(time);
         for (uint32_t i = 0; i < length(); i++) {
-
+            GameObject* targetBone = mCurves[i].mTargetBone;
+            mCurves[i].sample(targetBone->transform(), time, mIsLoop);
         }
     }
 
@@ -53,7 +56,7 @@ namespace GLaDOS {
 
     real AnimationClip::clampTimeInCurve(real time) const {
         if (mIsLoop) {
-
+            // TODO
         } else {
             time = Math::clamp(time, mStartTime, mEndTime);
         }

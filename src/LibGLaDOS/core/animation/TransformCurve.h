@@ -2,9 +2,10 @@
 #define GLADOS_TRANSFORMCURVE_H
 
 #include "AnimationCurve.hpp"
-#include "core/component/Transform.h"
 
 namespace GLaDOS {
+    class Transform;
+    class GameObject;
     class TransformCurve {
       public:
         TransformCurve() = default;
@@ -12,9 +13,10 @@ namespace GLaDOS {
 
         real getStartTime() const;
         real getEndTime() const;
-        Transform* sample(Transform* targetTransform, real time, bool loop);
 
-        int32_t mBoneID;
+        void sample(Transform* targetTransform, real time, bool loop) const;
+
+        GameObject* mTargetBone;
         Vec3Curve mTranslation;
         QuatCurve mRotation;
         Vec3Curve mScale;

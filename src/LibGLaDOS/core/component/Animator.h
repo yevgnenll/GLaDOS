@@ -8,9 +8,11 @@
 namespace GLaDOS {
     class AnimationState;
     class AnimationClip;
+    class AnimationController;
     class Animator : public Component {
       public:
         Animator();
+        Animator(AnimationController* animationController);
         ~Animator() override = default;
 
         void play(const std::string& name);
@@ -23,8 +25,6 @@ namespace GLaDOS {
         void removeClip(const std::string& name);
 
         bool isPlaying() const;
-        bool playAutomatically() const;
-        void setPlayAutomatically(bool playAutomatically);
 
         std::size_t length() const;
         AnimationState* operator [](const std::string& name) const;
@@ -41,7 +41,7 @@ namespace GLaDOS {
         Map<std::string, AnimationState*> mAnimations;
         AnimationWrapMode mWrapMode{AnimationWrapMode::Loop}; // default wrapMode for all animationState if not specified
         bool mIsPlaying{false};
-        bool mPlayAutomatically{true};
+        AnimationController* mAnimationController;
     };
 }
 

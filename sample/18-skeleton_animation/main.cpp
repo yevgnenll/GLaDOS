@@ -25,6 +25,8 @@ class MainScene : public Scene {
         }
         parent->transform()->setLocalScale(Vec3{0.01, 0.01, 0.01});
         parent->transform()->setLocalPosition(Vec3{0, -1, 3});
+        AnimationController* animationController = NEW_T(AnimationController);
+        parent->addComponent<Animator>(animationController);
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));

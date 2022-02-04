@@ -23,7 +23,7 @@ namespace GLaDOS {
         real getEndTime() const;
         real getDuration() const;
 
-        T evaluate(real time, bool loop);
+        T evaluate(real time, bool loop) const;
         KeyFrame<N> operator[](std::size_t index) const;
 
          void addKeyFrame(const KeyFrame<N>& keyFrame); // add a new keyframe at the end
@@ -31,14 +31,14 @@ namespace GLaDOS {
          int moveKeyFrame(std::size_t index, const KeyFrame<N>& keyFrame); // move a keyframe into the index
 
        private:
-        real clampTimeInCurve(real time, bool loop);
+        real clampTimeInCurve(real time, bool loop) const;
         int getKeyFrameIndex(real time, bool loop) const;
 
-        T constant(real time, bool loop);
-        T linear(real time, bool loop);
-        T cubic(real time, bool loop);
+        T constant(real time, bool loop) const;
+        T linear(real time, bool loop) const;
+        T cubic(real time, bool loop) const;
 
-        inline T cast(real* value);
+        inline T cast(const real* value) const;
 
         Vector<KeyFrame<N>> mKeyFrames;
         Interpolation mInterpolation{Interpolation::Linear};
@@ -88,7 +88,7 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t N>
-    T AnimationCurve<T, N>::evaluate(real time, bool loop) {
+    T AnimationCurve<T, N>::evaluate(real time, bool loop) const {
         if (mInterpolation == Interpolation::Constant) {
             return constant(time, loop);
         }
@@ -129,7 +129,7 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t N>
-    real AnimationCurve<T, N>::clampTimeInCurve(real time, bool loop) {
+    real AnimationCurve<T, N>::clampTimeInCurve(real time, bool loop) const {
         if (length() <= 1) {
             return real(0);
         }
@@ -187,7 +187,7 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t N>
-    T AnimationCurve<T, N>::constant(real time, bool loop) {
+    T AnimationCurve<T, N>::constant(real time, bool loop) const {
         int index = getKeyFrameIndex(time, loop);
         if (index < 0 || index >= length()) {
             return T();
@@ -197,7 +197,7 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t N>
-    T AnimationCurve<T, N>::linear(real time, bool loop) {
+    T AnimationCurve<T, N>::linear(real time, bool loop) const {
         int currentKeyFrameIndex = getKeyFrameIndex(time, loop);
         if (currentKeyFrameIndex < 0 || currentKeyFrameIndex >= length() - 1) {
             return T();
@@ -217,27 +217,27 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t N>
-    T AnimationCurve<T, N>::cubic(real time, bool loop) {
+    T AnimationCurve<T, N>::cubic(real time, bool loop) const {
         return T(); // TODO
     }
 
     template<>
-    inline real AnimationCurve<real, 1>::cast(real* value) {
+    inline real AnimationCurve<real, 1>::cast(const real* value) const {
         return value[0];
     }
 
     template<>
-    inline Vec2 AnimationCurve<Vec2, 2>::cast(real* value) {
+    inline Vec2 AnimationCurve<Vec2, 2>::cast(const real* value) const {
         return Vec2{value[0], value[1]};
     }
 
     template<>
-    inline Vec3 AnimationCurve<Vec3, 3>::cast(real* value) {
+    inline Vec3 AnimationCurve<Vec3, 3>::cast(const real* value) const {
         return Vec3{value[0], value[1], value[2]};
     }
 
     template<>
-    inline Quat AnimationCurve<Quat, 4>::cast(real* value) {
+    inline Quat AnimationCurve<Quat, 4>::cast(const real* value) const {
         return Quat{value[0], value[1], value[2], value[3]};
     }
 
