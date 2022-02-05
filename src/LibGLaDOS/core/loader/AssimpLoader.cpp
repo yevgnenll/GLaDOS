@@ -39,12 +39,11 @@ namespace GLaDOS {
         }
 
         aiNode* rootNode = aiscene->mRootNode;
-        Mat4<real> invRootTransform = Mat4<real>::inverse(toMat4(rootNode->mTransformation));
-        parent->transform()->fromMat4(invRootTransform);
 
         // first build all node in scene
+        int32_t numBones = 0;
         for (uint32_t i = 0; i < rootNode->mNumChildren; i++) {
-            buildNodeTable(rootNode->mChildren[i]);
+            buildNodeTable(rootNode->mChildren[i], numBones);
         }
 
         // load bone hierarchy
@@ -206,17 +205,17 @@ namespace GLaDOS {
         return Platform::getRenderer().createTexture2D(texturePath, PixelFormat::RGBA32); // FIXME: format? automatic
     }
 
-    void AssimpLoader::buildNodeTable(const aiNode* node) {
+    void AssimpLoader::buildNodeTable(const aiNode* node, int32_t& boneCounter) {
         std::string nodeName = node->mName.C_Str();
         SceneNode newNode;
-        newNode.id = mNumNodes++;
+        newNode.id = (node->mNumMeshes != 0) ? -1 : boneCounter++;
         newNode.name = nodeName;
         newNode.isBone = (node->mNumMeshes == 0);
         addNode(newNode);
 
         // recursively load all the child node
         for (uint32_t i = 0; i < node->mNumChildren; i++) {
-            buildNodeTable(node->mChildren[i]);
+            buildNodeTable(node->mChildren[i], boneCounter);
         }
     }
 

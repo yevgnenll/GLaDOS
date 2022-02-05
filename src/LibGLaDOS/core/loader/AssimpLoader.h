@@ -50,7 +50,7 @@ namespace GLaDOS {
         Mesh* loadMesh(aiMesh* mesh);
         void loadBoneWeight(Vector<Vertex>& vertices, aiBone* bone);
         Texture* loadTexture(aiMaterial* material, aiTextureType textureType);
-        void buildNodeTable(const aiNode* node);
+        void buildNodeTable(const aiNode* node, int32_t& boneCounter);
         GameObject* buildBoneHierarchy(const aiNode* node, Scene* scene, GameObject* parent);
         Vector<AnimationClip*> loadAnimation(const aiScene* scene, GameObject* rootNode);
 
@@ -68,7 +68,6 @@ namespace GLaDOS {
         UnorderedMap<std::string, SceneNode> mNodeTable;
         Vector<Texture*> mTextures;
         std::string mDirectoryPath;
-        int32_t mNumNodes{0};
     };
 }
 

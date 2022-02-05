@@ -15,15 +15,15 @@ class MainScene : public Scene {
 
         camera = getMainCamera();
         cameraTransform = camera->gameObject()->transform();
-        cameraTransform->setLocalPosition({0, 0, 5});
+        cameraTransform->setLocalPosition({0, 0.5, 1.5});
 
         parent = createGameObject("parent");
 
         AssimpLoader loader;
-        if (!loader.loadFromFile("xbot@Idle.fbx", this, parent)) {
+        if (!loader.loadFromFile("Woman.gltf", this, parent)) {
             return false;
         }
-        parent->transform()->setLocalScale(Vec3{0.01, 0.01, 0.01});
+        parent->transform()->setLocalScale(Vec3{0.2, 0.2, 0.2});
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
@@ -48,7 +48,7 @@ class MainScene : public Scene {
             Platform::getInstance().quit();
         }
 
-        animator->play("mixamo.com");
+//        animator->play("Walking");
 
         // character movement
         Vec3 rightMove = Vec3::right;

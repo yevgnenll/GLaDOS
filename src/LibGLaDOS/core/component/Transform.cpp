@@ -218,11 +218,11 @@ namespace GLaDOS {
     }
 
     Mat4<real> Transform::parentLocalMatrix() const {
-        if ((mGameObject == nullptr) || (mGameObject->mParent == nullptr)) {
+        if ((mGameObject == nullptr) || (parent() == nullptr)) {
             return Mat4<real>::identity();
         }
 
-        return mGameObject->mParent->mTransform->localMatrix() * mGameObject->mParent->mTransform->parentLocalMatrix();
+        return parent()->mTransform->localMatrix() * parent()->mTransform->parentLocalMatrix();
     }
 
     void Transform::fixedUpdate(real fixedDeltaTime) {
