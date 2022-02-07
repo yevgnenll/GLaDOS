@@ -28,6 +28,7 @@ namespace GLaDOS {
     struct SceneNode {
         int32_t id;
         std::string name;
+        Mat4<real> offset;
         bool isBone;
     };
     struct Vertex {
@@ -46,13 +47,14 @@ namespace GLaDOS {
         Vector<Texture*> getTexture() const;
 
       private:
-        void loadNodeMeshAndMaterial(aiNode* node, const aiScene* aiscene, Scene* scene, GameObject* parent, GameObject* rootBone);
+        Vector<Mesh*> loadNodeMeshAndMaterial(aiNode* node, const aiScene* aiscene, Scene* scene, GameObject* parent, GameObject* rootBone);
         Mesh* loadMesh(aiMesh* mesh);
         void loadBoneWeight(Vector<Vertex>& vertices, aiBone* bone);
         Texture* loadTexture(aiMaterial* material, aiTextureType textureType);
         void buildNodeTable(const aiNode* node, int32_t& boneCounter);
         GameObject* buildBoneHierarchy(const aiNode* node, Scene* scene, GameObject* parent);
         Vector<AnimationClip*> loadAnimation(const aiScene* scene, GameObject* rootNode);
+        void getBindPose(Vector<Mat4<real>>& bindPose);
 
         SceneNode* findNode(const std::string& name);
         int32_t addNode(const SceneNode& node);

@@ -15,15 +15,14 @@ class MainScene : public Scene {
 
         camera = getMainCamera();
         cameraTransform = camera->gameObject()->transform();
-        cameraTransform->setLocalPosition({0, 0.5, 1.5});
+        cameraTransform->setLocalPosition({0, 0, 5});
 
         parent = createGameObject("parent");
 
         AssimpLoader loader;
-        if (!loader.loadFromFile("Woman.gltf", this, parent)) {
+        if (!loader.loadFromFile("simple-skin.gltf", this, parent)) {
             return false;
         }
-        parent->transform()->setLocalScale(Vec3{0.2, 0.2, 0.2});
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
@@ -48,7 +47,7 @@ class MainScene : public Scene {
             Platform::getInstance().quit();
         }
 
-//        animator->play("Walking");
+        animator->play("animation[0]");
 
         // character movement
         Vec3 rightMove = Vec3::right;
@@ -75,8 +74,8 @@ class MainScene : public Scene {
         // camera rotation
         if (Input::isMousePress(MouseButton::MOUSE_RIGHT)) {
             Vec3 mouseDelta = Input::mouseDeltaPosition();
-            real rotationX = mouseDelta.y * sensitivity * deltaTime;
-            real rotationY = mouseDelta.x * sensitivity * deltaTime;
+            real rotationX = mouseDelta.y * sensitivity2 * deltaTime;
+            real rotationY = mouseDelta.x * sensitivity2 * deltaTime;
             cameraTransform->rotate(cameraTransform->right(), Deg{rotationX});
             cameraTransform->rotate(UVec3::up, Deg{-rotationY});
         }
@@ -90,7 +89,8 @@ class MainScene : public Scene {
     }
 
   private:
-    real sensitivity = 5;
+    real sensitivity = 1000;
+    real sensitivity2 = 5;
     GameObject* parent = nullptr;
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;

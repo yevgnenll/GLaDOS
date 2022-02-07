@@ -25,24 +25,27 @@ namespace GLaDOS {
         mRootBone = gameObject;
     }
 
-    void SkinnedMeshRenderer::buildMatrixPalette(GameObject* node, std::size_t& matrixIndex) {
+    void SkinnedMeshRenderer::buildMatrixPalette(GameObject* node, Mesh* mesh, std::size_t& matrixIndex) {
         // Pre Order Traversal in children nodes
         if (node == nullptr) {
             return;
         }
-        // inverse bine pose matrix * bone transformation
-        mMatrixPalette[matrixIndex++] = Mat4<real>::identity();
+        // bine pose * to root transform
+        // TODO: localToWorldMatrix 에 최상위 부모의 transform 여러번 곱해짐. 테스트할땐 단위 행렬이라 문제없지만, 수정해야함
+        mMatrixPalette[matrixIndex] = mesh->getBindPose(matrixIndex) * node->transform()->localToWorldMatrix();
+        matrixIndex++;
         Vector<GameObject*> children = node->getChildren();
         for (uint32_t i = 0; i < children.size(); i++) {
-            buildMatrixPalette(children[i], matrixIndex);
+            buildMatrixPalette(children[i], mesh, matrixIndex);
         }
     }
 
     void SkinnedMeshRenderer::update(real deltaTime) {
         if (mRenderable != nullptr) {
             ShaderProgram* shaderProgram = mRenderable->getMaterial()->getShaderProgram();
+            Mesh* mesh = mRenderable->getMesh();
             std::size_t matrixIndex = 0;
-            buildMatrixPalette(mRootBone, matrixIndex);
+            buildMatrixPalette(mRootBone, mesh, matrixIndex);
             shaderProgram->setUniform("boneTransform", mMatrixPalette.data(), mMatrixPalette.size());
             MeshRenderer::update(deltaTime);
         }

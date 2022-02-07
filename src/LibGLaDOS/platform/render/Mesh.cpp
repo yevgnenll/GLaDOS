@@ -4,6 +4,7 @@
 #include "Renderer.h"
 #include "VertexBuffer.h"
 #include "platform/Platform.h"
+#include "math/Mat4.hpp"
 
 namespace GLaDOS {
     Logger* Mesh::logger = LoggerRegistry::getInstance().makeAndGetLogger("Mesh");
@@ -145,6 +146,17 @@ namespace GLaDOS {
 
     GPUBufferUsage Mesh::getIndexUsage() const {
         return mIndexBufferUsage;
+    }
+
+    Mat4<real> Mesh::getBindPose(std::size_t index) {
+        if (index < 0 || index >= mBindPose.size()) {
+            return Mat4<real>::identity();
+        }
+        return mBindPose[index];
+    }
+
+    void Mesh::setBindPose(const Vector<Mat4<real>>& bindPose) {
+        mBindPose = bindPose;
     }
 
     bool Mesh::build(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer) {

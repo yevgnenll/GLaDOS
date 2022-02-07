@@ -39,6 +39,8 @@ namespace GLaDOS {
         }
 
         aiNode* rootNode = aiscene->mRootNode;
+        // TODO: rootToWorld apply in root bone node?
+        Mat4<real> rootToWorld = Mat4<real>::inverse(toMat4(rootNode->mTransformation));
 
         // first build all node in scene
         int32_t numBones = 0;
@@ -59,7 +61,12 @@ namespace GLaDOS {
         if (!parent->getChildren().empty()) {
             rootBoneNode = parent->getChildren().front();
         }
-        loadNodeMeshAndMaterial(rootNode, aiscene, scene, parent, rootBoneNode);
+        Vector<Mesh*> meshes = loadNodeMeshAndMaterial(rootNode, aiscene, scene, parent, rootBoneNode);
+        Vector<Mat4<real>> bindPoses;
+        getBindPose(bindPoses);
+        for (Mesh* mesh : meshes) {
+            mesh->setBindPose(bindPoses);
+        }
 
         // load animations
         if (rootBoneNode != nullptr) {
@@ -79,8 +86,9 @@ namespace GLaDOS {
         return mTextures;
     }
 
-    void AssimpLoader::loadNodeMeshAndMaterial(aiNode* node, const aiScene* aiscene, Scene* scene, GameObject* parent, GameObject* rootBone) {
+    Vector<Mesh*> AssimpLoader::loadNodeMeshAndMaterial(aiNode* node, const aiScene* aiscene, Scene* scene, GameObject* parent, GameObject* rootBone) {
         static const Array<aiTextureType, 4> textureTypes = { aiTextureType_DIFFUSE, aiTextureType_SPECULAR, aiTextureType_AMBIENT, aiTextureType_NORMALS };
+        Vector<Mesh*> meshes;
 
         // load mesh at the current node
         for (uint32_t i = 0; i < node->mNumMeshes; i++) {
@@ -88,6 +96,7 @@ namespace GLaDOS {
             Mesh* currentMesh = loadMesh(mesh);
             if (currentMesh != nullptr) {
                 makeGameObject(mesh->mName.C_Str(), currentMesh, scene, parent, rootBone);
+                meshes.emplace_back(currentMesh);
             }
 
             aiMaterial* material = aiscene->mMaterials[mesh->mMaterialIndex];
@@ -103,8 +112,11 @@ namespace GLaDOS {
 
         // recursively load all the child node
         for (uint32_t j = 0; j < node->mNumChildren; j++) {
-            loadNodeMeshAndMaterial(node->mChildren[j], aiscene, scene, parent, rootBone);
+            Vector<Mesh*> childMeshes = loadNodeMeshAndMaterial(node->mChildren[j], aiscene, scene, parent, rootBone);
+            std::copy(childMeshes.begin(), childMeshes.end(), std::back_inserter(meshes));
         }
+
+        return meshes;
     }
 
     Mesh* AssimpLoader::loadMesh(aiMesh* mesh) {
@@ -175,6 +187,9 @@ namespace GLaDOS {
         }
         aiVertexWeight* weights = bone->mWeights;
         uint32_t numWeights = bone->mNumWeights;
+        if (node->offset.isIdentity()) {
+            node->offset = toMat4(bone->mOffsetMatrix);
+        }
 
         for (uint32_t i = 0; i < numWeights; i++) {
             uint32_t vertexID = weights[i].mVertexId;
@@ -229,7 +244,9 @@ namespace GLaDOS {
 
         for (uint32_t i = 0; i < node->mNumChildren; i++) {
             GameObject* childRigGameObject = buildBoneHierarchy(node->mChildren[i], scene, boneNode);
-            boneNode->getChildren().emplace_back(childRigGameObject);
+            if (childRigGameObject != nullptr) {
+                boneNode->getChildren().emplace_back(childRigGameObject);
+            }
         }
 
         return boneNode;
@@ -239,7 +256,11 @@ namespace GLaDOS {
         Vector<AnimationClip*> clips;
         for (uint32_t i = 0; i < scene->mNumAnimations; i++) {
             aiAnimation* animation = scene->mAnimations[i];
-            AnimationClip* clip = NEW_T(AnimationClip(animation->mName.C_Str()));
+            std::string animationName = animation->mName.C_Str();
+            if (animationName.empty()) {
+                animationName = "animation[" + StringUtils::normalize(clips.size()) + "]";
+            }
+            AnimationClip* clip = NEW_T(AnimationClip(animationName));
             clip->setStartTime(0);
             clip->setEndTime(static_cast<real>(animation->mDuration));
 
@@ -288,6 +309,18 @@ namespace GLaDOS {
         }
 
         return clips;
+    }
+
+    void AssimpLoader::getBindPose(Vector<Mat4<real>>& bindPose) {
+        Vector<SceneNode> sceneNodes;
+        // TODO: remove copy
+        for (const auto& pair : mNodeTable) {
+            if (pair.second.isBone) {
+                sceneNodes.emplace_back(pair.second);
+            }
+        }
+        std::sort(sceneNodes.begin(), sceneNodes.end(), [](const SceneNode& node1, const SceneNode& node2) { return node1.id < node2.id; });
+        std::transform(sceneNodes.begin(), sceneNodes.end(), std::back_inserter(bindPose), [](const SceneNode& node) { return node.offset; });
     }
 
     SceneNode* AssimpLoader::findNode(const std::string& name) {

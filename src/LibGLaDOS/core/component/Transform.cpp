@@ -210,11 +210,11 @@ namespace GLaDOS {
     }
 
     Mat4<real> Transform::worldMatrix() const {
-        return Mat4<real>::scale(mLossyScale) * Mat4<real>::rotate(mRotation) * Mat4<real>::translate(mPosition);
+        return Mat4<real>::buildSRT(mPosition, mRotation, mLossyScale);
     }
 
     Mat4<real> Transform::localMatrix() const {
-        return Mat4<real>::scale(mLocalScale) * Mat4<real>::rotate(mLocalRotation) * Mat4<real>::translate(mLocalPosition);
+        return Mat4<real>::buildSRT(mLocalPosition, mLocalRotation, mLocalScale);
     }
 
     Mat4<real> Transform::parentLocalMatrix() const {

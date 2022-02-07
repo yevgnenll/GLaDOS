@@ -5,6 +5,8 @@
 #include "utils/Enumeration.h"
 
 namespace GLaDOS {
+    template <typename T>
+    class Mat4;
     class Logger;
     class VertexFormat;
     class VertexBuffer;
@@ -38,6 +40,8 @@ namespace GLaDOS {
         IndexBuffer* getCPUIndexBuffer();
         GPUBufferUsage getVertexUsage() const;
         GPUBufferUsage getIndexUsage() const;
+        Mat4<real> getBindPose(std::size_t index);
+        void setBindPose(const Vector<Mat4<real>>& bindPose);
 
         bool build(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer);
         void recalculateNormals();
@@ -56,6 +60,7 @@ namespace GLaDOS {
         std::size_t mIndexStartLocation{0};
         GPUBufferUsage mVertexBufferUsage{GPUBufferUsage::Private};
         GPUBufferUsage mIndexBufferUsage{GPUBufferUsage::Private};
+        Vector<Mat4<real>> mBindPose; // the inverse of the transformation matrix of the bone relative to parent.
     };
 }  // namespace GLaDOS
 
