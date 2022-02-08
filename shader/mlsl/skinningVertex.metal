@@ -31,24 +31,16 @@ typedef struct {
 } VertexUniforms;
 
 vertex VertexOut main0(VertexIn verts [[stage_in]], constant VertexUniforms &uniforms [[buffer(0)]]) {
+    float4x4 skin = uniforms.boneTransform[verts._boneIndex.x] * verts._boneWeight.x;
+    skin += uniforms.boneTransform[verts._boneIndex.y] * verts._boneWeight.y;
+    skin += uniforms.boneTransform[verts._boneIndex.z] * verts._boneWeight.z;
+    skin += uniforms.boneTransform[verts._boneIndex.w] * verts._boneWeight.w;
+
+    float4 skinnedPosition = skin * float4(verts._position, 1.0f);
     VertexOut out;
-    float4 skinnedPosition = 0.f;
-    float3 skinnedNormal = 0.f;
-    float3 skinnedTangent = 0.f;
-
-    for (int i = 0; i < MAX_BONE_INFLUENCE; i++) {
-        int boneIndex = verts._boneIndex[i];
-        if (boneIndex <= -1 || boneIndex > MAX_BONES) {
-            continue;
-        }
-        skinnedPosition += uniforms.boneTransform[boneIndex] * float4(verts._position, 1.0f) * verts._boneWeight[i];
-        skinnedNormal += float3(uniforms.boneTransform[boneIndex] * float4(verts._normal, 0.f)) * verts._boneWeight[i];
-        skinnedTangent += float3(uniforms.boneTransform[boneIndex] * float4(verts._tangent, 0.f)) * verts._boneWeight[i];
-    }
-
     out._position = uniforms.modelViewProj * skinnedPosition;
-    out._normal = float3(uniforms.transInvModelView * float4(skinnedNormal, 0.f));
-    out._tangent = float3(uniforms.transInvModelView * float4(skinnedTangent, 0.f));
+    out._normal = float3(uniforms.transInvModelView * skin * float4(verts._normal, 0.f));
+    out._tangent = float3(uniforms.transInvModelView * skin * float4(verts._tangent, 0.f));
     out._texCoord0 = verts._texCoord0;
     out._fragPos = float3(uniforms.model * skinnedPosition);
 

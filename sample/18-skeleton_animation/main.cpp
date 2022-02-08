@@ -20,7 +20,7 @@ class MainScene : public Scene {
         parent = createGameObject("parent");
 
         AssimpLoader loader;
-        if (!loader.loadFromFile("simple-skin.gltf", this, parent)) {
+        if (!loader.loadFromFile("xbot@Idle.fbx", this, parent)) {
             return false;
         }
 
@@ -47,7 +47,7 @@ class MainScene : public Scene {
             Platform::getInstance().quit();
         }
 
-        animator->play("animation[0]");
+        animator->play("mixamo.com");
 
         // character movement
         Vec3 rightMove = Vec3::right;

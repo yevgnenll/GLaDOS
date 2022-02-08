@@ -13,8 +13,9 @@ namespace GLaDOS {
     }
 
     void TransformCurve::sample(real time, bool loop) const {
-        mTargetBone->transform()->mLocalPosition = mTranslation.evaluate(time, loop);
-        mTargetBone->transform()->mLocalRotation = mRotation.evaluate(time, loop);
-        mTargetBone->transform()->mLocalScale = mScale.evaluate(time, loop);
+        Transform* boneTransform = mTargetBone->transform();
+        boneTransform->mLocalPosition = mTranslation.evaluate(time, loop);
+        boneTransform->mLocalRotation = mRotation.evaluate(time, loop);
+        boneTransform->mLocalScale = mScale.evaluate(time, loop);
     }
 }
