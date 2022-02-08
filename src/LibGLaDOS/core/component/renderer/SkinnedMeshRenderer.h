@@ -25,7 +25,7 @@ namespace GLaDOS {
         static Logger* logger;
         static constexpr std::size_t MAX_BONE_MATRIX = 96;
 
-        void buildMatrixPalette(GameObject* node, Mesh* mesh, std::size_t& matrixIndex);
+        void buildMatrixPalette(GameObject* node, Mesh* mesh, const Mat4<real>& parentMatrix, std::size_t& matrixIndex);
 
         GameObject* mRootBone;
         Vector<Mat4<real>> mMatrixPalette{MAX_BONE_MATRIX};

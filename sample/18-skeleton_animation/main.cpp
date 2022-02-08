@@ -15,7 +15,7 @@ class MainScene : public Scene {
 
         camera = getMainCamera();
         cameraTransform = camera->gameObject()->transform();
-        cameraTransform->setLocalPosition({0, 0, 5});
+        cameraTransform->setLocalPosition({0, 1, 3});
 
         parent = createGameObject("parent");
 
@@ -23,6 +23,7 @@ class MainScene : public Scene {
         if (!loader.loadFromFile("xbot@Idle.fbx", this, parent)) {
             return false;
         }
+        parent->transform()->setLocalScale(Vec3{0.1, 0.1, 0.1});
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
@@ -74,8 +75,8 @@ class MainScene : public Scene {
         // camera rotation
         if (Input::isMousePress(MouseButton::MOUSE_RIGHT)) {
             Vec3 mouseDelta = Input::mouseDeltaPosition();
-            real rotationX = mouseDelta.y * sensitivity2 * deltaTime;
-            real rotationY = mouseDelta.x * sensitivity2 * deltaTime;
+            real rotationX = mouseDelta.y * sensitivity * deltaTime;
+            real rotationY = mouseDelta.x * sensitivity * deltaTime;
             cameraTransform->rotate(cameraTransform->right(), Deg{rotationX});
             cameraTransform->rotate(UVec3::up, Deg{-rotationY});
         }
@@ -89,8 +90,7 @@ class MainScene : public Scene {
     }
 
   private:
-    real sensitivity = 1000;
-    real sensitivity2 = 5;
+    real sensitivity = 5;
     GameObject* parent = nullptr;
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;

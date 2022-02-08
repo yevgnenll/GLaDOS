@@ -58,6 +58,10 @@ namespace GLaDOS {
         Vec3 inverseTransformPoint(const Vec3& position) const;
         Vec3 inverseTransformVector(const Vec3& vector) const;
 
+        Mat4<real> worldMatrix() const;
+        Mat4<real> localMatrix() const;
+        Mat4<real> parentLocalMatrix() const;
+
       protected:
         void fixedUpdate(real fixedDeltaTime) override;
         void update(real deltaTime) override;
@@ -65,10 +69,6 @@ namespace GLaDOS {
         Component* clone() override;
 
       private:
-        Mat4<real> worldMatrix() const;
-        Mat4<real> localMatrix() const;
-        Mat4<real> parentLocalMatrix() const;
-
         Vec3 mPosition{Vec3::zero};
         Quat mRotation;
         Vec3 mLossyScale{Vec3::one};

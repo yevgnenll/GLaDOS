@@ -39,8 +39,8 @@ namespace GLaDOS {
         }
 
         aiNode* rootNode = aiscene->mRootNode;
-        // TODO: rootToWorld apply in root bone node?
         Mat4<real> rootToWorld = Mat4<real>::inverse(toMat4(rootNode->mTransformation));
+        parent->transform()->fromMat4(rootToWorld);
 
         // first build all node in scene
         int32_t numBones = 0;

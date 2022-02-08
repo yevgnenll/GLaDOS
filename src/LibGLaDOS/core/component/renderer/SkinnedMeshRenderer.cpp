@@ -25,18 +25,18 @@ namespace GLaDOS {
         mRootBone = gameObject;
     }
 
-    void SkinnedMeshRenderer::buildMatrixPalette(GameObject* node, Mesh* mesh, std::size_t& matrixIndex) {
+    void SkinnedMeshRenderer::buildMatrixPalette(GameObject* node, Mesh* mesh, const Mat4<real>& parentMatrix, std::size_t& matrixIndex) {
         // Pre Order Traversal in children nodes
         if (node == nullptr) {
             return;
         }
+        // caching to-parent matrix
+        Mat4<real> transformMatrix = node->transform()->localMatrix() * parentMatrix;
         // bine pose * to root transform
-        // TODO: localToWorldMatrix 에 최상위 부모의 transform 여러번 곱해짐. 테스트할땐 단위 행렬이라 문제없지만, 수정해야함
-        mMatrixPalette[matrixIndex] = mesh->getBindPose(matrixIndex) * node->transform()->localToWorldMatrix();
-        matrixIndex++;
+        mMatrixPalette[matrixIndex++] = mesh->getBindPose(matrixIndex) * transformMatrix;
         Vector<GameObject*> children = node->getChildren();
         for (uint32_t i = 0; i < children.size(); i++) {
-            buildMatrixPalette(children[i], mesh, matrixIndex);
+            buildMatrixPalette(children[i], mesh, transformMatrix, matrixIndex);
         }
     }
 
@@ -45,7 +45,7 @@ namespace GLaDOS {
             ShaderProgram* shaderProgram = mRenderable->getMaterial()->getShaderProgram();
             Mesh* mesh = mRenderable->getMesh();
             std::size_t matrixIndex = 0;
-            buildMatrixPalette(mRootBone, mesh, matrixIndex);
+            buildMatrixPalette(mRootBone, mesh, mRootBone->transform()->parentLocalMatrix(), matrixIndex);
             shaderProgram->setUniform("boneTransform", mMatrixPalette.data(), mMatrixPalette.size());
             MeshRenderer::update(deltaTime);
         }

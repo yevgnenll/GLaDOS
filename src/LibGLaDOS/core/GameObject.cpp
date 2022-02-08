@@ -109,6 +109,13 @@ namespace GLaDOS {
         return mChildren;
     }
 
+    Transform* GameObject::parent() const {
+        if (mParent == nullptr) {
+            return nullptr;
+        }
+        return mParent->mTransform;
+    }
+
     GameObject* GameObject::clone() {
         GameObject* clone = NEW_T(GameObject(mParent, mScene));
         clone->mName = mName + " (duplicated)";
