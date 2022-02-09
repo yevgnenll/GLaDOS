@@ -210,8 +210,8 @@ namespace GLaDOS {
         }
         real sampleTime = (currentTime - mKeyFrames[currentKeyFrameIndex].time) / keyFrameDelta;
 
-        T start = cast(&mKeyFrames[currentKeyFrameIndex].value[0]);
-        T end = cast(&mKeyFrames[nextKeyFrameIndex].value[0]);
+        T start = cast(mKeyFrames[currentKeyFrameIndex].value);
+        T end = cast(mKeyFrames[nextKeyFrameIndex].value);
 
         return Math::lerpUnclamped(start, end, sampleTime);
     }
