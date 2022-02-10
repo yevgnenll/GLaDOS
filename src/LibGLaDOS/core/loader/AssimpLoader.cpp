@@ -39,6 +39,11 @@ namespace GLaDOS {
             return false;
         }
 
+        if (!aiscene->HasMeshes()) {
+            LOG_ERROR(logger, "Scene is without meshes.");
+            return false;
+        }
+
         aiNode* rootNode = aiscene->mRootNode;
         Mat4<real> rootToWorld = Mat4<real>::inverse(toMat4(rootNode->mTransformation));
         parent->transform()->decomposeSRT(rootToWorld);
@@ -74,13 +79,11 @@ namespace GLaDOS {
         }
 
         // load animations
-        if (rootBoneNode != nullptr) {
-            Vector<AnimationClip*> animationClips = loadAnimation(aiscene, rootBoneNode);
-            if (!animationClips.empty()) {
-                Animator* animator = parent->addComponent<Animator>();
-                for (AnimationClip* clip : animationClips) {
-                    animator->addClip(clip, clip->getName());
-                }
+        Vector<AnimationClip*> animationClips = loadAnimation(aiscene, rootBoneNode);
+        if (!animationClips.empty()) {
+            Animator* animator = parent->addComponent<Animator>();
+            for (AnimationClip* clip : animationClips) {
+                animator->addClip(clip, clip->getName());
             }
         }
 
@@ -131,6 +134,10 @@ namespace GLaDOS {
         Vector<Vertex> vertices(mesh->mNumVertices);
         for (uint32_t i = 0; i < mesh->mNumVertices; i++) {
             Vertex vertex;
+            if (!mesh->HasPositions()) {
+                LOG_ERROR(logger, "Has no vertex positions.");
+                return nullptr;
+            }
             vertex.position = toVec3(mesh->mVertices[i]);
 
             if (mesh->HasNormals()) {
@@ -153,14 +160,10 @@ namespace GLaDOS {
             vertices[i] = std::move(vertex);
         }
 
-        for (uint32_t i = 0; i < mesh->mNumBones; i++) {
-            loadBoneWeight(vertices, mesh->mBones[i]);
-        }
-
         // process mesh's face
         Vector<uint32_t> indices(mesh->mNumFaces * 3);
         for (uint32_t i = 0; i < mesh->mNumFaces; i++) {
-            aiFace face = mesh->mFaces[i];
+            aiFace& face = mesh->mFaces[i];
             if (face.mNumIndices != 3) {
                 LOG_ERROR(logger, "vertex face is not triangluated! mesh triangle may be not rendered correctly.");
             }
@@ -169,12 +172,9 @@ namespace GLaDOS {
             }
         }
 
-        // normalize vertex bone weights to make all weights sum 1
-        for (uint32_t i = 0; i < vertices.size(); i++) {
-            real totalWeight = vertices[i].boneWeight.x + vertices[i].boneWeight.y + vertices[i].boneWeight.z + vertices[i].boneWeight.w;
-            if (totalWeight > real(0)) {
-                vertices[i].boneWeight /= totalWeight;
-            }
+        // process mesh's bone weight & bone index
+        for (uint32_t i = 0; i < mesh->mNumBones; i++) {
+            loadBoneWeight(vertices, mesh->mBones[i]);
         }
 
         VertexBuffer* vertexBuffer = NEW_T(VertexBuffer(vertexDesc, vertices.size()));
@@ -190,15 +190,14 @@ namespace GLaDOS {
             LOG_ERROR(logger, "Can't find `{0}` node in node table", bone->mName.C_Str());
             return;
         }
-        aiVertexWeight* weights = bone->mWeights;
-        uint32_t numWeights = bone->mNumWeights;
+
         if (node->offset.isIdentity()) {
             node->offset = toMat4(bone->mOffsetMatrix);
         }
 
-        for (uint32_t i = 0; i < numWeights; i++) {
-            uint32_t vertexID = weights[i].mVertexId;
-            real weight = weights[i].mWeight;
+        for (uint32_t i = 0; i < bone->mNumWeights; i++) {
+            uint32_t vertexID = bone->mWeights[i].mVertexId;
+            real weight = bone->mWeights[i].mWeight;
             if (vertexID > vertices.size()) {
                 LOG_ERROR(logger, "Failed to parse bone weight! vertexID(`{0}`) should not be greater than vertices size (`{1}`)", vertexID, vertices.size());
                 return;
@@ -209,6 +208,7 @@ namespace GLaDOS {
                 if (vertex.boneIndex[j] < 0) {
                     vertex.boneWeight[j] = weight;
                     vertex.boneIndex[j] = node->id;
+                    break;
                 }
             }
         }
@@ -274,7 +274,7 @@ namespace GLaDOS {
                 SceneNode* sceneNode = findNode(channel->mNodeName.C_Str());
                 if (sceneNode == nullptr || !sceneNode->isBone) {
                     LOG_ERROR(logger, "Can't find bone in animation: `{0}`", channel->mNodeName.C_Str());
-                    return clips;
+                    continue;
                 }
 
                 TransformCurve transformCurve;
