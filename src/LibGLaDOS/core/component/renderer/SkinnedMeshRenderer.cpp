@@ -34,6 +34,7 @@ namespace GLaDOS {
         Mat4<real> transformMatrix = node->transform()->localMatrix() * parentMatrix;
         // bine pose * to root transform
         mMatrixPalette[matrixIndex++] = mesh->getBindPose(matrixIndex) * transformMatrix;
+
         Vector<GameObject*> children = node->getChildren();
         for (uint32_t i = 0; i < children.size(); i++) {
             buildMatrixPalette(children[i], mesh, transformMatrix, matrixIndex);
@@ -47,8 +48,9 @@ namespace GLaDOS {
             std::size_t matrixIndex = 0;
             buildMatrixPalette(mRootBone, mesh, mRootBone->transform()->parentLocalMatrix(), matrixIndex);
             shaderProgram->setUniform("boneTransform", mMatrixPalette.data(), mMatrixPalette.size());
-            MeshRenderer::update(deltaTime);
         }
+
+        MeshRenderer::update(deltaTime);
     }
 
     void SkinnedMeshRenderer::render() {

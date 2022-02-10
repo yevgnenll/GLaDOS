@@ -153,7 +153,7 @@ namespace GLaDOS {
         parent->mChildren.emplace_back(mGameObject);
     }
 
-    void Transform::fromMat4(const Mat4<real>& transform) {
+    void Transform::decomposeSRT(const Mat4<real>& transform) {
         Vec3 translation{transform._m44[3][0], transform._m44[3][1], transform._m44[3][2]};
         Quat rotation = Quat::fromRotation(transform);
 

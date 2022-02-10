@@ -40,7 +40,7 @@ namespace GLaDOS {
 
         aiNode* rootNode = aiscene->mRootNode;
         Mat4<real> rootToWorld = Mat4<real>::inverse(toMat4(rootNode->mTransformation));
-        parent->transform()->fromMat4(rootToWorld);
+        parent->transform()->decomposeSRT(rootToWorld);
 
         // first build all node in scene
         int32_t numBones = 0;
@@ -62,10 +62,14 @@ namespace GLaDOS {
             rootBoneNode = parent->getChildren().front();
         }
         Vector<Mesh*> meshes = loadNodeMeshAndMaterial(rootNode, aiscene, scene, parent, rootBoneNode);
-        Vector<Mat4<real>> bindPoses;
-        getBindPose(bindPoses);
-        for (Mesh* mesh : meshes) {
-            mesh->setBindPose(bindPoses);
+
+        // setting bind pose
+        if (rootBoneNode != nullptr) {
+            Vector<Mat4<real>> bindPoses;
+            getBindPose(bindPoses);
+            for (Mesh* mesh : meshes) {
+                mesh->setBindPose(bindPoses);
+            }
         }
 
         // load animations
@@ -240,7 +244,7 @@ namespace GLaDOS {
             return nullptr;
         }
         GameObject* boneNode = scene->createGameObject(sceneNode->name, parent);
-        boneNode->transform()->fromMat4(toMat4(node->mTransformation));
+        boneNode->transform()->decomposeSRT(toMat4(node->mTransformation));
 
         for (uint32_t i = 0; i < node->mNumChildren; i++) {
             GameObject* childRigGameObject = buildBoneHierarchy(node->mChildren[i], scene, boneNode);

@@ -36,12 +36,14 @@ namespace GLaDOS {
             ShaderProgram* shaderProgram = mRenderable->getMaterial()->getShaderProgram();
             Camera* mainCamera = mGameObject->scene()->getMainCamera();
             FillMode fillMode = mRenderable->getMaterial()->getShaderProgram()->rasterizerState()->mRasterizerDescription.mFillMode;
-            shaderProgram->setUniform("isWireFrameMode", fillMode == FillMode::Lines);
-            shaderProgram->setUniform("model", mGameObject->transform()->localToWorldMatrix());
-            Mat4<real> modelView = mGameObject->transform()->localToWorldMatrix() * mainCamera->worldToCameraMatrix();
+            Mat4<real> model = mGameObject->transform()->localToWorldMatrix();
+            Mat4<real> modelView = model * mainCamera->worldToCameraMatrix();
+
+            shaderProgram->setUniform("model", model);
             shaderProgram->setUniform("modelViewProj", modelView * mainCamera->projectionMatrix());
             shaderProgram->setUniform("transInvModelView", Mat4<real>::transpose(Mat4<real>::inverse(modelView)));
             shaderProgram->setUniform("viewPos", mainCamera->gameObject()->transform()->position());
+            shaderProgram->setUniform("isWireFrameMode", fillMode == FillMode::Lines);
         }
     }
 

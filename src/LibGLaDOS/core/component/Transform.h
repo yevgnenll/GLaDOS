@@ -46,7 +46,7 @@ namespace GLaDOS {
         void setLocalEulerAngles(const Vec3& euler);
         void setLocalRotation(const Quat& quat);
         void setParent(GameObject* parent);
-        void fromMat4(const Mat4<real>& transform);
+        void decomposeSRT(const Mat4<real>& transform);
 
         // local space to world space
         Vec3 transformDirection(const Vec3& direction) const; // rotation only
