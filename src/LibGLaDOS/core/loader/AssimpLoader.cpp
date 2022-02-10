@@ -174,7 +174,31 @@ namespace GLaDOS {
 
         // process mesh's bone weight & bone index
         for (uint32_t i = 0; i < mesh->mNumBones; i++) {
-            loadBoneWeight(vertices, mesh->mBones[i]);
+            aiBone* bone = mesh->mBones[i];
+            SceneNode* node = findNode(bone->mName.C_Str());
+            if (node == nullptr || !node->isBone) {
+                LOG_ERROR(logger, "Can't find `{0}` bone in scene nodes", bone->mName.C_Str());
+                continue;
+            }
+            node->offset = toMat4(bone->mOffsetMatrix);
+
+            for (uint32_t j = 0; j < bone->mNumWeights; j++) {
+                uint32_t vertexID = bone->mWeights[j].mVertexId;
+                real weight = bone->mWeights[j].mWeight;
+                if (vertexID >= vertices.size()) {
+                    LOG_ERROR(logger, "Failed to parse bone weight! vertexID(`{0}`) should not be greater than vertices size (`{1}`)", vertexID, vertices.size());
+                    continue;
+                }
+                Vertex& vertex = vertices[vertexID];
+
+                for (uint32_t k = 0; k < MAX_BONE_INFLUENCE; k++) {
+                    if (vertex.boneIndex[k] < 0) {
+                        vertex.boneWeight[k] = weight;
+                        vertex.boneIndex[k] = node->id;
+                        break;
+                    }
+                }
+            }
         }
 
         VertexBuffer* vertexBuffer = NEW_T(VertexBuffer(vertexDesc, vertices.size()));
@@ -182,36 +206,6 @@ namespace GLaDOS {
         IndexBuffer* indexBuffer = NEW_T(IndexBuffer(sizeof(uint32_t), indices.size()));
         indexBuffer->copyBufferData(indices.data());
         return Platform::getRenderer().createMesh(vertexBuffer, indexBuffer);
-    }
-
-    void AssimpLoader::loadBoneWeight(Vector<Vertex>& vertices, aiBone* bone) {
-        SceneNode* node = findNode(bone->mName.C_Str());
-        if (node == nullptr || !node->isBone) {
-            LOG_ERROR(logger, "Can't find `{0}` node in node table", bone->mName.C_Str());
-            return;
-        }
-
-        if (node->offset.isIdentity()) {
-            node->offset = toMat4(bone->mOffsetMatrix);
-        }
-
-        for (uint32_t i = 0; i < bone->mNumWeights; i++) {
-            uint32_t vertexID = bone->mWeights[i].mVertexId;
-            real weight = bone->mWeights[i].mWeight;
-            if (vertexID > vertices.size()) {
-                LOG_ERROR(logger, "Failed to parse bone weight! vertexID(`{0}`) should not be greater than vertices size (`{1}`)", vertexID, vertices.size());
-                return;
-            }
-            Vertex& vertex = vertices[vertexID];
-
-            for (uint32_t j = 0; j < MAX_BONE_INFLUENCE; j++) {
-                if (vertex.boneIndex[j] < 0) {
-                    vertex.boneWeight[j] = weight;
-                    vertex.boneIndex[j] = node->id;
-                    break;
-                }
-            }
-        }
     }
 
     Texture* AssimpLoader::loadTexture(aiMaterial* material, aiTextureType textureType) {
@@ -228,9 +222,10 @@ namespace GLaDOS {
     void AssimpLoader::buildNodeTable(const aiNode* node, int32_t& boneCounter) {
         std::string nodeName = node->mName.C_Str();
         SceneNode newNode;
-        newNode.id = (node->mNumMeshes != 0) ? -1 : boneCounter++;
-        newNode.name = nodeName;
         newNode.isBone = (node->mNumMeshes == 0);
+        newNode.id = (newNode.isBone) ? boneCounter++ : -1;
+        newNode.name = nodeName;
+
         addNode(newNode);
 
         // recursively load all the child node

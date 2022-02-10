@@ -23,7 +23,7 @@ class MainScene : public Scene {
         if (!loader.loadFromFile("Woman.gltf", this, parent)) {
             return false;
         }
-        parent->transform()->setLocalScale(Vec3{0.1, 0.1, 0.1});
+        parent->transform()->setLocalScale(Vec3{0.03, 0.03, 0.03});
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
@@ -48,7 +48,7 @@ class MainScene : public Scene {
             Platform::getInstance().quit();
         }
 
-//        animator->play("mixamo.com");
+//        animator->play("Walking");
 
         // character movement
         Vec3 rightMove = Vec3::right;
@@ -75,8 +75,8 @@ class MainScene : public Scene {
         // camera rotation
         if (Input::isMousePress(MouseButton::MOUSE_RIGHT)) {
             Vec3 mouseDelta = Input::mouseDeltaPosition();
-            real rotationX = mouseDelta.y * sensitivity * deltaTime;
-            real rotationY = mouseDelta.x * sensitivity * deltaTime;
+            real rotationX = mouseDelta.y * dragSensitivity * deltaTime;
+            real rotationY = mouseDelta.x * dragSensitivity * deltaTime;
             cameraTransform->rotate(cameraTransform->right(), Deg{rotationX});
             cameraTransform->rotate(UVec3::up, Deg{-rotationY});
         }
@@ -90,7 +90,8 @@ class MainScene : public Scene {
     }
 
   private:
-    real sensitivity = 5;
+    real sensitivity = 1;
+    real dragSensitivity = 5;
     GameObject* parent = nullptr;
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;

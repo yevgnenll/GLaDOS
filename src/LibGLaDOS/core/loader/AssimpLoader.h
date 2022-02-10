@@ -49,7 +49,6 @@ namespace GLaDOS {
       private:
         Vector<Mesh*> loadNodeMeshAndMaterial(aiNode* node, const aiScene* aiscene, Scene* scene, GameObject* parent, GameObject* rootBone);
         Mesh* loadMesh(aiMesh* mesh);
-        void loadBoneWeight(Vector<Vertex>& vertices, aiBone* bone);
         Texture* loadTexture(aiMaterial* material, aiTextureType textureType);
         void buildNodeTable(const aiNode* node, int32_t& boneCounter);
         GameObject* buildBoneHierarchy(const aiNode* node, Scene* scene, GameObject* parent);
