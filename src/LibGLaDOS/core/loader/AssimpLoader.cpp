@@ -32,6 +32,7 @@ namespace GLaDOS {
         std::string filePath = std::string(RESOURCE_DIR) + fileName;
 
         Assimp::Importer importer;
+        importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, false);
         const aiScene* aiscene = importer.ReadFile(filePath, aiProcessPreset_TargetRealtime_Quality);
         if (aiscene == nullptr || ((aiscene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) != 0u) || aiscene->mRootNode == nullptr) {
             LOG_ERROR(logger, "Load from file error: {0}", importer.GetErrorString());
@@ -355,19 +356,25 @@ namespace GLaDOS {
     }
 
     void AssimpLoader::makeGameObject(const std::string& name, Mesh* mesh, Scene* scene, GameObject* parent, GameObject* rootBone) {
-        GameObject* node = scene->createGameObject(name, parent);
-        ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgramFromFile("skinningVertex", "skinningFragment");
-        if (shaderProgram == nullptr) {
-            return;
-        }
-        Material* material = NEW_T(Material);
-        material->setShaderProgram(shaderProgram);
-
         if (rootBone != nullptr) {
+            ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgramFromFile("skinningVertex", "skinningFragment");
+            if (shaderProgram == nullptr) {
+                return;
+            }
+            Material* material = NEW_T(Material);
+            material->setShaderProgram(shaderProgram);
+            GameObject* node = scene->createGameObject(name, parent);
             node->addComponent<SkinnedMeshRenderer>(mesh, material, rootBone);
-            return;
+        } else {
+            ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgramFromFile("normalVertex", "normalFragment");
+            if (shaderProgram == nullptr) {
+                return;
+            }
+            Material* material = NEW_T(Material);
+            material->setShaderProgram(shaderProgram);
+            GameObject* node = scene->createGameObject(name, parent);
+            node->addComponent<MeshRenderer>(mesh, material);
         }
-        node->addComponent<MeshRenderer>(mesh, material);
     }
 
     Mat4<real> AssimpLoader::toMat4(const aiMatrix4x4& mat) {

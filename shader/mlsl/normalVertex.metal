@@ -5,6 +5,11 @@ using namespace metal;
 typedef struct {
   float3 _position [[attribute(0)]];
   float3 _normal [[attribute(1)]];
+  float3 _tangent [[attribute(2)]];
+  float3 _biTangent [[attribute(3)]];
+  float4 _boneWeight [[attribute(4)]];
+  int4 _boneIndex [[attribute(5)]];
+  float2 _texCoord0 [[attribute(6)]];
 } VertexIn;
 
 typedef struct {
@@ -15,16 +20,15 @@ typedef struct {
 
 typedef struct {
   float4x4 model;
-  float4x4 view;
-  float4x4 projection;
-  float4x4 invModelView;
+  float4x4 modelViewProj;
+  float4x4 transInvModelView;
 } VertexUniforms;
 
 vertex VertexOut main0(VertexIn verts [[stage_in]], constant VertexUniforms &uniforms [[buffer(0)]]) {
     VertexOut out;
     float4 position = float4(verts._position, 1);
-    out._position = uniforms.projection * uniforms.view * uniforms.model * position;
-    out._normal = float3(transpose(uniforms.invModelView) * float4(verts._normal, 0));
+    out._position = uniforms.modelViewProj * position;
+    out._normal = float3(uniforms.transInvModelView * float4(verts._normal, 0));
     out._fragPos = float3(uniforms.model * position);
     return out;
 }

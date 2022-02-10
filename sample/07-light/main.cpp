@@ -39,12 +39,6 @@ class MainScene : public Scene {
 
         knotTransform->rotate(Vec3{0, deltaTime * 50, 0});
 
-        shaderProgram->setUniform("invModelView", Mat4<real>::inverse(knotTransform->localToWorldMatrix() * camera->worldToCameraMatrix()));
-        shaderProgram->setUniform("viewPos", cameraTransform->localPosition());
-        shaderProgram->setUniform("model", knotTransform->localToWorldMatrix());
-        shaderProgram->setUniform("view", camera->worldToCameraMatrix());
-        shaderProgram->setUniform("projection", camera->projectionMatrix());
-
         // camera translation
         Vec3 right = cameraTransform->right();
         right *= Input::getAxisRaw("Horizontal") * sensitivity * deltaTime;

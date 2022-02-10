@@ -15,12 +15,12 @@ class MainScene : public Scene {
 
         camera = getMainCamera();
         cameraTransform = camera->gameObject()->transform();
-        cameraTransform->setLocalPosition({0, 1, 3});
+        cameraTransform->setLocalPosition({0, 0, 1});
 
         parent = createGameObject("parent");
 
         AssimpLoader loader;
-        if (!loader.loadFromFile("xbot@Idle.fbx", this, parent)) {
+        if (!loader.loadFromFile("Woman.gltf", this, parent)) {
             return false;
         }
         parent->transform()->setLocalScale(Vec3{0.1, 0.1, 0.1});
@@ -48,7 +48,7 @@ class MainScene : public Scene {
             Platform::getInstance().quit();
         }
 
-        animator->play("mixamo.com");
+//        animator->play("mixamo.com");
 
         // character movement
         Vec3 rightMove = Vec3::right;
