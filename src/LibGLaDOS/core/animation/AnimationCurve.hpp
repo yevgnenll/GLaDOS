@@ -9,6 +9,26 @@
 #include "math/Math.h"
 
 namespace GLaDOS {
+    inline float adjustHermiteResult(real f) {
+        return f;
+    }
+
+    inline Vec3 adjustHermiteResult(const Vec3& v) {
+        return v;
+    }
+
+    inline Quat adjustHermiteResult(const Quat& q) {
+        return Quat::normalize(q);
+    }
+
+    inline void neighborhood(const float& a, float& b) { }
+    inline void neighborhood(const Vec3& a, Vec3& b) { }
+    inline void neighborhood(const Quat& a, Quat& b) {
+        if (Quat::dot(a, b) < 0) {
+            b = -b;
+        }
+    }
+
     template <typename T, std::size_t N>
     class AnimationCurve {
       public:
@@ -17,13 +37,11 @@ namespace GLaDOS {
         ~AnimationCurve() = default;
 
         std::size_t length() const;
-        Interpolation getInterpolation() const;
-        void setInterpolation(Interpolation interpolation);
         real getStartTime() const;
         real getEndTime() const;
         real getDuration() const;
 
-        T evaluate(real time, bool loop) const;
+        T evaluate(real time, bool loop, Interpolation interpolation) const;
         KeyFrame<N> operator[](std::size_t index) const;
 
          void addKeyFrame(const KeyFrame<N>& keyFrame); // add a new keyframe at the end
@@ -38,10 +56,10 @@ namespace GLaDOS {
         T linear(real time, bool loop) const;
         T cubic(real time, bool loop) const;
 
+        T hermite(real t, const T& p1, const T& s1, const T& _p2, const T& s2) const;
         inline T cast(const real* value) const;
 
         Vector<KeyFrame<N>> mKeyFrames;
-        Interpolation mInterpolation{Interpolation::Linear};
     };
 
     template <typename T, std::size_t N>
@@ -54,16 +72,6 @@ namespace GLaDOS {
     template <typename T, std::size_t N>
     std::size_t AnimationCurve<T, N>::length() const {
         return mKeyFrames.size();
-    }
-
-    template <typename T, std::size_t N>
-    Interpolation AnimationCurve<T, N>::getInterpolation() const {
-        return mInterpolation;
-    }
-
-    template <typename T, std::size_t N>
-    void AnimationCurve<T, N>::setInterpolation(Interpolation interpolation) {
-        mInterpolation = interpolation;
     }
 
     template <typename T, std::size_t N>
@@ -88,12 +96,12 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t N>
-    T AnimationCurve<T, N>::evaluate(real time, bool loop) const {
-        if (mInterpolation == Interpolation::Constant) {
+    T AnimationCurve<T, N>::evaluate(real time, bool loop, Interpolation interpolation) const {
+        if (interpolation == Interpolation::Constant) {
             return constant(time, loop);
         }
 
-        if (mInterpolation == Interpolation::Linear) {
+        if (interpolation == Interpolation::Linear) {
             return linear(time, loop);
         }
 
@@ -218,7 +226,52 @@ namespace GLaDOS {
 
     template <typename T, std::size_t N>
     T AnimationCurve<T, N>::cubic(real time, bool loop) const {
-        return T(); // TODO
+        int currentKeyFrameIndex = getKeyFrameIndex(time, loop);
+        if (currentKeyFrameIndex < 0 || currentKeyFrameIndex >= length() - 1) {
+            return T();
+        }
+        std::size_t nextKeyFrameIndex = static_cast<size_t>(currentKeyFrameIndex + 1);
+        real currentTime = clampTimeInCurve(time, loop);
+        real keyFrameDelta = mKeyFrames[nextKeyFrameIndex].time - mKeyFrames[currentKeyFrameIndex].time;
+        if (keyFrameDelta < real(0)) {
+            return T();
+        }
+        real sampleTime = (currentTime - mKeyFrames[currentKeyFrameIndex].time) / keyFrameDelta;
+
+        T point1 = cast(mKeyFrames[currentKeyFrameIndex].value);
+        T slope1;
+        std::size_t size = N * sizeof(real);
+        // Note: the Out tangent of the left key frame is taken here, and the In tangent is not used. The Out and In here
+        // As like as two peas of Delta T, it is exactly the same as T.
+        // Moreover, the copy function is used here, not the Cast function, because for T of quaternion type
+        // The Cast function will normalize, and here is the tangent, so normalization is not required
+        memcpy(&slope1, mKeyFrames[currentKeyFrameIndex].outTangent, size);
+        slope1 = slope1 * keyFrameDelta;
+
+        T point2 = cast(mKeyFrames[nextKeyFrameIndex].value);
+        T slope2;
+        // Note: the In tangent of the right key frame is taken here, and the Out tangent is not used
+        memcpy(&slope2, mKeyFrames[nextKeyFrameIndex].inTangent, size);
+        slope2 = slope2 * keyFrameDelta;
+
+        return hermite(sampleTime, point1, slope1, point2, slope2);
+    }
+
+    template <typename T, std::size_t N>
+    T AnimationCurve<T, N>::hermite(real t, const T& p1, const T& s1, const T& _p2, const T& s2) const {
+        real tt = t * t;
+        real ttt = tt * t;
+
+        T p2 = _p2;
+        neighborhood(p1, p2);
+
+        real h1 = 2.0f * ttt - 3.0f * tt + 1.0f;
+        real h2 = -2.0f * ttt + 3.0f * tt;
+        real h3 = ttt - 2.0f * tt + t;
+        real h4 = ttt - tt;
+
+        T result = p1 * h1 + p2 * h2 + s1 * h3 + s2 * h4;
+        return adjustHermiteResult(result);
     }
 
     template<>

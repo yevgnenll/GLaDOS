@@ -130,7 +130,8 @@ namespace GLaDOS {
         clone->mTransform = clone->getComponent<Transform>();
 
         // clone children of game object `recursively`
-        for (const auto& children : mChildren) {
+        // TODO: fix clone bug
+        for (GameObject* children : mChildren) {
             clone->mChildren.emplace_back(children->clone());
         }
 
