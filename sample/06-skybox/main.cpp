@@ -5,11 +5,12 @@ using namespace GLaDOS;
 class MainScene : public Scene {
   public:
     bool onInit() override {
-        TextureCube* cubemap = Platform::getRenderer().createTextureCube("test", {"px.png", "nx.png", "py.png", "ny.png", "pz.png", "nz.png"}, PixelFormat::RGBA32);
-
         GameObject* cubemapObject = createGameObject("cubemap");
-        CubemapRenderer* cubemapRenderer = cubemapObject->addComponent<CubemapRenderer>();
-        cubemapRenderer->setTextureCube(cubemap);
+        TextureCube* cubemap = Platform::getRenderer().createTextureCube("test", {"px.png", "nx.png", "py.png", "ny.png", "pz.png", "nz.png"}, PixelFormat::RGBA32);
+        if (cubemap == nullptr) {
+            return false;
+        }
+        cubemapObject->addComponent<CubemapRenderer>()->setTextureCube(cubemap);
 
         Mesh* mesh = MeshGenerator::generateTorusKnot(3, 8, 256, 32, 0.2);
         if (mesh == nullptr) {
@@ -81,7 +82,7 @@ class MainScene : public Scene {
 
   private:
     GameObject* knot = nullptr;
-    real sensitivity = 15;
+    real sensitivity = 5;
     ShaderProgram* shaderProgram = nullptr;
     Camera* camera = nullptr;
     Transform* knotTransform = nullptr;

@@ -48,7 +48,7 @@ class MainScene : public Scene {
             Platform::getInstance().quit();
         }
 
-//        animator->play("Walking");
+        animator->play("Walking");
 
         // character movement
         Vec3 rightMove = Vec3::right;

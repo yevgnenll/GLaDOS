@@ -16,7 +16,7 @@ namespace GLaDOS {
 
         void sample(real time, bool loop) const;
 
-        GameObject* mTargetBone;
+        GameObject* mTargetBone{nullptr};
         Vec3Curve mTranslation;
         QuatCurve mRotation;
         Vec3Curve mScale;
