@@ -3,7 +3,6 @@
 using namespace metal;
 
 constant int MAX_BONES = 96;
-constant int MAX_BONE_INFLUENCE = 4;
 
 typedef struct {
   float3 _position [[attribute(0)]];

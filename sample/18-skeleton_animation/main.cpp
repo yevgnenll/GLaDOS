@@ -17,13 +17,13 @@ class MainScene : public Scene {
         cameraTransform = camera->gameObject()->transform();
         cameraTransform->setLocalPosition({0, 0, 1});
 
-        parent = createGameObject("parent");
+        model = createGameObject("parent");
 
         AssimpLoader loader;
-        if (!loader.loadFromFile("Woman.gltf", this, parent)) {
+        if (!loader.loadFromFile("Woman.gltf", this, model)) {
             return false;
         }
-        parent->transform()->setLocalScale(Vec3{0.03, 0.03, 0.03});
+        model->transform()->setLocalScale(Vec3{0.03, 0.03, 0.03});
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
@@ -31,14 +31,14 @@ class MainScene : public Scene {
         Input::addAxis("MovementX", NEW_T(InputHandler(KeyCode::KEY_RIGHT, KeyCode::KEY_LEFT, 0.1)));
         Input::addAxis("MovementY", NEW_T(InputHandler(KeyCode::KEY_UP, KeyCode::KEY_DOWN, 0.1)));
 
-        for (GameObject* gameObject : parent->getChildren()) {
+        for (GameObject* gameObject : model->getChildren()) {
             SkinnedMeshRenderer* skinnedMeshRenderer = gameObject->getComponent<SkinnedMeshRenderer>();
             if (skinnedMeshRenderer != nullptr) {
                 shaderPrograms.emplace_back(skinnedMeshRenderer->getRenderable()->getMaterial()->getShaderProgram());
             }
         }
 
-        animator = parent->getComponent<Animator>();
+        animator = model->getComponent<Animator>();
 
         return true;
     }
@@ -53,11 +53,11 @@ class MainScene : public Scene {
         // character movement
         Vec3 rightMove = Vec3::right;
         rightMove *= Input::getAxisRaw("MovementX") * sensitivity * deltaTime;
-        parent->transform()->translate(rightMove);
+        model->transform()->translate(rightMove);
 
         Vec3 upMove = Vec3::up;
         upMove *= Input::getAxisRaw("MovementY") * sensitivity * deltaTime;
-        parent->transform()->translate(upMove);
+        model->transform()->translate(upMove);
 
         // camera translation
         Vec3 right = cameraTransform->right();
@@ -92,7 +92,7 @@ class MainScene : public Scene {
   private:
     real sensitivity = 1;
     real dragSensitivity = 5;
-    GameObject* parent = nullptr;
+    GameObject* model = nullptr;
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;
     RasterizerDescription rasterizerDesc{};
