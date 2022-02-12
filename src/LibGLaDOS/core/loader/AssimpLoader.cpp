@@ -273,7 +273,12 @@ namespace GLaDOS {
                 }
 
                 TransformCurve transformCurve;
-                transformCurve.mTargetBone = retrieveTargetBone(sceneNode->name, rootNode);
+                GameObject* targetBone = retrieveTargetBone(sceneNode->name, rootNode);
+                if (targetBone == nullptr) {
+                    LOG_ERROR(logger, "Can't find target bone `{0}`", sceneNode->name);
+                    continue;
+                }
+                transformCurve.mTargetBone = targetBone;
                 // TODO: customize interpolation type in aiNodeAnim
 
                 // load position keyframe

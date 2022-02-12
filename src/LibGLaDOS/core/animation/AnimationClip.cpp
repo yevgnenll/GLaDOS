@@ -16,8 +16,8 @@ namespace GLaDOS {
         }
 
         time = clampTimeInCurve(time);
-        for (uint32_t i = 0; i < length(); i++) {
-            mCurves[i].sample(time, mIsLoop);
+        for (const TransformCurve& curve : mCurves) {
+            curve.sample(time, mIsLoop);
         }
 
         return time;

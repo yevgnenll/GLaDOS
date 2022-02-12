@@ -15,9 +15,15 @@ namespace GLaDOS {
     void TransformCurve::sample(real time, bool loop) const {
         if (mTargetBone != nullptr) {
             Transform* boneTransform = mTargetBone->transform();
-            boneTransform->mLocalPosition = mTranslation.evaluate(time, loop, Interpolation::Linear);
-            boneTransform->mLocalRotation = mRotation.evaluate(time, loop, Interpolation::Cubic);
-            boneTransform->mLocalScale = mScale.evaluate(time, loop, Interpolation::Linear);
+            if (mTranslation.length() > 1) {
+                boneTransform->mLocalPosition = mTranslation.evaluate(time, loop, Interpolation::Linear);
+            }
+            if (mRotation.length() > 1) {
+                boneTransform->mLocalRotation = mRotation.evaluate(time, loop, Interpolation::Linear);
+            }
+            if (mScale.length() > 1) {
+                boneTransform->mLocalScale = mScale.evaluate(time, loop, Interpolation::Linear);
+            }
         }
     }
 }

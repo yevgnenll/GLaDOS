@@ -19,8 +19,8 @@ namespace GLaDOS {
 
         AnimationClip* getClip() const;
         void setClip(AnimationClip* clip);
-        real getSpeed() const;
-        void setSpeed(real speed);
+        real getTicksPerSecond() const;
+        void setTicksPerSecond(real speed);
         AnimationWrapMode getWrapMode() const;
         void setWrapMode(AnimationWrapMode wrapMode);
 
@@ -31,8 +31,8 @@ namespace GLaDOS {
 
       private:
         AnimationClip* mClip{nullptr};
-        real mSpeed{1}; // 1 is normal playback speed
-        real mTime{0}; // current time of animation
+        real mTicksPerSecond{1}; // 1 is normal playback speed
+        real mCurrentTime{0}; // current time of animation
         AnimationWrapMode mWrapMode;
         AnimationBlendMode mBlendMode{AnimationBlendMode::Blend};
     };

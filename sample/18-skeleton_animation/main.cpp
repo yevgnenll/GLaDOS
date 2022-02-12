@@ -20,10 +20,10 @@ class MainScene : public Scene {
         model = createGameObject("parent");
 
         AssimpLoader loader;
-        if (!loader.loadFromFile("Woman.gltf", this, model)) {
+        if (!loader.loadFromFile("simple-skin.gltf", this, model)) {
             return false;
         }
-        model->transform()->setLocalScale(Vec3{0.03, 0.03, 0.03});
+        model->transform()->setLocalScale(Vec3{0.4, 0.4, 0.4});
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
@@ -48,7 +48,7 @@ class MainScene : public Scene {
             Platform::getInstance().quit();
         }
 
-        animator->play("Walking");
+        animator->play("animation[0]");
 
         // character movement
         Vec3 rightMove = Vec3::right;

@@ -7,7 +7,7 @@ namespace GLaDOS {
     }
 
     AnimationState::AnimationState(const AnimationState& other)
-        : mClip{other.mClip}, mSpeed{other.mSpeed}, mTime{other.mTime}, mWrapMode{other.mWrapMode}, mBlendMode{other.mBlendMode} {
+        : mClip{other.mClip}, mTicksPerSecond{other.mTicksPerSecond}, mCurrentTime{other.mCurrentTime}, mWrapMode{other.mWrapMode}, mBlendMode{other.mBlendMode} {
         mName = other.mName;
     }
 
@@ -19,12 +19,12 @@ namespace GLaDOS {
         mClip = clip;
     }
 
-    real AnimationState::getSpeed() const {
-        return mSpeed;
+    real AnimationState::getTicksPerSecond() const {
+        return mTicksPerSecond;
     }
 
-    void AnimationState::setSpeed(real speed) {
-        mSpeed = speed;
+    void AnimationState::setTicksPerSecond(real speed) {
+        mTicksPerSecond = speed;
     }
 
     AnimationWrapMode AnimationState::getWrapMode() const {
@@ -40,7 +40,7 @@ namespace GLaDOS {
 
     void AnimationState::update(real deltaTime) {
         if (mIsActive) {
-            mTime = mClip->sampleAnimation(mTime + (deltaTime * mSpeed));
+            mCurrentTime = mClip->sampleAnimation(mCurrentTime + (deltaTime * mTicksPerSecond));
         }
     }
 
@@ -50,8 +50,8 @@ namespace GLaDOS {
     AnimationState& AnimationState::operator=(const AnimationState& other) {
         mClip = other.mClip;
         mName = other.mName;
-        mSpeed = other.mSpeed;
-        mTime = other.mTime;
+        mTicksPerSecond = other.mTicksPerSecond;
+        mCurrentTime = other.mCurrentTime;
         mWrapMode = other.mWrapMode;
         mBlendMode = other.mBlendMode;
         return *this;
