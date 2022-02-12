@@ -37,10 +37,6 @@ class MainScene : public Scene {
             Platform::getInstance().quit();
         }
 
-        shaderProgram->setUniform("model", target->transform()->localToWorldMatrix());
-        shaderProgram->setUniform("view", camera->worldToCameraMatrix());
-        shaderProgram->setUniform("projection", camera->projectionMatrix());
-
         if (Input::isKeyDown(KeyCode::KEY_SPACE)) {
             changeCurrentAngle();
         }
