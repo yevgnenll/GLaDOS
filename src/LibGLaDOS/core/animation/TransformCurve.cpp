@@ -19,7 +19,7 @@ namespace GLaDOS {
                 boneTransform->mLocalPosition = mTranslation.evaluate(time, loop, Interpolation::Linear);
             }
             if (mRotation.length() > 1) {
-                boneTransform->mLocalRotation = mRotation.evaluate(time, loop, Interpolation::Linear);
+                boneTransform->mLocalRotation = mRotation.evaluate(time, loop, Interpolation::Cubic);
             }
             if (mScale.length() > 1) {
                 boneTransform->mLocalScale = mScale.evaluate(time, loop, Interpolation::Linear);
