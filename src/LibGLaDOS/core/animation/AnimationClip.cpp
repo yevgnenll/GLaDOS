@@ -3,7 +3,7 @@
 #include "core/component/Transform.h"
 
 namespace GLaDOS {
-    AnimationClip::AnimationClip(const std::string& name) : mName{name}, mStartTime{0}, mEndTime{0}, mIsLoop{true} {
+    AnimationClip::AnimationClip(const std::string& name) : mName{name}, mStartTime{0}, mEndTime{0}, mIsLoop{false} {
     }
 
     void AnimationClip::addCurve(const TransformCurve& curve) {

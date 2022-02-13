@@ -10,6 +10,7 @@
 #include "platform/render/Renderer.h"
 #include "platform/render/VertexBuffer.h"
 #include "platform/render/Texture2D.h"
+#include "platform/OSTypes.h"
 #include "core/animation/TransformCurve.h"
 #include "core/animation/AnimationClip.h"
 #include "core/component/renderer/SkinnedMeshRenderer.h"
@@ -33,7 +34,22 @@ namespace GLaDOS {
 
         Assimp::Importer importer;
         importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, false);
-        const aiScene* aiscene = importer.ReadFile(filePath, aiProcessPreset_TargetRealtime_Quality);
+        unsigned int importFlags = aiProcessPreset_TargetRealtime_Quality;
+#ifdef PLATFORM_MACOS
+        // Metal API uses left-handed NDC space which is +X points to the right, +Z points away from the viewer into the screen and +Y points upwards
+        // and also Metal API uses texture coordinates such as the origin(0, 0) is located at the top-left corner (Y down).
+        importFlags |= aiProcess_MakeLeftHanded;
+        importFlags |= aiProcess_FlipUVs;
+#elif PLATFORM_WINDOW
+        // there are already predefined DirectX12 import flags in Assimp.
+        importFlags |= aiProcess_ConvertToLeftHanded;
+#else
+        // Vulkan API uses right-handed NDC space so default Assimp flag is enough
+        // but Vulkan API uses texture coordinates as same as Metal API so flip this.
+        importFlags |= aiProcess_FlipUVs;
+#endif
+        const aiScene* aiscene = importer.ReadFile(filePath, importFlags);
+
         if (aiscene == nullptr || ((aiscene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) != 0u) || aiscene->mRootNode == nullptr) {
             LOG_ERROR(logger, "Load from file error: {0}", importer.GetErrorString());
             return false;
