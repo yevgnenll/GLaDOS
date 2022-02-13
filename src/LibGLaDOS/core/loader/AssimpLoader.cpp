@@ -307,7 +307,7 @@ namespace GLaDOS {
                 // load rotation keyframe
                 for (uint32_t k = 0; k < channel->mNumRotationKeys; k++) {
                     aiQuaternion quat = channel->mRotationKeys[k].mValue;
-                    real value[4] = {quat.w, quat.x, quat.y, quat.z};
+                    real value[4] = {-quat.w, quat.x, quat.y, quat.z};
                     transformCurve.mRotation.addKeyFrame(KeyFrame<4>{
                         static_cast<real>(channel->mRotationKeys[k].mTime), value
                     });

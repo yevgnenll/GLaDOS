@@ -20,10 +20,10 @@ class MainScene : public Scene {
         model = createGameObject("parent");
 
         AssimpLoader loader;
-        if (!loader.loadFromFile("simple-skin.gltf", this, model)) {
+        if (!loader.loadFromFile("Woman.gltf", this, model)) {
             return false;
         }
-        model->transform()->setLocalScale(Vec3{0.4, 0.4, 0.4});
+        model->transform()->setLocalScale(Vec3{0.03, 0.03, 0.03});
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
@@ -39,6 +39,7 @@ class MainScene : public Scene {
         }
 
         animator = model->getComponent<Animator>();
+        animator->getClipNames(animaitonClips);
 
         return true;
     }
@@ -48,7 +49,11 @@ class MainScene : public Scene {
             Platform::getInstance().quit();
         }
 
-        animator->play("animation[0]");
+        animator->play(animaitonClips[curClipIndex]);
+
+        if (Input::isKeyDown(KeyCode::KEY_RETURN)) {
+            curClipIndex = (curClipIndex + 1) % animaitonClips.size();
+        }
 
         // character movement
         Vec3 rightMove = Vec3::right;
@@ -98,6 +103,8 @@ class MainScene : public Scene {
     RasterizerDescription rasterizerDesc{};
     Vector<ShaderProgram*> shaderPrograms;
     Animator* animator;
+    Vector<std::string> animaitonClips;
+    int curClipIndex = 0;
 };
 
 int main(int argc, char** argv) {
