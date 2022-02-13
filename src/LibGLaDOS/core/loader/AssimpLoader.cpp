@@ -36,9 +36,7 @@ namespace GLaDOS {
         importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, false);
         unsigned int importFlags = aiProcessPreset_TargetRealtime_Quality;
 #ifdef PLATFORM_MACOS
-        // Metal API uses left-handed NDC space which is +X points to the right, +Z points away from the viewer into the screen and +Y points upwards
-        // and also Metal API uses texture coordinates such as the origin(0, 0) is located at the top-left corner (Y down).
-        importFlags |= aiProcess_MakeLeftHanded;
+        // Metal API uses texture coordinates such as the origin(0, 0) is located at the top-left corner (Y down).
         importFlags |= aiProcess_FlipUVs;
 #elif PLATFORM_WINDOW
         // there are already predefined DirectX12 import flags in Assimp.

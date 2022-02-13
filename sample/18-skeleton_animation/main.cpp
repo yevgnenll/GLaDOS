@@ -6,7 +6,7 @@ class MainScene : public Scene {
   public:
     bool onInit() override {
         TextureCube* cubemap = Platform::getRenderer().createTextureCube(
-            "test", {"grid.png", "grid.png", "grid.png", "grid.png", "grid.png", "grid.png"}, PixelFormat::RGBA32
+            "test", {"grid.png", "grid2.png", "grid3.png", "grid4.png", "grid5.png", "grid6.png"}, PixelFormat::RGBA32
         );
 
         GameObject* cubemapObject = createGameObject("cubemap");

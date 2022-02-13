@@ -6,7 +6,7 @@ class MainScene : public Scene {
   public:
     bool onInit() override {
         TextureCube* cubemap = Platform::getRenderer().createTextureCube(
-            "test", {"grid.png", "grid.png", "grid.png", "grid.png", "grid.png", "grid.png"}, PixelFormat::RGBA32
+            "test", {"grid.png", "grid2.png", "grid3.png", "grid4.png", "grid5.png", "grid6.png"}, PixelFormat::RGBA32
         );
 
         GameObject* cubemapObject = createGameObject("cubemap");
@@ -20,7 +20,7 @@ class MainScene : public Scene {
         model = createGameObject("model");
 
         AssimpLoader loader;
-        if (!loader.loadFromFile("final.obj", this, model)) {
+        if (!loader.loadFromFile("kabuto-samurai-helmet/source/kabuto.fbx", this, model)) {
             return false;
         }
         model->transform()->setLocalScale(Vec3{0.03, 0.03, 0.03});
@@ -28,6 +28,13 @@ class MainScene : public Scene {
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
         Input::addAxis("Vertical", NEW_T(InputHandler(KeyCode::KEY_W, KeyCode::KEY_S, 0.1)));
+
+        for (GameObject* gameObject : model->getChildren()) {
+            MeshRenderer* meshRenderer = gameObject->getComponent<MeshRenderer>();
+            if (meshRenderer != nullptr) {
+                shaderPrograms.emplace_back(meshRenderer->getRenderable()->getMaterial()->getShaderProgram());
+            }
+        }
 
         return true;
     }
@@ -58,6 +65,13 @@ class MainScene : public Scene {
             cameraTransform->rotate(cameraTransform->right(), Deg{rotationX});
             cameraTransform->rotate(UVec3::up, Deg{-rotationY});
         }
+
+        if (Input::isKeyDown(KeyCode::KEY_TAB)) {
+            rasterizerDesc.mFillMode = (rasterizerDesc.mFillMode == FillMode::Lines) ? FillMode::Fill : FillMode::Lines;
+            for (ShaderProgram* shaderProgram : shaderPrograms) {
+                shaderProgram->setRasterizerState(rasterizerDesc);
+            }
+        }
     }
 
   private:
@@ -66,6 +80,8 @@ class MainScene : public Scene {
     GameObject* model = nullptr;
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;
+    RasterizerDescription rasterizerDesc{};
+    Vector<ShaderProgram*> shaderPrograms;
 };
 
 int main(int argc, char** argv) {
