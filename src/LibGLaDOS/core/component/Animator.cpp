@@ -52,6 +52,10 @@ namespace GLaDOS {
         return true;
     }
 
+    AnimationState* Animator::getCurrentState() {
+        return mCurrentState->second;
+    }
+
     void Animator::getClipNames(Vector<std::string>& clips) const {
         clips.clear();
         std::transform(mAnimations.begin(), mAnimations.end(), std::back_inserter(clips),

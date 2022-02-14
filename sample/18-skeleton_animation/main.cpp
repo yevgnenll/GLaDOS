@@ -20,7 +20,7 @@ class MainScene : public Scene {
         model = createGameObject("parent");
 
         AssimpLoader loader;
-        if (!loader.loadFromFile("Strafe.fbx", this, model)) {
+        if (!loader.loadFromFile("Flair.fbx", this, model)) {
             return false;
         }
         model->transform()->setLocalScale(Vec3{0.05, 0.05, 0.05});
@@ -78,6 +78,16 @@ class MainScene : public Scene {
         upMove *= Input::getAxisRaw("MovementY") * moveSpeed * deltaTime;
         model->transform()->translate(upMove);
 
+        if (Input::isKeyPress(KeyCode::KEY_O)) {
+            animSpeed = Math::clamp(animSpeed - 1, 0.f, 60.f);
+            animator->getCurrentState()->setTicksPerSecond(animSpeed);
+        }
+
+        if (Input::isKeyPress(KeyCode::KEY_P)) {
+            animSpeed = Math::clamp(animSpeed + 1, 0.f, 60.f);
+            animator->getCurrentState()->setTicksPerSecond(animSpeed);
+        }
+
         // camera rotation
         if (Input::isMousePress(MouseButton::MOUSE_RIGHT)) {
             Vec3 mouseDelta = Input::mouseDeltaPosition();
@@ -122,6 +132,7 @@ class MainScene : public Scene {
     real dragSensitivity = 7;
     real moveSensitivity = 1;
     real moveSpeed = 0.2;
+    real animSpeed = 30;
     GameObject* model = nullptr;
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;

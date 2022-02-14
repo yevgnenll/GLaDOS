@@ -20,6 +20,7 @@ namespace GLaDOS {
         void addClip(AnimationClip* clip, const std::string& name);
         bool removeClip(const std::string& name);
 
+        AnimationState* getCurrentState();
         void getClipNames(Vector<std::string>& clips) const;
         bool isPlaying() const;
         std::size_t length() const;
