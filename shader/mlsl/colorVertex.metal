@@ -5,6 +5,7 @@ using namespace metal;
 typedef struct {
   float3 _position [[attribute(0)]];
   float3 _normal [[attribute(1)]];
+  float2 _texCoord0 [[attribute(2)]];
 } VertexIn;
 
 typedef struct {

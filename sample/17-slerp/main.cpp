@@ -6,7 +6,7 @@ class MainScene : public Scene {
   public:
     bool onInit() override {
         target = createGameObject("target");
-        Mesh* mesh = MeshGenerator::generateCube();
+        Mesh* mesh = MeshGenerator::generateTexturedCube();
         if (mesh == nullptr) {
             return false;
         }

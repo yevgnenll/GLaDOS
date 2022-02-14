@@ -57,10 +57,6 @@ class MainScene : public Scene {
             Platform::getInstance().quit();
         }
 
-        shaderProgram->setUniform("model", planeTransform->localToWorldMatrix());
-        shaderProgram->setUniform("view", camera->worldToCameraMatrix());
-        shaderProgram->setUniform("projection", camera->projectionMatrix());
-
         if (Input::isMousePress(MouseButton::MOUSE_LEFT)) {
             Vec3 mouseDelta = Input::mouseDeltaPosition();
             real rotationX = mouseDelta.y * sensitivity * deltaTime;

@@ -42,7 +42,7 @@ class MainScene : public Scene {
         animator->getClipNames(animaitonClips);
 
         GameObject* plane = createGameObject("plane");
-        Mesh* planeMesh = MeshGenerator::generateCube();
+        Mesh* planeMesh = MeshGenerator::generateTexturedCube();
         Material* planeMat = NEW_T(Material);
         colorShader = Platform::getRenderer().createShaderProgramFromFile("colorVertex", "colorFragment");
         if (colorShader == nullptr) {
@@ -50,8 +50,8 @@ class MainScene : public Scene {
         }
         planeMat->setShaderProgram(colorShader);
         plane->addComponent<MeshRenderer>(planeMesh, planeMat);
-        plane->transform()->setLocalScale(Vec3{10, 0.5, 10});
-        plane->transform()->translate(Vec3{0, -0.05, 0});
+        plane->transform()->setLocalScale(Vec3{10, 0.1, 10});
+        plane->transform()->translate(Vec3{0, -0.1, 0});
 
         return true;
     }

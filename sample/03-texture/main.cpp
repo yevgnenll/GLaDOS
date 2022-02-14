@@ -5,7 +5,60 @@ using namespace GLaDOS;
 class MainScene : public Scene {
   public:
     bool onInit() override {
-        Mesh* mesh = MeshGenerator::generateTexturedCube();
+        // clang-format off
+        real quad[] = {
+            //Front
+            -1.0,  1.0,  1.0, 0.25, 0.25,
+            -1.0, -1.0,  1.0, 0.25, 0.50,
+            1.0, -1.0,  1.0, 0.50, 0.50,
+            -1.0,  1.0,  1.0, 0.25, 0.25,
+            1.0, -1.0,  1.0, 0.50, 0.50,
+            1.0,  1.0,  1.0, 0.50, 0.25,
+
+            //Left
+            -1.0,  1.0, -1.0, 0.00, 0.25,
+            -1.0, -1.0, -1.0, 0.00, 0.50,
+            -1.0, -1.0,  1.0, 0.25, 0.50,
+            -1.0,  1.0, -1.0, 0.00, 0.25,
+            -1.0, -1.0,  1.0, 0.25, 0.50,
+            -1.0,  1.0,  1.0, 0.25, 0.25,
+
+            //Right
+            1.0,  1.0,  1.0, 0.50, 0.25,
+            1.0, -1.0,  1.0, 0.50, 0.50,
+            1.0, -1.0, -1.0, 0.75, 0.50,
+            1.0,  1.0,  1.0, 0.50, 0.25,
+            1.0, -1.0, -1.0, 0.75, 0.50,
+            1.0,  1.0, -1.0, 0.75, 0.25,
+
+            //Top
+            -1.0,  1.0, -1.0, 0.25, 0.00,
+            -1.0,  1.0,  1.0, 0.25, 0.25,
+            1.0,  1.0,  1.0, 0.50, 0.25,
+            -1.0,  1.0, -1.0, 0.25, 0.00,
+            1.0,  1.0,  1.0, 0.50, 0.25,
+            1.0,  1.0, -1.0, 0.50, 0.00,
+
+            //Bottom
+            -1.0, -1.0,  1.0, 0.25, 0.50,
+            -1.0, -1.0, -1.0, 0.25, 0.75,
+            1.0, -1.0, -1.0, 0.50, 0.75,
+            -1.0, -1.0,  1.0, 0.25, 0.50,
+            1.0, -1.0, -1.0, 0.50, 0.75,
+            1.0, -1.0,  1.0, 0.50, 0.50,
+
+            //Back
+            1.0,  1.0, -1.0, 0.75, 0.25,
+            1.0, -1.0, -1.0, 0.75, 0.50,
+            -1.0, -1.0, -1.0, 1.00, 0.50,
+            1.0,  1.0, -1.0, 0.75, 0.25,
+            -1.0, -1.0, -1.0, 1.00, 0.50,
+            -1.0,  1.0, -1.0, 1.00, 0.25
+        };
+        // clang-format on
+        VertexBuffer* vertexData = NEW_T(VertexBuffer(VertexFormatDescriptor().position().texCoord0(), 36));
+        vertexData->copyBufferData(quad);
+        Mesh* mesh = Platform::getRenderer().createMesh(vertexData, nullptr);
         if (mesh == nullptr) {
             return false;
         }
@@ -24,6 +77,7 @@ class MainScene : public Scene {
 
         GameObject* cube = createGameObject("cube");
         planeTransform = cube->transform();
+        planeTransform->setLocalScale({0.5, 0.5, 0.5});
         cube->addComponent<MeshRenderer>(mesh, material);
 
         camera = getMainCamera();
