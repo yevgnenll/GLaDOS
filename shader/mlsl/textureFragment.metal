@@ -8,6 +8,7 @@ typedef struct {
 } VertexOut;
 
 typedef struct {
+  float3 viewPos;
   bool isWireFrameMode;
 } FragmentUniforms;
 

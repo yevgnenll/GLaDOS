@@ -15,15 +15,15 @@ class MainScene : public Scene {
 
         camera = getMainCamera();
         cameraTransform = camera->gameObject()->transform();
-        cameraTransform->setLocalPosition({0, 0, 1});
+        cameraTransform->setLocalPosition({0, 0.2, 1});
 
         model = createGameObject("parent");
 
         AssimpLoader loader;
-        if (!loader.loadFromFile("Woman.gltf", this, model)) {
+        if (!loader.loadFromFile("Strafe.fbx", this, model)) {
             return false;
         }
-        model->transform()->setLocalScale(Vec3{0.03, 0.03, 0.03});
+        model->transform()->setLocalScale(Vec3{0.05, 0.05, 0.05});
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
@@ -41,6 +41,18 @@ class MainScene : public Scene {
         animator = model->getComponent<Animator>();
         animator->getClipNames(animaitonClips);
 
+        GameObject* plane = createGameObject("plane");
+        Mesh* planeMesh = MeshGenerator::generateCube();
+        Material* planeMat = NEW_T(Material);
+        colorShader = Platform::getRenderer().createShaderProgramFromFile("colorVertex", "colorFragment");
+        if (colorShader == nullptr) {
+            return false;
+        }
+        planeMat->setShaderProgram(colorShader);
+        plane->addComponent<MeshRenderer>(planeMesh, planeMat);
+        plane->transform()->setLocalScale(Vec3{10, 0.5, 10});
+        plane->transform()->translate(Vec3{0, -0.05, 0});
+
         return true;
     }
 
@@ -48,6 +60,8 @@ class MainScene : public Scene {
         if (Input::isKeyDown(KeyCode::KEY_ESCAPE)) {
             Platform::getInstance().quit();
         }
+
+        colorShader->setUniform("color", Color::white);
 
         animator->play(animaitonClips[curClipIndex]);
 
@@ -102,9 +116,10 @@ class MainScene : public Scene {
     Transform* cameraTransform = nullptr;
     RasterizerDescription rasterizerDesc{};
     Vector<ShaderProgram*> shaderPrograms;
-    Animator* animator;
+    Animator* animator{nullptr};
     Vector<std::string> animaitonClips;
     int curClipIndex = 0;
+    ShaderProgram* colorShader{nullptr};
 };
 
 int main(int argc, char** argv) {

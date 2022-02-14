@@ -26,9 +26,8 @@ typedef struct {
 
 vertex VertexOut main0(VertexIn verts [[stage_in]], constant VertexUniforms &uniforms [[buffer(0)]]) {
     VertexOut out;
-    float4 position = float4(verts._position, 1);
-    out._position = uniforms.modelViewProj * position;
+    out._position = uniforms.modelViewProj * float4(verts._position, 1);
     out._normal = float3(uniforms.transInvModelView * float4(verts._normal, 0));
-    out._fragPos = float3(uniforms.model * position);
+    out._fragPos = float3(uniforms.model * float4(verts._position, 1));
     return out;
 }

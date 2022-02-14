@@ -34,6 +34,7 @@ namespace GLaDOS {
 
         Assimp::Importer importer;
         importer.SetPropertyBool(AI_CONFIG_IMPORT_FBX_PRESERVE_PIVOTS, false);
+        importer.SetPropertyBool(AI_CONFIG_IMPORT_REMOVE_EMPTY_BONES, false);
         unsigned int importFlags = aiProcessPreset_TargetRealtime_Quality;
 #ifdef PLATFORM_MACOS
         // Metal API uses texture coordinates such as the origin(0, 0) is located at the top-left corner (Y down).
