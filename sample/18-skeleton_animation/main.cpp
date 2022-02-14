@@ -71,25 +71,12 @@ class MainScene : public Scene {
 
         // character movement
         Vec3 rightMove = Vec3::right;
-        rightMove *= Input::getAxisRaw("MovementX") * sensitivity * deltaTime;
+        rightMove *= Input::getAxisRaw("MovementX") * moveSpeed * deltaTime;
         model->transform()->translate(rightMove);
 
-        Vec3 upMove = Vec3::up;
-        upMove *= Input::getAxisRaw("MovementY") * sensitivity * deltaTime;
+        Vec3 upMove = Vec3::forward;
+        upMove *= Input::getAxisRaw("MovementY") * moveSpeed * deltaTime;
         model->transform()->translate(upMove);
-
-        // camera translation
-        Vec3 right = cameraTransform->right();
-        right *= Input::getAxisRaw("Horizontal") * sensitivity * deltaTime;
-        cameraTransform->translate(right);
-
-        Vec3 up = cameraTransform->up();
-        up *= Input::getAxisRaw("Forward") * sensitivity * deltaTime;
-        cameraTransform->translate(up);
-
-        Vec3 forward = cameraTransform->forward();
-        forward *= Input::getAxisRaw("Vertical") * sensitivity * deltaTime;
-        cameraTransform->translate(forward);
 
         // camera rotation
         if (Input::isMousePress(MouseButton::MOUSE_RIGHT)) {
@@ -98,6 +85,28 @@ class MainScene : public Scene {
             real rotationY = mouseDelta.x * dragSensitivity * deltaTime;
             cameraTransform->rotate(cameraTransform->right(), Deg{rotationX});
             cameraTransform->rotate(UVec3::up, Deg{-rotationY});
+
+            // camera translation
+            Vec3 right = cameraTransform->right();
+            right *= Input::getAxisRaw("Horizontal") * moveSensitivity * deltaTime;
+            cameraTransform->translate(right);
+
+            Vec3 up = cameraTransform->up();
+            up *= Input::getAxisRaw("Forward") * moveSensitivity * deltaTime;
+            cameraTransform->translate(up);
+
+            Vec3 forward = cameraTransform->forward();
+            forward *= Input::getAxisRaw("Vertical") * moveSensitivity * deltaTime;
+            cameraTransform->translate(forward);
+        }
+
+        if (Input::isMousePress(MouseButton::MOUSE_MIDDLE)) {
+            Vec3 mouseDelta = Input::mouseDeltaPosition();
+            Vec3 right = cameraTransform->right();
+            Vec3 up = cameraTransform->up();
+            right *= -1 * mouseDelta.x * scrollSensitivity * deltaTime;
+            up *= -1 * mouseDelta.y * scrollSensitivity * deltaTime;
+            cameraTransform->translate(right + up);
         }
 
         if (Input::isKeyDown(KeyCode::KEY_TAB)) {
@@ -109,8 +118,10 @@ class MainScene : public Scene {
     }
 
   private:
-    real sensitivity = 1;
-    real dragSensitivity = 5;
+    real scrollSensitivity = 0.1f;
+    real dragSensitivity = 7;
+    real moveSensitivity = 1;
+    real moveSpeed = 0.2;
     GameObject* model = nullptr;
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;
