@@ -14,7 +14,7 @@ class MainScene : public Scene {
         cameraTransform = camera->gameObject()->transform();
         cameraTransform->setLocalPosition({0, 0, 5});
 
-        shaderProgram = Platform::getRenderer().createShaderProgramFromFile("normalVertex", "normalFragment");
+        shaderProgram = Platform::getRenderer().createShaderProgramFromFile("checkerVertex", "checkerFragment");
         if (shaderProgram == nullptr) {
             return false;
         }
@@ -40,6 +40,10 @@ class MainScene : public Scene {
         if (Input::isKeyDown(KeyCode::KEY_SPACE)) {
             changeCurrentAngle();
         }
+
+        shaderProgram->setUniform("size", 16.0f);
+        shaderProgram->setUniform("color0", Color::fromRGB(254, 247, 224));
+        shaderProgram->setUniform("color1", Color::fromRGB(21, 21, 21));
 
         target->transform()->setRotation(Quat::slerp(target->transform()->rotation(), currentAngle, 0.2));
 
