@@ -27,6 +27,18 @@
 namespace GLaDOS {
     Logger* AssimpLoader::logger = LoggerRegistry::getInstance().makeAndGetLogger("AssimpLoader");
     const uint32_t AssimpLoader::MAX_BONE_INFLUENCE = 4;
+    const Array<aiTextureType, 10> AssimpLoader::SUPPORT_TEXTURE_TYPES = {
+        aiTextureType_AMBIENT, // Blinn–Phong AO
+        aiTextureType_DIFFUSE, // Blinn–Phong albedo
+        aiTextureType_SPECULAR, // Blinn–Phong roughness
+        aiTextureType_SHININESS, // Blinn–Phong shininess
+        aiTextureType_NORMALS, // Blinn–Phong / PBR normal map
+        aiTextureType_HEIGHT, // Height map (confusion, obj file's bump map will be mapped into Assimp Height map, byt map_Kn will be mapped into Assimp Normal map.
+        aiTextureType_AMBIENT_OCCLUSION, // PBR AO
+        aiTextureType_BASE_COLOR, // PBR albedo
+        aiTextureType_DIFFUSE_ROUGHNESS, // PBR roughness
+        aiTextureType_METALNESS // PBR metallic
+    };
 
     bool AssimpLoader::loadFromFile(const std::string& fileName, Scene* scene, GameObject* parent) {
         mDirectoryPath = StringUtils::splitFileName(fileName).first;
@@ -105,31 +117,20 @@ namespace GLaDOS {
         return true;
     }
 
-    Vector<Texture*> AssimpLoader::getTexture() const {
-        return mTextures;
-    }
-
     Vector<Mesh*> AssimpLoader::loadNodeMeshAndMaterial(aiNode* node, const aiScene* aiscene, Scene* scene, GameObject* parent, GameObject* rootBone) {
-        static const Array<aiTextureType, 4> textureTypes = { aiTextureType_DIFFUSE, aiTextureType_SPECULAR, aiTextureType_AMBIENT, aiTextureType_NORMALS };
         Vector<Mesh*> meshes;
 
-        // load mesh at the current node
+        // load mesh, material at the current node
         for (uint32_t i = 0; i < node->mNumMeshes; i++) {
             aiMesh* mesh = aiscene->mMeshes[node->mMeshes[i]];
-            Mesh* currentMesh = loadMesh(mesh);
-            if (currentMesh != nullptr) {
-                makeGameObject(mesh->mName.C_Str(), currentMesh, scene, parent, rootBone);
-                meshes.emplace_back(currentMesh);
-            }
-
             aiMaterial* material = aiscene->mMaterials[mesh->mMaterialIndex];
-            for (const auto textureType : textureTypes) {
-                if (material->GetTextureCount(textureType) > 0) {
-                    Texture* texture = loadTexture(material, textureType);
-                    if (texture != nullptr) {
-                        mTextures.emplace_back(texture);
-                    }
-                }
+
+            Mesh* currentMesh = loadMesh(mesh);
+            Material* currentMaterial = loadMaterial(material, rootBone);
+
+            if (currentMesh != nullptr && currentMaterial != nullptr) {
+                createGameObject(mesh->mName.C_Str(), currentMesh, currentMaterial, scene, parent, rootBone);
+                meshes.emplace_back(currentMesh);
             }
         }
 
@@ -221,6 +222,43 @@ namespace GLaDOS {
         IndexBuffer* indexBuffer = NEW_T(IndexBuffer(sizeof(uint32_t), indices.size()));
         indexBuffer->copyBufferData(indices.data());
         return Platform::getRenderer().createMesh(vertexBuffer, indexBuffer);
+    }
+
+    Material* AssimpLoader::loadMaterial(aiMaterial* material, GameObject* rootBone) {
+        ShaderProgram* shaderProgram;
+        if (rootBone != nullptr) {
+            shaderProgram = Platform::getRenderer().createShaderProgramFromFile("skinningVertex", "skinningFragment");
+            if (shaderProgram == nullptr) {
+                return nullptr;
+            }
+        } else {
+            shaderProgram = Platform::getRenderer().createShaderProgramFromFile("normalVertex", "normalFragment");
+            if (shaderProgram == nullptr) {
+                return nullptr;
+            }
+        }
+
+        Material* mat = NEW_T(Material);
+        mat->setShaderProgram(shaderProgram);
+
+        aiColor4D diffuse;
+        if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse)) {
+            mat->setBaseColor(toColor(diffuse));
+        }
+
+        std::size_t lastTexture = 0;
+        for (const auto textureType : SUPPORT_TEXTURE_TYPES) {
+            if (material->GetTextureCount(textureType) > 0) {
+                Texture* texture = loadTexture(material, textureType);
+                if (texture != nullptr) {
+                    mat->setTextureFromIndex(texture, lastTexture);
+                    mat->setTextureType(toTextureType(textureType), lastTexture);
+                    lastTexture++;
+                }
+            }
+        }
+
+        return mat;
     }
 
     Texture* AssimpLoader::loadTexture(aiMaterial* material, aiTextureType textureType) {
@@ -370,23 +408,11 @@ namespace GLaDOS {
         return nullptr;
     }
 
-    void AssimpLoader::makeGameObject(const std::string& name, Mesh* mesh, Scene* scene, GameObject* parent, GameObject* rootBone) {
+    void AssimpLoader::createGameObject(const std::string& name, Mesh* mesh, Material* material, Scene* scene, GameObject* parent, GameObject* rootBone) {
         if (rootBone != nullptr) {
-            ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgramFromFile("skinningVertex", "skinningFragment");
-            if (shaderProgram == nullptr) {
-                return;
-            }
-            Material* material = NEW_T(Material);
-            material->setShaderProgram(shaderProgram);
             GameObject* node = scene->createGameObject(name, parent);
             node->addComponent<SkinnedMeshRenderer>(mesh, material, rootBone);
         } else {
-            ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgramFromFile("normalVertex", "normalFragment");
-            if (shaderProgram == nullptr) {
-                return;
-            }
-            Material* material = NEW_T(Material);
-            material->setShaderProgram(shaderProgram);
             GameObject* node = scene->createGameObject(name, parent);
             node->addComponent<MeshRenderer>(mesh, material);
         }
@@ -407,5 +433,49 @@ namespace GLaDOS {
 
     Vec2 AssimpLoader::toVec2(const aiVector3D& vec3) {
         return Vec2{vec3.x, vec3.y};
+    }
+
+    Color AssimpLoader::toColor(const aiColor4D& color) {
+        return Color{color.r, color.g, color.b, color.a};
+    }
+
+    TextureType AssimpLoader::toTextureType(aiTextureType textureType) {
+        TextureType result;
+        switch (textureType) {
+            case aiTextureType_AMBIENT:
+                result = TextureType::Ambient;
+                break;
+            case aiTextureType_DIFFUSE:
+                result = TextureType::Diffuse;
+                break;
+            case aiTextureType_SPECULAR:
+                result = TextureType::Specular;
+                break;
+            case aiTextureType_SHININESS:
+                result = TextureType::Shininess;
+                break;
+            case aiTextureType_NORMALS:
+                result = TextureType::NormalMap;
+                break;
+            case aiTextureType_HEIGHT:
+                result = TextureType::HeightMap;
+                break;
+            case aiTextureType_AMBIENT_OCCLUSION:
+                result = TextureType::AmbientOcclusion;
+                break;
+            case aiTextureType_BASE_COLOR:
+                result = TextureType::Albedo;
+                break;
+            case aiTextureType_DIFFUSE_ROUGHNESS:
+                result = TextureType::Roughness;
+                break;
+            case aiTextureType_METALNESS:
+                result = TextureType::Metallic;
+                break;
+            default:
+                result = TextureType::Undefined;
+                break;
+        }
+        return result;
     }
 }

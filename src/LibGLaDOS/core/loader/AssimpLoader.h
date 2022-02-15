@@ -5,6 +5,7 @@
 #include <assimp/material.h>
 #include "utils/Stl.h"
 #include "math/Mat4.hpp"
+#include "math/Color.h"
 #include "platform/render/VertexFormat.h"
 
 struct aiNode;
@@ -24,6 +25,7 @@ namespace GLaDOS {
     class Texture;
     class Mesh;
     class Logger;
+    class Material;
 
     struct SceneNode {
         int32_t id;
@@ -44,11 +46,11 @@ namespace GLaDOS {
     class AssimpLoader {
       public:
         bool loadFromFile(const std::string& fileName, Scene* scene, GameObject* parent);
-        Vector<Texture*> getTexture() const;
 
       private:
         Vector<Mesh*> loadNodeMeshAndMaterial(aiNode* node, const aiScene* aiscene, Scene* scene, GameObject* parent, GameObject* rootBone);
         Mesh* loadMesh(aiMesh* mesh);
+        Material* loadMaterial(aiMaterial* material, GameObject* rootBone);
         Texture* loadTexture(aiMaterial* material, aiTextureType textureType);
         void buildNodeTable(const aiNode* node, int32_t& boneCounter);
         GameObject* buildBoneHierarchy(const aiNode* node, Scene* scene, GameObject* parent);
@@ -58,16 +60,18 @@ namespace GLaDOS {
         SceneNode* findNode(const std::string& name);
         int32_t addNode(const SceneNode& node);
         static GameObject* retrieveTargetBone(const std::string& name, GameObject* rootNode);
-        static void makeGameObject(const std::string& name, Mesh* mesh, Scene* scene, GameObject* parent, GameObject* rootBone);
+        static void createGameObject(const std::string& name, Mesh* mesh, Material* material, Scene* scene, GameObject* parent, GameObject* rootBone);
         static Mat4<real> toMat4(const aiMatrix4x4& mat);
         static Vec3 toVec3(const aiVector3D& vec3);
         static Vec2 toVec2(const aiVector3D& vec3);
+        static Color toColor(const aiColor4D& color);
+        static TextureType toTextureType(aiTextureType textureType);
 
         static Logger* logger;
         static const uint32_t MAX_BONE_INFLUENCE;
+        static const Array<aiTextureType, 10> SUPPORT_TEXTURE_TYPES;
 
         UnorderedMap<std::string, SceneNode> mNodeTable;
-        Vector<Texture*> mTextures;
         std::string mDirectoryPath;
     };
 }

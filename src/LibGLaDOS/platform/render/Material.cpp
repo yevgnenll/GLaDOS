@@ -106,15 +106,36 @@ namespace GLaDOS {
     }
 
     Texture* Material::getTextureFromIndex(std::size_t index) {
-        if (index < 0 || index > 7) {
+        if (index < 0 || index >= MAX_TEXTURE_COUNT) {
             return nullptr;
         }
         return mTextures[index];
     }
 
     void Material::setTextureFromIndex(Texture* texture, std::size_t index) {
-        if (index >= 0 || index <= 7) {
+        if (index >= 0 || index < MAX_TEXTURE_COUNT) {
             mTextures[index] = texture;
         }
+    }
+
+    TextureType Material::getTextureType(std::size_t index) {
+        if (index < 0 || index >= MAX_TEXTURE_COUNT) {
+            return TextureType::Undefined;
+        }
+        return mTextureTypes[index];
+    }
+
+    void Material::setTextureType(TextureType textureType, std::size_t index) {
+        if (index >= 0 || index < MAX_TEXTURE_COUNT) {
+            mTextureTypes[index] = textureType;
+        }
+    }
+
+    Color Material::getBaseColor() const {
+        return mBaseColor;
+    }
+
+    void Material::setBaseColor(const Color& color) {
+        mBaseColor = color;
     }
 }  // namespace GLaDOS

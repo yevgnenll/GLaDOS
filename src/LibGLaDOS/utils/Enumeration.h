@@ -67,6 +67,20 @@ namespace GLaDOS {
         CubeMapTex
     };
 
+    enum class TextureType {
+        Undefined = -1,
+        Ambient, // Blinn–Phong
+        Diffuse, // Blinn–Phong
+        Specular, // Blinn–Phong
+        Shininess, // Blinn–Phong
+        NormalMap, // Blinn–Phong / PBR
+        HeightMap, // Height map
+        AmbientOcclusion, // PBR
+        Albedo, // PBR
+        Roughness, // PBR
+        Metallic // PBR
+    };
+
     enum class PixelFormat {
         Unknown = -1,
 

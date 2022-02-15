@@ -2,6 +2,8 @@
 #define GLADOS_MATERIAL_H
 
 #include "utils/Utility.h"
+#include "math/Color.h"
+#include "utils/Enumeration.h"
 
 namespace GLaDOS {
     class Texture;
@@ -36,10 +38,18 @@ namespace GLaDOS {
 
         Texture* getTextureFromIndex(std::size_t index);
         void setTextureFromIndex(Texture* texture, std::size_t index);
+        TextureType getTextureType(std::size_t index);
+        void setTextureType(TextureType textureType, std::size_t index);
+        Color getBaseColor() const;
+        void setBaseColor(const Color& color);
 
       private:
+        static constexpr const std::size_t MAX_TEXTURE_COUNT = 8;
+
         ShaderProgram* mShaderProgram{nullptr};
-        Array<Texture*, 8> mTextures{};
+        Array<Texture*, MAX_TEXTURE_COUNT> mTextures{};
+        Array<TextureType, MAX_TEXTURE_COUNT> mTextureTypes{TextureType::Undefined};
+        Color mBaseColor;
     };
 }  // namespace GLaDOS
 
