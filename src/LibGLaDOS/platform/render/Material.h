@@ -40,8 +40,10 @@ namespace GLaDOS {
         void setTextureFromIndex(Texture* texture, std::size_t index);
         TextureType getTextureType(std::size_t index);
         void setTextureType(TextureType textureType, std::size_t index);
-        Color getBaseColor() const;
-        void setBaseColor(const Color& color);
+        Color getAlbedo() const;
+        void setAlbedo(const Color& color);
+        Color getSpecular() const;
+        void setSpecular(const Color& color);
 
       private:
         static constexpr const std::size_t MAX_TEXTURE_COUNT = 8;
@@ -49,7 +51,8 @@ namespace GLaDOS {
         ShaderProgram* mShaderProgram{nullptr};
         Array<Texture*, MAX_TEXTURE_COUNT> mTextures{};
         Array<TextureType, MAX_TEXTURE_COUNT> mTextureTypes{TextureType::Undefined};
-        Color mBaseColor;
+        Color mAlbedo;
+        Color mSpecular;
     };
 }  // namespace GLaDOS
 

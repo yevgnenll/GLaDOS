@@ -33,9 +33,10 @@ namespace GLaDOS {
 
     void MeshRenderer::update(real deltaTime) {
         if (mRenderable != nullptr) {
-            ShaderProgram* shaderProgram = mRenderable->getMaterial()->getShaderProgram();
+            Material* material = mRenderable->getMaterial();
+            ShaderProgram* shaderProgram = material->getShaderProgram();
+            FillMode fillMode = shaderProgram->rasterizerState()->mRasterizerDescription.mFillMode;
             Camera* mainCamera = mGameObject->scene()->getMainCamera();
-            FillMode fillMode = mRenderable->getMaterial()->getShaderProgram()->rasterizerState()->mRasterizerDescription.mFillMode;
             Mat4<real> model = mGameObject->transform()->localToWorldMatrix();
             Mat4<real> modelView = model * mainCamera->worldToCameraMatrix();
 
@@ -43,6 +44,8 @@ namespace GLaDOS {
             shaderProgram->setUniform("modelViewProj", modelView * mainCamera->projectionMatrix());
             shaderProgram->setUniform("transInvModelView", Mat4<real>::transpose(Mat4<real>::inverse(modelView)));
             shaderProgram->setUniform("viewPos", mainCamera->gameObject()->transform()->position());
+            shaderProgram->setUniform("albedo", material->getAlbedo());
+            shaderProgram->setUniform("specular", material->getSpecular());
             shaderProgram->setUniform("isWireFrameMode", fillMode == FillMode::Lines);
         }
     }

@@ -131,11 +131,19 @@ namespace GLaDOS {
         }
     }
 
-    Color Material::getBaseColor() const {
-        return mBaseColor;
+    Color Material::getAlbedo() const {
+        return mAlbedo;
     }
 
-    void Material::setBaseColor(const Color& color) {
-        mBaseColor = color;
+    void Material::setAlbedo(const Color& color) {
+        mAlbedo = color;
+    }
+
+    Color Material::getSpecular() const {
+        return mSpecular;
+    }
+
+    void Material::setSpecular(const Color& color) {
+        mSpecular = color;
     }
 }  // namespace GLaDOS

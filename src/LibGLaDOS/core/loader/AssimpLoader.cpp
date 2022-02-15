@@ -243,7 +243,12 @@ namespace GLaDOS {
 
         aiColor4D diffuse;
         if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse)) {
-            mat->setBaseColor(toColor(diffuse));
+            mat->setAlbedo(toColor(diffuse));
+        }
+
+        aiColor4D specular;
+        if (AI_SUCCESS == material->Get(AI_MATKEY_COLOR_SPECULAR, specular)) {
+            mat->setSpecular(toColor(specular));
         }
 
         std::size_t lastTexture = 0;
