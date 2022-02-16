@@ -33,7 +33,7 @@ namespace GLaDOS {
     void* mmalloc(std::size_t size, const char* file, int line, const char* function) {
         void* memory_ptr = align_malloc(size + sizeof(MemBlockDList), _mem_alignment);
         if (memory_ptr == nullptr) {
-#ifdef MEMORY_DEBUG_PRINT
+#if MEMORY_DEBUG_PRINT == 1
             printf("Allocation failed : %s: %s() (%4d): %zd bytes\n", file, function, line, size);
 #endif
             return memory_ptr;
@@ -58,7 +58,7 @@ namespace GLaDOS {
             _mem_block_head = memory_block;
         }
 
-#ifdef MEMORY_DEBUG_PRINT
+#if MEMORY_DEBUG_PRINT == 1
         mprint("Allocated ", memory_block);
 #endif
 
@@ -67,14 +67,14 @@ namespace GLaDOS {
 
     void mfree(void* ptr) {
         if (ptr == nullptr) {
-#ifdef MEMORY_DEBUG_PRINT
+#if MEMORY_DEBUG_PRINT == 1
             printf("Free Failed\n");
 #endif
             return;
         }
 
         MemBlockDList* memory_block = CAST(MemBlockDList*, ptr) - 1;
-#ifdef MEMORY_DEBUG_PRINT
+#if MEMORY_DEBUG_PRINT == 1
         mprint("Freed ", memory_block);
 #endif
         memory_block->size = ~memory_block->size;
@@ -102,6 +102,7 @@ namespace GLaDOS {
     }
 
     void dumpMemory() {
+#if MEMORY_DEBUG_PRINT_LEAK == 1
         MemBlockDList* memory_block = _mem_block_head;
         bool leak = false;
         while (memory_block != nullptr) {
@@ -126,5 +127,6 @@ namespace GLaDOS {
             }
             memory_block = memory_block->next;
         }
+#endif
     }
 }  // namespace GLaDOS

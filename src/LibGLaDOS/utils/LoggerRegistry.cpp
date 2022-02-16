@@ -1,5 +1,5 @@
 #include "LoggerRegistry.h"
-
+#include "Config.h"
 #include "Logger.hpp"
 #include "Utility.h"
 #include "utils/DestructionManager.h"
@@ -27,6 +27,14 @@ namespace GLaDOS {
 
     Logger* LoggerRegistry::makeAndGetLogger(const std::string& name) {
         Logger* logger = NEW_T(Logger(name));
+#if DEBUG_BUILD == 1
+        logger->setLevel(LogLevel::Trace);
+#elif DEBUG_BUILD == 2
+        logger->setLevel(LogLevel::Debug);
+#else
+        logger->setLevel(LogLevel::Error);
+#endif
+
         if (!registerNewLogger(logger)) {
             DELETE_T(logger, Logger);
             return mDefaultLogger;
