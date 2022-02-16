@@ -188,16 +188,16 @@ namespace GLaDOS {
     enum class ResourceType {
         Undefined = -1,
         Shader,
-        Sound,
+        AudioClip,
         Texture,
         Mesh,
+        AnimationClip,
         Font
     };
 
     enum class GPUBufferType {
         VertexBuffer,
-        IndexBuffer,
-        UniformBuffer
+        IndexBuffer
     };
 
     // TODO
