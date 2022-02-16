@@ -6,7 +6,6 @@
 #include "utils/Stl.h"
 #include "math/Mat4.hpp"
 #include "math/Color.h"
-#include "platform/render/VertexFormat.h"
 #include "utils/Singleton.hpp"
 
 struct aiNode;
@@ -21,7 +20,6 @@ typedef aiMatrix4x4t<ai_real> aiMatrix4x4;
 
 namespace GLaDOS {
     class AnimationClip;
-    class Scene;
     class GameObject;
     class Texture;
     class Mesh;
@@ -48,21 +46,21 @@ namespace GLaDOS {
       public:
         AssimpLoader();
         ~AssimpLoader() override = default;
-        bool loadFromFile(const std::string& fileName, Scene* scene, GameObject* parent);
+        bool loadFromFile(const std::string& fileName, GameObject* parent);
 
       private:
-        Vector<Mesh*> loadNodeMeshAndMaterial(aiNode* node, const aiScene* aiscene, Scene* scene, GameObject* parent, GameObject* rootBone, UnorderedMap<std::string, SceneNode*>& nodeMap, const std::string& textureRootPath);
+        Vector<Mesh*> loadNodeMeshAndMaterial(aiNode* node, const aiScene* scene, GameObject* parent, GameObject* rootBone, UnorderedMap<std::string, SceneNode*>& nodeMap, const std::string& textureRootPath);
         Mesh* loadMesh(aiMesh* mesh, UnorderedMap<std::string, SceneNode*>& nodeMap);
         Material* loadMaterial(aiMaterial* material, GameObject* rootBone, const std::string& textureRootPath);
         Texture* loadTexture(aiMaterial* material, aiTextureType textureType, const std::string& textureRootPath);
         Vector<AnimationClip*> loadAnimation(const aiScene* scene, GameObject* rootNode, UnorderedMap<std::string, SceneNode*>& nodeMap);
         void buildNodeMap(const aiNode* node, int32_t& boneCounter, UnorderedMap<std::string, SceneNode*>& nodeMap);
-        GameObject* buildBoneHierarchy(const aiNode* node, Scene* scene, GameObject* parent, UnorderedMap<std::string, SceneNode*>& nodeMap);
+        GameObject* buildBoneHierarchy(const aiNode* node, GameObject* parent, UnorderedMap<std::string, SceneNode*>& nodeMap);
 
         void getBindPose(Vector<Mat4<real>>& bindPose, UnorderedMap<std::string, SceneNode*>& nodeMap);
         SceneNode* findNode(const std::string& name, UnorderedMap<std::string, SceneNode*>& nodeMap);
         GameObject* retrieveTargetBone(const std::string& name, GameObject* rootNode);
-        void createGameObject(const std::string& name, Mesh* mesh, Material* material, Scene* scene, GameObject* parent, GameObject* rootBone);
+        void createGameObject(const std::string& name, Mesh* mesh, Material* material, GameObject* parent, GameObject* rootBone);
         Mat4<real> toMat4(const aiMatrix4x4& mat);
         Vec3 toVec3(const aiVector3D& vec3);
         Vec2 toVec2(const aiVector3D& vec3);

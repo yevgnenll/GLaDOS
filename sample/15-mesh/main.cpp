@@ -19,8 +19,7 @@ class MainScene : public Scene {
 
         model = createGameObject("model");
 
-        AssimpLoader loader;
-        if (!AssimpLoader::getInstance().loadFromFile("Low Poly Pine/Low Poly Pine.obj", this, model)) {
+        if (!Platform::getRenderer().createPrefabFromFile("Low Poly Pine/Low Poly Pine.obj", model)) {
             return false;
         }
         model->transform()->setLocalScale(Vec3{0.03, 0.03, 0.03});

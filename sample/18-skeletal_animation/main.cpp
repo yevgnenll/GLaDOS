@@ -18,15 +18,15 @@ class MainScene : public Scene {
         cameraTransform->setLocalPosition({0, 0.2, 1});
 
         // flair
-        Flair = createGameObject("Flair");
-        if (!AssimpLoader::getInstance().loadFromFile("Flair.fbx", this, Flair)) {
+        flair = createGameObject("Flair");
+        if (!Platform::getRenderer().createPrefabFromFile("Flair.fbx", flair)) {
             return false;
         }
-        Flair->transform()->setLocalScale(Vec3{0.05, 0.05, 0.05});
-        animator = Flair->getComponent<Animator>();
+        flair->transform()->setLocalScale(Vec3{0.05, 0.05, 0.05});
+        animator = flair->getComponent<Animator>();
         animator->getClipNames(animaitonClips);
 
-        for (GameObject* gameObject : Flair->getChildren()) {
+        for (GameObject* gameObject : flair->getChildren()) {
             SkinnedMeshRenderer* skinnedMeshRenderer = gameObject->getComponent<SkinnedMeshRenderer>();
             if (skinnedMeshRenderer != nullptr) {
                 shaderPrograms.emplace_back(skinnedMeshRenderer->getRenderable()->getMaterial()->getShaderProgram());
@@ -34,15 +34,15 @@ class MainScene : public Scene {
         }
 
         // strafe
-        Strafe = createGameObject("Strafe");
-        if (!AssimpLoader::getInstance().loadFromFile("Strafe.fbx", this, Strafe)) {
+        strafe = createGameObject("Strafe");
+        if (!Platform::getRenderer().createPrefabFromFile("Strafe.fbx", strafe)) {
             return false;
         }
-        Strafe->transform()->setLocalScale(Vec3{0.05, 0.05, 0.05});
-        Strafe->transform()->setLocalPosition(Vec3{0.3, 0, 0});
-        animator2 = Strafe->getComponent<Animator>();
+        strafe->transform()->setLocalScale(Vec3{0.05, 0.05, 0.05});
+        strafe->transform()->setLocalPosition(Vec3{0.3, 0, 0});
+        animator2 = strafe->getComponent<Animator>();
 
-        for (GameObject* gameObject : Strafe->getChildren()) {
+        for (GameObject* gameObject : strafe->getChildren()) {
             SkinnedMeshRenderer* skinnedMeshRenderer = gameObject->getComponent<SkinnedMeshRenderer>();
             if (skinnedMeshRenderer != nullptr) {
                 shaderPrograms.emplace_back(skinnedMeshRenderer->getRenderable()->getMaterial()->getShaderProgram());
@@ -85,11 +85,11 @@ class MainScene : public Scene {
         // character movement
         Vec3 rightMove = Vec3::right;
         rightMove *= Input::getAxisRaw("MovementX") * moveSpeed * deltaTime;
-        Flair->transform()->translate(rightMove);
+        flair->transform()->translate(rightMove);
 
         Vec3 upMove = Vec3::forward;
         upMove *= Input::getAxisRaw("MovementY") * moveSpeed * deltaTime;
-        Flair->transform()->translate(upMove);
+        flair->transform()->translate(upMove);
 
         if (Input::isKeyPress(KeyCode::KEY_O)) {
             animSpeed = Math::clamp(animSpeed - 1, 0.f, 60.f);
@@ -146,8 +146,8 @@ class MainScene : public Scene {
     real moveSensitivity = 1;
     real moveSpeed = 0.2;
     real animSpeed = 30;
-    GameObject* Flair = nullptr;
-    GameObject* Strafe = nullptr;
+    GameObject* flair = nullptr;
+    GameObject* strafe = nullptr;
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;
     RasterizerDescription rasterizerDesc{};

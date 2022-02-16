@@ -32,6 +32,7 @@ namespace GLaDOS {
     class Shader;
     template <typename T>
     class Rect;
+    class GameObject;
     class Renderer {
       public:
         Renderer() = default;
@@ -59,7 +60,7 @@ namespace GLaDOS {
 
         Mesh* createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage);
         Mesh* createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer);
-        Mesh* createMesh(const std::string& meshPath, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage);
+        bool createPrefabFromFile(const std::string& meshFilePath, GameObject* parent);
         VertexBuffer* createVertexBuffer(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count);
         IndexBuffer* createIndexBuffer(std::size_t stride, std::size_t count);
 

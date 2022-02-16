@@ -2,6 +2,8 @@
 #include "platform/render/Mesh.h"
 #include "platform/render/VertexBuffer.h"
 #include "platform/render/IndexBuffer.h"
+#include "core/GameObject.hpp"
+#include "core/loader/AssimpLoader.h"
 
 namespace GLaDOS {
     Logger* Renderer::logger = LoggerRegistry::getInstance().makeAndGetLogger("Renderer");
@@ -24,11 +26,8 @@ namespace GLaDOS {
         return mesh;
     }
 
-    Mesh* Renderer::createMesh(const std::string& meshPath, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) {
-        // TODO
-        // const auto& [vertexBuffer, indexBuffer] = MeshLoader::loadFromFile(meshPath);
-        // return createMesh(vertexBuffer, indexBuffer, primitiveTopology, dynamicVertex, dynamicIndex);
-        return nullptr;
+    bool Renderer::createPrefabFromFile(const std::string& meshPath, GameObject* parent) {
+        return AssimpLoader::getInstance().loadFromFile(meshPath, parent);
     }
 
     VertexBuffer* Renderer::createVertexBuffer(const VertexFormatDescriptor& vertexFormatDescriptor, std::size_t count) {

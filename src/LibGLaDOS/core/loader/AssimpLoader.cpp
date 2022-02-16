@@ -44,7 +44,7 @@ namespace GLaDOS {
         setDestructionPhase(1);
     }
 
-    bool AssimpLoader::loadFromFile(const std::string& fileName, Scene* scene, GameObject* parent) {
+    bool AssimpLoader::loadFromFile(const std::string& fileName, GameObject* parent) {
         std::string directoryPath = StringUtils::splitFileName(fileName).first;
         std::string filePath = std::string(RESOURCE_DIR) + fileName;
 
@@ -63,19 +63,19 @@ namespace GLaDOS {
         // but Vulkan API uses texture coordinates as same as Metal API so flip this.
         importFlags |= aiProcess_FlipUVs;
 #endif
-        const aiScene* aiscene = importer.ReadFile(filePath, importFlags);
+        const aiScene* scene = importer.ReadFile(filePath, importFlags);
 
-        if (aiscene == nullptr || ((aiscene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) != 0u) || aiscene->mRootNode == nullptr) {
+        if (scene == nullptr || ((scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) != 0u) || scene->mRootNode == nullptr) {
             LOG_ERROR(logger, "Load from file error: {0}", importer.GetErrorString());
             return false;
         }
 
-        if (!aiscene->HasMeshes()) {
+        if (!scene->HasMeshes()) {
             LOG_ERROR(logger, "Scene is without meshes.");
             return false;
         }
 
-        aiNode* rootNode = aiscene->mRootNode;
+        aiNode* rootNode = scene->mRootNode;
         Mat4<real> rootToWorld = Mat4<real>::inverse(toMat4(rootNode->mTransformation));
         parent->transform()->decomposeSRT(rootToWorld);
 
@@ -88,7 +88,7 @@ namespace GLaDOS {
 
         // load bone hierarchy
         for (uint32_t i = 0; i < rootNode->mNumChildren; i++) {
-            GameObject* boneNode = buildBoneHierarchy(rootNode->mChildren[i], scene, parent, nodeMap);
+            GameObject* boneNode = buildBoneHierarchy(rootNode->mChildren[i], parent, nodeMap);
             if (boneNode != nullptr) {
                 parent->getChildren().emplace_back(boneNode);
             }
@@ -99,7 +99,7 @@ namespace GLaDOS {
         if (!parent->getChildren().empty()) {
             rootBoneNode = parent->getChildren().front();
         }
-        Vector<Mesh*> meshes = loadNodeMeshAndMaterial(rootNode, aiscene, scene, parent, rootBoneNode, nodeMap, directoryPath);
+        Vector<Mesh*> meshes = loadNodeMeshAndMaterial(rootNode, scene, parent, rootBoneNode, nodeMap, directoryPath);
 
         // setting bind pose
         if (rootBoneNode != nullptr) {
@@ -111,7 +111,7 @@ namespace GLaDOS {
         }
 
         // load animations
-        Vector<AnimationClip*> animationClips = loadAnimation(aiscene, rootBoneNode, nodeMap);
+        Vector<AnimationClip*> animationClips = loadAnimation(scene, rootBoneNode, nodeMap);
         if (!animationClips.empty()) {
             Animator* animator = parent->addComponent<Animator>();
             for (AnimationClip* clip : animationClips) {
@@ -124,28 +124,28 @@ namespace GLaDOS {
         return true;
     }
 
-    Vector<Mesh*> AssimpLoader::loadNodeMeshAndMaterial(aiNode* node, const aiScene* aiscene, Scene* scene,
+    Vector<Mesh*> AssimpLoader::loadNodeMeshAndMaterial(aiNode* node, const aiScene* scene,
                                                         GameObject* parent, GameObject* rootBone,
                                                         UnorderedMap<std::string, SceneNode*>& nodeMap, const std::string& textureRootPath) {
         Vector<Mesh*> meshes;
 
         // load mesh, material at the current node
         for (uint32_t i = 0; i < node->mNumMeshes; i++) {
-            aiMesh* mesh = aiscene->mMeshes[node->mMeshes[i]];
-            aiMaterial* material = aiscene->mMaterials[mesh->mMaterialIndex];
+            aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+            aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
             Mesh* currentMesh = loadMesh(mesh, nodeMap);
             Material* currentMaterial = loadMaterial(material, rootBone, textureRootPath);
 
             if (currentMesh != nullptr && currentMaterial != nullptr) {
-                createGameObject(mesh->mName.C_Str(), currentMesh, currentMaterial, scene, parent, rootBone);
+                createGameObject(mesh->mName.C_Str(), currentMesh, currentMaterial, parent, rootBone);
                 meshes.emplace_back(currentMesh);
             }
         }
 
         // recursively load all the child node
         for (uint32_t j = 0; j < node->mNumChildren; j++) {
-            Vector<Mesh*> childMeshes = loadNodeMeshAndMaterial(node->mChildren[j], aiscene, scene, parent, rootBone, nodeMap, textureRootPath);
+            Vector<Mesh*> childMeshes = loadNodeMeshAndMaterial(node->mChildren[j], scene, parent, rootBone, nodeMap, textureRootPath);
             std::copy(childMeshes.begin(), childMeshes.end(), std::back_inserter(meshes));
         }
 
@@ -363,16 +363,16 @@ namespace GLaDOS {
         }
     }
 
-    GameObject* AssimpLoader::buildBoneHierarchy(const aiNode* node, Scene* scene, GameObject* parent, UnorderedMap<std::string, SceneNode*>& nodeMap) {
+    GameObject* AssimpLoader::buildBoneHierarchy(const aiNode* node, GameObject* parent, UnorderedMap<std::string, SceneNode*>& nodeMap) {
         SceneNode* sceneNode = findNode(node->mName.C_Str(), nodeMap);
         if (sceneNode == nullptr || !sceneNode->isBone) {
             return nullptr;
         }
-        GameObject* boneNode = scene->createGameObject(sceneNode->name, parent);
+        GameObject* boneNode = parent->scene()->createGameObject(sceneNode->name, parent);
         boneNode->transform()->decomposeSRT(toMat4(node->mTransformation));
 
         for (uint32_t i = 0; i < node->mNumChildren; i++) {
-            GameObject* childRigGameObject = buildBoneHierarchy(node->mChildren[i], scene, boneNode, nodeMap);
+            GameObject* childRigGameObject = buildBoneHierarchy(node->mChildren[i], boneNode, nodeMap);
             if (childRigGameObject != nullptr) {
                 boneNode->getChildren().emplace_back(childRigGameObject);
             }
@@ -416,12 +416,11 @@ namespace GLaDOS {
         return nullptr;
     }
 
-    void AssimpLoader::createGameObject(const std::string& name, Mesh* mesh, Material* material, Scene* scene, GameObject* parent, GameObject* rootBone) {
+    void AssimpLoader::createGameObject(const std::string& name, Mesh* mesh, Material* material, GameObject* parent, GameObject* rootBone) {
+        GameObject* node = parent->scene()->createGameObject(name, parent);
         if (rootBone != nullptr) {
-            GameObject* node = scene->createGameObject(name, parent);
             node->addComponent<SkinnedMeshRenderer>(mesh, material, rootBone);
         } else {
-            GameObject* node = scene->createGameObject(name, parent);
             node->addComponent<MeshRenderer>(mesh, material);
         }
     }
