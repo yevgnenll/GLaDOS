@@ -40,10 +40,6 @@ class MainScene : public Scene {
             Platform::getInstance().quit();
         }
 
-        shaderProgram->setUniform("model", cubeObject->transform()->localToWorldMatrix());
-        shaderProgram->setUniform("view", camera->worldToCameraMatrix());
-        shaderProgram->setUniform("projection", camera->projectionMatrix());
-
         // camera translation
         Vec3 right = cameraTransform->right();
         right *= Input::getAxisRaw("Horizontal") * moveSensitivity * deltaTime;

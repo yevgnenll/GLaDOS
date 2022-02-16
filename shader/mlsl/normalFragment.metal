@@ -10,6 +10,8 @@ typedef struct {
 
 typedef struct {
   float3 viewPos;
+  float4 albedo;
+  float4 specular;
   bool isWireFrameMode;
 } FragmentUniforms;
 

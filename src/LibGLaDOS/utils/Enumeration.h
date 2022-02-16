@@ -363,6 +363,12 @@ namespace GLaDOS {
         Additive
     };
 
+    enum class LightType {
+        DirectionalLight = 0,
+        PointLight,
+        SpotLight
+    };
+
     enum class JsonNodeType {
         Null = 0,
         Boolean,
