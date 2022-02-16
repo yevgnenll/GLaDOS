@@ -466,4 +466,35 @@ namespace GLaDOS {
         return Platform::getRenderer().createMesh(vertexBuffer, indexBuffer);
     }
 
+    Mesh* MeshGenerator::generateFrustum(const Vec3& center, real fov, real maxRange, real minRange, real aspect) {
+        real tanAngle = Math::tan(fov * 0.5f);
+
+        real yNear = minRange * tanAngle;
+        real xNear = aspect * yNear;
+        real yFar = maxRange * tanAngle;
+        real xFar = aspect * yFar;
+
+        Vec3 nearLeftTop(-xNear, yNear, -10.0f * minRange);
+        Vec3 nearLeftBottom(-xNear, -yNear, -10.0f * minRange);
+        Vec3 nearRightBottom(xNear, -yNear, -10.0f * minRange);
+        Vec3 nearRightTop(xNear, yNear, -10.0f * minRange);
+
+        Vec3 farLeftTop(-xFar, yFar, -10.0f * maxRange);
+        Vec3 farLeftBottom(-xFar, -yFar, -10.0f * maxRange);
+        Vec3 farRightBottom(xFar, -yFar, -10.0f * maxRange);
+        Vec3 farRightTop(xFar, yFar, -10.0f * maxRange);
+
+        Vec3 vertices[24] = {
+            nearLeftTop,     nearLeftBottom,  nearRightBottom, nearRightTop,   // front face
+            farLeftTop,      farLeftBottom,   farRightBottom,  farRightTop,    // far face
+            nearLeftBottom,  nearRightBottom, farRightBottom,  farLeftBottom,  // bottom face
+            nearLeftTop,     nearRightTop,    farRightTop,     farLeftTop,     // top face
+            nearLeftBottom,  farLeftBottom,   farLeftTop,      nearLeftTop,    // left face
+            nearRightBottom, farRightBottom,  farRightTop,     nearRightTop    // right face
+        };
+
+        VertexBuffer* vertexBuffer = NEW_T(VertexBuffer(VertexFormatDescriptor().position().normal(), 24));
+        vertexBuffer->copyBufferData(vertices);
+        return Platform::getRenderer().createMesh(vertexBuffer, nullptr, PrimitiveTopology::Line);
+    }
 }  // namespace GLaDOS

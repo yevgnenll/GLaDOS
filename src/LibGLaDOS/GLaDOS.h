@@ -14,6 +14,7 @@
 #include "core/component/renderer/FontRenderer.h"
 #include "core/component/renderer/LineRenderer.h"
 #include "core/component/renderer/TilemapRenderer.h"
+#include "core/component/renderer/BoneRenderer.h"
 #include "core/component/Transform.h"
 #include "core/component/Animator.h"
 #include "core/animation/AnimationState.h"

@@ -58,6 +58,7 @@ namespace GLaDOS {
         virtual TextureCube* createTextureCube(const std::string& name, const Array<std::string, 6>& cubeNames, PixelFormat format) = 0;
         virtual RenderTexture* createRenderTexture(const std::string& name) = 0;
 
+        Mesh* createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveTopology primitiveTopology);
         Mesh* createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage);
         Mesh* createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer);
         bool createPrefabFromFile(const std::string& meshFilePath, GameObject* parent);

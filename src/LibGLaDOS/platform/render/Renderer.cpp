@@ -8,6 +8,15 @@
 namespace GLaDOS {
     Logger* Renderer::logger = LoggerRegistry::getInstance().makeAndGetLogger("Renderer");
 
+    Mesh* Renderer::createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveTopology primitiveTopology) {
+        Mesh* mesh = NEW_T(Mesh(primitiveTopology, GPUBufferUsage::Private, GPUBufferUsage::Private));
+        if (!mesh->build(vertexBuffer, indexBuffer)) {
+            LOG_ERROR(logger, "Failed to build mesh");
+            return nullptr;
+        }
+        return mesh;
+    }
+
     Mesh* Renderer::createMesh(VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage) {
         Mesh* mesh = NEW_T(Mesh(primitiveTopology, vertexUsage, indexUsage));
         if (!mesh->build(vertexBuffer, indexBuffer)) {
