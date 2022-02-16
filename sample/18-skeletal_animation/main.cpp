@@ -19,8 +19,7 @@ class MainScene : public Scene {
 
         // flair
         Flair = createGameObject("Flair");
-        AssimpLoader loader;
-        if (!loader.loadFromFile("Flair.fbx", this, Flair)) {
+        if (!AssimpLoader::getInstance().loadFromFile("Flair.fbx", this, Flair)) {
             return false;
         }
         Flair->transform()->setLocalScale(Vec3{0.05, 0.05, 0.05});
@@ -36,8 +35,7 @@ class MainScene : public Scene {
 
         // strafe
         Strafe = createGameObject("Strafe");
-        AssimpLoader loader2;
-        if (!loader2.loadFromFile("Strafe.fbx", this, Strafe)) {
+        if (!AssimpLoader::getInstance().loadFromFile("Strafe.fbx", this, Strafe)) {
             return false;
         }
         Strafe->transform()->setLocalScale(Vec3{0.05, 0.05, 0.05});

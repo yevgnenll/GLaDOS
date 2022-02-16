@@ -23,7 +23,7 @@ namespace GLaDOS {
                                                        static_cast<double>(mClearColor.g),
                                                        static_cast<double>(mClearColor.b),
                                                        static_cast<double>(mClearColor.a));
-        colorAttachment.storeAction = MTLStoreActionStore;
+        colorAttachment.storeAction = MTLStoreActionStore; // MTLStoreActionMultisampleResolve
         colorAttachment.loadAction = MTLLoadActionClear;
 
         MTLRenderPassDepthAttachmentDescriptor* depthAttachment = passDescriptor.depthAttachment;
@@ -66,8 +66,11 @@ namespace GLaDOS {
                                                                                                          width:static_cast<NSUInteger>(drawableSize.width)
                                                                                                         height:static_cast<NSUInteger>(drawableSize.height)
                                                                                                      mipmapped:NO];
-            textureDescriptor.usage = MTLTextureUsageRenderTarget;
-            textureDescriptor.storageMode = MTLStorageModePrivate;
+            [textureDescriptor setUsage:MTLTextureUsageRenderTarget]; // | MTLTextureUsageShaderRead
+            [textureDescriptor setStorageMode:MTLStorageModePrivate];
+//            [textureDescriptor setTextureType:MTLTextureType2DMultisample];
+//            [textureDescriptor setSampleCount:4];
+
             if (mDepthStencilTexture != nil) {
                 [mDepthStencilTexture release];
             }

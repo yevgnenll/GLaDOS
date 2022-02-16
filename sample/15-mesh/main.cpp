@@ -20,7 +20,7 @@ class MainScene : public Scene {
         model = createGameObject("model");
 
         AssimpLoader loader;
-        if (!loader.loadFromFile("kabuto-samurai-helmet/source/kabuto.fbx", this, model)) {
+        if (!AssimpLoader::getInstance().loadFromFile("Low Poly Pine/Low Poly Pine.obj", this, model)) {
             return false;
         }
         model->transform()->setLocalScale(Vec3{0.03, 0.03, 0.03});

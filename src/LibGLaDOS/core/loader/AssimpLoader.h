@@ -7,6 +7,7 @@
 #include "math/Mat4.hpp"
 #include "math/Color.h"
 #include "platform/render/VertexFormat.h"
+#include "utils/Singleton.hpp"
 
 struct aiNode;
 struct aiScene;
@@ -43,36 +44,34 @@ namespace GLaDOS {
         Vec2 texcoord;
     };
 
-    class AssimpLoader {
+    class AssimpLoader : public Singleton<AssimpLoader> {
       public:
+        AssimpLoader();
+        ~AssimpLoader() override = default;
         bool loadFromFile(const std::string& fileName, Scene* scene, GameObject* parent);
 
       private:
-        Vector<Mesh*> loadNodeMeshAndMaterial(aiNode* node, const aiScene* aiscene, Scene* scene, GameObject* parent, GameObject* rootBone);
-        Mesh* loadMesh(aiMesh* mesh);
-        Material* loadMaterial(aiMaterial* material, GameObject* rootBone);
-        Texture* loadTexture(aiMaterial* material, aiTextureType textureType);
-        void buildNodeTable(const aiNode* node, int32_t& boneCounter);
-        GameObject* buildBoneHierarchy(const aiNode* node, Scene* scene, GameObject* parent);
-        Vector<AnimationClip*> loadAnimation(const aiScene* scene, GameObject* rootNode);
-        void getBindPose(Vector<Mat4<real>>& bindPose);
+        Vector<Mesh*> loadNodeMeshAndMaterial(aiNode* node, const aiScene* aiscene, Scene* scene, GameObject* parent, GameObject* rootBone, UnorderedMap<std::string, SceneNode*>& nodeMap, const std::string& textureRootPath);
+        Mesh* loadMesh(aiMesh* mesh, UnorderedMap<std::string, SceneNode*>& nodeMap);
+        Material* loadMaterial(aiMaterial* material, GameObject* rootBone, const std::string& textureRootPath);
+        Texture* loadTexture(aiMaterial* material, aiTextureType textureType, const std::string& textureRootPath);
+        Vector<AnimationClip*> loadAnimation(const aiScene* scene, GameObject* rootNode, UnorderedMap<std::string, SceneNode*>& nodeMap);
+        void buildNodeMap(const aiNode* node, int32_t& boneCounter, UnorderedMap<std::string, SceneNode*>& nodeMap);
+        GameObject* buildBoneHierarchy(const aiNode* node, Scene* scene, GameObject* parent, UnorderedMap<std::string, SceneNode*>& nodeMap);
 
-        SceneNode* findNode(const std::string& name);
-        int32_t addNode(const SceneNode& node);
-        static GameObject* retrieveTargetBone(const std::string& name, GameObject* rootNode);
-        static void createGameObject(const std::string& name, Mesh* mesh, Material* material, Scene* scene, GameObject* parent, GameObject* rootBone);
-        static Mat4<real> toMat4(const aiMatrix4x4& mat);
-        static Vec3 toVec3(const aiVector3D& vec3);
-        static Vec2 toVec2(const aiVector3D& vec3);
-        static Color toColor(const aiColor4D& color);
-        static TextureType toTextureType(aiTextureType textureType);
+        void getBindPose(Vector<Mat4<real>>& bindPose, UnorderedMap<std::string, SceneNode*>& nodeMap);
+        SceneNode* findNode(const std::string& name, UnorderedMap<std::string, SceneNode*>& nodeMap);
+        GameObject* retrieveTargetBone(const std::string& name, GameObject* rootNode);
+        void createGameObject(const std::string& name, Mesh* mesh, Material* material, Scene* scene, GameObject* parent, GameObject* rootBone);
+        Mat4<real> toMat4(const aiMatrix4x4& mat);
+        Vec3 toVec3(const aiVector3D& vec3);
+        Vec2 toVec2(const aiVector3D& vec3);
+        Color toColor(const aiColor4D& color);
+        TextureType toTextureType(aiTextureType textureType);
 
         static Logger* logger;
         static const uint32_t MAX_BONE_INFLUENCE;
         static const Array<aiTextureType, 10> SUPPORT_TEXTURE_TYPES;
-
-        UnorderedMap<std::string, SceneNode> mNodeTable;
-        std::string mDirectoryPath;
     };
 }
 
