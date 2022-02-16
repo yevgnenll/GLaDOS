@@ -39,7 +39,7 @@ namespace GLaDOS {
         AnimationState* newState = NEW_T(AnimationState);
         newState->setName(name);
         newState->setClip(clip);
-        newState->setTicksPerSecond(30); // TODO: fix it customizable
+        newState->setTicksPerSecond(clip->getInitialTicksPerSecond());
         mAnimations.insert(std::make_pair(name, newState));
     }
 

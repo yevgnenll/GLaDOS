@@ -26,6 +26,8 @@ namespace GLaDOS {
 
         bool isLooping() const;
         void setLooping(bool loop);
+        real getInitialTicksPerSecond() const;
+        void setInitialTicksPerSecond(real ticksPerSecond);
 
       private:
         real clampTimeInCurve(real time) const;
@@ -34,6 +36,7 @@ namespace GLaDOS {
         std::string mName;
         real mStartTime;
         real mEndTime;
+        real mInitialTicksPerSecond;
         bool mIsLoop;
     };
 }

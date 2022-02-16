@@ -297,6 +297,7 @@ namespace GLaDOS {
             AnimationClip* clip = NEW_T(AnimationClip(animationName));
             clip->setStartTime(0);
             clip->setEndTime(static_cast<real>(animation->mDuration));
+            clip->setInitialTicksPerSecond(static_cast<real>(animation->mTicksPerSecond));
 
             for (uint32_t j = 0; j < animation->mNumChannels; j++) {
                 aiNodeAnim* channel = animation->mChannels[j];

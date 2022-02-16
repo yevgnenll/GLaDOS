@@ -15,8 +15,35 @@ class MainScene : public Scene {
 
         camera = getMainCamera();
         cameraTransform = camera->gameObject()->transform();
-        cameraTransform->setLocalPosition({0, 0.2, 1});
+        cameraTransform->setLocalPosition({0.3, 0.2, 1});
 
+        if (!loadPrefab()) {
+            return false;
+        }
+
+        GameObject* plane = createGameObject("plane");
+        Mesh* planeMesh = MeshGenerator::generateTexturedCube();
+        Material* planeMat = NEW_T(Material);
+        colorShader = Platform::getRenderer().createShaderProgramFromFile("colorVertex", "colorFragment");
+        if (colorShader == nullptr) {
+            return false;
+        }
+        planeMat->setShaderProgram(colorShader);
+        planeMat->setAlbedo(Color::grey);
+        plane->addComponent<MeshRenderer>(planeMesh, planeMat);
+        plane->transform()->setLocalScale(Vec3{10, 0.1, 10});
+        plane->transform()->translate(Vec3{0, -0.1, 0});
+
+        Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
+        Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
+        Input::addAxis("Vertical", NEW_T(InputHandler(KeyCode::KEY_W, KeyCode::KEY_S, 0.1)));
+        Input::addAxis("MovementX", NEW_T(InputHandler(KeyCode::KEY_RIGHT, KeyCode::KEY_LEFT, 0.1)));
+        Input::addAxis("MovementY", NEW_T(InputHandler(KeyCode::KEY_UP, KeyCode::KEY_DOWN, 0.1)));
+
+        return true;
+    }
+
+    bool loadPrefab() {
         // flair
         flair = createGameObject("Flair");
         if (!Platform::getRenderer().createPrefabFromFile("Flair.fbx", flair)) {
@@ -24,7 +51,6 @@ class MainScene : public Scene {
         }
         flair->transform()->setLocalScale(Vec3{0.05, 0.05, 0.05});
         animator = flair->getComponent<Animator>();
-        animator->getClipNames(animaitonClips);
 
         for (GameObject* gameObject : flair->getChildren()) {
             SkinnedMeshRenderer* skinnedMeshRenderer = gameObject->getComponent<SkinnedMeshRenderer>();
@@ -49,23 +75,22 @@ class MainScene : public Scene {
             }
         }
 
-        GameObject* plane = createGameObject("plane");
-        Mesh* planeMesh = MeshGenerator::generateTexturedCube();
-        Material* planeMat = NEW_T(Material);
-        colorShader = Platform::getRenderer().createShaderProgramFromFile("colorVertex", "colorFragment");
-        if (colorShader == nullptr) {
+        // woman
+        woman = createGameObject("woman");
+        if (!Platform::getRenderer().createPrefabFromFile("Woman.gltf", woman)) {
             return false;
         }
-        planeMat->setShaderProgram(colorShader);
-        plane->addComponent<MeshRenderer>(planeMesh, planeMat);
-        plane->transform()->setLocalScale(Vec3{10, 0.1, 10});
-        plane->transform()->translate(Vec3{0, -0.1, 0});
+        woman->transform()->setLocalScale(Vec3{0.03, 0.03, 0.03});
+        woman->transform()->setLocalPosition(Vec3{0.6, 0, 0});
+        animator3 = woman->getComponent<Animator>();
+        animator3->getClipNames(animaitonClips);
 
-        Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
-        Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
-        Input::addAxis("Vertical", NEW_T(InputHandler(KeyCode::KEY_W, KeyCode::KEY_S, 0.1)));
-        Input::addAxis("MovementX", NEW_T(InputHandler(KeyCode::KEY_RIGHT, KeyCode::KEY_LEFT, 0.1)));
-        Input::addAxis("MovementY", NEW_T(InputHandler(KeyCode::KEY_UP, KeyCode::KEY_DOWN, 0.1)));
+        for (GameObject* gameObject : woman->getChildren()) {
+            SkinnedMeshRenderer* skinnedMeshRenderer = gameObject->getComponent<SkinnedMeshRenderer>();
+            if (skinnedMeshRenderer != nullptr) {
+                shaderPrograms.emplace_back(skinnedMeshRenderer->getRenderable()->getMaterial()->getShaderProgram());
+            }
+        }
 
         return true;
     }
@@ -75,8 +100,9 @@ class MainScene : public Scene {
             Platform::getInstance().quit();
         }
 
-        animator->play(animaitonClips[curClipIndex]);
+        animator->play("mixamo.com");
         animator2->play("mixamo.com");
+        animator3->play(animaitonClips[curClipIndex]);
 
         if (Input::isKeyDown(KeyCode::KEY_RETURN)) {
             curClipIndex = (curClipIndex + 1) % animaitonClips.size();
@@ -92,13 +118,13 @@ class MainScene : public Scene {
         flair->transform()->translate(upMove);
 
         if (Input::isKeyPress(KeyCode::KEY_O)) {
-            animSpeed = Math::clamp(animSpeed - 1, 0.f, 60.f);
-            animator->getCurrentState()->setTicksPerSecond(animSpeed);
+            animSpeed = Math::clamp(animSpeed - 100, 0.f, 2000.f);
+            animator3->getCurrentState()->setTicksPerSecond(animSpeed);
         }
 
         if (Input::isKeyPress(KeyCode::KEY_P)) {
-            animSpeed = Math::clamp(animSpeed + 1, 0.f, 60.f);
-            animator->getCurrentState()->setTicksPerSecond(animSpeed);
+            animSpeed = Math::clamp(animSpeed + 100, 0.f, 2000.f);
+            animator3->getCurrentState()->setTicksPerSecond(animSpeed);
         }
 
         // camera rotation
@@ -145,14 +171,13 @@ class MainScene : public Scene {
     real dragSensitivity = 7;
     real moveSensitivity = 1;
     real moveSpeed = 0.2;
-    real animSpeed = 30;
-    GameObject* flair = nullptr;
-    GameObject* strafe = nullptr;
+    real animSpeed = 1000;
+    GameObject* flair = nullptr, *strafe = nullptr, *woman = nullptr;
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;
     RasterizerDescription rasterizerDesc{};
     Vector<ShaderProgram*> shaderPrograms;
-    Animator* animator = nullptr, *animator2 = nullptr;
+    Animator* animator = nullptr, *animator2 = nullptr, *animator3 = nullptr;
     Vector<std::string> animaitonClips;
     int curClipIndex = 0;
     ShaderProgram* colorShader{nullptr};

@@ -63,6 +63,14 @@ namespace GLaDOS {
         mIsLoop = loop;
     }
 
+    real AnimationClip::getInitialTicksPerSecond() const {
+        return mInitialTicksPerSecond;
+    }
+
+    void AnimationClip::setInitialTicksPerSecond(real ticksPerSecond) {
+        mInitialTicksPerSecond = ticksPerSecond;
+    }
+
     real AnimationClip::clampTimeInCurve(real time) const {
         if (mIsLoop) {
             real duration = getDuration();

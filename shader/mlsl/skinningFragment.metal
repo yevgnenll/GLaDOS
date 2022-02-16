@@ -19,6 +19,7 @@ typedef struct {
 
 constant float4 lightColor = float4(1.0);
 constant float3 lightPos = float3(0.0, 10.0, 0.0);
+constant float ambientStrength = 0.7;
 constant float shininess = 16;
 constant float pi = 3.14159265;
 
@@ -28,7 +29,7 @@ fragment float4 main0(VertexOut verts [[stage_in]], constant FragmentUniforms &u
     }
 
     // ambient color
-	float4 ambient = lightColor;
+	float4 ambient = ambientStrength * lightColor;
 
 	// diffuse color
 	float3 norm = normalize(verts._normal);
