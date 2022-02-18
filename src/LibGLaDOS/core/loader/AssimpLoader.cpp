@@ -138,7 +138,12 @@ namespace GLaDOS {
             Material* currentMaterial = loadMaterial(material, rootBone, textureRootPath);
 
             if (currentMesh != nullptr && currentMaterial != nullptr) {
-                createGameObject(mesh->mName.C_Str(), currentMesh, currentMaterial, parent, rootBone);
+                GameObject* parentNode = parent;
+                SceneNode* sceneNode = findNode(node->mParent->mName.C_Str(), nodeMap);
+                if (sceneNode != nullptr && sceneNode->isBone) {
+                    parentNode = retrieveTargetBone(sceneNode->name, rootBone);
+                }
+                createGameObject(mesh->mName.C_Str(), currentMesh, currentMaterial, parentNode, rootBone);
                 meshes.emplace_back(currentMesh);
             }
         }
@@ -153,6 +158,7 @@ namespace GLaDOS {
     }
 
     Mesh* AssimpLoader::loadMesh(aiMesh* mesh, UnorderedMap<std::string, SceneNode*>& nodeMap) {
+        // TODO: fix dynamic vertex format
         VertexFormatDescriptor vertexDesc = VertexFormatDescriptor().position().normal().tangent().biTangent().boneWeight().boneIndex().texCoord0();
 
         // process mesh's vertices
@@ -174,9 +180,13 @@ namespace GLaDOS {
                 vertex.biTangent = toVec3(mesh->mBitangents[i]);
             }
 
+            // TODO: AI_MAX_NUMBER_OF_TEXTURECOORDS (4)
             if (mesh->HasTextureCoords(0)) {
                 vertex.texcoord = toVec2(mesh->mTextureCoords[0][i]);
             }
+
+            // TODO: AI_MAX_NUMBER_OF_COLOR_SETS (4)
+            // mesh->HasVertexColors(0)
 
             for (uint32_t j = 0; j < MAX_BONE_INFLUENCE; j++) {
                 vertex.boneIndex[j] = -1;
@@ -234,17 +244,12 @@ namespace GLaDOS {
     }
 
     Material* AssimpLoader::loadMaterial(aiMaterial* material, GameObject* rootBone, const std::string& textureRootPath) {
-        ShaderProgram* shaderProgram;
-        if (rootBone != nullptr) {
-            shaderProgram = Platform::getRenderer().createShaderProgramFromFile("skinningVertex", "skinningFragment");
-            if (shaderProgram == nullptr) {
-                return nullptr;
-            }
-        } else {
-            shaderProgram = Platform::getRenderer().createShaderProgramFromFile("normalVertex", "normalFragment");
-            if (shaderProgram == nullptr) {
-                return nullptr;
-            }
+        std::pair<std::string, std::string> shaderPair = (rootBone != nullptr)
+                                                             ? std::make_pair("skinningVertex", "skinningFragment")
+                                                             : std::make_pair("normalVertex", "normalFragment");
+        ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgramFromFile(shaderPair.first, shaderPair.second);
+        if (shaderProgram == nullptr) {
+            return nullptr;
         }
 
         Material* mat = NEW_T(Material);

@@ -29,18 +29,22 @@ brew install catch2 google-benchmark
 - Supporting texture format (JPEG, PNG, TGA, BMP, PSD, GIF, HDR, PIC, PNM)
 - CPU bounded Mipmaps texture generation
 - Model loading and rendering (DAE, FBX, glTF, OBJ, PLY, STL etc...)
-- handmade bunch of Math classes (Vec2, Vec3, Vec4, Quat, Mat4, Angle, Rect, Point)
+- Handmade bunch of Math classes (Vec2, Vec3, Vec4, Quat, Mat4, Angle, Rect, Point)
 - ECS system inspired by unity ECS
-- 2D, 3D Animation system (blending, keyframe, skinning, bone)
-- (TODO) Inverse Kinematics (IK solver)
-- (TODO) Collision detection
-- (TODO) various Light (Point, Directional, Spot)
-- (TODO) audio loader and play (WAV, OGG)
+- 2D, 3D Animation system (keyframe, skinning, rigging, blending)
 - 2D Sprite rendering
 - Custom memory allocator for easy to debug
 - Handmade JSON parser
 - Various kind of Thread safe data structure
 - Platform independent rendering abstraction (DirectX12, Metal, Vulkan support)
+- (TODO) Inverse Kinematics (IK solver)
+- (TODO) Collision detection
+- (TODO) various Light (Point, Directional, Spot)
+- (TODO) audio loader and play (WAV, OGG)
+- (TODO) compressed Texture loading (DXT, BC)
+- (TODO) Terrain heightmap brush, texture splatting
+- (TODO) PBR material system
+- (TODO) Shader graph
 
 ### Sample
 
