@@ -3,6 +3,7 @@
 
 #include "GPUBuffer.h"
 #include "utils/Enumeration.h"
+#include "resource/Resource.h"
 
 namespace GLaDOS {
     template <typename T>
@@ -12,11 +13,11 @@ namespace GLaDOS {
     class VertexBuffer;
     class IndexBuffer;
     class VertexFormatHolder;
-    class Mesh {
+    class Mesh : public Resource {
       public:
-        Mesh();
-        Mesh(PrimitiveTopology primitiveType, GPUBufferUsage vertexBufferUsage, GPUBufferUsage indexBufferUsage);
-        ~Mesh();
+        Mesh(const std::string& name);
+        Mesh(const std::string& name, PrimitiveTopology primitiveType, GPUBufferUsage vertexBufferUsage, GPUBufferUsage indexBufferUsage);
+        ~Mesh() override;
 
         Mesh(const Mesh& other);
         Mesh& operator=(const Mesh& other);

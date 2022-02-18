@@ -8,11 +8,13 @@
 
 namespace GLaDOS {
     Logger* Mesh::logger = LoggerRegistry::getInstance().makeAndGetLogger("Mesh");
-    Mesh::Mesh() {
+    Mesh::Mesh(const std::string& name) : Resource(ResourceType::Mesh) {
+        setName(name);
     }
 
-    Mesh::Mesh(PrimitiveTopology primitiveType, GPUBufferUsage vertexBufferUsage, GPUBufferUsage indexBufferUsage)
-        : mPrimitiveTopology{primitiveType}, mVertexBufferUsage{vertexBufferUsage}, mIndexBufferUsage{indexBufferUsage} {
+    Mesh::Mesh(const std::string& name, PrimitiveTopology primitiveType, GPUBufferUsage vertexBufferUsage, GPUBufferUsage indexBufferUsage)
+        : Resource(ResourceType::Mesh), mPrimitiveTopology{primitiveType}, mVertexBufferUsage{vertexBufferUsage}, mIndexBufferUsage{indexBufferUsage} {
+        setName(name);
     }
 
     Mesh::~Mesh() {
@@ -23,7 +25,7 @@ namespace GLaDOS {
     }
 
     Mesh::Mesh(const Mesh& other)
-        : mPrimitiveTopology{other.mPrimitiveTopology}, mVertexStartLocation{other.mVertexStartLocation}, mIndexStartLocation{other.mIndexStartLocation},
+        : Resource(ResourceType::Mesh), mPrimitiveTopology{other.mPrimitiveTopology}, mVertexStartLocation{other.mVertexStartLocation}, mIndexStartLocation{other.mIndexStartLocation},
             mVertexBufferUsage{other.mVertexBufferUsage}, mIndexBufferUsage{other.mIndexBufferUsage} {
         VertexBuffer* vertexBuffer = Platform::getRenderer().createVertexBuffer(other.mVertexBufferCPU->getVertexFormatDescriptor(), other.mVertexBufferCPU->count());
         vertexBuffer->copyBufferData(other.mVertexBufferCPU->buffer());

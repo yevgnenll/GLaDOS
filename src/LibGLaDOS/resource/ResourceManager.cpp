@@ -35,6 +35,8 @@ namespace GLaDOS {
         auto result = mResources.insert(std::make_pair(resource->name(), resource));
         if (result.second) {
             LOG_TRACE(logger, "Resource `{0}` newly added.", resource->name());
+        } else {
+            LOG_TRACE(logger, "Resource `{0}` already exists.", resource->name());
         }
         return result.second;
     }

@@ -283,12 +283,12 @@ namespace GLaDOS {
         return texture;
     }
 
-    Texture2D* MetalRenderer::createTexture2D(PixelFormat format, Blob& data) {
+    Texture2D* MetalRenderer::createTexture2D(const std::string& name, PixelFormat format, Blob& data) {
         // TODO
         return nullptr;
     }
 
-    Texture2D* MetalRenderer::createTexture2D(uint32_t width, uint32_t height, PixelFormat format, unsigned char* data) {
+    Texture2D* MetalRenderer::createTexture2D(const std::string& name, uint32_t width, uint32_t height, PixelFormat format, unsigned char* data) {
         // TODO
         return nullptr;
     }

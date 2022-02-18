@@ -11,7 +11,6 @@ namespace GLaDOS {
     }
 
     Renderable::~Renderable() {
-        DELETE_T(mMesh, Mesh);
         DELETE_T(mMaterial, Material);
     }
 }  // namespace GLaDOS

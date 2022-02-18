@@ -1,5 +1,4 @@
 #include "MeshGenerator.h"
-
 #include "math/UVec3.h"
 #include "math/Vec3.h"
 #include "math/Math.h"
@@ -10,6 +9,7 @@
 #include "platform/render/Renderer.h"
 #include "platform/render/VertexBuffer.h"
 #include "platform/render/VertexFormat.h"
+#include "utils/UUID.h"
 
 namespace GLaDOS {
     Mesh* MeshGenerator::generateRectangle(const Rect<real> textureRect, const Size<uint32_t>& size) {
@@ -43,7 +43,7 @@ namespace GLaDOS {
         vertexBuffer->copyBufferData(vertices.data());
         IndexBuffer* indexBuffer = NEW_T(IndexBuffer(sizeof(uint16_t), indices.size()));
         indexBuffer->copyBufferData(indices.data());
-        return Platform::getRenderer().createMesh(vertexBuffer, indexBuffer);
+        return Platform::getRenderer().createMesh("Quad-" + UUID::generateV4(), vertexBuffer, indexBuffer);
     }
 
     Mesh* MeshGenerator::generatePlane(unsigned int dimensions) {
@@ -84,7 +84,7 @@ namespace GLaDOS {
         vertexBuffer->copyBufferData(vertices.data());
         IndexBuffer* indexBuffer = NEW_T(IndexBuffer(sizeof(uint32_t), indexCount));
         indexBuffer->copyBufferData(indices.data());
-        return Platform::getRenderer().createMesh(vertexBuffer, indexBuffer);
+        return Platform::getRenderer().createMesh("Plane-" + UUID::generateV4(), vertexBuffer, indexBuffer);
     }
 
     Mesh* MeshGenerator::generateCube() {
@@ -132,7 +132,7 @@ namespace GLaDOS {
         vertexBuffer->copyBufferData(vertices);
         IndexBuffer* indexBuffer = NEW_T(IndexBuffer(sizeof(uint16_t), sizeof(indices) / sizeof(uint16_t)));
         indexBuffer->copyBufferData(indices);
-        return Platform::getRenderer().createMesh(vertexBuffer, indexBuffer);
+        return Platform::getRenderer().createMesh("Cube", vertexBuffer, indexBuffer);
     }
 
     Mesh* MeshGenerator::generateTexturedCube() {
@@ -189,7 +189,7 @@ namespace GLaDOS {
 
         VertexBuffer* vertexBuffer = NEW_T(VertexBuffer(VertexFormatDescriptor().position().normal().texCoord0(), vertices.size() / 8));
         vertexBuffer->copyBufferData(vertices.data());
-        return Platform::getRenderer().createMesh(vertexBuffer, nullptr);
+        return Platform::getRenderer().createMesh("TexturedCube", vertexBuffer, nullptr);
     }
 
     Mesh* MeshGenerator::generateIcoSphere(unsigned int subdivisions) {
@@ -216,7 +216,7 @@ namespace GLaDOS {
             3, 9, 4, 3, 4, 2, 3, 2, 6, 3, 6, 8, 3, 8, 9,
             4, 9, 5, 2, 4, 11, 6, 2, 10, 8, 6, 7, 9, 8, 1};
 
-        auto subdivide = [](std::size_t p1, std::size_t p2) {
+        auto subdivide = [] (std::size_t p1, std::size_t p2) {
             Vec3 middle = (vertices[p1] + vertices[p2]) / 2.f;
             vertices.emplace_back(Vec3::normalize(middle));
             return vertices.size() - 1;
@@ -253,7 +253,7 @@ namespace GLaDOS {
         vertexBuffer->copyBufferData(vertices.data());
         IndexBuffer* indexBuffer = NEW_T(IndexBuffer(sizeof(uint32_t), indices.size()));
         indexBuffer->copyBufferData(indices.data());
-        return Platform::getRenderer().createMesh(vertexBuffer, indexBuffer);
+        return Platform::getRenderer().createMesh("Sphere-" + UUID::generateV4(), vertexBuffer, indexBuffer);
     }
 
     Mesh* MeshGenerator::generateUVSphere() {
@@ -338,7 +338,7 @@ namespace GLaDOS {
         vertexBuffer->copyBufferData(vertices.data());
         IndexBuffer* indexBuffer = NEW_T(IndexBuffer(sizeof(uint32_t), indices.size()));
         indexBuffer->copyBufferData(indices.data());
-        return Platform::getRenderer().createMesh(vertexBuffer, indexBuffer);
+        return Platform::getRenderer().createMesh("Torus-" + UUID::generateV4(), vertexBuffer, indexBuffer);
     }
 
     Mesh* MeshGenerator::generateCone(real radius, real height) {
@@ -463,7 +463,7 @@ namespace GLaDOS {
         vertexBuffer->copyBufferData(vertices.data());
         IndexBuffer* indexBuffer = NEW_T(IndexBuffer(sizeof(uint32_t), indexCount));
         indexBuffer->copyBufferData(indices.data());
-        return Platform::getRenderer().createMesh(vertexBuffer, indexBuffer);
+        return Platform::getRenderer().createMesh("TorusKnot-" + UUID::generateV4(), vertexBuffer, indexBuffer);
     }
 
     Mesh* MeshGenerator::generateFrustum(const Vec3& center, real fov, real maxRange, real minRange, real aspect) {
@@ -495,6 +495,6 @@ namespace GLaDOS {
 
         VertexBuffer* vertexBuffer = NEW_T(VertexBuffer(VertexFormatDescriptor().position().normal(), 24));
         vertexBuffer->copyBufferData(vertices);
-        return Platform::getRenderer().createMesh(vertexBuffer, nullptr, PrimitiveTopology::Line);
+        return Platform::getRenderer().createMesh("Frustum-" + UUID::generateV4(), vertexBuffer, nullptr, PrimitiveTopology::Line);
     }
 }  // namespace GLaDOS

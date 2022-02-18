@@ -230,7 +230,7 @@ namespace GLaDOS {
         vertexBuffer->copyBufferData(vertices.data());
         IndexBuffer* indexBuffer = NEW_T(IndexBuffer(sizeof(uint32_t), indices.size()));
         indexBuffer->copyBufferData(indices.data());
-        return Platform::getRenderer().createMesh(vertexBuffer, indexBuffer);
+        return Platform::getRenderer().createMesh(mesh->mName.C_Str(), vertexBuffer, indexBuffer);
     }
 
     Material* AssimpLoader::loadMaterial(aiMaterial* material, GameObject* rootBone, const std::string& textureRootPath) {
