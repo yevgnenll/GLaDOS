@@ -31,7 +31,7 @@ namespace GLaDOS {
 
         std::uniform_int_distribution<T> range(from, to);
         std::random_device randomDevice;
-        std::default_random_engine engine{randomDevice()};
+        std::mt19937 engine{randomDevice()};
 
         return range(engine);
     }

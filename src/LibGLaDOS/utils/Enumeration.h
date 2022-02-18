@@ -185,16 +185,6 @@ namespace GLaDOS {
         Borderless = 1 << 5
     };
 
-    enum class ResourceType {
-        Undefined = -1,
-        Shader,
-        AudioClip,
-        Texture,
-        Mesh,
-        AnimationClip,
-        Font
-    };
-
     enum class GPUBufferType {
         VertexBuffer,
         IndexBuffer
@@ -386,6 +376,50 @@ namespace GLaDOS {
         DoubleQuote = '\"',
         Colon = ':',
         Comma = ','
+    };
+
+    class ResourceType {
+      public:
+        enum Value : int8_t {
+            Undefined = -1,
+            Shader,
+            AudioClip,
+            Texture,
+            Mesh,
+            AnimationClip,
+            Font,
+            TheNumberOfResourceType
+        };
+
+        ResourceType() = delete;
+        constexpr ResourceType(Value _value) : value{_value} {}  // no explicit
+
+        constexpr operator Value() const { return value; }  // no explicit
+        explicit operator bool() = delete;
+        constexpr const char* toString() const {
+            switch (value) {
+                case Shader:
+                    return "Shader";
+                case AudioClip:
+                    return "AudioClip";
+                case Texture:
+                    return "Texture";
+                case Mesh:
+                    return "Mesh";
+                case AnimationClip:
+                    return "AnimationClip";
+                case Font:
+                    return "Font";
+                default:
+                    return "Undefined";
+            }
+        }
+        constexpr static std::size_t size() {
+            return TheNumberOfResourceType;
+        }
+
+      private:
+        Value value;
     };
 
     class UniformType {

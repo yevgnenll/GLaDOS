@@ -1,5 +1,5 @@
 #include "Mesh.h"
-
+#include "RootDir.h"
 #include "IndexBuffer.h"
 #include "Renderer.h"
 #include "VertexBuffer.h"
@@ -9,6 +9,7 @@
 namespace GLaDOS {
     Logger* Mesh::logger = LoggerRegistry::getInstance().makeAndGetLogger("Mesh");
     Mesh::Mesh(const std::string& name) : Resource(ResourceType::Mesh) {
+        setResourceDir(RESOURCE_DIR);
         setName(name);
     }
 

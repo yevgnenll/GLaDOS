@@ -3,6 +3,8 @@
 
 namespace GLaDOS {
     std::string UUID::generateV4() {
+        // Honestly, this is not a real Unique ID but rather a pseudo UUID.
+        // see how std::mt19937 random number generation works in documentation.
         std::stringstream ss;
         int i;
         ss << std::hex;
