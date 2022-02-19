@@ -79,7 +79,13 @@ namespace GLaDOS {
 
         Vector<uint8_t*> textureParameter;
         std::transform(images.begin(), images.end(), std::back_inserter(textureParameter), [](const InternalTextureData& it) { return it.data; });
-        generateTexture(textureParameter);
+
+        if (!generateTexture(textureParameter)) {
+            for (auto& image : images) {
+                stbi_image_free(image.data);
+            }
+            return false;
+        }
 
         for (auto& image : images) {
             LOG_TRACE(logger, "CubeTexture load success [name={0}, width={1}, height={2}, bpp={3}]", image.name, image.width, image.height, image.channels);

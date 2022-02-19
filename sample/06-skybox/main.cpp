@@ -6,7 +6,7 @@ class MainScene : public Scene {
   public:
     bool onInit() override {
         GameObject* cubemapObject = createGameObject("cubemap");
-        TextureCube* cubemap = Platform::getRenderer().createTextureCube("test", {"px.png", "nx.png", "py.png", "ny.png", "pz.png", "nz.png"}, PixelFormat::RGBA32);
+        TextureCube* cubemap = Platform::getRenderer().createTextureCube("CubeMap", {"px.png", "nx.png", "py.png", "ny.png", "pz.png", "nz.png"}, PixelFormat::RGBA32);
         if (cubemap == nullptr) {
             return false;
         }

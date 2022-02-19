@@ -51,12 +51,13 @@ namespace GLaDOS {
         virtual DepthStencilState* createDepthStencilState(const DepthStencilDescription& desc) = 0;
         virtual SamplerState* createSamplerState(const SamplerDescription& desc) = 0;
         virtual RasterizerState* createRasterizerState(const RasterizerDescription& desc) = 0;
+        virtual Texture2D* createRenderTexture2D(const std::string& name, uint32_t width, uint32_t height, PixelFormat format) = 0;
+        virtual TextureCube* createRenderTextureCube(const std::string& name, uint32_t width, uint32_t height, PixelFormat format) = 0;
         virtual Texture2D* createTexture2D(const std::string& name, PixelFormat format) = 0;
         virtual Texture2D* createTexture2D(const std::string& name, PixelFormat format, Blob& data) = 0;
-        virtual Texture2D* createTexture2D(const std::string& name, uint32_t width, uint32_t height, PixelFormat format, unsigned char* data) = 0;
+        virtual Texture2D* createTexture2D(const std::string& name, PixelFormat format, unsigned char* data) = 0;
         virtual Texture3D* createTexture3D(const std::string& name) = 0;
         virtual TextureCube* createTextureCube(const std::string& name, const Array<std::string, 6>& cubeNames, PixelFormat format) = 0;
-        virtual RenderTexture* createRenderTexture(const std::string& name) = 0;
 
         Mesh* createMesh(const std::string& name, VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveTopology primitiveTopology);
         Mesh* createMesh(const std::string& name, VertexBuffer* vertexBuffer, IndexBuffer* indexBuffer, PrimitiveTopology primitiveTopology, GPUBufferUsage vertexUsage, GPUBufferUsage indexUsage);

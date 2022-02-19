@@ -58,7 +58,7 @@ class MainScene : public Scene {
         // clang-format on
         VertexBuffer* vertexData = NEW_T(VertexBuffer(VertexFormatDescriptor().position().texCoord0(), 36));
         vertexData->copyBufferData(quad);
-        Mesh* mesh = Platform::getRenderer().createMesh(vertexData, nullptr);
+        Mesh* mesh = Platform::getRenderer().createMesh("myCube", vertexData, nullptr);
         if (mesh == nullptr) {
             return false;
         }

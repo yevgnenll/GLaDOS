@@ -409,18 +409,17 @@ namespace GLaDOS {
     }
 
     MTLTextureUsage MetalTypes::textureUsageToMetal(TextureUsage usage) {
-        switch (usage) {
-            case TextureUsage::ShaderRead:
-                return MTLTextureUsageShaderRead;
-            case TextureUsage::ShaderWrite:
-                return MTLTextureUsageShaderWrite;
-            case TextureUsage::RenderTarget:
-                return MTLTextureUsageRenderTarget;
-            default:
-                break;
+        MTLTextureUsage metalUsage = MTLTextureUsageUnknown;
+        if (usage & TextureUsage::ShaderRead) {
+            metalUsage |= MTLTextureUsageShaderRead;
         }
-
-        return MTLTextureUsageUnknown;
+        if (usage & TextureUsage::ShaderWrite) {
+            metalUsage |= MTLTextureUsageShaderWrite;
+        }
+        if (usage & TextureUsage::RenderTarget) {
+            metalUsage |= MTLTextureUsageRenderTarget;
+        }
+        return metalUsage;
     }
 }
 

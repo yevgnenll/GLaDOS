@@ -53,6 +53,14 @@ namespace GLaDOS {
         return mHeight;
     }
 
+    void Texture::setWidth(uint32_t width) {
+        mWidth = width;
+    }
+
+    void Texture::setHeight(uint32_t height) {
+        mHeight = height;
+    }
+
     uint32_t Texture::getChannels() const {
         return mChannels;
     }
@@ -71,6 +79,10 @@ namespace GLaDOS {
 
     TextureDimension Texture::getDimension() const {
         return mDimension;
+    }
+
+    void Texture::overrideUsage(TextureUsage textureUsage) {
+        mUsage = textureUsage;
     }
 
     uint32_t Texture::mapChannelNumberFrom(PixelFormat format) {

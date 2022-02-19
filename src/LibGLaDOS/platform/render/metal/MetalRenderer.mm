@@ -166,6 +166,7 @@ namespace GLaDOS {
     }
 
     ShaderProgram* MetalRenderer::createShaderProgram(Shader* vertex, Shader* fragment) {
+        // should not cache from ResourceManager
         MetalShaderProgram* shaderProgram = NEW_T(MetalShaderProgram);
 
         if (!shaderProgram->createShaderProgram(vertex, fragment)) {
@@ -266,6 +267,32 @@ namespace GLaDOS {
         return NEW_T(MetalRasterizerState(desc));
     }
 
+    Texture2D* MetalRenderer::createRenderTexture2D(const std::string& name, uint32_t width, uint32_t height, PixelFormat format) {
+        Resource* resource = ResourceManager::getInstance().getResource(name, ResourceType::Texture);
+        if (resource != nullptr) {
+            return static_cast<Texture2D*>(resource);
+        }
+
+        MetalTexture2D* texture = NEW_T(MetalTexture2D(name, format));
+        texture->overrideUsage(TextureUsage::ShaderRead | TextureUsage::RenderTarget);
+        texture->setWidth(width);
+        texture->setHeight(height);
+
+        if (!texture->generateTexture()) {
+            DELETE_T(texture, MetalTexture2D);
+            return nullptr;
+        }
+
+        ResourceManager::getInstance().store(texture);
+
+        return texture;
+    }
+
+    TextureCube* MetalRenderer::createRenderTextureCube(const std::string& name, uint32_t width, uint32_t height, PixelFormat format) {
+        // TODO
+        return nullptr;
+    }
+
     Texture2D* MetalRenderer::createTexture2D(const std::string& name, PixelFormat format) {
         Resource* resource = ResourceManager::getInstance().getResource(name, ResourceType::Texture);
         if (resource != nullptr) {
@@ -284,11 +311,23 @@ namespace GLaDOS {
     }
 
     Texture2D* MetalRenderer::createTexture2D(const std::string& name, PixelFormat format, Blob& data) {
-        // TODO
-        return nullptr;
+        Resource* resource = ResourceManager::getInstance().getResource(name, ResourceType::Texture);
+        if (resource != nullptr) {
+            return static_cast<Texture2D*>(resource);
+        }
+
+        MetalTexture2D* texture = NEW_T(MetalTexture2D(name, format));
+        if (!texture->loadTextureFromBuffer(data)) {
+            DELETE_T(texture, MetalTexture2D);
+            return nullptr;
+        }
+
+        ResourceManager::getInstance().store(texture);
+
+        return texture;
     }
 
-    Texture2D* MetalRenderer::createTexture2D(const std::string& name, uint32_t width, uint32_t height, PixelFormat format, unsigned char* data) {
+    Texture2D* MetalRenderer::createTexture2D(const std::string& name, PixelFormat format, unsigned char* data) {
         // TODO
         return nullptr;
     }
@@ -313,11 +352,6 @@ namespace GLaDOS {
         ResourceManager::getInstance().store(textureCube);
 
         return textureCube;
-    }
-
-    RenderTexture* MetalRenderer::createRenderTexture(const std::string& name) {
-        // TODO
-        return nullptr;
     }
 
     id<MTLDevice> MetalRenderer::getDevice() const {

@@ -22,7 +22,7 @@ class MainScene : public Scene {
         vertexData->copyBufferData(vertices);
         IndexBuffer* indexData = Platform::getRenderer().createIndexBuffer(sizeof(uint16_t), 6);
         indexData->copyBufferData(indices);
-        Mesh* mesh = Platform::getRenderer().createMesh(vertexData, indexData);
+        Mesh* mesh = Platform::getRenderer().createMesh("myQuad", vertexData, indexData);
         if (mesh == nullptr) {
             return false;
         }

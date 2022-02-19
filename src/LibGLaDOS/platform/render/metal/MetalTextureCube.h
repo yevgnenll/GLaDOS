@@ -16,7 +16,7 @@ namespace GLaDOS {
         MetalTextureCube(const std::string& name, PixelFormat format);
 
         id<MTLSamplerState> metalSamplerState() override;
-        void generateTexture(Vector<uint8_t*> data) override;
+        bool generateTexture(Vector<uint8_t*> data) override;
         void replaceRegion(uint32_t size, uint32_t slice, uint32_t bytesPerRow, uint32_t bytesPerImage, uint8_t* data) override;
 
       private:

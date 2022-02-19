@@ -48,7 +48,10 @@ namespace GLaDOS {
             mChannels = static_cast<uint32_t>(desiredChannel);
         }
 
-        generateTexture(0, 0, data);
+        if (!generateTexture(0, 0, data)) {
+            stbi_image_free(data);
+            return false;
+        }
         stbi_image_free(data);
 
         LOG_TRACE(logger, "Texture load success: [name={0}, width={1}, height={2}, bpp={3}, useMipmap={4}, mipmapCount={5}]", mName, mWidth, mHeight, mChannels, mUseMipmap, mMipmapCount);
@@ -71,7 +74,11 @@ namespace GLaDOS {
         mWidth = static_cast<uint32_t>(width);
         mHeight = static_cast<uint32_t>(height);
         mChannels = static_cast<uint32_t>(channels);
-        generateTexture(0, 0, data);
+
+        if (!generateTexture(0, 0, data)) {
+            stbi_image_free(data);
+            return false;
+        }
         stbi_image_free(data);
 
         return true;

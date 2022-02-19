@@ -15,16 +15,16 @@ namespace GLaDOS {
         return static_cast<MetalSamplerState*>(samplerState())->getMetalSamplerState();
     }
 
-    void MetalTextureCube::generateTexture(Vector<uint8_t*> data) {
+    bool MetalTextureCube::generateTexture(Vector<uint8_t*> data) {
         id<MTLDevice> device = MetalRenderer::getInstance().getDevice();
         if (device == nil) {
             LOG_ERROR(logger, "Invalid Metal device state, texture creation failed.");
-            return;
+            return false;
         }
 
         if (data.empty() || data.size() != static_cast<uint32_t>(CubeMapFace::TheNumberOfFace)) {
-            LOG_ERROR(logger, "Cubemap can only be created from exactly six images");
-            return;
+            LOG_ERROR(logger, "CubeMap can only be created from exactly six images");
+            return false;
         }
 
         release();
@@ -40,7 +40,7 @@ namespace GLaDOS {
 
         if (mTexture == nil) {
             LOG_ERROR(logger, "Failed to create Texture: {0}", mName);
-            return;
+            return false;
         }
 
         const uint32_t bytesPerRow = mChannels * mWidth;
@@ -49,6 +49,8 @@ namespace GLaDOS {
         for (uint32_t slice = 0; slice < static_cast<uint32_t>(CubeMapFace::TheNumberOfFace); slice++) {
             replaceRegion(mWidth, slice, bytesPerRow, bytesPerImage, data[slice]);
         }
+
+        return true;
     }
 
     void MetalTextureCube::replaceRegion(uint32_t size, uint32_t slice, uint32_t bytesPerRow, uint32_t bytesPerImage, uint8_t* data) {
