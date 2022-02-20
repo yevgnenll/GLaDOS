@@ -4,7 +4,6 @@
 
 #include "MetalFrameBuffer.h"
 #include "MetalGPUBuffer.h"
-#include "MetalRenderBuffer.h"
 #include "MetalRenderState.h"
 #include "MetalRenderable.h"
 #include "MetalShaderProgram.h"
@@ -302,10 +301,6 @@ namespace GLaDOS {
 
     FrameBuffer* MetalRenderer::createFrameBuffer() {
         return NEW_T(MetalFrameBuffer);
-    }
-
-    RenderBuffer* MetalRenderer::createRenderBuffer() {
-        return NEW_T(MetalRenderBuffer);
     }
 
     DepthStencilState* MetalRenderer::createDepthStencilState(const DepthStencilDescription& desc) {

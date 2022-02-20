@@ -307,10 +307,6 @@ namespace GLaDOS {
         return nullptr;
     }
 
-    RenderBuffer* D3DX12Renderer::createRenderBuffer() {
-        return nullptr;
-    }
-
     DepthStencilState* D3DX12Renderer::createDepthStencilState(const DepthStencilDescription& desc) {
         return nullptr;
     }

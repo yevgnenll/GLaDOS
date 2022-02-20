@@ -15,7 +15,6 @@ namespace GLaDOS {
     class Renderable;
     class ShaderProgram;
     class FrameBuffer;
-    class RenderBuffer;
     class VertexBuffer;
     class IndexBuffer;
     class DepthStencilState;
@@ -50,7 +49,6 @@ namespace GLaDOS {
         virtual ShaderProgram* createShaderProgramFromFile(const std::string& vertexName, RenderPipelineState* renderPipelineState = nullptr) = 0;
         virtual Renderable* createRenderable(Mesh* mesh, Material* material) = 0;
         virtual FrameBuffer* createFrameBuffer() = 0;
-        virtual RenderBuffer* createRenderBuffer() = 0;
         virtual DepthStencilState* createDepthStencilState(const DepthStencilDescription& desc) = 0;
         virtual SamplerState* createSamplerState(const SamplerDescription& desc) = 0;
         virtual RasterizerState* createRasterizerState(const RasterizerDescription& desc) = 0;

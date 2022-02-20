@@ -30,7 +30,6 @@ namespace GLaDOS {
         ShaderProgram* createShaderProgramFromFile(const std::string& vertexName, RenderPipelineState* renderPipelineState) override;
         Renderable* createRenderable(Mesh* mesh, Material* material) override;
         FrameBuffer* createFrameBuffer() override;
-        RenderBuffer* createRenderBuffer() override;
         DepthStencilState* createDepthStencilState(const DepthStencilDescription& desc) override;
         SamplerState* createSamplerState(const SamplerDescription& desc) override;
         RasterizerState* createRasterizerState(const RasterizerDescription& desc) override;
