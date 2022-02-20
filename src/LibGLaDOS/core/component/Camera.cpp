@@ -1,11 +1,11 @@
 #include "Camera.h"
-
 #include "Transform.h"
 #include "core/GameObject.hpp"
 #include "math/UVec3.h"
 #include "math/Vec2.h"
 #include "platform/Platform.h"
 #include "platform/OSTypes.h"
+#include "platform/render/RenderTexture.h"
 
 namespace GLaDOS {
     Camera::Camera() : Component{"Camera"} {
@@ -129,12 +129,12 @@ namespace GLaDOS {
         return 1.F / mUnitSize;
     }
 
-    void Camera::setTargetTexture(Texture2D* targetTexture) {
-        mTargetTexture = targetTexture;
+    void Camera::setRenderTexture(RenderTexture* renderTexture) {
+        mRenderTarget = renderTexture;
     }
 
-    Texture2D* Camera::getTargetTexture() {
-        return mTargetTexture;
+    RenderTexture* Camera::getRenderTexture() {
+        return mRenderTarget;
     }
 
     real Camera::aspectRatio() {
@@ -162,7 +162,7 @@ namespace GLaDOS {
         camera->mIsOrthographic = mIsOrthographic;
         camera->mUnitSize = mUnitSize;
         camera->mViewportRect = mViewportRect;
-        camera->mTargetTexture = mTargetTexture;
+        camera->mRenderTarget = mRenderTarget;
         camera->mCullingMask = mCullingMask;
         return camera;
     }

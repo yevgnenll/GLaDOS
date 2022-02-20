@@ -34,8 +34,7 @@ namespace GLaDOS {
         SamplerState* createSamplerState(const SamplerDescription& desc) override;
         RasterizerState* createRasterizerState(const RasterizerDescription& desc) override;
         RenderPipelineState* createRenderPipelineState(const RenderPipelineDescription& desc) override;
-        Texture2D* createRenderTexture2D(const std::string& name, uint32_t width, uint32_t height, PixelFormat format) override;
-        TextureCube* createRenderTextureCube(const std::string& name, uint32_t width, uint32_t height, PixelFormat format) override;
+        RenderTexture* createRenderTexture(uint32_t width, uint32_t height, PixelFormat format) override;
         Texture2D* createTexture2D(const std::string& name, PixelFormat format) override;
         Texture2D* createTexture2D(const std::string& name, PixelFormat format, Blob& data) override;
         Texture2D* createTexture2D(const std::string& name, PixelFormat format, unsigned char* data) override;

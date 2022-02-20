@@ -6,14 +6,19 @@
 #ifdef PLATFORM_MACOS
 
 #include "platform/render/RenderTexture.h"
+#include "MetalTextureBase.h"
 
 namespace GLaDOS {
-    class MetalRenderTexture : public RenderTexture {
+    class MetalRenderTexture : public RenderTexture, public MetalTextureBase {
       public:
         MetalRenderTexture(PixelFormat format);
         ~MetalRenderTexture() override;
 
+        bool generateTexture() override;
+        id<MTLSamplerState> metalSamplerState() override;
+
       private:
+        static Logger* logger;
     };
 }  // namespace GLaDOS
 

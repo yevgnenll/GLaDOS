@@ -48,33 +48,6 @@ namespace GLaDOS {
         return true;
     }
 
-    bool MetalTexture2D::generateTexture() {
-        id<MTLDevice> device = MetalRenderer::getInstance().getDevice();
-        if (device == nil) {
-            LOG_ERROR(logger, "Invalid Metal device state, texture creation failed.");
-            return false;
-        }
-
-        release();
-
-        mTextureDescriptor = [MTLTextureDescriptor new];
-        mTextureDescriptor.pixelFormat = MetalTypes::pixelFormatToMetal(mFormat);
-        mTextureDescriptor.width = mWidth;
-        mTextureDescriptor.height = mHeight;
-        mTextureDescriptor.usage = MetalTypes::textureUsageToMetal(mUsage);
-        mTextureDescriptor.textureType = MTLTextureType2D;
-        mTextureDescriptor.mipmapLevelCount = 1; // RT does not create mipmap.
-        mTexture = [device newTextureWithDescriptor:mTextureDescriptor];
-        mMipmapCount = static_cast<uint32_t>(mTextureDescriptor.mipmapLevelCount);
-
-        if (mTexture == nil) {
-            LOG_ERROR(logger, "Failed to create Texture: {0}", mName);
-            return false;
-        }
-
-        return true;
-    }
-
     void MetalTexture2D::replaceRegion(uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint32_t level, uint8_t* data) {
         MTLRegion region = {{x, y, 0}, {w, h, 1}};
         uint32_t bytesPerRow = mChannels * w;

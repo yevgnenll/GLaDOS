@@ -8,7 +8,7 @@
 #include "memory/BitMask.h"
 
 namespace GLaDOS {
-    class Texture2D;
+    class RenderTexture;
     class Camera : public Component {
       public:
         Camera();
@@ -36,8 +36,8 @@ namespace GLaDOS {
         void setFarClipPlane(real far);
         void setUnitSize(real unitSize);
         real getUnitSize() const;
-        void setTargetTexture(Texture2D* targetTexture);
-        Texture2D* getTargetTexture();
+        void setRenderTexture(RenderTexture* renderTexture);
+        RenderTexture* getRenderTexture();
 
         static real aspectRatio();
 
@@ -54,7 +54,7 @@ namespace GLaDOS {
         bool mIsOrthographic{false};
         real mUnitSize{real(1)}; // only affect orthographic projection
         Rect<real> mViewportRect; // normalized viewport Rect default is (0, 0, 1, 1) bottom-left to top-right
-        Texture2D* mTargetTexture{nullptr};
+        RenderTexture* mRenderTarget{nullptr};
         BitMask mCullingMask;
     };
 }  // namespace GLaDOS

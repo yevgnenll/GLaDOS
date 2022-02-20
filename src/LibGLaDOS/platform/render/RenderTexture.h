@@ -9,10 +9,7 @@ namespace GLaDOS {
         RenderTexture(PixelFormat format);
         ~RenderTexture() override;
 
-        bool loadTextureFromFile() override { return false; }
-        bool loadTextureFromBuffer(Blob& buffer) override { return false; }
-
-      private:
+        virtual bool generateTexture() = 0;
     };
 }  // namespace GLaDOS
 

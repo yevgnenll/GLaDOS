@@ -53,8 +53,7 @@ namespace GLaDOS {
         virtual SamplerState* createSamplerState(const SamplerDescription& desc) = 0;
         virtual RasterizerState* createRasterizerState(const RasterizerDescription& desc) = 0;
         virtual RenderPipelineState* createRenderPipelineState(const RenderPipelineDescription& desc) = 0;
-        virtual Texture2D* createRenderTexture2D(const std::string& name, uint32_t width, uint32_t height, PixelFormat format) = 0;
-        virtual TextureCube* createRenderTextureCube(const std::string& name, uint32_t width, uint32_t height, PixelFormat format) = 0;
+        virtual RenderTexture* createRenderTexture(uint32_t width, uint32_t height, PixelFormat format) = 0;
         virtual Texture2D* createTexture2D(const std::string& name, PixelFormat format) = 0;
         virtual Texture2D* createTexture2D(const std::string& name, PixelFormat format, Blob& data) = 0;
         virtual Texture2D* createTexture2D(const std::string& name, PixelFormat format, unsigned char* data) = 0;

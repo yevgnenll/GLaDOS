@@ -9,6 +9,7 @@
 #include "MetalShaderProgram.h"
 #include "MetalTexture2D.h"
 #include "MetalTextureCube.h"
+#include "MetalRenderTexture.h"
 #include "MetalTypes.h"
 #include "platform/render/Mesh.h"
 #include "platform/render/VertexBuffer.h"
@@ -319,16 +320,11 @@ namespace GLaDOS {
         return NEW_T(RenderPipelineState(desc)); // should we make graphics api specific pipeline state?
     }
 
-    Texture2D* MetalRenderer::createRenderTexture2D(const std::string& name, uint32_t width, uint32_t height, PixelFormat format) {
-        Resource* resource = ResourceManager::getInstance().getResource(name, ResourceType::Texture);
-        if (resource != nullptr) {
-            return static_cast<Texture2D*>(resource);
-        }
-
-        MetalTexture2D* texture = NEW_T(MetalTexture2D(name, format));
-        texture->overrideUsage(TextureUsage::ShaderRead | TextureUsage::RenderTarget);
-        texture->setWidth(width);
-        texture->setHeight(height);
+    RenderTexture* MetalRenderer::createRenderTexture(uint32_t width, uint32_t height, PixelFormat format) {
+        MetalRenderTexture* renderTexture = NEW_T(MetalRenderTexture(format));
+        renderTexture->overrideUsage(TextureUsage::ShaderRead | TextureUsage::RenderTarget);
+        renderTexture->setWidth(width);
+        renderTexture->setHeight(height);
 
         SamplerDescription desc;
         desc.mMinFilter = FilterMode::Nearest;
@@ -337,21 +333,14 @@ namespace GLaDOS {
         desc.mSWrap = WrapMode::Repeat;
         desc.mTWrap = WrapMode::Repeat;
         desc.mRWrap = WrapMode::Repeat;
-        texture->setSamplerState(desc);
+        renderTexture->setSamplerState(desc);
 
-        if (!texture->generateTexture()) {
-            DELETE_T(texture, MetalTexture2D);
+        if (!renderTexture->generateTexture()) {
+            DELETE_T(renderTexture, MetalRenderTexture);
             return nullptr;
         }
 
-        ResourceManager::getInstance().store(texture);
-
-        return texture;
-    }
-
-    TextureCube* MetalRenderer::createRenderTextureCube(const std::string& name, uint32_t width, uint32_t height, PixelFormat format) {
-        // TODO
-        return nullptr;
+        return renderTexture;
     }
 
     Texture2D* MetalRenderer::createTexture2D(const std::string& name, PixelFormat format) {
