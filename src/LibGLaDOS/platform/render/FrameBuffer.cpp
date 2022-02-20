@@ -9,11 +9,11 @@ namespace GLaDOS {
         mClearColor = clearColor;
     }
 
-    real FrameBuffer::getFrameWidth() const {
-        return mFrameWidth;
+    real FrameBuffer::getWidth() const {
+        return mWidth;
     }
 
-    real FrameBuffer::getFrameHeight() const {
-        return mFrameHeight;
+    real FrameBuffer::getHeight() const {
+        return mHeight;
     }
 }  // namespace GLaDOS

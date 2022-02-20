@@ -9,4 +9,7 @@ namespace GLaDOS {
 
     RasterizerState::RasterizerState(const RasterizerDescription& desc) : mRasterizerDescription{desc} {
     }
+
+    RenderPipelineState::RenderPipelineState(const RenderPipelineDescription& desc) : mRenderPipelineDescription{desc} {
+    }
 }  // namespace GLaDOS

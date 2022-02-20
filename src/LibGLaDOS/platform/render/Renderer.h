@@ -24,6 +24,8 @@ namespace GLaDOS {
     struct SamplerDescription;
     class RasterizerState;
     struct RasterizerDescription;
+    class RenderPipelineState;
+    struct RenderPipelineDescription;
     class Texture2D;
     class Texture3D;
     class TextureCube;
@@ -43,14 +45,16 @@ namespace GLaDOS {
 
         virtual GPUBuffer* createGPUVertexBuffer(GPUBufferUsage usage, void* data, std::size_t size) = 0;
         virtual GPUBuffer* createGPUIndexBuffer(GPUBufferUsage usage, void* data, std::size_t size) = 0;
-        virtual ShaderProgram* createShaderProgram(Shader* vertex, Shader* fragment) = 0;
-        virtual ShaderProgram* createShaderProgramFromFile(const std::string& vertexName, const std::string& fragmentName) = 0;
+        virtual ShaderProgram* createShaderProgram(Shader* vertex, Shader* fragment, RenderPipelineState* renderPipelineState = nullptr) = 0;
+        virtual ShaderProgram* createShaderProgramFromFile(const std::string& vertexName, const std::string& fragmentName, RenderPipelineState* renderPipelineState = nullptr) = 0;
+        virtual ShaderProgram* createShaderProgramFromFile(const std::string& vertexName, RenderPipelineState* renderPipelineState = nullptr) = 0;
         virtual Renderable* createRenderable(Mesh* mesh, Material* material) = 0;
         virtual FrameBuffer* createFrameBuffer() = 0;
         virtual RenderBuffer* createRenderBuffer() = 0;
         virtual DepthStencilState* createDepthStencilState(const DepthStencilDescription& desc) = 0;
         virtual SamplerState* createSamplerState(const SamplerDescription& desc) = 0;
         virtual RasterizerState* createRasterizerState(const RasterizerDescription& desc) = 0;
+        virtual RenderPipelineState* createRenderPipelineState(const RenderPipelineDescription& desc) = 0;
         virtual Texture2D* createRenderTexture2D(const std::string& name, uint32_t width, uint32_t height, PixelFormat format) = 0;
         virtual TextureCube* createRenderTextureCube(const std::string& name, uint32_t width, uint32_t height, PixelFormat format) = 0;
         virtual Texture2D* createTexture2D(const std::string& name, PixelFormat format) = 0;

@@ -16,7 +16,8 @@ namespace GLaDOS {
     }
 
     Material::Material(const Material& other) : mTextures{other.mTextures} {
-        mShaderProgram = Platform::getRenderer().createShaderProgram(other.mShaderProgram->getVertexShader(), other.mShaderProgram->getFragmentShader());
+        RenderPipelineState* renderPipelineState = Platform::getRenderer().createRenderPipelineState(mShaderProgram->renderPipelineState()->mRenderPipelineDescription);
+        mShaderProgram = Platform::getRenderer().createShaderProgram(other.mShaderProgram->getVertexShader(), other.mShaderProgram->getFragmentShader(), renderPipelineState);
         RasterizerDescription rasterizerDescription = other.mShaderProgram->rasterizerState()->mRasterizerDescription;
         DepthStencilDescription depthStencilDescription = other.mShaderProgram->depthStencilState()->mDepthStencilDescription;
         mShaderProgram->setRasterizerState(rasterizerDescription);
@@ -25,7 +26,8 @@ namespace GLaDOS {
 
     Material& Material::operator=(const Material& other) {
         mTextures = other.mTextures;
-        mShaderProgram = Platform::getRenderer().createShaderProgram(mShaderProgram->getVertexShader(), mShaderProgram->getFragmentShader());
+        RenderPipelineState* renderPipelineState = Platform::getRenderer().createRenderPipelineState(mShaderProgram->renderPipelineState()->mRenderPipelineDescription);
+        mShaderProgram = Platform::getRenderer().createShaderProgram(mShaderProgram->getVertexShader(), mShaderProgram->getFragmentShader(), renderPipelineState);
         RasterizerDescription rasterizerDescription = other.mShaderProgram->rasterizerState()->mRasterizerDescription;
         DepthStencilDescription depthStencilDescription = other.mShaderProgram->depthStencilState()->mDepthStencilDescription;
         mShaderProgram->setRasterizerState(rasterizerDescription);

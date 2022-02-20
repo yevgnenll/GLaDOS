@@ -165,9 +165,15 @@ namespace GLaDOS {
         return indexBuffer;
     }
 
-    ShaderProgram* MetalRenderer::createShaderProgram(Shader* vertex, Shader* fragment) {
+    ShaderProgram* MetalRenderer::createShaderProgram(Shader* vertex, Shader* fragment, RenderPipelineState* renderPipelineState) {
+        // if RenderPipeline were null, then set it default one.
+        if (renderPipelineState == nullptr) {
+            RenderPipelineDescription desc;
+            renderPipelineState = createRenderPipelineState(desc);
+        }
+
         // should not cache from ResourceManager
-        MetalShaderProgram* shaderProgram = NEW_T(MetalShaderProgram);
+        MetalShaderProgram* shaderProgram = NEW_T(MetalShaderProgram(renderPipelineState));
 
         if (!shaderProgram->createShaderProgram(vertex, fragment)) {
             DELETE_T(shaderProgram, MetalShaderProgram);
@@ -178,7 +184,7 @@ namespace GLaDOS {
         return shaderProgram;
     }
 
-    ShaderProgram* MetalRenderer::createShaderProgramFromFile(const std::string& vertexName, const std::string& fragmentName) {
+    ShaderProgram* MetalRenderer::createShaderProgramFromFile(const std::string& vertexName, const std::string& fragmentName, RenderPipelineState* renderPipelineState) {
         // Load Vertex Resource
         Resource* vertexResource = ResourceManager::getInstance().getResource(vertexName, ResourceType::Shader);
         if (vertexResource == nullptr) {
@@ -229,8 +235,55 @@ namespace GLaDOS {
             fragmentResource = fragmentShader;
         }
 
-        MetalShaderProgram* shaderProgram = NEW_T(MetalShaderProgram);
+        // if RenderPipeline were null, then set it default one.
+        if (renderPipelineState == nullptr) {
+            RenderPipelineDescription desc;
+            renderPipelineState = createRenderPipelineState(desc);
+        }
+
+        MetalShaderProgram* shaderProgram = NEW_T(MetalShaderProgram(renderPipelineState));
         if (!shaderProgram->createShaderProgram(static_cast<Shader*>(vertexResource), static_cast<Shader*>(fragmentResource))) {
+            DELETE_T(shaderProgram, MetalShaderProgram);
+            return nullptr;
+        }
+
+        return shaderProgram;
+    }
+
+    ShaderProgram* MetalRenderer::createShaderProgramFromFile(const std::string& vertexName, RenderPipelineState* renderPipelineState) {
+        // Load Vertex Resource
+        Resource* vertexResource = ResourceManager::getInstance().getResource(vertexName, ResourceType::Shader);
+        if (vertexResource == nullptr) {
+            FileSystem vertexFile{SHADER_DIR + vertexName + SHADER_SUFFIX, OpenMode::ReadBinary};
+            std::string vertexSource;
+            if (!vertexFile.readAllBytes(vertexSource)) {
+                LOG_ERROR(logger, "Vertex shader `{0}` is not found.", vertexFile.fullName());
+                return nullptr;
+            }
+
+            MetalShader* vertexShader = NEW_T(MetalShader(vertexSource));
+            vertexShader->setName(vertexName);
+            if (!vertexShader->createShader()) {
+                DELETE_T(vertexShader, MetalShader);
+                return nullptr;
+            }
+
+            if (!ResourceManager::getInstance().store(vertexShader)) {
+                DELETE_T(vertexShader, MetalShader);
+                return nullptr;
+            }
+
+            vertexResource = vertexShader;
+        }
+
+        // if RenderPipeline were null, then set it default one.
+        if (renderPipelineState == nullptr) {
+            RenderPipelineDescription desc;
+            renderPipelineState = createRenderPipelineState(desc);
+        }
+
+        MetalShaderProgram* shaderProgram = NEW_T(MetalShaderProgram(renderPipelineState));
+        if (!shaderProgram->createShaderProgram(static_cast<Shader*>(vertexResource), nullptr)) {
             DELETE_T(shaderProgram, MetalShaderProgram);
             return nullptr;
         }
@@ -267,6 +320,10 @@ namespace GLaDOS {
         return NEW_T(MetalRasterizerState(desc));
     }
 
+    RenderPipelineState* MetalRenderer::createRenderPipelineState(const RenderPipelineDescription& desc) {
+        return NEW_T(RenderPipelineState(desc)); // should we make graphics api specific pipeline state?
+    }
+
     Texture2D* MetalRenderer::createRenderTexture2D(const std::string& name, uint32_t width, uint32_t height, PixelFormat format) {
         Resource* resource = ResourceManager::getInstance().getResource(name, ResourceType::Texture);
         if (resource != nullptr) {
@@ -277,6 +334,15 @@ namespace GLaDOS {
         texture->overrideUsage(TextureUsage::ShaderRead | TextureUsage::RenderTarget);
         texture->setWidth(width);
         texture->setHeight(height);
+
+        SamplerDescription desc;
+        desc.mMinFilter = FilterMode::Nearest;
+        desc.mMagFilter = FilterMode::Nearest;
+        desc.mMipFilter = FilterMode::Nearest;
+        desc.mSWrap = WrapMode::Repeat;
+        desc.mTWrap = WrapMode::Repeat;
+        desc.mRWrap = WrapMode::Repeat;
+        texture->setSamplerState(desc);
 
         if (!texture->generateTexture()) {
             DELETE_T(texture, MetalTexture2D);

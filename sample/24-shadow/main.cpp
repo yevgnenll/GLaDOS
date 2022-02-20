@@ -9,6 +9,12 @@ class MainScene : public Scene {
         camera->gameObject()->transform()->setLocalPosition({0, 0, 1});
 
         Texture2D* shadowMap = Platform::getRenderer().createRenderTexture2D("shadowMap", 1024, 800, PixelFormat::Depth32);
+        RenderPipelineDescription desc;
+        desc.depthPixelFormat = shadowMap->getPixelFormat();
+        desc.stencilPixelFormat = PixelFormat::Unknown;
+        desc.colorPixelFormat = PixelFormat::Unknown;
+        RenderPipelineState* renderPipelineState = Platform::getRenderer().createRenderPipelineState(desc);
+        ShaderProgram* shaderProgram = Platform::getRenderer().createShaderProgramFromFile("shadowVertex", renderPipelineState);
 
         return true;
     }

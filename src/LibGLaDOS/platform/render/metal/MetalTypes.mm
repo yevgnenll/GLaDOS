@@ -401,7 +401,6 @@ namespace GLaDOS {
             case PixelFormat::Depth32Stencil8:
                 return MTLPixelFormatDepth32Float_Stencil8;
             default:
-                LOG_ERROR(logger, "Invalid Texture format.");
                 break;
         }
 

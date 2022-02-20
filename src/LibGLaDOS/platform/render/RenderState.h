@@ -75,6 +75,20 @@ namespace GLaDOS {
 
         RasterizerDescription mRasterizerDescription;
     };
+
+    struct RenderPipelineDescription {
+        PixelFormat colorPixelFormat{PixelFormat::BGRA32};
+        PixelFormat depthPixelFormat{PixelFormat::Depth32Stencil8};
+        PixelFormat stencilPixelFormat{PixelFormat::Depth32Stencil8};
+    };
+
+    class RenderPipelineState : public RenderState {
+      public:
+        RenderPipelineState(const RenderPipelineDescription& desc);
+        ~RenderPipelineState() override = default;
+
+        RenderPipelineDescription mRenderPipelineDescription;
+    };
 }  // namespace GLaDOS
 
 #endif  //GLADOS_RENDERSTATE_H

@@ -16,13 +16,13 @@ namespace GLaDOS {
 
         Color getClearColor() const;
         void setClearColor(const Color& clearColor);
-        real getFrameWidth() const;
-        real getFrameHeight() const;
+        real getWidth() const;
+        real getHeight() const;
 
       protected:
         Color mClearColor = Color::black;
-        real mFrameWidth{0};
-        real mFrameHeight{0};
+        real mWidth{0};
+        real mHeight{0};
     };
 }  // namespace GLaDOS
 

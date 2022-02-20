@@ -26,10 +26,12 @@ namespace GLaDOS {
     struct DepthStencilDescription;
     class RasterizerState;
     struct RasterizerDescription;
+    class RenderPipelineState;
+    struct RenderPipelineDescription;
     class Shader;
     class ShaderProgram {
       public:
-        ShaderProgram() = default;
+        ShaderProgram(RenderPipelineState* renderPipelineState);
         virtual ~ShaderProgram();
 
         void setUniform(const std::string& name, int value);
@@ -66,6 +68,7 @@ namespace GLaDOS {
         void setDepthStencilState(const DepthStencilDescription& desc);
         RasterizerState* rasterizerState();
         void setRasterizerState(const RasterizerDescription& desc);
+        RenderPipelineState* renderPipelineState();
 
         Shader* getVertexShader();
         Shader* getFragmentShader();
@@ -80,6 +83,7 @@ namespace GLaDOS {
         UnorderedMap<std::string, Uniform*> mUniforms;
         DepthStencilState* mDepthStencilState{nullptr};
         RasterizerState* mRasterizerState{nullptr};
+        RenderPipelineState* mRenderPipelineState{nullptr};
         bool mIsValid{false};
         Blob mVertexUniformBuffer;
         Blob mFragmentUniformBuffer;

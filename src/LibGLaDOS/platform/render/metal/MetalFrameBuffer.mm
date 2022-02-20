@@ -56,17 +56,19 @@ namespace GLaDOS {
     }
 
     void MetalFrameBuffer::makeDepthStencilTexture() {
+        // TODO: can we make drawableSize resize in here?
+        // change method name to makeRenderTarget(size_x, size_y)
         CGSize drawableSize = MetalRenderer::getInstance().getMetalLayer().drawableSize;
 
         // recreate texture when depth texture size and drawable size is changed.
         if ([mDepthStencilTexture width] != static_cast<NSUInteger>(drawableSize.width) || [mDepthStencilTexture height] != static_cast<NSUInteger>(drawableSize.height)) {
-            mFrameWidth = static_cast<real>(drawableSize.width);
-            mFrameHeight = static_cast<real>(drawableSize.height);
+            mWidth = static_cast<real>(drawableSize.width);
+            mHeight = static_cast<real>(drawableSize.height);
             MTLTextureDescriptor* textureDescriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatDepth32Float_Stencil8
                                                                                                          width:static_cast<NSUInteger>(drawableSize.width)
                                                                                                         height:static_cast<NSUInteger>(drawableSize.height)
                                                                                                      mipmapped:NO];
-            [textureDescriptor setUsage:MTLTextureUsageRenderTarget]; // | MTLTextureUsageShaderRead
+            [textureDescriptor setUsage:MTLTextureUsageRenderTarget];
             [textureDescriptor setStorageMode:MTLStorageModePrivate];
 //            [textureDescriptor setTextureType:MTLTextureType2DMultisample];
 //            [textureDescriptor setSampleCount:4];

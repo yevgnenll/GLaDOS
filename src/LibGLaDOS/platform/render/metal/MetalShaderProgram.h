@@ -23,7 +23,7 @@ namespace GLaDOS {
         friend class MetalRenderer;
 
       public:
-        MetalShaderProgram() = default;
+        MetalShaderProgram(RenderPipelineState* renderPipelineState);
         ~MetalShaderProgram() override;
 
         MTLRenderPipelineDescriptor* getPipelineDescriptor() const;

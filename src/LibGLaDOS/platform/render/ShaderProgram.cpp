@@ -8,10 +8,15 @@
 
 namespace GLaDOS {
     Logger* ShaderProgram::logger = LoggerRegistry::getInstance().makeAndGetLogger("ShaderProgram");
+
+    ShaderProgram::ShaderProgram(RenderPipelineState* renderPipelineState) : mRenderPipelineState{renderPipelineState} {
+    }
+
     ShaderProgram::~ShaderProgram() {
         deallocValueInMap(mUniforms);
         DELETE_T(mDepthStencilState, DepthStencilState);
         DELETE_T(mRasterizerState, RasterizerState);
+        DELETE_T(mRenderPipelineState, RenderPipelineState);
     }
 
     void ShaderProgram::setUniform(const std::string& name, int value) {
@@ -297,6 +302,10 @@ namespace GLaDOS {
             DELETE_T(mRasterizerState, RasterizerState);
         }
         mRasterizerState = Platform::getRenderer().createRasterizerState(desc);
+    }
+
+    RenderPipelineState* ShaderProgram::renderPipelineState() {
+        return mRenderPipelineState;
     }
 
     Shader* ShaderProgram::getVertexShader() {

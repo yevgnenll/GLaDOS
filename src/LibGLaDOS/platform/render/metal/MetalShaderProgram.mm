@@ -11,6 +11,9 @@
 #include "MetalShader.h"
 
 namespace GLaDOS {
+    MetalShaderProgram::MetalShaderProgram(RenderPipelineState* renderPipelineState) : ShaderProgram{renderPipelineState} {
+    }
+
     MetalShaderProgram::~MetalShaderProgram() {
         if (mIsValid) {
             [mPipelineDescriptor release];
@@ -82,12 +85,21 @@ namespace GLaDOS {
     }
 
     bool MetalShaderProgram::createShaderProgram(Shader* vertex, Shader* fragment) {
-        mIsValid = vertex->isCompiled() && fragment->isCompiled();
-
+        if (vertex == nullptr) {
+            LOG_ERROR(logger, "VertexShader must not be null!");
+            return false;
+        }
         MetalShader* metalVertex = static_cast<MetalShader*>(vertex);
-        MetalShader* metalFragment = static_cast<MetalShader*>(fragment);
         mVertexShader = metalVertex;
-        mFragmentShader = metalFragment;
+        mIsValid = vertex->isCompiled();
+
+        // fragment shader can be null
+        MetalShader* metalFragment = nullptr;
+        if (fragment != nullptr) {
+            metalFragment = static_cast<MetalShader*>(fragment);
+            mFragmentShader = metalFragment;
+            mIsValid = fragment->isCompiled();
+        }
 
         if (!makePipelineDescriptor(metalVertex, metalFragment)) {
             mIsValid = false;
@@ -97,16 +109,6 @@ namespace GLaDOS {
     }
 
     bool MetalShaderProgram::makePipelineDescriptor(MetalShader* vertex, MetalShader* fragment) {
-        if (vertex == nullptr) {
-            LOG_ERROR(logger, "Invalid vertex shader");
-            return false;
-        }
-
-        if (fragment == nullptr) {
-            LOG_ERROR(logger, "Invalid fragment shader");
-            return false;
-        }
-
         if (!mIsValid) {
             LOG_ERROR(logger, "Invalid Metal shader program");
             return false;
@@ -120,16 +122,26 @@ namespace GLaDOS {
 
         mPipelineDescriptor = [MTLRenderPipelineDescriptor new];
         [mPipelineDescriptor setVertexFunction:vertex->getFunction()];
-        [mPipelineDescriptor setFragmentFunction:fragment->getFunction()];
+        if (fragment != nullptr) {
+            [mPipelineDescriptor setFragmentFunction:fragment->getFunction()];
+        } else {
+            [mPipelineDescriptor setFragmentFunction:nil];
+        }
 
         MTLRenderPipelineColorAttachmentDescriptor* colorAttachmentDescriptor = mPipelineDescriptor.colorAttachments[0];
         if (colorAttachmentDescriptor == nil) {
             LOG_ERROR(logger, "Invalid ColorAttachment state");
             return false;
         }
-        colorAttachmentDescriptor.pixelFormat = [MetalRenderer::getInstance().getMetalLayer() pixelFormat];
-        mPipelineDescriptor.depthAttachmentPixelFormat = MTLPixelFormatDepth32Float_Stencil8;
-        mPipelineDescriptor.stencilAttachmentPixelFormat = MTLPixelFormatDepth32Float_Stencil8;
+
+        if (fragment == nullptr) {
+            // if fragment shader were null, then don't use colorAttachment so that set pixel format as invalid.
+            mRenderPipelineState->mRenderPipelineDescription.colorPixelFormat = PixelFormat::Unknown;
+        }
+
+        colorAttachmentDescriptor.pixelFormat = MetalTypes::pixelFormatToMetal(mRenderPipelineState->mRenderPipelineDescription.colorPixelFormat);
+        mPipelineDescriptor.depthAttachmentPixelFormat = MetalTypes::pixelFormatToMetal(mRenderPipelineState->mRenderPipelineDescription.depthPixelFormat);
+        mPipelineDescriptor.stencilAttachmentPixelFormat = MetalTypes::pixelFormatToMetal(mRenderPipelineState->mRenderPipelineDescription.stencilPixelFormat);
 
         MTLVertexDescriptor* vertexDescriptor = makeVertexDescriptor(vertex->getFunction().vertexAttributes);;
         [mPipelineDescriptor setVertexDescriptor:vertexDescriptor];
@@ -145,11 +157,7 @@ namespace GLaDOS {
             return false;
         }
 
-        if (!addShaderArguments(pipelineReflection)) {
-            return false;
-        }
-
-        return true;
+        return addShaderArguments(pipelineReflection);
     }
 
     MTLVertexDescriptor* MetalShaderProgram::makeVertexDescriptor(NSArray<MTLVertexAttribute*>* vertexAttributes) {

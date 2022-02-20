@@ -25,14 +25,16 @@ namespace GLaDOS {
 
         GPUBuffer* createGPUVertexBuffer(GPUBufferUsage usage, void* data, std::size_t size) override;
         GPUBuffer* createGPUIndexBuffer(GPUBufferUsage usage, void* data, std::size_t size) override;
-        ShaderProgram* createShaderProgram(Shader* vertex, Shader* fragment) override;
-        ShaderProgram* createShaderProgramFromFile(const std::string& vertexName, const std::string& fragmentName) override;
+        ShaderProgram* createShaderProgram(Shader* vertex, Shader* fragment, RenderPipelineState* renderPipelineState) override;
+        ShaderProgram* createShaderProgramFromFile(const std::string& vertexName, const std::string& fragmentName, RenderPipelineState* renderPipelineState) override;
+        ShaderProgram* createShaderProgramFromFile(const std::string& vertexName, RenderPipelineState* renderPipelineState) override;
         Renderable* createRenderable(Mesh* mesh, Material* material) override;
         FrameBuffer* createFrameBuffer() override;
         RenderBuffer* createRenderBuffer() override;
         DepthStencilState* createDepthStencilState(const DepthStencilDescription& desc) override;
         SamplerState* createSamplerState(const SamplerDescription& desc) override;
         RasterizerState* createRasterizerState(const RasterizerDescription& desc) override;
+        RenderPipelineState* createRenderPipelineState(const RenderPipelineDescription& desc) override;
         Texture2D* createRenderTexture2D(const std::string& name, uint32_t width, uint32_t height, PixelFormat format) override;
         TextureCube* createRenderTextureCube(const std::string& name, uint32_t width, uint32_t height, PixelFormat format) override;
         Texture2D* createTexture2D(const std::string& name, PixelFormat format) override;
