@@ -1,13 +1,13 @@
-#ifndef GLADOS_LIGHT_H
-#define GLADOS_LIGHT_H
+#ifndef GLADOS_LIGHTSOURCE_H
+#define GLADOS_LIGHTSOURCE_H
 
 #include "core/Component.h"
 
 namespace GLaDOS {
-    class Light : public Component {
+    class LightSource : public Component {
       public:
-        Light();
-        ~Light();
+        LightSource();
+        ~LightSource();
 
       protected:
         void fixedUpdate(real fixedDeltaTime) override;
@@ -19,4 +19,4 @@ namespace GLaDOS {
     };
 }  // namespace GLaDOS
 
-#endif  // GLADOS_LIGHT_H
+#endif  // GLADOS_LIGHTSOURCE_H

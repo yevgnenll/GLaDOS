@@ -17,6 +17,7 @@
 #include "core/component/renderer/BoneRenderer.h"
 #include "core/component/Transform.h"
 #include "core/component/Animator.h"
+#include "core/component/LightSource.h"
 #include "core/animation/AnimationState.h"
 #include "core/animation/AnimationClip.h"
 #include "core/animation/AnimationCurve.hpp"

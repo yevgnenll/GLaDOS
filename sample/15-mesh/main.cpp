@@ -6,7 +6,7 @@ class MainScene : public Scene {
   public:
     bool onInit() override {
         TextureCube* cubemap = Platform::getRenderer().createTextureCube(
-            "test", {"grid.png", "grid2.png", "grid3.png", "grid4.png", "grid5.png", "grid6.png"}, PixelFormat::RGBA32
+            "Cubemap", {"grid.png", "grid2.png", "grid3.png", "grid4.png", "grid5.png", "grid6.png"}, PixelFormat::RGBA32
         );
 
         GameObject* cubemapObject = createGameObject("cubemap");
@@ -22,7 +22,8 @@ class MainScene : public Scene {
         if (!Platform::getRenderer().createPrefabFromFile("Low Poly Pine/Low Poly Pine.obj", model)) {
             return false;
         }
-        model->transform()->setLocalScale(Vec3{0.03, 0.03, 0.03});
+        modelTransform = model->transform();
+        modelTransform->setLocalScale(Vec3{0.03, 0.03, 0.03});
 
         Input::addAxis("Forward", NEW_T(InputHandler(KeyCode::KEY_Q, KeyCode::KEY_E, 0.1)));
         Input::addAxis("Horizontal", NEW_T(InputHandler(KeyCode::KEY_D, KeyCode::KEY_A, 0.1)));
@@ -42,6 +43,8 @@ class MainScene : public Scene {
         if (Input::isKeyDown(KeyCode::KEY_ESCAPE)) {
             Platform::getInstance().quit();
         }
+
+        modelTransform->rotate(Vec3{0, 20.f * deltaTime, 0});
 
         // camera translation
         Vec3 right = cameraTransform->right();
@@ -78,7 +81,7 @@ class MainScene : public Scene {
     real dragSensitivity = 5;
     GameObject* model = nullptr;
     Camera* camera = nullptr;
-    Transform* cameraTransform = nullptr;
+    Transform* cameraTransform = nullptr, *modelTransform = nullptr;
     RasterizerDescription rasterizerDesc{};
     Vector<ShaderProgram*> shaderPrograms;
 };
