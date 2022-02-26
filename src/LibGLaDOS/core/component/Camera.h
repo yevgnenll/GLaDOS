@@ -54,7 +54,7 @@ namespace GLaDOS {
         bool mIsOrthographic{false};
         real mUnitSize{real(1)}; // only affect orthographic projection
         Rect<real> mViewportRect; // normalized viewport Rect default is (0, 0, 1, 1) bottom-left to top-right
-        RenderTexture* mRenderTarget{nullptr};
+        RenderTexture* mRenderTexture{nullptr};
         BitMask mCullingMask;
     };
 }  // namespace GLaDOS
