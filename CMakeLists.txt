@@ -72,6 +72,7 @@ option(GLADOS_ENABLE_BENCHMARK "Enable benchmarking of the GLaDOS." ON)
 option(GLADOS_ENABLE_SAMPLE "Enable sample build." ON)
 
 if (GLADOS_ENABLE_TESTING)
+  # enable tests with whitespace and other special characters in its name
   cmake_policy(SET CMP0110 NEW)
   find_package(Catch2 REQUIRED)
   add_subdirectory(test)

@@ -52,7 +52,7 @@ brew install catch2 google-benchmark
 
 - 01-setup: simple window and init engine demo.
 
-### Build on your project
+### Build on your project (MacOS version)
 
 1. Grep all the .h, .hpp files into your project include directory.
 ```
@@ -91,6 +91,23 @@ Compile
 g++ main.cpp -std=c++1z -Iinclude -Llib -lGLaDOS -lobjc -framework Metal -framework Cocoa -framework QuartzCore -o test
 ./test
 ```
+
+### Build on your project (Linux version)
+
+1. install every tools to build GLaDOS
+```
+sudo apt install build-essential libx11-dev mesa-vulkan-drivers libvulkan-dev libbenchmark-dev cmake ninja-build assimp-utils
+```
+
+2. clone Catch2 dependencies
+```
+git clone https://github.com/catchorg/Catch2
+cd Catch2 && mkdir build && cd build && cmake ..
+make
+sudo make install
+```
+
+3. The same as MacOS installation.
 
 ### clang-format
 
