@@ -130,11 +130,11 @@ namespace GLaDOS {
     }
 
     void Camera::setRenderTexture(RenderTexture* renderTexture) {
-        mRenderTarget = renderTexture;
+        mRenderTexture = renderTexture;
     }
 
     RenderTexture* Camera::getRenderTexture() {
-        return mRenderTarget;
+        return mRenderTexture;
     }
 
     real Camera::aspectRatio() {
@@ -162,7 +162,7 @@ namespace GLaDOS {
         camera->mIsOrthographic = mIsOrthographic;
         camera->mUnitSize = mUnitSize;
         camera->mViewportRect = mViewportRect;
-        camera->mRenderTarget = mRenderTarget;
+        camera->mRenderTexture = mRenderTexture;
         camera->mCullingMask = mCullingMask;
         return camera;
     }
