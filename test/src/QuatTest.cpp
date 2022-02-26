@@ -13,10 +13,14 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
         Quat q1;
         REQUIRE(Quat::identity == q1);
         q1.w = 2;
-        q1.vector = Vec3{1,2,3};
+        q1.x = 1;
+        q1.y = 2;
+        q1.z = 3;
         Quat q2 = q1;
-        REQUIRE(q2.scalar == 2);
-        REQUIRE(q2.vector == Vec3{1,2,3});
+        REQUIRE(q2.w == 2);
+        REQUIRE(q2.x == 1);
+        REQUIRE(q2.y == 2);
+        REQUIRE(q2.z == 3);
     }
 
     SECTION("Quat AngleAxis") {
@@ -59,7 +63,7 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
         REQUIRE(Quat::conjugate(q3 * 3) == Quat::conjugate(q3) * 3);
 
         // q + q* == 2w
-        REQUIRE((q3 + Quat::conjugate(q3)).scalar == 2 * q3.scalar);
+        REQUIRE((q3 + Quat::conjugate(q3)).w == 2 * q3.w);
 
         // qq* == q*q
         REQUIRE(q3 * Quat::conjugate(q3) == Quat::conjugate(q3) * q3);
@@ -72,11 +76,11 @@ TEST_CASE("Quaternion unit tests", "[Quaternion]") {
 
         // sqrt(qq*) == ||q||
         Quat qmul = q1 * Quat::conjugate(q1);
-        REQUIRE(Math::equal(len, Math::sqrt(qmul.scalar)));
+        REQUIRE(Math::equal(len, Math::sqrt(qmul.w)));
 
         // sqrt(q*q) == ||q||
         Quat qmul2 = Quat::conjugate(q1) * q1;
-        REQUIRE(Math::equal(len, Math::sqrt(qmul2.scalar)));
+        REQUIRE(Math::equal(len, Math::sqrt(qmul2.w)));
 
         Quat qnorm = Quat::normalize(q1);
         REQUIRE(qnorm == q1 / len);

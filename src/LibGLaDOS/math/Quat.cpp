@@ -70,7 +70,8 @@ namespace GLaDOS {
     Vec3 Quat::operator*(const Vec3& other) const {
         // equal to qvq-1 but simplified version
         real two = real(2.0);
-        return vector * two * Vec3::dot(vector, other) + other * (scalar * scalar - Vec3::dot(vector, vector)) + Vec3::cross(vector, other) * two * scalar;
+        Vec3 vector{x, y, z};
+        return vector * two * Vec3::dot(vector, other) + other * (w * w - Vec3::dot(vector, vector)) + Vec3::cross(vector, other) * two * w;
     }
 
     Vec4 Quat::operator*(const Vec4& other) const {

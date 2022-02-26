@@ -78,10 +78,6 @@ namespace GLaDOS {
                 real y;
                 real z;
             };
-            struct {
-                real scalar;
-                Vec3 vector;
-            };
             real v[4];
         };
         static const Quat zero, identity;

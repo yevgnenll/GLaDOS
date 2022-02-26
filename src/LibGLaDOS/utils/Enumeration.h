@@ -27,7 +27,7 @@ namespace GLaDOS {
     template<typename T>
     struct TruthValue {
         T t;
-        constexpr TruthValue(T t): t(t) { }
+        constexpr TruthValue(T _t): t(_t) { }
         constexpr operator T() const { return t; }
         constexpr explicit operator bool() const { return underlying(t); }
     };

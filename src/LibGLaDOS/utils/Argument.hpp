@@ -98,7 +98,6 @@ namespace GLaDOS {
         Vec2 const& mData;
     };
 
-    template <>
     template <typename T>
     class ArgumentType<Mat4<T>> : public Argument {
       public:

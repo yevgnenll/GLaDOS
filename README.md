@@ -96,7 +96,7 @@ g++ main.cpp -std=c++1z -Iinclude -Llib -lGLaDOS -lobjc -framework Metal -framew
 
 1. install every tools to build GLaDOS
 ```
-sudo apt install build-essential libx11-dev mesa-vulkan-drivers libvulkan-dev libbenchmark-dev cmake ninja-build assimp-utils
+sudo apt install build-essential libx11-dev mesa-vulkan-drivers libvulkan-dev libbenchmark-dev cmake ninja-build libassimp-dev
 ```
 
 2. clone Catch2 dependencies
