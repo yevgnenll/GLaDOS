@@ -25,25 +25,25 @@ namespace GLaDOS {
         ~D3DX12Renderer() override;
 
         bool initialize(int width, int height) override;
-        void render(Renderable* _renderable) override;
+        void render(Renderable* _renderable, const Rect<real>& normalizedViewportRect) override;
 
         GPUBuffer* createGPUVertexBuffer(GPUBufferUsage usage, void* data, std::size_t size) override;
         GPUBuffer* createGPUIndexBuffer(GPUBufferUsage usage, void* data, std::size_t size) override;
-        ShaderProgram* createShaderProgram(const std::string& vertexSource, const std::string& fragmentSource) override;
-        ShaderProgram* createShaderProgramFromFile(const std::string& vertexName, const std::string& fragmentName) override;
+        ShaderProgram* createShaderProgram(Shader* vertex, Shader* fragment, RenderPipelineState* renderPipelineState) override;
+        ShaderProgram* createShaderProgramFromFile(const std::string& vertexName, const std::string& fragmentName, RenderPipelineState* renderPipelineState) override;
+        ShaderProgram* createShaderProgramFromFile(const std::string& vertexName, RenderPipelineState* renderPipelineState) override;
         Renderable* createRenderable(Mesh* mesh, Material* material) override;
         FrameBuffer* createFrameBuffer() override;
         DepthStencilState* createDepthStencilState(const DepthStencilDescription& desc) override;
         SamplerState* createSamplerState(const SamplerDescription& desc) override;
         RasterizerState* createRasterizerState(const RasterizerDescription& desc) override;
-        Texture2D* createTexture2D(const std::string& name, PixelFormat format, const Color& colorKey) override;
+        RenderPipelineState* createRenderPipelineState(const RenderPipelineDescription& desc) override;
+        RenderTexture* createRenderTexture(uint32_t width, uint32_t height, PixelFormat format) override;
         Texture2D* createTexture2D(const std::string& name, PixelFormat format) override;
-        Texture2D* createTexture2D(PixelFormat format, Blob& data, const Color& colorKey) override;
-        Texture2D* createTexture2D(PixelFormat format, Blob& data) override;
-        Texture2D* createTexture2D(uint32_t width, uint32_t height, PixelFormat format, unsigned char* data) override;
+        Texture2D* createTexture2D(const std::string& name, PixelFormat format, Blob& data) override;
+        Texture2D* createTexture2D(const std::string& name, PixelFormat format, unsigned char* data) override;
         Texture3D* createTexture3D(const std::string& name) override;
-        TextureCube* createTextureCube(const std::string& name, PixelFormat format) override;
-        RenderTexture* createRenderTexture(const std::string& name) override;
+        TextureCube* createTextureCube(const std::string& name, const Array<std::string, 6>& cubeNames, PixelFormat format) override;
 
         ComPtr<ID3D12Device> getDevice() const;
         ComPtr<ID3D12GraphicsCommandList> getCommandList() const;

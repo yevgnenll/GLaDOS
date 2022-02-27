@@ -94,7 +94,6 @@ elseif(UNIX AND NOT APPLE) # LINUX
   find_library(X11_LIBRARY X11 REQUIRED)
   find_package(Vulkan REQUIRED)
   find_package(Threads REQUIRED)
-  target_compile_definitions(vulkan PRIVATE VK_USE_PLATFORM_WAYLAND_KHR)
   set(LINK_LIBRARIES ${X11_LIBRARY} ${Vulkan_LIBRARIES} pthread)
   set(INCLUDE_LIBRARIES ${STB_LIB_DIR} ${Vulkan_INCLUDE_DIRS})
 elseif(WIN32)

@@ -223,10 +223,10 @@ namespace GLaDOS {
         return true;
     }
 
-    void D3DX12Renderer::render(Renderable* _renderable) {
-//        if (_renderable == nullptr) {
-//            return;
-//        }
+    void D3DX12Renderer::render(Renderable* _renderable, const Rect<real>& normalizedViewportRect) {
+        if (_renderable == nullptr) {
+            return;
+        }
 
         PopulateCommandList();
 

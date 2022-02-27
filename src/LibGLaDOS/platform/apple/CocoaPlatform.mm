@@ -24,7 +24,7 @@ namespace GLaDOS {
         LOG_TRACE(logger, "Initialize Cocoa Platform...");
 
         if (params.width <= 0 || params.height <= 0) {
-            LOG_ERROR(logger, "Platform getContentWidth and getContentHeight should not be less than 0.");
+            LOG_ERROR(logger, "width and height should not be less than 0.");
             return false;
         }
 
