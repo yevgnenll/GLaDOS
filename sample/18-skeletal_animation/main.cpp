@@ -92,6 +92,22 @@ class MainScene : public Scene {
             }
         }
 
+        // stormTrooper
+        stormTrooper = createGameObject("stormTrooper");
+        if (!Platform::getRenderer().createPrefabFromFile("dancing-stormtrooper/source/silly_dancing.fbx", stormTrooper)) {
+            return false;
+        }
+        stormTrooper->transform()->setLocalScale(Vec3{0.37, 0.37, 0.37});
+        stormTrooper->transform()->setLocalPosition(Vec3{-0.3, 0, 0});
+        animator4 = stormTrooper->getComponent<Animator>();
+
+        for (GameObject* gameObject : stormTrooper->getChildren()) {
+            SkinnedMeshRenderer* skinnedMeshRenderer = gameObject->getComponent<SkinnedMeshRenderer>();
+            if (skinnedMeshRenderer != nullptr) {
+                shaderPrograms.emplace_back(skinnedMeshRenderer->getRenderable()->getMaterial()->getShaderProgram());
+            }
+        }
+
         return true;
     }
 
@@ -103,6 +119,7 @@ class MainScene : public Scene {
         animator->play("mixamo.com");
         animator2->play("mixamo.com");
         animator3->play(animaitonClips[curClipIndex]);
+        animator4->play("mixamo.com");
 
         if (Input::isKeyDown(KeyCode::KEY_RETURN)) {
             curClipIndex = (curClipIndex + 1) % animaitonClips.size();
@@ -172,12 +189,12 @@ class MainScene : public Scene {
     real moveSensitivity = 1;
     real moveSpeed = 0.2;
     real animSpeed = 1000;
-    GameObject* flair = nullptr, *strafe = nullptr, *woman = nullptr;
+    GameObject* flair = nullptr, *strafe = nullptr, *woman = nullptr, *stormTrooper;
     Camera* camera = nullptr;
     Transform* cameraTransform = nullptr;
     RasterizerDescription rasterizerDesc{};
     Vector<ShaderProgram*> shaderPrograms;
-    Animator* animator = nullptr, *animator2 = nullptr, *animator3 = nullptr;
+    Animator* animator = nullptr, *animator2 = nullptr, *animator3 = nullptr, *animator4;
     Vector<std::string> animaitonClips;
     int curClipIndex = 0;
     ShaderProgram* colorShader{nullptr};
