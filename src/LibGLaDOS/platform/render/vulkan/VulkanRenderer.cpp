@@ -165,10 +165,10 @@ namespace GLaDOS {
 
         VkApplicationInfo applicationInfo{};
         applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-        applicationInfo.apiVersion = VK_MAKE_VERSION(1, 0, 2);
+        applicationInfo.apiVersion = VK_API_VERSION_1_1; // using at least Vulkan version 1.1
         applicationInfo.applicationVersion = VK_MAKE_VERSION(0, 0, 1);
         applicationInfo.engineVersion = VK_MAKE_VERSION(0, 0, 1);
-        applicationInfo.pApplicationName = "GLaDOS";
+        applicationInfo.pApplicationName = nullptr;
         applicationInfo.pEngineName = "GLaDOS";
 
         VkInstanceCreateInfo instanceCreateInfo{};
