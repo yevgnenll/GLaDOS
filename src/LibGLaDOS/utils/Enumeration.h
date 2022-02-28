@@ -342,6 +342,12 @@ namespace GLaDOS {
         PingPong
     };
 
+    enum class AnimationCullingMode {
+        NoCulling = 0, // always rendering animation
+        CullUpdate, // culling only update
+        CullCompletely // culling completely when renderers are not visible
+    };
+
     enum class Interpolation {
         Constant = 0,
         Linear,

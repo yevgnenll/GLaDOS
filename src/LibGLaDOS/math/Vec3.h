@@ -119,6 +119,7 @@ namespace GLaDOS {
         static Deg angleBetween(const Vec3& from, const Vec3& to);
         static Vec3 reflect(const Vec3& a, const Vec3& b);
         static Vec3 negate(const Vec3& v);
+        static Vec3 smoothDamp(const Vec3& current, const Vec3& target, Vec3& currentVelocity, real smoothTime, real maxSpeed);
 
         union {
             struct {

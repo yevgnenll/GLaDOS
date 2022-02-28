@@ -226,6 +226,11 @@ namespace GLaDOS {
         return Vec3{-v.x, -v.y, -v.z};
     }
 
+    Vec3 Vec3::smoothDamp(const Vec3& current, const Vec3& target, Vec3& currentVelocity, real smoothTime, real maxSpeed = Math::realInfinity) {
+        // TODO
+        return Vec3();
+    }
+
     void Vec3::swap(Vec3& first, Vec3& second) {
         using std::swap;
 
