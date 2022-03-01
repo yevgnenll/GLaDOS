@@ -38,14 +38,14 @@ namespace GLaDOS {
         real getUnitSize() const;
         void setRenderTexture(RenderTexture* renderTexture);
         RenderTexture* getRenderTexture();
-
-        static real aspectRatio();
+        real aspectRatio() const;
 
       protected:
         void fixedUpdate(real fixedDeltaTime) override;
         void update(real deltaTime) override;
         void render() override;
         Component* clone() override;
+        void dirty();
 
       private:
         Deg mFieldOfView{real(60.0)};
@@ -56,6 +56,10 @@ namespace GLaDOS {
         Rect<real> mViewportRect; // normalized viewport Rect default is (0, 0, 1, 1) bottom-left to top-right
         RenderTexture* mRenderTexture{nullptr};
         BitMask mCullingMask;
+        real mDrawableWidth{0};
+        real mDrawableHeight{0};
+        mutable Mat4<real> mProjectionMatrixCache;
+        mutable bool mProjectionDirtyFlag{true};
     };
 }  // namespace GLaDOS
 

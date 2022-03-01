@@ -16,13 +16,20 @@ namespace GLaDOS {
     }
 
     Mat4<real> Camera::projectionMatrix() const {
-        if (mIsOrthographic) {
-            // left, right, bottom, top
-            real halfWidth = static_cast<real>(Platform::getInstance().getDrawableWidth()) * 0.5f * mUnitSize;
-            real halfHeight = static_cast<real>(Platform::getInstance().getDrawableHeight()) * 0.5f * mUnitSize;
-            return Mat4<real>::orthogonal(-halfWidth, halfWidth, -halfHeight, halfHeight, mNearClipPlane, mFarClipPlane);
+        if (mProjectionDirtyFlag) {
+            if (mIsOrthographic) {
+                // left, right, bottom, top
+                real halfUnitSize = mUnitSize * 0.5f;
+                real halfWidth = mDrawableWidth * halfUnitSize;
+                real halfHeight = mDrawableHeight * halfUnitSize;
+                mProjectionMatrixCache = Mat4<real>::orthogonal(-halfWidth, halfWidth, -halfHeight, halfHeight, mNearClipPlane, mFarClipPlane);
+            } else {
+                mProjectionMatrixCache = Mat4<real>::perspective(Math::toRadians(fieldOfView()), aspectRatio(), mNearClipPlane, mFarClipPlane);
+            }
+            mProjectionDirtyFlag = false;
         }
-        return Mat4<real>::perspective(Math::toRadians(fieldOfView()), aspectRatio(), mNearClipPlane, mFarClipPlane);
+
+        return mProjectionMatrixCache;
     }
 
     Mat4<real> Camera::worldToCameraMatrix() const {
@@ -83,6 +90,7 @@ namespace GLaDOS {
 
     void Camera::setOrthographic(bool orthographic) {
         mIsOrthographic = orthographic;
+        dirty();
     }
 
     Deg Camera::fieldOfView() const {
@@ -111,18 +119,26 @@ namespace GLaDOS {
 
     void Camera::setFieldOfView(Deg fov) {
         mFieldOfView = fov;
+        if (!mIsOrthographic) {
+            dirty();
+        }
     }
 
     void Camera::setNearClipPlane(real near) {
         mNearClipPlane = near;
+        dirty();
     }
 
     void Camera::setFarClipPlane(real far) {
         mFarClipPlane = far;
+        dirty();
     }
 
     void Camera::setUnitSize(real unitSize) {
         mUnitSize = 1.F / unitSize;
+        if (mIsOrthographic) {
+            dirty();
+        }
     }
 
     real Camera::getUnitSize() const {
@@ -137,8 +153,8 @@ namespace GLaDOS {
         return mRenderTexture;
     }
 
-    real Camera::aspectRatio() {
-        return static_cast<real>(Platform::getInstance().getDrawableWidth()) / static_cast<real>(Platform::getInstance().getDrawableHeight());
+    real Camera::aspectRatio() const {
+        return mDrawableWidth / mDrawableHeight;
     }
 
     void Camera::fixedUpdate(real fixedDeltaTime) {
@@ -146,7 +162,17 @@ namespace GLaDOS {
     }
 
     void Camera::update(real deltaTime) {
-        // Nothing to do here
+        real drawableWidth = Platform::getInstance().getDrawableWidth();
+        if (mDrawableWidth != drawableWidth) {
+            mDrawableWidth = drawableWidth;
+            dirty();
+        }
+
+        real drawableHeight = Platform::getInstance().getDrawableHeight();
+        if (mDrawableHeight != drawableHeight) {
+            mDrawableHeight = drawableHeight;
+            dirty();
+        }
     }
 
     void Camera::render() {
@@ -165,5 +191,9 @@ namespace GLaDOS {
         camera->mRenderTexture = mRenderTexture;
         camera->mCullingMask = mCullingMask;
         return camera;
+    }
+
+    void Camera::dirty() {
+        mProjectionDirtyFlag = true;
     }
 }  // namespace GLaDOS

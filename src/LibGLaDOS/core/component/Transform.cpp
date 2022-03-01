@@ -119,13 +119,8 @@ namespace GLaDOS {
     }
 
     Mat4<real> Transform::worldToLocalMatrix() const {
-        if (mLocalToWorldDirtyFlag) {
-            mLocalToWorldMatrixCache = localToWorldMatrix();
-            mLocalToWorldDirtyFlag = false;
-        }
-
         if (mWorldToLocalDirtyFlag) {
-            mWorldToLocalMatrixCache = Mat4<real>::inverse(mLocalToWorldMatrixCache);
+            mWorldToLocalMatrixCache = Mat4<real>::inverse(localToWorldMatrix());
             mWorldToLocalDirtyFlag = false;
         }
         return mWorldToLocalMatrixCache;
