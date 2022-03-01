@@ -116,6 +116,27 @@ namespace GLaDOS {
         return mParent->mTransform;
     }
 
+    Vector<GameObject*>::iterator GameObject::findInChildren(const GameObject* target) {
+        return std::find_if(mChildren.begin(), mChildren.end(), [target](const GameObject* gameObject) {
+            return gameObject->getInstanceId() == target->getInstanceId();
+        });
+    }
+
+    bool GameObject::addChildren(GameObject* target) {
+        if (findInChildren(target) != mChildren.end()) {
+            return false;
+        }
+        mChildren.push_back(target);
+        return true;
+    }
+
+    void GameObject::removeChildren(const GameObject* target) {
+        auto iter = findInChildren(target);
+        if (iter != mChildren.end()) {
+            mChildren.erase(iter);
+        }
+    }
+
     GameObject* GameObject::clone() {
         GameObject* clone = NEW_T(GameObject(mParent, mScene));
         clone->mName = mName + " (duplicated)";

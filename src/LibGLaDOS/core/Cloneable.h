@@ -5,6 +5,9 @@
 namespace GLaDOS {
     template <typename T>
     class Cloneable {
+      public:
+        virtual ~Cloneable() = default;
+
       protected:
         virtual T* clone() = 0;
     };

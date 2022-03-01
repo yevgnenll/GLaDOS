@@ -53,6 +53,9 @@ namespace GLaDOS {
         void setLayer(uint32_t layer);
         Vector<GameObject*> getChildren() const;
         Transform* parent() const;
+        Vector<GameObject*>::iterator findInChildren(const GameObject* target);
+        bool addChildren(GameObject* target);
+        void removeChildren(const GameObject* target);
 
       protected:
         GameObject* clone() override;

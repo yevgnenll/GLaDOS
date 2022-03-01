@@ -14,6 +14,7 @@ namespace GLaDOS {
         } else if (relativeTo == Space::World) {
             mPosition += translation;
         }
+        dirty();
     }
 
     void Transform::rotate(const UVec3& axis, Deg angle, Space relativeTo) {
@@ -25,6 +26,7 @@ namespace GLaDOS {
             mRotation = angleAxis * mRotation;
             mRotation.makeNormalize();
         }
+        dirty();
     }
 
     void Transform::rotate(const Vec3& eulerAngles, Space relativeTo) {
@@ -36,6 +38,7 @@ namespace GLaDOS {
             mRotation = euler * mRotation;
             mRotation.makeNormalize();
         }
+        dirty();
     }
 
     void Transform::rotateAround(const Vec3& point, const UVec3& axis, Deg angle) {
@@ -46,6 +49,7 @@ namespace GLaDOS {
         diff = rotation * diff;
         worldPos = point + diff;
         mPosition = worldPos;
+        dirty();
     }
 
     void Transform::scale(const Vec3& axis, Space relativeTo) {
@@ -54,10 +58,12 @@ namespace GLaDOS {
         } else if (relativeTo == Space::World) {
             mLossyScale += axis;
         }
+        dirty();
     }
 
     void Transform::lookAt(const Transform& target, const UVec3& worldUp) {
         // TODO
+        dirty();
     }
 
     Vec3 Transform::position() const {
@@ -105,11 +111,24 @@ namespace GLaDOS {
     }
 
     Mat4<real> Transform::localToWorldMatrix() const {
-        return localMatrix() * worldMatrix() * parentLocalMatrix();
+        if (mLocalToWorldDirtyFlag) {
+            mLocalToWorldMatrixCache = localMatrix() * worldMatrix() * parentLocalMatrix();
+            mLocalToWorldDirtyFlag = false;
+        }
+        return mLocalToWorldMatrixCache;
     }
 
     Mat4<real> Transform::worldToLocalMatrix() const {
-        return Mat4<real>::inverse(localToWorldMatrix());
+        if (mLocalToWorldDirtyFlag) {
+            mLocalToWorldMatrixCache = localToWorldMatrix();
+            mLocalToWorldDirtyFlag = false;
+        }
+
+        if (mWorldToLocalDirtyFlag) {
+            mWorldToLocalMatrixCache = Mat4<real>::inverse(mLocalToWorldMatrixCache);
+            mWorldToLocalDirtyFlag = false;
+        }
+        return mWorldToLocalMatrixCache;
     }
 
     GameObject* Transform::parent() const {
@@ -118,39 +137,49 @@ namespace GLaDOS {
 
     void Transform::setPosition(const Vec3& position) {
         mPosition = position;
+        dirty();
     }
 
     void Transform::setLossyScale(const Vec3& scale) {
         mLossyScale = scale;
+        dirty();
     }
 
     void Transform::setEulerAngles(const Vec3& euler) {
         mRotation = Quat::fromEuler(euler).makeNormalize();
+        dirty();
     }
 
     void Transform::setRotation(const Quat& quat) {
         mRotation = quat;
+        dirty();
     }
 
     void Transform::setLocalPosition(const Vec3& position) {
         mLocalPosition = position;
+        dirty();
     }
 
     void Transform::setLocalScale(const Vec3& scale) {
         mLocalScale = scale;
+        dirty();
     }
 
     void Transform::setLocalEulerAngles(const Vec3& euler) {
         mLocalRotation = Quat::fromEuler(euler).makeNormalize();
+        dirty();
     }
 
     void Transform::setLocalRotation(const Quat& quat) {
         mLocalRotation = quat;
+        dirty();
     }
 
     void Transform::setParent(GameObject* parent) {
+        mGameObject->mParent->removeChildren(mGameObject);
         mGameObject->mParent = parent;
-        parent->mChildren.emplace_back(mGameObject);
+        mGameObject->mParent->addChildren(mGameObject);
+        dirty();
     }
 
     void Transform::decomposeSRT(const Mat4<real>& transform) {
@@ -171,6 +200,7 @@ namespace GLaDOS {
         mLocalPosition = translation;
         mLocalRotation = rotation;
         mLocalScale = scale;
+        dirty();
     }
 
     Vec3 Transform::transformDirection(const Vec3& direction) const {
@@ -218,11 +248,12 @@ namespace GLaDOS {
     }
 
     Mat4<real> Transform::parentLocalMatrix() const {
-        if ((mGameObject == nullptr) || (parent() == nullptr)) {
+        GameObject* parentTransform = parent();
+        if ((mGameObject == nullptr) || (parentTransform == nullptr)) {
             return Mat4<real>::identity();
         }
 
-        return parent()->mTransform->localMatrix() * parent()->mTransform->parentLocalMatrix();
+        return parentTransform->mTransform->localMatrix() * parentTransform->mTransform->parentLocalMatrix();
     }
 
     void Transform::fixedUpdate(real fixedDeltaTime) {
@@ -247,5 +278,10 @@ namespace GLaDOS {
         transform->mLocalRotation = mLocalRotation;
         transform->mLocalScale = mLocalScale;
         return transform;
+    }
+
+    void Transform::dirty() {
+        mLocalToWorldDirtyFlag = true;
+        mWorldToLocalDirtyFlag = true;
     }
 }  // namespace GLaDOS

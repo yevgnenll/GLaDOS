@@ -5,6 +5,7 @@
 #include "math/Quat.h"
 #include "math/UVec3.h"
 #include "math/Vec3.h"
+#include "math/Mat4.hpp"
 
 namespace GLaDOS {
     template <typename T>
@@ -67,6 +68,7 @@ namespace GLaDOS {
         void update(real deltaTime) override;
         void render() override;
         Component* clone() override;
+        void dirty();
 
       private:
         Vec3 mPosition{Vec3::zero};
@@ -75,6 +77,10 @@ namespace GLaDOS {
         Vec3 mLocalPosition{Vec3::zero};
         Quat mLocalRotation;
         Vec3 mLocalScale{Vec3::one};
+        mutable Mat4<real> mLocalToWorldMatrixCache;
+        mutable bool mLocalToWorldDirtyFlag{true};
+        mutable Mat4<real> mWorldToLocalMatrixCache;
+        mutable bool mWorldToLocalDirtyFlag{true};
     };
 }  // namespace GLaDOS
 
