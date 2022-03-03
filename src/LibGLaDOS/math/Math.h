@@ -151,14 +151,31 @@ namespace GLaDOS {
         static char* dtoa(char* s, double n);
         static bool atod(const char* s, const char* s_end, double* result);
 
+        static constexpr uint16_t jsonMaxNumberStringSize = 32;
         static constexpr real pi = real(3.14159265358979);  // std::atan(1) * 4
         static constexpr int degrees = 360;
         static constexpr real deg2Rad = Math::pi / real(180);
         static constexpr real rad2Deg = real(180) / Math::pi;
         static constexpr real realEpsilon = std::numeric_limits<real>::epsilon();
         static constexpr real realInfinity = std::numeric_limits<real>::infinity();
-        static constexpr uint16_t shortMax = std::numeric_limits<uint16_t>::max();
-        static constexpr uint16_t maxNumberStringSize = 32;
+
+        static constexpr uint8_t unsignedByteMin = std::numeric_limits<uint8_t>::min();
+        static constexpr uint8_t unsignedByteMax = std::numeric_limits<uint8_t>::max();
+        static constexpr uint16_t unsignedShortMin = std::numeric_limits<uint16_t>::min();
+        static constexpr uint16_t unsignedShortMax = std::numeric_limits<uint16_t>::max();
+        static constexpr uint32_t unsignedIntMin = std::numeric_limits<uint32_t>::min();
+        static constexpr uint32_t unsignedIntMax = std::numeric_limits<uint32_t>::max();
+        static constexpr uint64_t unsignedLongMin = std::numeric_limits<uint64_t>::min();
+        static constexpr uint64_t unsignedLongMax = std::numeric_limits<uint64_t>::max();
+
+        static constexpr uint8_t byteMin = std::numeric_limits<int8_t>::min();
+        static constexpr uint8_t byteMax = std::numeric_limits<int8_t>::max();
+        static constexpr uint16_t shortMin = std::numeric_limits<int16_t>::min();
+        static constexpr uint16_t shortMax = std::numeric_limits<int16_t>::max();
+        static constexpr uint32_t intMin = std::numeric_limits<int32_t>::min();
+        static constexpr uint32_t intMax = std::numeric_limits<int32_t>::max();
+        static constexpr uint64_t longMin = std::numeric_limits<int64_t>::min();
+        static constexpr uint64_t longMax = std::numeric_limits<int64_t>::max();
     };
 
     template <typename T>

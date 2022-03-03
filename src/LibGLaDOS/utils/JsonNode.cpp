@@ -449,7 +449,7 @@ namespace GLaDOS {
                 break;
             }
             case JsonNodeType::Number: {
-                char buf[Math::maxNumberStringSize];
+                char buf[Math::jsonMaxNumberStringSize];
                 const char* c = Math::dtoa(buf, storage.num_val);
                 std::copy(c, c + strlen(c), iter);
                 break;
