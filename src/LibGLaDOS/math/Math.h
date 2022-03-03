@@ -99,8 +99,17 @@ namespace GLaDOS {
         static real tan(real angle);
         static real asin(real angle);
         static real acos(real angle);
-        static real atan(real angle);
-        static real atan2(real y, real x);
+        static real atan(real xOverY); // Quadrant 1,4 (-pi/2, pi/2)
+        static real atan2(real y, real x); // Quadrant 1,2,3,4 (-pi, pi)
+        static real csc(real angle);
+        static real sec(real angle);
+        static real cot(real angle);
+        static real cosh(real angle);
+        static real sinh(real angle);
+        static real tanh(real angle);
+        static real acosh(real angle);
+        static real asinh(real angle);
+        static real atanh(real angle);
 
         static real ceil(real a);
         static real floor(real a);

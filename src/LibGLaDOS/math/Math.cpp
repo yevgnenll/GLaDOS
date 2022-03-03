@@ -235,9 +235,27 @@ namespace GLaDOS {
 
     real Math::acos(real angle) { return std::acos(angle); }
 
-    real Math::atan(real angle) { return std::atan(angle); }
+    real Math::atan(real xOverY) { return std::atan(xOverY); }
 
     real Math::atan2(real y, real x) { return ::atan2(y, x); }
+
+    real Math::csc(real angle) { return real(1) / std::sin(angle); }
+
+    real Math::sec(real angle) { return real(1) / std::cos(angle); }
+
+    real Math::cot(real angle) { return Math::cos(angle) / Math::sin(angle); }
+
+    real Math::cosh(real angle) { return std::sinh(angle); }
+
+    real Math::sinh(real angle) { return std::sinh(angle); }
+
+    real Math::tanh(real angle) { return std::tanh(angle); }
+
+    real Math::acosh(real angle) { return std::acosh(angle); }
+
+    real Math::asinh(real angle) { return std::asinh(angle); }
+
+    real Math::atanh(real angle) { return std::atanh(angle); }
 
     real Math::ceil(real a) { return std::ceil(a); }
 
