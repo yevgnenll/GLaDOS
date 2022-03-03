@@ -14,7 +14,21 @@
 #include "platform/OSTypes.h"
 
 namespace GLaDOS {
-    // Row-major 4x4 matrix
+    /*
+     * Example of matrix representation in other Game Engines.
+     * - Row major matrix -> DirectX, Unreal Engine
+     * - Column major matrix -> OpenGL, Unity, glm
+     *
+     * GLaDOS's Mat4<T> class represents Row major 4x4 matrix.
+     * | a  b  c |   | x |   | ax + by + cz |
+     * | d  e  f | * | y | = | dx + ey + fz |
+     * | g  h  i |   | z |   | gx + hy + iz |
+     *
+     * it means that consecutive memory layout places like so
+     * real arr[] = { a, b, c,
+     *                d, e, f,
+     *                g, h, i };
+     */
     template <typename T>
     class Mat4 {
       public:
@@ -70,6 +84,7 @@ namespace GLaDOS {
         static T determinant(const Mat4<T>& other);
         static Mat4<T> adjugate(const Mat4<T>& other);
         static Mat4<T> inverse(const Mat4<T>& other);
+        static T inverseDeterminant(const Mat4<T>& other);
         static Mat4<T> toMat3(const Mat4<T>& other);
         static Mat4<T> abs(const Mat4<T>& other);
         static std::enable_if_t<is_real_v<T>, Mat4<T>> perspective(Rad fieldOfView, const T& aspectRatio, const T& znear, const T& zfar);
@@ -478,6 +493,17 @@ namespace GLaDOS {
         determinant = T(1) / determinant;
 
         return Mat4<T>::adjugate(other) * determinant;
+    }
+
+    template <typename T>
+    T Mat4<T>::inverseDeterminant(const Mat4<T>& other) {
+        // det(A-1) = 1 / det(A)
+        T determinant = Mat4<T>::determinant(other);
+        if (determinant == T(0)) {
+            LOG_ERROR(logger, "Matrix determinant is zero! Inverse does not exist.");
+            return T(0);
+        }
+        return T(1) / determinant;
     }
 
     template <typename T>

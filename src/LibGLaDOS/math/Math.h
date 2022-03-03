@@ -28,6 +28,10 @@ namespace GLaDOS {
         template <typename T>
         static std::enable_if_t<std::is_floating_point_v<T>, bool> equal(const T& a, const T& b);
         template <typename T>
+        static std::enable_if_t<!std::is_floating_point_v<T>, bool> equalUlps(const T& a, const T& b, int ulpsTolerance);
+        template <typename T>
+        static std::enable_if_t<std::is_floating_point_v<T>, bool> equalUlps(const T& a, const T& b, int ulpsTolerance);
+        template <typename T>
         static bool zero(const T& a);
         template <typename T>
         static T clamp(const T& x, const T& min, const T& max);
@@ -156,6 +160,17 @@ namespace GLaDOS {
     template <typename T>
     std::enable_if_t<std::is_floating_point_v<T>, bool> Math::equal(const T& a, const T& b) {
         return Real<T>(a) == Real<T>(b);
+    }
+
+    template <typename T>
+    std::enable_if_t<!std::is_floating_point_v<T>, bool> Math::equalUlps(const T& a, const T& b, int ulpsTolerance) {
+        return a == b;
+    }
+
+    template <typename T>
+    std::enable_if_t<std::is_floating_point_v<T>, bool> Math::equalUlps(const T& a, const T& b, int ulpsTolerance) {
+        static T tolerance = std::numeric_limits<T>::epsilon();
+        return compareTo(Real<T>(a), Real<T>(b), ulpsTolerance, tolerance) == 0;
     }
 
     template <typename T>

@@ -142,6 +142,18 @@ TEST_CASE("Matrix unit tests", "[Matrix]") {
     REQUIRE(m1.makeInverse() == result);
   }
 
+  SECTION("inverse of determinant of matrix test") {
+      Mat4<real> m1{
+          -3.F, -1.F, 2.F, -3.F,
+          -3.F, 1.F, 2.F, -2.F,
+          -2.F, 3.F, 0.F, 1.F,
+          1.F, -2.F, -3.F, 1.F};
+      Mat4<real> inverseM1 = Mat4<real>::inverse(m1);
+      real determinantOfInverseM1 = Mat4<real>::determinant(inverseM1);
+
+      REQUIRE(Math::equalUlps(Mat4<real>::inverseDeterminant(m1), determinantOfInverseM1, 16));
+  }
+
   SECTION("toMat3 test") {
     Mat4<real> m1{
         -3.F, -1.F, 2.F, -3.F,
