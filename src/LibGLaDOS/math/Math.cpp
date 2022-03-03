@@ -243,7 +243,7 @@ namespace GLaDOS {
 
     real Math::sec(real angle) { return real(1) / std::cos(angle); }
 
-    real Math::cot(real angle) { return Math::cos(angle) / Math::sin(angle); }
+    real Math::cot(real angle) { return std::cos(angle) / std::sin(angle); }
 
     real Math::cosh(real angle) { return std::sinh(angle); }
 
