@@ -50,13 +50,13 @@ namespace GLaDOS {
         void decomposeSRT(const Mat4<real>& transform);
 
         // local space to world space
-        Vec3 transformDirection(const Vec3& direction) const; // rotation only
-        Vec3 transformPoint(const Vec3& position) const; // position, rotation, and scale
+        Vec3 transformDirection(const UVec3& direction) const; // rotation only
+        Vec3 transformPoint(const Vec3& point) const; // position, rotation, and scale
         Vec3 transformVector(const Vec3& vector) const; // rotation and scale only
 
         // world space to local space
-        Vec3 inverseTransformDirection(const Vec3& direction) const;
-        Vec3 inverseTransformPoint(const Vec3& position) const;
+        Vec3 inverseTransformDirection(const UVec3& direction) const;
+        Vec3 inverseTransformPoint(const Vec3& point) const;
         Vec3 inverseTransformVector(const Vec3& vector) const;
 
         Mat4<real> worldMatrix() const;

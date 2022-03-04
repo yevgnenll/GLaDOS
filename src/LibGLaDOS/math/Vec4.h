@@ -6,6 +6,8 @@
 #include "Vec3.h"
 
 namespace GLaDOS {
+    template <typename T>
+    class Mat4;
     class UVec4;
     class Vec4 {
       public:
@@ -30,11 +32,8 @@ namespace GLaDOS {
         Vec4 operator-(const Vec4& other) const;
         Vec4& operator-=(const Vec4& other);
 
-        Vec4 operator*(const Vec4& other) const;
-        Vec4& operator*=(const Vec4& other);
-
-        Vec4 operator/(const Vec4& other) const;
-        Vec4& operator/=(const Vec4& other);
+        Vec4 operator*(const Mat4<real>& m) const;
+        Vec4 operator*=(const Mat4<real>& m);
 
         Vec4 operator+(real scalar) const;
         Vec4& operator+=(real scalar);

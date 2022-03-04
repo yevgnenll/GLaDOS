@@ -103,7 +103,7 @@ namespace GLaDOS {
     }
 
     Vec3 Transform::eulerAngles() const {
-        return localEulerAngles() * Quat::toEuler(mRotation);
+        return Quat::toEuler(mRotation);
     }
 
     Vec3 Transform::localEulerAngles() const {
@@ -198,20 +198,29 @@ namespace GLaDOS {
         dirty();
     }
 
-    Vec3 Transform::transformDirection(const Vec3& direction) const {
+    Vec3 Transform::transformDirection(const UVec3& direction) const {
         Vec3 out;
 
+        // only care vector direction
         out = rotation() * direction;
 
         return out;
     }
 
-    Vec3 Transform::transformPoint(const Vec3& position) const {
+    Vec3 Transform::transformPoint(const Vec3& point) const {
         Vec3 out;
 
-        // SRT order
-        out = rotation() * (scale() * position);
-        out = this->position() + out;
+        // first scale (X, Y, Z) each vector components
+        Vec3 scaleVector = scale();
+        out.x = point.x * scaleVector.x;
+        out.y = point.y * scaleVector.y;
+        out.z = point.z * scaleVector.z;
+
+        // second rotate vector with quaternion
+        out = rotation() * out;
+
+        // third add position to point
+        out = position() + out;
 
         return out;
     }
@@ -219,16 +228,22 @@ namespace GLaDOS {
     Vec3 Transform::transformVector(const Vec3& vector) const {
         Vec3 out;
 
-        // SR order
-        out = rotation() * (scale() * vector);
+        // first scale (X, Y, Z) each vector components
+        Vec3 scaleVector = scale();
+        out.x = vector.x * scaleVector.x;
+        out.y = vector.y * scaleVector.y;
+        out.z = vector.z * scaleVector.z;
+
+        // second rotate vector with quaternion
+        out = rotation() * out;
 
         return out;
     }
 
-    Vec3 Transform::inverseTransformDirection(const Vec3& direction) const {
+    Vec3 Transform::inverseTransformDirection(const UVec3& direction) const {
     }
 
-    Vec3 Transform::inverseTransformPoint(const Vec3& position) const {
+    Vec3 Transform::inverseTransformPoint(const Vec3& point) const {
     }
 
     Vec3 Transform::inverseTransformVector(const Vec3& vector) const {

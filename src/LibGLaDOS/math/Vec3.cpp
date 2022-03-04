@@ -58,24 +58,6 @@ namespace GLaDOS {
         return *this;
     }
 
-    Vec3 Vec3::operator*(const Vec3& other) const { return Vec3(*this) *= other; }
-
-    Vec3& Vec3::operator*=(const Vec3& other) {
-        x *= other.x;
-        y *= other.y;
-        z *= other.z;
-        return *this;
-    }
-
-    Vec3 Vec3::operator/(const Vec3& other) const { return Vec3(*this) /= other; }
-
-    Vec3& Vec3::operator/=(const Vec3& other) {
-        x /= other.x;
-        y /= other.y;
-        z /= other.z;
-        return *this;
-    }
-
     Vec3 Vec3::operator+(const real scalar) const { return Vec3(*this) += scalar; }
 
     Vec3& Vec3::operator+=(const real scalar) {

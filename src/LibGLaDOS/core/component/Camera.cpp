@@ -63,7 +63,7 @@ namespace GLaDOS {
 #endif
         clipCoords.w = 1.f;
 
-        Vec4 eyeCoords = Mat4<real>::inverse(projectionMatrix()) * clipCoords;
+        Vec4 eyeCoords = clipCoords * Mat4<real>::inverse(projectionMatrix());
 #ifdef PLATFORM_MACOS
         // metal use 2x2x1 NDC space
         eyeCoords.z = 1.f;  // forward
@@ -74,7 +74,7 @@ namespace GLaDOS {
         eyeCoords.w = 0.f;
 
         // NOTE: not cameraToWorldMatrix()
-        Vec4 worldCoords = mGameObject->transform()->localToWorldMatrix() * eyeCoords;
+        Vec4 worldCoords = eyeCoords * mGameObject->transform()->localToWorldMatrix();
 
         return Vec3{worldCoords.x, worldCoords.y, worldCoords.z}.makeNormalize();
     }

@@ -57,7 +57,8 @@ namespace GLaDOS {
         bool operator==(const Mat4<T>& m) const;
         bool operator!=(const Mat4<T>& m) const;
 
-        Vec4 operator*(const Vec4& v);
+        // Intentionally don't overload operator * function with vec4
+        // because it makes matrix seem like column major matrix (M * v).
 
         Mat4<T> operator+(const T& scalar) const;
         Mat4<T>& operator+=(const T& scalar);
@@ -284,18 +285,6 @@ namespace GLaDOS {
     template <typename T>
     bool Mat4<T>::operator!=(const Mat4<T>& m) const {
         return !(*this == m);  // use equal operator to implement not equal
-    }
-
-    template <typename T>
-    Vec4 Mat4<T>::operator*(const Vec4& v) {
-        Vec4 t = Vec4::zero;
-        for (unsigned r = 0; r < 4; r++) {
-            for (unsigned c = 0; c < 4; c++) {
-                t[c] += _m44[r][c] * v[c];
-            }
-        }
-
-        return t;
     }
 
     template <typename T>
@@ -815,10 +804,18 @@ namespace GLaDOS {
     template <typename T>
     std::enable_if_t<is_real_v<T>, Mat4<T>> Mat4<T>::buildSRT(const Vec3& p, const Quat& q, const Vec3& s) {
         /*
-          if using column vectors
-          M := T * R * S
-          else if using row vectors
-          M := S * R * T
+          if using column vectors, column major matrix
+                        <-- multiply order
+          M := T * R * S * | v1 |
+                           | v2 |
+                           | v3 |
+                           |  0 |
+
+          if using row vectors, row major matrix
+          M := |v1, v2, v3, 0| * S * R * T
+               multiply order -->
+
+          Because Mat4<T> class uses row major matrix, SRT is correct multiplication order.
         */
         return Mat4<real>::scale(s) * Mat4<real>::rotate(q) * Mat4<real>::translate(p);
     }

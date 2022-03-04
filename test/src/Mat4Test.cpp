@@ -122,7 +122,7 @@ TEST_CASE("Matrix unit tests", "[Matrix]") {
   SECTION("multiply with Vec4") {
     Mat4<real> m1;
     Vec4 v1{1,2,3,4};
-    Vec4 v2 = m1 * v1;
+    Vec4 v2 = v1 * m1;
     REQUIRE(v2 == Vec4{1,2,3,4});
   }
 

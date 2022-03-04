@@ -2,6 +2,7 @@
 
 #include "Math.h"
 #include "UVec4.h"
+#include "Mat4.hpp"
 
 namespace GLaDOS {
     Vec4::Vec4() : x{0.0}, y{0.0}, z{0.0}, w{0.0} {}
@@ -61,29 +62,19 @@ namespace GLaDOS {
         return *this;
     }
 
-    Vec4 Vec4::operator*(const Vec4& other) const {
+    Vec4 Vec4::operator*(const Mat4<real>& m) const {
         // using op= (more effective c++ section 22)
-        return Vec4(*this) *= other;
+        return Vec4(*this) *= m;
     }
 
-    Vec4& Vec4::operator*=(const Vec4& other) {
-        x *= other.x;
-        y *= other.y;
-        z *= other.z;
-        w *= other.w;
-        return *this;
-    }
-
-    Vec4 Vec4::operator/(const Vec4& other) const {
-        // using op= (more effective c++ section 22)
-        return Vec4(*this) /= other;
-    }
-
-    Vec4& Vec4::operator/=(const Vec4& other) {
-        x /= other.x;
-        y /= other.y;
-        z /= other.z;
-        w /= other.w;
+    Vec4 Vec4::operator*=(const Mat4<real>& m) {
+        for (unsigned r = 0; r < 4; r++) {
+            real temp = 0.f;
+            for (unsigned c = 0; c < 4; c++) {
+                temp += v[c] * m._m44[r][c];
+            }
+            v[r] = temp;
+        }
         return *this;
     }
 

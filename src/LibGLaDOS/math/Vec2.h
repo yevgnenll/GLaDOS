@@ -28,12 +28,6 @@ namespace GLaDOS {
         Vec2 operator-(const Vec2& other) const;
         Vec2& operator-=(const Vec2& other);
 
-        Vec2 operator*(const Vec2& other) const;
-        Vec2& operator*=(const Vec2& other);
-
-        Vec2 operator/(const Vec2& other) const;
-        Vec2& operator/=(const Vec2& other);
-
         Vec2 operator+(real scalar) const;
         Vec2& operator+=(real scalar);
 
