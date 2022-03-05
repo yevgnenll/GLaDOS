@@ -3,14 +3,17 @@
 
 #include "AbstractView.h"
 
-namespace GLaDOS::GUI {
+namespace GLaDOS {
   class ViewBuffer;
   class AbstractFrame : public AbstractView {
   public:
+    AbstractFrame();
+    ~AbstractFrame() override;
+
   private:
     FrameFlags mFrameFlags;
     ViewBuffer* mViewBuffer;
   };
-}  // namespace GLaDOS::GUI
+}  // namespace GLaDOS
 
 #endif  //GLADOS_ABSTRACTFRAME_H

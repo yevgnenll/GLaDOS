@@ -1,9 +1,9 @@
 #ifndef GLADOS_WINDOW_H
 #define GLADOS_WINDOW_H
 
-namespace GLaDOS::GUI {
+namespace GLaDOS {
   class Window {
   };
-}  // namespace GLaDOS::GUI
+}  // namespace GLaDOS
 
 #endif  //GLADOS_WINDOW_H

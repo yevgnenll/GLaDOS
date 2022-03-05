@@ -21,6 +21,8 @@
 #include "core/animation/AnimationState.h"
 #include "core/animation/AnimationClip.h"
 #include "core/animation/AnimationCurve.hpp"
+#include "core/component/canvas/GUICanvas.h"
+#include "core/gui/MessageBox.h"
 #include "math/Color.h"
 #include "platform/Input.h"
 #include "platform/InputHandler.h"

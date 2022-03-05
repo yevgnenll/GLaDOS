@@ -4,11 +4,11 @@
 #include <atomic>
 #include <string>
 
-#include "constant/Constant.h"
+#include "core/gui/constant/Constant.h"
 #include "math/Size.hpp"
 #include "math/Vec2.h"
 
-namespace GLaDOS::GUI {
+namespace GLaDOS {
   class AbstractWindow;
   class AbstractView {
   public:
@@ -59,6 +59,6 @@ namespace GLaDOS::GUI {
     Size<int> mSize;
     std::string mName;
   };
-}  // namespace GLaDOS::GUI
+}  // namespace GLaDOS
 
 #endif  //GLADOS_ABSTRACTVIEW_H

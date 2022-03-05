@@ -1,6 +1,6 @@
 #include "MessageBox.h"
 
-namespace GLaDOS::GUI {
+namespace GLaDOS {
     MessageBox::MessageBox(const std::string &title, const std::string &description) {
     }
 

@@ -1,9 +1,9 @@
 #ifndef GLADOS_LABEL_H
 #define GLADOS_LABEL_H
 
-namespace GLaDOS::GUI {
+namespace GLaDOS {
   class Label {
   };
-}  // namespace GLaDOS::GUI
+}  // namespace GLaDOS
 
 #endif  //GLADOS_LABEL_H

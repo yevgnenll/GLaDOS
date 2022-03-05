@@ -1,9 +1,9 @@
 #ifndef GLADOS_VIEWBUFFER_H
 #define GLADOS_VIEWBUFFER_H
 
-namespace GLaDOS::GUI {
+namespace GLaDOS {
   class ViewBuffer {
   };
-}  // namespace GLaDOS::GUI
+}  // namespace GLaDOS
 
 #endif  //GLADOS_VIEWBUFFER_H

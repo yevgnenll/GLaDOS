@@ -46,8 +46,8 @@ namespace GLaDOS {
         void quit();
         int getContentWidth() const;
         int getContentHeight() const;
-        real getDrawableWidth() const;
-        real getDrawableHeight() const;
+        real getDrawableWidth() const; // scaled viewport width
+        real getDrawableHeight() const; // scaled viewport height
         std::string titleName() const;
         bool isFullScreen() const;
         bool isRunning() const;

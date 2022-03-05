@@ -3,15 +3,15 @@
 
 #include "AbstractRoundFrame.h"
 
-namespace GLaDOS::GUI {
+namespace GLaDOS {
   class AbstractDialog : public AbstractRoundFrame {
   public:
     AbstractDialog();
-    virtual ~AbstractDialog();
+    ~AbstractDialog() override;
 
   protected:
     virtual Response draw(AbstractWindow* context) = 0;
   };
-}  // namespace GLaDOS::GUI
+}  // namespace GLaDOS
 
 #endif  //GLADOS_ABSTRACTDIALOG_H

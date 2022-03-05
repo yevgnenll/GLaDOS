@@ -41,7 +41,6 @@ else()
   set(DEBUG_BUILD 1)
 endif()
 set(LIB_GLADOS_SOURCE_DIR "${SOURCE_DIR}/LibGLaDOS")
-set(LIB_GUI_SOURCE_DIR "${SOURCE_DIR}/LibGUI")
 
 # Link this 'library' to set the c++ standard / compile-time options requested
 add_library(project_options INTERFACE)
@@ -137,20 +136,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${LIB_GLADOS_SOURCE_DIR} ${INC
 configure_file("${CMAKE_SOURCE_DIR}/cmake/RootDir.h.in" "${LIB_GLADOS_SOURCE_DIR}/RootDir.h")
 configure_file("${CMAKE_SOURCE_DIR}/cmake/Config.h.in" "${LIB_GLADOS_SOURCE_DIR}/Config.h")
 
-# LibGUI
-file(GLOB_RECURSE LIB_GUI_SOURCE_FILES
-        "${LIB_GUI_SOURCE_DIR}/*.h"
-        "${LIB_GUI_SOURCE_DIR}/*.hpp"
-        "${LIB_GUI_SOURCE_DIR}/*.cpp")
-add_library("GUI" STATIC ${LIB_GUI_SOURCE_FILES})
-target_link_libraries("GUI"
-        PRIVATE
-        ${LINK_LIBRARIES}
-        ${PROJECT_NAME}
-        project_options
-        project_warnings)
-target_include_directories("GUI" PRIVATE ${LIB_GLADOS_SOURCE_DIR} ${INCLUDE_LIBRARIES} ${LIB_GUI_SOURCE_DIR})
-
 # Macro to preserve source files hierarchy in the IDE
 if(MSVC_IDE)
   macro(GroupSources curdir)
@@ -204,4 +189,5 @@ if (GLADOS_ENABLE_SAMPLE)
   make_sample(22-gizmo "22-gizmo/main.cpp")
   make_sample(23-animation_blending "23-animation_blending/main.cpp")
   make_sample(24-shadow "24-shadow/main.cpp")
+  make_sample(25-gui "25-gui/main.cpp")
 endif ()

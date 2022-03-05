@@ -1,7 +1,7 @@
 #ifndef GLADOS_CONSTANT_H
 #define GLADOS_CONSTANT_H
 
-namespace GLaDOS::GUI {
+namespace GLaDOS {
   enum class FrameFlagMask {
     FrameFocusableMask = (1 << 0),
     FrameFloatingMask = (1 << 1),

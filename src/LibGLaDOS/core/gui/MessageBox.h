@@ -5,7 +5,7 @@
 
 #include "AbstractDialog.h"
 
-namespace GLaDOS::GUI {
+namespace GLaDOS {
   class Font;
   class Label;
   class CloseButton;
@@ -29,6 +29,6 @@ namespace GLaDOS::GUI {
     Label* mText;
     CloseButton* mClose;
   };
-}  // namespace GLaDOS::GUI
+}  // namespace GLaDOS
 
 #endif  //GLADOS_MESSAGEBOX_H

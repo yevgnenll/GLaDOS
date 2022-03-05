@@ -1,5 +1,5 @@
 #include "AbstractForm.h"
 
-namespace GLaDOS::GUI {
+namespace GLaDOS {
 
 }
