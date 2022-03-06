@@ -97,8 +97,8 @@ namespace GLaDOS {
         [[nodiscard]] Vec3 zzy() const { return Vec3(z, z, y); }
         [[nodiscard]] Vec3 zzz() const { return Vec3(z, z, z); }
 
-        static Vec3 cross(const Vec3& a, const Vec3& b);
         static real dot(const Vec3& a, const Vec3& b);
+        static Vec3 cross(const Vec3& a, const Vec3& b);
         static Vec3 inverse(const Vec3& v);
         static Vec2 toVec2(const Vec3& v);
         static Vec4 toVec4(const Vec3& v);

@@ -26,6 +26,14 @@ namespace GLaDOS {
         return !(*this == other);
     }
 
+    Vec3 Ray::getOrigin() const {
+        return mOrigin;
+    }
+
+    Vec3 Ray::getDirection() const {
+        return mDirection;
+    }
+
     void Ray::swap(Ray& first, Ray& second) {
         using std::swap;
 

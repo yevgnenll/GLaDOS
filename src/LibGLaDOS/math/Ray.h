@@ -17,6 +17,9 @@ namespace GLaDOS {
         bool operator==(const Ray& other);
         bool operator!=(const Ray& other);
 
+        Vec3 getOrigin() const;
+        Vec3 getDirection() const;
+
       private:
         void swap(Ray& first, Ray& second);
 
