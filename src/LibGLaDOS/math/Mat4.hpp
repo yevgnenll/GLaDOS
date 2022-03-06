@@ -38,6 +38,7 @@ namespace GLaDOS {
              T m21, T m22, T m23, T m24,
              T m31, T m32, T m33, T m34,
              T m41, T m42, T m43, T m44);
+        Mat4(const Vec4& row1, const Vec4& row2, const Vec4& row3, const Vec4& row4);
         Mat4(const Mat4& other);
         Mat4(Mat4<T>&& other) noexcept;
         Mat4<T>& operator=(Mat4<T> other);  // copy and swap idiom
@@ -167,6 +168,14 @@ namespace GLaDOS {
         _m44[3][1] = m42;
         _m44[3][2] = m43;
         _m44[3][3] = m44;
+    }
+
+    template <typename T>
+    Mat4<T>::Mat4(const Vec4& row1, const Vec4& row2, const Vec4& row3, const Vec4& row4) {
+        rows[0] = row1;
+        rows[1] = row2;
+        rows[2] = row3;
+        rows[3] = row4;
     }
 
     template <typename T>
