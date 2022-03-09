@@ -20,22 +20,19 @@ namespace GLaDOS {
     class Mat {
       public:
         Mat();
-        Mat(T scalar);
-        Mat(const Vec<T, R>& vector);
-        Mat(const T(&scalars)[R*C]);
-        Mat(const Vec<T, R>(&vectors)[C]);
-        Mat(const Array<T, R*C>& scalars);
-        Mat(const Array<Vec<T, R>, C>& vectors);
+        template<typename... Ts, typename = std::enable_if_t<std::conjunction_v<std::is_same<T, Ts>...>>>
+        Mat(Ts&&... scalars);
+        Mat(const Mat<T, R, C>& other);
         Mat(Mat<T, R, C>&& other) noexcept;
         Mat<T, R, C>& operator=(Mat<T, R, C> other);  // copy and swap idiom (intentionally call by value)
         ~Mat() = default;
 
-        template<typename = typename std::enable_if_t<R == C>>
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == COL>>
         void makeIdentity();
-        template<typename = typename std::enable_if_t<R == C>>
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == COL>>
         bool isIdentity() const;
         Mat<T, R, C>& makeTranspose();
-        template<typename = typename std::enable_if_t<R == C>>
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == COL>>
         Mat<T, R, C>& makeInverse();
         T* pointer();
 
@@ -58,16 +55,28 @@ namespace GLaDOS {
         Mat<T, R, C> operator/(const T& scalar) const;
         Mat<T, R, C>& operator/=(const T& scalar);
 
+        static Mat<T, R, C> from(const T& scalar);
+        static Mat<T, R, C> from(const Vec<T, R>& vector);
         static constexpr std::size_t dimension();
         static constexpr std::size_t size();
-        template<typename = typename std::enable_if_t<R == C>>
-        static constexpr Mat<T, R, C> identity();
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == COL>>
+        static constexpr Mat<T, ROW, COL> identity();
         static constexpr Mat<T, R, C> zero();
+        static Vec<T, C> diagonal(const Mat<T, R, C>& other);
+        static Mat<T, R, C> transpose(const Mat<T, R, C>& other);
+        static T minor(const Mat<T, R, C>& other, std::size_t row, std::size_t col);
+        static T cofactor(const Mat<T, R, C>& other, std::size_t row, std::size_t col);
+        static T determinant(const Mat<T, R, C>& other);
+        static Mat<T, R, C> adjugate(const Mat<T, R, C>& other);
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == COL>>
+        static Mat<T, ROW, COL> inverse(const Mat<T, ROW, COL>& other);
+        static T inverseDeterminant(const Mat<T, R, C>& other);
+        static T trace(const Mat<T, R, C>& other);
 
         union {
             T _m44[R][C];
             T _m16[R*C];
-            Vec<T, R> rows[C];
+            Vec<T, C> rows[R];
         };
 
       private:
@@ -76,43 +85,41 @@ namespace GLaDOS {
 
     template <typename T, std::size_t R, std::size_t C>
     Mat<T, R, C>::Mat() {
-        for (unsigned c = 0; c < C; c++) {
-            for (unsigned r = 0; r < R; r++) {
-                _m44[c][r] = Math::equal(c, r) ? T(1.0) : T(0.0);
+        for (unsigned int r = 0; r < R; r++) {
+            for (unsigned int c = 0; c < C; c++) {
+                if constexpr (R == C) {
+                    _m44[r][c] = Math::equal(r, c) ? T(1.0) : T(0.0);
+                } else {
+                    _m44[r][c] = T(0.0);
+                }
             }
         }
     }
 
     template <typename T, std::size_t R, std::size_t C>
-    Mat<T, R, C>::Mat(T scalar) {
-        for (unsigned c = 0; c < C; c++) {
-            for (unsigned r = 0; r < R; r++) {
-                _m44[c][r] = scalar;
+    template <typename... Ts, typename>
+    Mat<T, R, C>::Mat(Ts&&... scalars) {
+        static_assert(sizeof...(scalars) == (R * C), "Exceed matrix dimension");
+        Array<T, sizeof...(Ts)> arr = { std::forward<T>(scalars)... };
+        for (unsigned int r = 0; r < R; r++) {
+            for (unsigned int c = 0; c < C; c++) {
+                _m44[r][c] = arr[r * C + c];
             }
         }
     }
 
     template <typename T, std::size_t R, std::size_t C>
-    Mat<T, R, C>::Mat(const Vec<T, R>& vector) {
-        for (unsigned c = 0; c < C; c++) {
-            rows[c] = vector;
+    Mat<T, R, C>::Mat(const Mat<T, R, C>& other) {
+        for (unsigned int r = 0; r < R; r++) {
+            for (unsigned int c = 0; c < C; c++) {
+                _m44[r][c] = other._m44[r][c];
+            }
         }
-    }
-
-    template <typename T, std::size_t R, std::size_t C>
-    Mat<T, R, C>::Mat(const T (&scalars)[R*C]) {
-    }
-
-    template <typename T, std::size_t R, std::size_t C>
-    Mat<T, R, C>::Mat(const Vec<T, R> (&vectors)[C]) {
-    }
-
-    template <typename T, std::size_t R, std::size_t C>
-    Mat<T, R, C>::Mat(const Array<GLaDOS::Vec<T, R>, C>& vectors) {
     }
 
     template <typename T, std::size_t R, std::size_t C>
     Mat<T, R, C>::Mat(Mat<T, R, C>&& other) noexcept {
+        Mat<T, R, C>::swap(*this, other);
     }
 
     template <typename T, std::size_t R, std::size_t C>
@@ -122,19 +129,19 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t R, std::size_t C>
-    template <typename>
+    template <std::size_t ROW, std::size_t COL, typename>
     void Mat<T, R, C>::makeIdentity() {
-        for (unsigned c = 0; c < C; c++) {
-            for (unsigned r = 0; r < R; r++) {
-                _m44[c][r] = Math::equal(c, r) ? T(1.0) : T(0.0);
+        for (unsigned int r = 0; r < ROW; r++) {
+            for (unsigned int c = 0; c < COL; c++) {
+                _m44[r][c] = Math::equal(r, c) ? T(1.0) : T(0.0);
             }
         }
     }
 
     template <typename T, std::size_t R, std::size_t C>
-    template <typename>
+    template <std::size_t ROW, std::size_t COL, typename>
     bool Mat<T, R, C>::isIdentity() const {
-        return *this == Mat<T, R, C>::identity();
+        return *this == Mat<T, ROW, COL>::identity();
     }
 
     template <typename T, std::size_t R, std::size_t C>
@@ -143,7 +150,7 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t R, std::size_t C>
-    template <typename>
+    template <std::size_t ROW, std::size_t COL, typename>
     Mat<T, R, C>& Mat<T, R, C>::makeInverse() {
         return *this;
     }
@@ -155,41 +162,60 @@ namespace GLaDOS {
 
     template <typename T, std::size_t R, std::size_t C>
     Mat<T, R, C> Mat<T, R, C>::operator+(const Mat<T, R, C>& other) const {
-        return Mat<T, R, C>();
+        return Mat<T, R, C>(*this) += other;
     }
 
     template <typename T, std::size_t R, std::size_t C>
     Mat<T, R, C>& Mat<T, R, C>::operator+=(const Mat<T, R, C>& other) {
+        for (unsigned int r = 0; r < R; r++) {
+            for (unsigned int c = 0; c < C; c++) {
+                _m44[r][c] += other._m44[r][c];
+            }
+        }
         return *this;
     }
 
     template <typename T, std::size_t R, std::size_t C>
     Mat<T, R, C> Mat<T, R, C>::operator-(const Mat<T, R, C>& other) const {
-        return Mat<T, R, C>();
+        return Mat<T, R, C>(*this) -= other;
     }
 
     template <typename T, std::size_t R, std::size_t C>
     Mat<T, R, C>& Mat<T, R, C>::operator-=(const Mat<T, R, C>& other) {
+        for (unsigned int r = 0; r < R; r++) {
+            for (unsigned int c = 0; c < C; c++) {
+                _m44[r][c] -= other._m44[r][c];
+            }
+        }
         return *this;
     }
 
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t R2, std::size_t C2, typename>
     Mat<T, R, C2> Mat<T, R, C>::operator*(const Mat<T, R2, C2>& other) const {
-        return Mat<T, R, C2>();
+        return Mat<T, R, C>(*this) *= other;
     }
 
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t R2, std::size_t C2, typename>
     Mat<T, R, C2>& Mat<T, R, C>::operator*=(const Mat<T, R2, C2>& other) {
-        return *this;
+        Mat<T, R, C2> result;
+        for (unsigned int r = 0; r < R; r++) {
+            for (unsigned int c = 0; c < C2; c++) {
+                result._m44[r][c] = T(0);
+                for (unsigned int k = 0; k < C; k++) {
+                    result._m44[r][c] += _m44[r][k] * other._m44[k][c];
+                }
+            }
+        }
+        return *this = result;
     }
 
     template <typename T, std::size_t R, std::size_t C>
     bool Mat<T, R, C>::operator==(const Mat<T, R, C>& other) const {
-        for (unsigned c = 0; c < C; c++) {
-            for (unsigned r = 0; r < R; r++) {
-                if (!Math::equal(_m44[c][r], other._m44[c][r])) {
+        for (unsigned int r = 0; r < R; r++) {
+            for (unsigned int c = 0; c < C; c++) {
+                if (!Math::equal(_m44[r][c], other._m44[r][c])) {
                     return false;
                 }
             }
@@ -204,22 +230,38 @@ namespace GLaDOS {
 
     template <typename T, std::size_t R, std::size_t C>
     Mat<T, R, C> Mat<T, R, C>::operator*(const T& scalar) const {
-        return Mat<T, R, C>();
+        return Mat<T, R, C>(*this) *= scalar;
     }
 
     template <typename T, std::size_t R, std::size_t C>
     Mat<T, R, C>& Mat<T, R, C>::operator*=(const T& scalar) {
+        for (auto& element : _m16) {
+            element *= scalar;
+        }
         return *this;
     }
 
     template <typename T, std::size_t R, std::size_t C>
     Mat<T, R, C> Mat<T, R, C>::operator/(const T& scalar) const {
-        return Mat<T, R, C>();
+        return Mat<T, R, C>(*this) /= scalar;
     }
 
     template <typename T, std::size_t R, std::size_t C>
     Mat<T, R, C>& Mat<T, R, C>::operator/=(const T& scalar) {
+        for (auto& element : _m16) {
+            element /= scalar;
+        }
         return *this;
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    Mat<T, R, C> Mat<T, R, C>::from(const T& scalar) {
+        return Mat<T, R, C>(); // TODO
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    Mat<T, R, C> Mat<T, R, C>::from(const Vec<T, R>& vector) {
+        return Mat<T, R, C>(); // TODO
     }
 
     template <typename T, std::size_t R, std::size_t C>
@@ -233,12 +275,12 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t R, std::size_t C>
-    template <typename>
-    constexpr Mat<T, R, C> Mat<T, R, C>::identity() {
-        Mat<T, R, C> mat;
-        for (unsigned c = 0; c < C; c++) {
-            for (unsigned r = 0; r < R; r++) {
-                mat._m44[c][r] = Math::equal(c, r) ? T(1.0) : T(0.0);
+    template <std::size_t ROW, std::size_t COL, typename>
+    constexpr Mat<T, ROW, COL> Mat<T, R, C>::identity() {
+        Mat<T, ROW, COL> mat;
+        for (unsigned int r = 0; r < ROW; r++) {
+            for (unsigned int c = 0; c < COL; c++) {
+                mat._m44[r][c] = Math::equal(r, c) ? T(1.0) : T(0.0);
             }
         }
         return mat;
@@ -247,21 +289,106 @@ namespace GLaDOS {
     template <typename T, std::size_t R, std::size_t C>
     constexpr Mat<T, R, C> Mat<T, R, C>::zero() {
         Mat<T, R, C> mat;
-        for (unsigned c = 0; c < C; c++) {
-            for (unsigned r = 0; r < R; r++) {
-                mat._m44[c][r] = T(0.0);
+        for (unsigned int r = 0; r < R; r++) {
+            for (unsigned int c = 0; c < C; c++) {
+                mat._m44[r][c] = T(0.0);
             }
         }
         return mat;
     }
 
     template <typename T, std::size_t R, std::size_t C>
+    Vec<T, C> Mat<T, R, C>::diagonal(const Mat<T, R, C>& other) {
+        const std::size_t dimension = Math::min(R, C);
+        Vec<T, dimension> result;
+        for (unsigned int c = 0; c < dimension; c++) {
+            result.v[c] = other._m44[c][c];
+        }
+        return result;
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    Mat<T, R, C> Mat<T, R, C>::transpose(const Mat<T, R, C>& other) {
+        Mat<T, R, C> transposed = other;
+        for (unsigned int r = 0; r < R; r++) {
+            for (unsigned int c = r + 1; c < C; c++) {
+                std::swap(transposed._m44[r][c], transposed._m44[c][r]);
+            }
+        }
+        return transposed;
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    T Mat<T, R, C>::minor(const Mat<T, R, C>& other, std::size_t row, std::size_t col) {
+        return nullptr; // TODO
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    T Mat<T, R, C>::cofactor(const Mat<T, R, C>& other, std::size_t row, std::size_t col) {
+        // Cofactor: (-1)^(row+col) * minor(row,col)
+        return Math::pow(real(-1), real(row + col)) * Mat<T, R, C>::minor(other, row, col);
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    T Mat<T, R, C>::determinant(const Mat<T, R, C>& other) {
+        // Sum(col=0->n)[A(0,col)*Cofactor(0,col)]
+        T result = T(0);
+        for (unsigned int c = 0; c < C; c++) {
+            result += other._m44[0][c] * Mat<T, R, C>::cofactor(other, 0, c); // fix row, change column <=> fix col, change row
+        }
+        return result;
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    Mat<T, R, C> Mat<T, R, C>::adjugate(const Mat<T, R, C>& other) {
+        Mat<T, R, C> cofactorMatrix;
+        for (unsigned int r = 0 ; r < 4 ; r++) {
+            for (unsigned int c = 0 ; c < 4 ; c++) {
+                cofactorMatrix._m44[r][c] = Mat<T, R, C>::cofactor(other, r, c);
+            }
+        }
+        return Mat<T, R, C>::transpose(cofactorMatrix);
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    template <std::size_t ROW, std::size_t COL, typename>
+    Mat<T, ROW, COL> Mat<T, R, C>::inverse(const Mat<T, ROW, COL>& other) {
+        T determinant = Mat<T, ROW, COL>::determinant(other);
+        if (Math::equal(determinant, T(0))) {
+            throw std::logic_error("Determinant is zero! Inverse does not exist.");
+        }
+        determinant = T(1) / determinant;
+
+        return Mat<T, ROW, COL>::adjugate(other) * determinant;
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    T Mat<T, R, C>::inverseDeterminant(const Mat<T, R, C>& other) {
+        // det(A-1) = 1 / det(A)
+        T determinant = Mat<T, R, C>::determinant(other);
+        if (Math::equal(determinant, T(0))) {
+            throw std::logic_error("Determinant is zero! Inverse does not exist.");
+        }
+        return T(1) / determinant;
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    T Mat<T, R, C>::trace(const Mat<T, R, C>& other) {
+        const std::size_t dimension = Math::min(R, C);
+        T result;
+        for (unsigned int c = 0; c < dimension; c++) {
+            result += other._m44[c][c];
+        }
+        return result;
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
     void Mat<T, R, C>::swap(Mat<T, R, C>& first, Mat<T, R, C>& second) {
         using std::swap;
 
-        for (int c = 0; c < C; c++) {
-            for (int r = 0; r < R; r++) {
-                swap(first._m44[c][r], second._m44[c][r]);
+        for (unsigned int r = 0; r < R; r++) {
+            for (unsigned int c = 0; c < C; c++) {
+                swap(first._m44[r][c], second._m44[r][c]);
             }
         }
     }
