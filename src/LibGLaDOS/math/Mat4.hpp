@@ -93,6 +93,9 @@ namespace GLaDOS {
         static Mat4<T> toMat3(const Mat4<T>& other);
         static Mat4<T> abs(const Mat4<T>& other);
         static T trace(const Mat4<T>& other);
+        static Mat4<T> elementary1(unsigned int rowIndex, T scalar); // row scalar multiplication
+        static Mat4<T> elementary2(unsigned int firstRowIndex, unsigned int secondRowIndex); // row swap
+        static Mat4<T> elementary3(unsigned int firstRowIndex, T scalar, unsigned int secondRowIndex); // row scalar multiplication and addition
         static std::enable_if_t<is_real_v<T>, Mat4<T>> perspective(Rad fieldOfView, const T& aspectRatio, const T& znear, const T& zfar);
         static std::enable_if_t<is_real_v<T>, Mat4<T>> orthogonal(const T& left, const T& right, const T& bottom, const T& top, const T& znear, const T& zfar);
         static std::enable_if_t<is_real_v<T>, Mat4<T>> frustum(const T& left, const T& right, const T& bottom, const T& top, const T& znear, const T& zfar);
@@ -546,6 +549,39 @@ namespace GLaDOS {
     template <typename T>
     T Mat4<T>::trace(const Mat4<T>& other) {
         return other._m44[0][0] + other._m44[1][1] + other._m44[2][2] + other._m44[3][3];
+    }
+
+    template <typename T>
+    Mat4<T> Mat4<T>::elementary1(unsigned int rowIndex, T scalar) {
+        Mat4<T> elementMatrix;
+        if (Math::equal(scalar, 0)) {
+            return elementMatrix;
+        }
+        for (unsigned int i = 0; i < 4; i++) {
+            elementMatrix._m44[rowIndex][i] *= scalar;
+        }
+        return elementMatrix;
+    }
+
+    template <typename T>
+    Mat4<T> Mat4<T>::elementary2(unsigned int firstRowIndex, unsigned int secondRowIndex) {
+        Mat4<T> elementMatrix;
+        for (unsigned int i = 0; i < 4; i++) {
+            std::swap(elementMatrix._m44[firstRowIndex][i], elementMatrix._m44[secondRowIndex][i]);
+        }
+        return elementMatrix;
+    }
+
+    template <typename T>
+    Mat4<T> Mat4<T>::elementary3(unsigned int firstRowIndex, T scalar, unsigned int secondRowIndex) {
+        Mat4<T> elementMatrix;
+        if (Math::equal(scalar, 0)) {
+            return elementMatrix;
+        }
+        for (unsigned int i = 0; i < 4; i++) {
+            elementMatrix[secondRowIndex][i] += elementMatrix._m44[firstRowIndex][i] * scalar;
+        }
+        return elementMatrix;
     }
 
     template <typename T>

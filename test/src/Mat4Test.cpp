@@ -217,4 +217,15 @@ TEST_CASE("Matrix unit tests", "[Matrix]") {
       };
       REQUIRE(Mat4<real>::trace(A) == 10);
   }
+
+  SECTION("matrix elementary row operations") {
+      // 1. Row-multiplying transformations
+      Mat4<real> em1 = Mat4<real>::elementary1(2, 3.f);
+
+      // 2. Row switching transformations
+      Mat4<real> em2 = Mat4<real>::elementary2(1, 2);
+
+      // 3. Row-addition transformations
+      Mat4<real> em3 = Mat4<real>::elementary3(2, 3.f, 1);
+  }
 }
