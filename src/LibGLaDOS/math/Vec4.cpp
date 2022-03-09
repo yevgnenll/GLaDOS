@@ -196,12 +196,12 @@ namespace GLaDOS {
         swap(first.w, second.w);
     }
 
-    const Vec4 Vec4::up = Vec4{0.0, 1.0, 0.0, 1.0};
-    const Vec4 Vec4::down = Vec4{0.0, -1.0, 0.0, 1.0};
-    const Vec4 Vec4::left = Vec4{-1.0, 0.0, 0.0, 1.0};
-    const Vec4 Vec4::right = Vec4{1.0, 0.0, 0.0, 1.0};
-    const Vec4 Vec4::forward = Vec4{0.0, 0.0, -1.0, 1.0};
-    const Vec4 Vec4::backward = Vec4{0.0, 0.0, 1.0, 1.0};
-    const Vec4 Vec4::one = Vec4{1.0, 1.0, 1.0, 1.0};
+    const Vec4 Vec4::up = Vec4{0.0, 1.0, 0.0, 0.0};
+    const Vec4 Vec4::down = Vec4{0.0, -1.0, 0.0, 0.0};
+    const Vec4 Vec4::left = Vec4{-1.0, 0.0, 0.0, 0.0};
+    const Vec4 Vec4::right = Vec4{1.0, 0.0, 0.0, 0.0};
+    const Vec4 Vec4::forward = Vec4{0.0, 0.0, -1.0, 0.0};
+    const Vec4 Vec4::backward = Vec4{0.0, 0.0, 1.0, 0.0};
+    const Vec4 Vec4::one = Vec4{1.0, 1.0, 1.0, 0.0};
     const Vec4 Vec4::zero = Vec4{0.0, 0.0, 0.0, 0.0};
 }  // namespace GLaDOS

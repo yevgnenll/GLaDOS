@@ -77,6 +77,8 @@ namespace GLaDOS {
         real at(int index) const;
         real at(int row, int col) const;
         std::size_t size() const;
+        Vec4 col(unsigned int index) const;
+        Vec4 row(unsigned int index) const;
 
         static constexpr Mat4<T> identity();
         static Vec4 diagonal(const Mat4<T>& other);
@@ -89,6 +91,7 @@ namespace GLaDOS {
         static T inverseDeterminant(const Mat4<T>& other);
         static Mat4<T> toMat3(const Mat4<T>& other);
         static Mat4<T> abs(const Mat4<T>& other);
+        static T trace(const Mat4<T>& other);
         static std::enable_if_t<is_real_v<T>, Mat4<T>> perspective(Rad fieldOfView, const T& aspectRatio, const T& znear, const T& zfar);
         static std::enable_if_t<is_real_v<T>, Mat4<T>> orthogonal(const T& left, const T& right, const T& bottom, const T& top, const T& znear, const T& zfar);
         static std::enable_if_t<is_real_v<T>, Mat4<T>> frustum(const T& left, const T& right, const T& bottom, const T& top, const T& znear, const T& zfar);
@@ -400,6 +403,24 @@ namespace GLaDOS {
     }
 
     template <typename T>
+    Vec4 Mat4<T>::col(unsigned int index) const {
+        if (index < 4) {
+            return Vec4{_m44[0][index], _m44[1][index], _m44[2][index], _m44[3][index]};
+        }
+
+        throw std::out_of_range("index is out of range!");
+    }
+
+    template <typename T>
+    Vec4 Mat4<T>::row(unsigned int index) const {
+        if (index < 4) {
+            return rows[index];
+        }
+
+        throw std::out_of_range("index is out of range!");
+    }
+
+    template <typename T>
     constexpr Mat4<T> Mat4<T>::identity() {
         Mat4<T> mat;
         for (unsigned c = 0; c < 4; c++) {
@@ -521,6 +542,11 @@ namespace GLaDOS {
                        Math::abs(other._m16[4]), Math::abs(other._m16[5]), Math::abs(other._m16[6]), Math::abs(other._m16[7]),
                        Math::abs(other._m16[8]), Math::abs(other._m16[9]), Math::abs(other._m16[10]), Math::abs(other._m16[11]),
                        Math::abs(other._m16[12]), Math::abs(other._m16[13]), Math::abs(other._m16[14]), Math::abs(other._m16[15]));
+    }
+
+    template <typename T>
+    T Mat4<T>::trace(const Mat4<T>& other) {
+        return other._m44[0][0] + other._m44[1][1] + other._m44[2][2] + other._m44[3][3];
     }
 
     template <typename T>

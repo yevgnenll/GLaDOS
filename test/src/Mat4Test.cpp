@@ -188,4 +188,33 @@ TEST_CASE("Matrix unit tests", "[Matrix]") {
     Mat4<real> m1;
     auto m2 = Mat4<real>::perspective(20_rad, 0.2f, 0.1f, 100.f);
   }
+
+  SECTION("matrix get col & row") {
+      Mat4<real> m1{
+          -3.F, -1.F, 2.F, -3.F,
+          -3.F, 1.F, 2.F, -2.F,
+          -2.F, 3.F, 0.F, 1.F,
+          1.F, -2.F, -3.F, 1.F};
+      Vec4 columnVector = m1.col(3);
+      REQUIRE(columnVector == Vec4{-3.f, -2.f, 1.f, 1.f});
+
+      Mat4<real> I;
+      Vec4 basis = I.row(0);
+      REQUIRE(basis == Vec4::right);
+  }
+
+  SECTION("matrix trace") {
+      // tr(I) = n
+      Mat4<real> I;
+      REQUIRE(Mat4<real>::trace(I) == 4);
+
+      // tr(A) = sum(Aii)
+      Mat4<real> A = {
+          1, 0, 0, 0,
+          0, 2, 0, 0,
+          0, 0, 3, 0,
+          0, 0, 0, 4
+      };
+      REQUIRE(Mat4<real>::trace(A) == 10);
+  }
 }
