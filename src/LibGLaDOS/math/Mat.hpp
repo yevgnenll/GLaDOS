@@ -55,8 +55,15 @@ namespace GLaDOS {
         Mat<T, R, C> operator/(const T& scalar) const;
         Mat<T, R, C>& operator/=(const T& scalar);
 
+        T operator()(unsigned int row, unsigned int col) const;
+        Vec<T, C> operator[](unsigned int index) const;
+        T at(int row, int col) const;
+        T at(int index) const;
+        Vec<T, C> col(unsigned int index) const;
+        Vec<T, C> row(unsigned int index) const;
+
         static Mat<T, R, C> from(const T& scalar);
-        static Mat<T, R, C> from(const Vec<T, R>& vector);
+        static Mat<T, R, C> from(const Vec<T, C>& vector);
         static constexpr std::size_t dimension();
         static constexpr std::size_t size();
         template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == COL>>
@@ -72,6 +79,9 @@ namespace GLaDOS {
         static Mat<T, ROW, COL> inverse(const Mat<T, ROW, COL>& other);
         static T inverseDeterminant(const Mat<T, R, C>& other);
         static T trace(const Mat<T, R, C>& other);
+        static Mat<T, R, C> elementary1(unsigned int rowIndex, T scalar); // row scalar multiplication
+        static Mat<T, R, C> elementary2(unsigned int firstRowIndex, unsigned int secondRowIndex); // row swap
+        static Mat<T, R, C> elementary3(unsigned int firstRowIndex, unsigned int secondRowIndex, T scalar); // row scalar multiplication and addition
 
         union {
             T _m44[R][C];
@@ -255,13 +265,73 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t R, std::size_t C>
-    Mat<T, R, C> Mat<T, R, C>::from(const T& scalar) {
-        return Mat<T, R, C>(); // TODO
+    T Mat<T, R, C>::operator()(unsigned int row, unsigned int col) const {
+        return _m44[row][col];
     }
 
     template <typename T, std::size_t R, std::size_t C>
-    Mat<T, R, C> Mat<T, R, C>::from(const Vec<T, R>& vector) {
-        return Mat<T, R, C>(); // TODO
+    Vec<T, C> Mat<T, R, C>::operator[](unsigned int index) const {
+        return rows[index];
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    T Mat<T, R, C>::at(int row, int col) const {
+        if (row >= 0 && row <= R && col >= 0 && col <= C) {
+            return _m44[row][col];
+        }
+
+        throw std::out_of_range("index out of range!");
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    T Mat<T, R, C>::at(int index) const {
+        if (index >= 0 && index <= (R * C)) {
+            return _m16[index];
+        }
+
+        throw std::out_of_range("index out of range!");
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    Vec<T, C> Mat<T, R, C>::col(unsigned int index) const {
+        if (index < C) {
+            Vec<T, C> vec;
+            for (unsigned int r = 0; r < R; r++) {
+                vec.v[r] = _m44[r][index];
+            }
+            return vec;
+        }
+
+        throw std::out_of_range("index out of range!");
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    Vec<T, C> Mat<T, R, C>::row(unsigned int index) const {
+        if (index < R) {
+            return rows[index];
+        }
+
+        throw std::out_of_range("index out of range!");
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    Mat<T, R, C> Mat<T, R, C>::from(const T& scalar) {
+        Mat<T, R, C> result;
+        for (unsigned int r = 0; r < R; r++) {
+            for (unsigned int c = 0; c < C; c++) {
+                result._m44[r][c] = scalar;
+            }
+        }
+        return result;
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    Mat<T, R, C> Mat<T, R, C>::from(const Vec<T, C>& vector) {
+        Mat<T, R, C> result;
+        for (unsigned int r = 0; r < R; r++) {
+            result.rows[r] = vector;
+        }
+        return result;
     }
 
     template <typename T, std::size_t R, std::size_t C>
@@ -320,7 +390,11 @@ namespace GLaDOS {
 
     template <typename T, std::size_t R, std::size_t C>
     T Mat<T, R, C>::minor(const Mat<T, R, C>& other, std::size_t row, std::size_t col) {
-        return nullptr; // TODO
+        Mat<T, R-1, C-1> minorMatrix;
+        std::size_t minorRow = 0;
+        std::size_t minorCol = 0;
+
+        return 0; // TODO
     }
 
     template <typename T, std::size_t R, std::size_t C>
@@ -380,6 +454,39 @@ namespace GLaDOS {
             result += other._m44[c][c];
         }
         return result;
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    Mat<T, R, C> Mat<T, R, C>::elementary1(unsigned int rowIndex, T scalar) {
+        Mat<T, R, C> elementMatrix;
+        if (Math::equal(scalar, T(0))) {
+            return elementMatrix;
+        }
+        for (unsigned int c = 0; c < C; c++) {
+            elementMatrix._m44[rowIndex][c] *= scalar;
+        }
+        return elementMatrix;
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    Mat<T, R, C> Mat<T, R, C>::elementary2(unsigned int firstRowIndex, unsigned int secondRowIndex) {
+        Mat<T, R, C> elementMatrix;
+        for (unsigned int c = 0; c < C; c++) {
+            std::swap(elementMatrix._m44[firstRowIndex][c], elementMatrix._m44[secondRowIndex][c]);
+        }
+        return elementMatrix;
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    Mat<T, R, C> Mat<T, R, C>::elementary3(unsigned int firstRowIndex, unsigned int secondRowIndex, T scalar) {
+        Mat<T, R, C> elementMatrix;
+        if (Math::equal(scalar, T(0))) {
+            return elementMatrix;
+        }
+        for (unsigned int c = 0; c < C; c++) {
+            elementMatrix._m44[secondRowIndex][c] += elementMatrix._m44[firstRowIndex][c] * scalar;
+        }
+        return elementMatrix;
     }
 
     template <typename T, std::size_t R, std::size_t C>
