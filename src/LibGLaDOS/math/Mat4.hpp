@@ -81,6 +81,7 @@ namespace GLaDOS {
         Vec4 row(unsigned int index) const;
 
         static constexpr Mat4<T> identity();
+        static constexpr Mat4<T> zero();
         static Vec4 diagonal(const Mat4<T>& other);
         static Mat4<T> transpose(const Mat4<T>& other);
         static T minor(const Mat4<T>& other, std::size_t row, std::size_t col);
@@ -118,8 +119,6 @@ namespace GLaDOS {
             T _m16[16];
             Vec4 rows[4];
         };
-        static const Mat4<T> one;
-        static const Mat4<T> zero;
 
       private:
         static Logger* logger;
@@ -129,17 +128,6 @@ namespace GLaDOS {
 
     template <typename T>
     Logger* Mat4<T>::logger = LoggerRegistry::getInstance().makeAndGetLogger("Mat4");
-
-    template <typename T>
-    const Mat4<T> Mat4<T>::one{1, 1, 1, 1,
-                               1, 1, 1, 1,
-                               1, 1, 1, 1,
-                               1, 1, 1, 1};
-    template <typename T>
-    const Mat4<T> Mat4<T>::zero{0, 0, 0, 0,
-                                0, 0, 0, 0,
-                                0, 0, 0, 0,
-                                0, 0, 0, 0};
 
     template <typename T>
     Mat4<T>::Mat4() {
@@ -432,6 +420,17 @@ namespace GLaDOS {
     }
 
     template <typename T>
+    constexpr Mat4<T> Mat4<T>::zero() {
+        Mat4<T> mat;
+        for (unsigned c = 0; c < 4; c++) {
+            for (unsigned r = 0; r < 4; r++) {
+                mat._m44[c][r] = 0.0;
+            }
+        }
+        return mat;
+    }
+
+    template <typename T>
     Vec4 Mat4<T>::diagonal(const Mat4<T>& other) {
         return Vec4(other._m44[0][0], other._m44[1][1], other._m44[2][2], other._m44[3][3]);
     }
@@ -562,7 +561,7 @@ namespace GLaDOS {
             | 0  0  0.5  0 |
             | 0  0  0.5  1 |
         */
-        Mat4<real> mat = Mat4<T>::zero;
+        Mat4<real> mat = Mat4<T>::zero();
         mat._m16[0] = T(1.0) / (aspectRatio * tanHalfFovy);
         mat._m16[5] = T(1.0) / tanHalfFovy;
         mat._m16[10] = -(zfar + znear) / (zfar - znear);
