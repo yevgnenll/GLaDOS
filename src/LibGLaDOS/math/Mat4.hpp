@@ -554,7 +554,7 @@ namespace GLaDOS {
     template <typename T>
     Mat4<T> Mat4<T>::elementary1(unsigned int rowIndex, T scalar) {
         Mat4<T> elementMatrix;
-        if (Math::equal(scalar, 0)) {
+        if (Math::equal(scalar, T(0))) {
             return elementMatrix;
         }
         for (unsigned int i = 0; i < 4; i++) {
@@ -575,11 +575,11 @@ namespace GLaDOS {
     template <typename T>
     Mat4<T> Mat4<T>::elementary3(unsigned int firstRowIndex, T scalar, unsigned int secondRowIndex) {
         Mat4<T> elementMatrix;
-        if (Math::equal(scalar, 0)) {
+        if (Math::equal(scalar, T(0))) {
             return elementMatrix;
         }
         for (unsigned int i = 0; i < 4; i++) {
-            elementMatrix[secondRowIndex][i] += elementMatrix._m44[firstRowIndex][i] * scalar;
+            elementMatrix._m44[secondRowIndex][i] += elementMatrix._m44[firstRowIndex][i] * scalar;
         }
         return elementMatrix;
     }

@@ -90,7 +90,7 @@ TEST_CASE("Matrix unit tests", "[Matrix]") {
     REQUIRE(m1 == m2);
 
     // multiply
-    REQUIRE(m2 * Mat4<real>::zero == Mat4<real>::zero);
+    REQUIRE(m2 * Mat4<real>::zero() == Mat4<real>::zero());
     m2 *= Mat4<real>::identity();
     REQUIRE(m2 == m2);
 
