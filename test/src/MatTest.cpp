@@ -254,6 +254,26 @@ TEST_CASE("Mat unit tests", "[Matrix]") {
         REQUIRE(Math::equal(Mat<real, 3, 3>::minor(m1, 2, 0), -3.f));
         REQUIRE(Math::equal(Mat<real, 3, 3>::minor(m1, 2, 1), -6.f));
         REQUIRE(Math::equal(Mat<real, 3, 3>::minor(m1, 2, 2), -3.f));
+        Mat<real, 4, 4> m2{1.f, 2.f, 3.f, 4.f,
+                           5.f, 6.f, 7.f, 8.f,
+                           9.f, 10.f, 11.f, 12.f,
+                           13.f, 14.f, 15.f, 16.f};
+        REQUIRE(Math::equal(Mat<real, 4, 4>::minor(m2, 0, 0), 0.f));
+        REQUIRE(Math::equal(Mat<real, 4, 4>::minor(m2, 0, 1), 0.f));
+        REQUIRE(Math::equal(Mat<real, 4, 4>::minor(m2, 0, 2), 0.f));
+        REQUIRE(Math::equal(Mat<real, 4, 4>::minor(m2, 0, 3), 0.f));
+        REQUIRE(Math::equal(Mat<real, 4, 4>::minor(m2, 1, 0), 0.f));
+        REQUIRE(Math::equal(Mat<real, 4, 4>::minor(m2, 1, 1), 0.f));
+        REQUIRE(Math::equal(Mat<real, 4, 4>::minor(m2, 1, 2), 0.f));
+        REQUIRE(Math::equal(Mat<real, 4, 4>::minor(m2, 1, 3), 0.f));
+        REQUIRE(Math::equal(Mat<real, 4, 4>::minor(m2, 2, 0), 0.f));
+        REQUIRE(Math::equal(Mat<real, 4, 4>::minor(m2, 2, 1), 0.f));
+        REQUIRE(Math::equal(Mat<real, 4, 4>::minor(m2, 2, 2), 0.f));
+        REQUIRE(Math::equal(Mat<real, 4, 4>::minor(m2, 2, 3), 0.f));
+        REQUIRE(Math::equal(Mat<real, 4, 4>::minor(m2, 3, 0), 0.f));
+        REQUIRE(Math::equal(Mat<real, 4, 4>::minor(m2, 3, 1), 0.f));
+        REQUIRE(Math::equal(Mat<real, 4, 4>::minor(m2, 3, 2), 0.f));
+        REQUIRE(Math::equal(Mat<real, 4, 4>::minor(m2, 3, 3), 0.f));
     }
 
     SECTION("matrix cofactor test") {
@@ -285,7 +305,8 @@ TEST_CASE("Mat unit tests", "[Matrix]") {
         REQUIRE(Math::equal(Mat<real, 2, 2>::determinant(m1), 1.f));
 
         Mat<real, 2, 2> m2{1.f, 2.f, 3.f, 4.f};
-        REQUIRE(Math::equal(Mat<real, 2, 2>::determinant(m2), -5.f));
+        auto m = Mat<real, 2, 2>::determinant(m2);
+        REQUIRE(Math::equal(Mat<real, 2, 2>::determinant(m2), -2.f));
 
         Mat<real, 3, 3> m3{1.f, 1.f, 2.f, 3.f, 4.f, -7.f, 6.f, 8.f, 2.f};
         REQUIRE(Math::equal(Mat<real, 3, 3>::determinant(m3), 16.f));

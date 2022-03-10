@@ -69,15 +69,18 @@ namespace GLaDOS {
         static constexpr Mat<T, R, C> zero();
         static Vec<T, C> diagonal(const Mat<T, R, C>& other);
         static Mat<T, C, R> transpose(const Mat<T, R, C>& other);
-        template<std::size_t ROW, std::size_t COL>
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == COL>>
         static T minor(const Mat<T, ROW, COL>& other, std::size_t row, std::size_t col);
-        static T cofactor(const Mat<T, R, C>& other, std::size_t row, std::size_t col);
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == COL>>
+        static T cofactor(const Mat<T, ROW, COL>& other, std::size_t row, std::size_t col);
         template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == COL>>
         static T determinant(const Mat<T, ROW, COL>& other);
-        static Mat<T, R, C> adjugate(const Mat<T, R, C>& other);
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == COL>>
+        static Mat<T, ROW, COL> adjugate(const Mat<T, ROW, COL>& other);
         template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == COL>>
         static Mat<T, ROW, COL> inverse(const Mat<T, ROW, COL>& other);
-        static T inverseDeterminant(const Mat<T, R, C>& other);
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == COL>>
+        static T inverseDeterminant(const Mat<T, ROW, COL>& other);
         template<std::size_t ROW, std::size_t COL, typename = typename std::enable_if_t<ROW == COL && R == C>>
         static Mat<T, ROW, COL> toSquareMat(const Mat<T, R, C>& other);
         static T trace(const Mat<T, R, C>& other);
@@ -92,7 +95,6 @@ namespace GLaDOS {
         };
 
       private:
-        static T determinant2x2(const Mat<T, 2, 2>& mat2x2);
         static void swap(Mat<T, R, C>& first, Mat<T, R, C>& second);
     };
 
@@ -392,12 +394,8 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t R, std::size_t C>
-    template <std::size_t ROW, std::size_t COL>
+    template <std::size_t ROW, std::size_t COL, typename>
     T Mat<T, R, C>::minor(const Mat<T, ROW, COL>& other, std::size_t row, std::size_t col) {
-        if constexpr (ROW == 2 && COL == 2) {
-            return determinant2x2(other);
-        }
-
         Mat<T, R-1, C-1> minorMatrix;
         std::size_t minorRow = 0;
         std::size_t minorCol = 0;
@@ -418,13 +416,14 @@ namespace GLaDOS {
             }
         }
 
-        return minor(minorMatrix, row, col); // TODO
+        return Mat<T, R-1, C-1>::determinant(minorMatrix);
     }
 
     template <typename T, std::size_t R, std::size_t C>
-    T Mat<T, R, C>::cofactor(const Mat<T, R, C>& other, std::size_t row, std::size_t col) {
+    template <std::size_t ROW, std::size_t COL, typename>
+    T Mat<T, R, C>::cofactor(const Mat<T, ROW, COL>& other, std::size_t row, std::size_t col) {
         // Cofactor: (-1)^(row+col) * minor(row,col)
-        return Math::pow(real(-1), real(row + col)) * Mat<T, R, C>::minor(other, row, col);
+        return Math::pow(real(-1), real(row + col)) * Mat<T, ROW, COL>::minor(other, row, col);
     }
 
     template <typename T, std::size_t R, std::size_t C>
@@ -439,14 +438,15 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t R, std::size_t C>
-    Mat<T, R, C> Mat<T, R, C>::adjugate(const Mat<T, R, C>& other) {
-        Mat<T, R, C> cofactorMatrix;
-        for (unsigned int r = 0 ; r < 4 ; r++) {
-            for (unsigned int c = 0 ; c < 4 ; c++) {
-                cofactorMatrix._m44[r][c] = Mat<T, R, C>::cofactor(other, r, c);
+    template <std::size_t ROW, std::size_t COL, typename>
+    Mat<T, ROW, COL> Mat<T, R, C>::adjugate(const Mat<T, ROW, COL>& other) {
+        Mat<T, ROW, COL> cofactorMatrix;
+        for (unsigned int r = 0 ; r < R; r++) {
+            for (unsigned int c = 0 ; c < C; c++) {
+                cofactorMatrix._m44[r][c] = Mat<T, ROW, COL>::cofactor(other, r, c);
             }
         }
-        return Mat<T, R, C>::transpose(cofactorMatrix);
+        return Mat<T, ROW, COL>::transpose(cofactorMatrix);
     }
 
     template <typename T, std::size_t R, std::size_t C>
@@ -462,9 +462,10 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t R, std::size_t C>
-    T Mat<T, R, C>::inverseDeterminant(const Mat<T, R, C>& other) {
+    template <std::size_t ROW, std::size_t COL, typename>
+    T Mat<T, R, C>::inverseDeterminant(const Mat<T, ROW, COL>& other) {
         // det(A-1) = 1 / det(A)
-        T determinant = Mat<T, R, C>::determinant(other);
+        T determinant = Mat<T, ROW, COL>::determinant(other);
         if (Math::equal(determinant, T(0))) {
             throw std::logic_error("Determinant is zero! Inverse does not exist.");
         }
@@ -527,17 +528,6 @@ namespace GLaDOS {
             elementMatrix._m44[secondRowIndex][c] += elementMatrix._m44[firstRowIndex][c] * scalar;
         }
         return elementMatrix;
-    }
-
-    template <typename T, std::size_t R, std::size_t C>
-    T Mat<T, R, C>::determinant2x2(const Mat<T, 2, 2>& mat2x2) {
-        /*
-            |a b|
-            |c d|
-        */
-        T ad = mat2x2._m44[0][0] * mat2x2._m44[1][1];
-        T bc = mat2x2._m44[0][1] * mat2x2._m44[1][0];
-        return ad - bc;
     }
 
     template <typename T, std::size_t R, std::size_t C>
