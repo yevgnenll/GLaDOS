@@ -41,8 +41,6 @@ namespace GLaDOS {
         Mat<T, R, C>& operator-=(const Mat<T, R, C>& other);
         template<std::size_t R2, std::size_t C2, typename = typename std::enable_if_t<C == R2>>
         Mat<T, R, C2> operator*(const Mat<T, R2, C2>& other) const;
-        template<std::size_t R2, std::size_t C2, typename = typename std::enable_if_t<C == R2>>
-        Mat<T, R, C2>& operator*=(const Mat<T, R2, C2>& other);
         bool operator==(const Mat<T, R, C>& other) const;
         bool operator!=(const Mat<T, R, C>& other) const;
 
@@ -58,7 +56,7 @@ namespace GLaDOS {
         Vec<T, C> operator[](unsigned int index) const;
         T at(int row, int col) const;
         T at(int index) const;
-        Vec<T, C> col(unsigned int index) const;
+        Vec<T, R> col(unsigned int index) const;
         Vec<T, C> row(unsigned int index) const;
 
         static Mat<T, R, C> from(const T& scalar);
@@ -203,12 +201,6 @@ namespace GLaDOS {
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t R2, std::size_t C2, typename>
     Mat<T, R, C2> Mat<T, R, C>::operator*(const Mat<T, R2, C2>& other) const {
-        return Mat<T, R, C>(*this) *= other;
-    }
-
-    template <typename T, std::size_t R, std::size_t C>
-    template <std::size_t R2, std::size_t C2, typename>
-    Mat<T, R, C2>& Mat<T, R, C>::operator*=(const Mat<T, R2, C2>& other) {
         Mat<T, R, C2> result;
         for (unsigned int r = 0; r < R; r++) {
             for (unsigned int c = 0; c < C2; c++) {
@@ -218,7 +210,7 @@ namespace GLaDOS {
                 }
             }
         }
-        return *this = result; // TODO
+        return result;
     }
 
     template <typename T, std::size_t R, std::size_t C>
@@ -293,9 +285,9 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t R, std::size_t C>
-    Vec<T, C> Mat<T, R, C>::col(unsigned int index) const {
+    Vec<T, R> Mat<T, R, C>::col(unsigned int index) const {
         if (index < C) {
-            Vec<T, C> vec;
+            Vec<T, R> vec;
             for (unsigned int r = 0; r < R; r++) {
                 vec.v[r] = _m44[r][index];
             }

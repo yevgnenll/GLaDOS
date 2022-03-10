@@ -100,13 +100,14 @@ TEST_CASE("Mat unit tests", "[Matrix]") {
         };
         REQUIRE((m5 * m6) == result3);
 
-//        Mat<real, 2, 3> m3{1.f, 3.f, 2.f,
-//                           4.f, 0.f, 1.f};
-//        Mat<real, 3, 1> m4{1.f, 0.f, 5.f};
-//        auto result2 = m3 * m4;
-//        REQUIRE(result2.dimension() == 2);
-//        REQUIRE(Math::equal(result2._m16[0], 11.f));
-//        REQUIRE(Math::equal(result2._m16[1], 9.f));
+        Mat<real, 2, 3> m7{1.f, 3.f, 2.f,
+                           4.f, 0.f, 1.f};
+        Mat<real, 3, 1> m8{1.f, 0.f, 5.f};
+        Mat<real, 1, 2> m9{1.f, 1.f};
+        Mat<real, 2, 2> result4 = m7 * m8 * m9;
+        REQUIRE(result4.dimension() == 4);
+        REQUIRE(Math::equal(result4._m16[0], 11.f));
+        REQUIRE(Math::equal(result4._m16[2], 9.f));
     }
 
     SECTION("matrix addition, subtraction test") {
@@ -166,7 +167,16 @@ TEST_CASE("Mat unit tests", "[Matrix]") {
         REQUIRE(m1.at(2) == 3.f);
         REQUIRE(m1.at(3) == 4.f);
 
-        // TODO: col, row (index) test
+        Mat<real, 4, 4> m2{
+            -3.f, -1.f, 2.f, -3.f,
+            -3.f, 1.f, 2.f, -2.f,
+            -2.f, 3.f, 0.f, 1.f,
+            1.f, -2.f, -3.f, 1.f
+        };
+        Vec<real, 4> column = m2.col(3);
+        Vec<real, 4> row = m2.row(3);
+//        REQUIRE(column == Vec<real, 4>{-3.f, -2.f, 1.f, 1.f});
+//        REQUIRE(row == Vec<real, 4>{1.f, -2.f, -3.f, 1.f});
     }
 
     SECTION("matrix copy test") {
@@ -209,10 +219,12 @@ TEST_CASE("Mat unit tests", "[Matrix]") {
         REQUIRE(Mat<real, 1, 4>::transpose(m3) == result3);
     }
 
-    SECTION("arithmetic with other matrix test") {
-    }
-
-    SECTION("equality test") {
+    SECTION("matrix equality test") {
+        Mat<real, 999, 999> m1;
+        Mat<real, 999, 999> m2;
+        REQUIRE(m1 == m2);
+        m1._m16[997] = 1.f;
+        REQUIRE(m1 != m2);
     }
 
     SECTION("multiply with Vec") {
@@ -221,13 +233,99 @@ TEST_CASE("Mat unit tests", "[Matrix]") {
 //        REQUIRE((v1 * m1) == Vec<real, 4>{1,2,3,4});
     }
 
+    SECTION("matrix diagonalize test") {
+        Mat<real, 3, 3> m1{1.f, 2.f, 3.f,
+                           4.f, 5.f, 6.f,
+                           7.f, 8.f, 8.f};
+        Vec<real, 3> diag = Mat<real, 3, 3>::diagonal(m1);
+//        REQUIRE(diag == Vec<real, 3>{1.f, 5.f, 8.f});
+    }
+
+    SECTION("matrix minor test") {
+        Mat<real, 3, 3> m1{1.f, 2.f, 3.f,
+                           4.f, 5.f, 6.f,
+                           7.f, 8.f, 9.f};
+        REQUIRE(Math::equal(Mat<real, 3, 3>::minor(m1, 0, 0), -3.f));
+        REQUIRE(Math::equal(Mat<real, 3, 3>::minor(m1, 0, 1), -6.f));
+        REQUIRE(Math::equal(Mat<real, 3, 3>::minor(m1, 0, 2), -3.f));
+        REQUIRE(Math::equal(Mat<real, 3, 3>::minor(m1, 1, 0), -6.f));
+        REQUIRE(Math::equal(Mat<real, 3, 3>::minor(m1, 1, 1), -12.f));
+        REQUIRE(Math::equal(Mat<real, 3, 3>::minor(m1, 1, 2), -6.f));
+        REQUIRE(Math::equal(Mat<real, 3, 3>::minor(m1, 2, 0), -3.f));
+        REQUIRE(Math::equal(Mat<real, 3, 3>::minor(m1, 2, 1), -6.f));
+        REQUIRE(Math::equal(Mat<real, 3, 3>::minor(m1, 2, 2), -3.f));
+    }
+
+    SECTION("matrix cofactor test") {
+        Mat<real, 3, 3> m1{1.f, 2.f, 3.f,
+                           4.f, 5.f, 6.f,
+                           7.f, 8.f, 9.f};
+        Mat<real, 3, 3> c1{
+            Mat<real, 3, 3>::cofactor(m1, 0, 0), Mat<real, 3, 3>::cofactor(m1, 0, 1), Mat<real, 3, 3>::cofactor(m1, 0, 2),
+            Mat<real, 3, 3>::cofactor(m1, 1, 0), Mat<real, 3, 3>::cofactor(m1, 1, 1), Mat<real, 3, 3>::cofactor(m1, 1, 2),
+            Mat<real, 3, 3>::cofactor(m1, 2, 0), Mat<real, 3, 3>::cofactor(m1, 2, 1), Mat<real, 3, 3>::cofactor(m1, 2, 2)
+        };
+        REQUIRE(c1 == Mat<real, 3, 3>{-3.f, 6.f, -3.f, 6.f, -12.f, 6.f, -3.f, 6.f, -3.f});
+    }
+
+    SECTION("matrix adjugate test") {
+        Mat<real, 3, 3> m1{1.f, 2.f, 3.f,
+                           4.f, 5.f, 6.f,
+                           7.f, 8.f, 9.f};
+        Mat<real, 3, 3> c1{
+            Mat<real, 3, 3>::cofactor(m1, 0, 0), Mat<real, 3, 3>::cofactor(m1, 0, 1), Mat<real, 3, 3>::cofactor(m1, 0, 2),
+            Mat<real, 3, 3>::cofactor(m1, 1, 0), Mat<real, 3, 3>::cofactor(m1, 1, 1), Mat<real, 3, 3>::cofactor(m1, 1, 2),
+            Mat<real, 3, 3>::cofactor(m1, 2, 0), Mat<real, 3, 3>::cofactor(m1, 2, 1), Mat<real, 3, 3>::cofactor(m1, 2, 2)
+        };
+        REQUIRE(Mat<real, 3, 3>::transpose(c1) == Mat<real, 3, 3>::adjugate(m1));
+    }
+
+    SECTION("matrix determinant test") {
+        Mat<real, 2, 2> m1;
+        REQUIRE(Math::equal(Mat<real, 2, 2>::determinant(m1), 1.f));
+
+        Mat<real, 2, 2> m2{1.f, 2.f, 3.f, 4.f};
+        REQUIRE(Math::equal(Mat<real, 2, 2>::determinant(m2), -5.f));
+
+        Mat<real, 3, 3> m3{1.f, 1.f, 2.f, 3.f, 4.f, -7.f, 6.f, 8.f, 2.f};
+        REQUIRE(Math::equal(Mat<real, 3, 3>::determinant(m3), 16.f));
+    }
+
     SECTION("inverse of matrix test") {
+        Mat<real, 4, 4> m1{
+            -3.f, -1.f, 2.f, -3.f,
+            -3.f, 1.f, 2.f, -2.f,
+            -2.f, 3.f, 0.f, 1.f,
+            1.f, -2.f, -3.f, 1.f
+        };
+        Mat<real, 4, 4> result{
+            -11.f / 7.f, 2.f, -1.f, 2.f / 7.f,
+            -15.f / 7.f, 3.f, -1.f, 4.f / 7.f,
+            2.f,        -3.f,  1.f,      -1.f,
+            23.f / 7.f, -5.f, 2.f, -8.f / 7.f
+        };
+
+        REQUIRE(Mat<real, 4, 4>::inverse(m1) == result);
+        REQUIRE(m1.makeInverse() == result);
     }
 
     SECTION("inverse of determinant of matrix test") {
+        Mat<real, 4, 4> m1{
+            -3.f, -1.f, 2.f, -3.f,
+            -3.f, 1.f, 2.f, -2.f,
+            -2.f, 3.f, 0.f, 1.f,
+            1.f, -2.f, -3.f, 1.f
+        };
+        Mat<real, 4, 4> inverseM1 = Mat<real, 4, 4>::inverse(m1);
+        real determinantOfInverseM1 = Mat<real, 4, 4>::determinant(inverseM1);
+
+        REQUIRE(Math::equalUlps(Mat<real, 4, 4>::inverseDeterminant(m1), determinantOfInverseM1, 16));
     }
 
     SECTION("toSquareMat test") {
+        Mat<real, 4, 4> m1;
+        Mat<real, 3, 3> m2 = Mat<real, 4, 4>::toSquareMat<3, 3>(m1);
+        REQUIRE(m2 == Mat<real, 3, 3>::identity());
     }
 
     SECTION("matrix trace") {
@@ -246,5 +344,13 @@ TEST_CASE("Mat unit tests", "[Matrix]") {
     }
 
     SECTION("matrix elementary row operations") {
+        // 1. Row-multiplying transformations
+        Mat<real, 4, 4> em1 = Mat<real, 4, 4>::elementary1(2, 3.f);
+
+        // 2. Row switching transformations
+        Mat<real, 4, 4> em2 = Mat<real, 4, 4>::elementary2(1, 2);
+
+        // 3. Row-addition transformations
+        Mat<real, 4, 4> em3 = Mat<real, 4, 4>::elementary3(2, 3.f, 1);
     }
 }
