@@ -95,6 +95,19 @@ namespace GLaDOS {
         };
 
       private:
+        template<std::size_t ROW, std::size_t COL>
+        struct Determinant {
+            static T determinant(const Mat<T, ROW, COL>& other);
+        };
+
+        template<>
+        struct Determinant<2, 2> {
+            static T determinant(const Mat<T, 2, 2>& other) {
+                // ad - bc
+                return other._m44[0][0] * other._m44[1][1] - other._m44[0][1] * other._m44[1][0];
+            }
+        };
+
         static void swap(Mat<T, R, C>& first, Mat<T, R, C>& second);
     };
 
@@ -429,10 +442,16 @@ namespace GLaDOS {
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
     T Mat<T, R, C>::determinant(const Mat<T, ROW, COL>& other) {
+        return Determinant<ROW, COL>::determinant(other);
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    template <std::size_t ROW, std::size_t COL>
+    T Mat<T, R, C>::Determinant<ROW, COL>::determinant(const Mat<T, ROW, COL>& other) {
         // Sum(col=0->n)[A(0,col)*Cofactor(0,col)]
         T result = T(0);
         for (unsigned int c = 0; c < COL; c++) {
-            result += other._m44[0][c] * Mat<T, ROW, COL>::cofactor(other, 0, c); // fix row, change column <=> fix col, change row
+            result += other._m44[0][c] * Mat<T, ROW, COL>::cofactor(other, 0, c);
         }
         return result;
     }
@@ -454,7 +473,7 @@ namespace GLaDOS {
     Mat<T, ROW, COL> Mat<T, R, C>::inverse(const Mat<T, ROW, COL>& other) {
         T determinant = Mat<T, ROW, COL>::determinant(other);
         if (Math::equal(determinant, T(0))) {
-            throw std::logic_error("Determinant is zero! Inverse does not exist.");
+            throw std::logic_error("Matrix is singular.");
         }
         determinant = T(1) / determinant;
 
@@ -467,7 +486,7 @@ namespace GLaDOS {
         // det(A-1) = 1 / det(A)
         T determinant = Mat<T, ROW, COL>::determinant(other);
         if (Math::equal(determinant, T(0))) {
-            throw std::logic_error("Determinant is zero! Inverse does not exist.");
+            throw std::logic_error("Determinant is zero.");
         }
         return T(1) / determinant;
     }

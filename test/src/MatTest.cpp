@@ -305,29 +305,54 @@ TEST_CASE("Mat unit tests", "[Matrix]") {
         REQUIRE(Math::equal(Mat<real, 2, 2>::determinant(m1), 1.f));
 
         Mat<real, 2, 2> m2{1.f, 2.f, 3.f, 4.f};
-        auto m = Mat<real, 2, 2>::determinant(m2);
         REQUIRE(Math::equal(Mat<real, 2, 2>::determinant(m2), -2.f));
 
         Mat<real, 3, 3> m3{1.f, 1.f, 2.f, 3.f, 4.f, -7.f, 6.f, 8.f, 2.f};
         REQUIRE(Math::equal(Mat<real, 3, 3>::determinant(m3), 16.f));
+
+        Mat<real, 4, 4> m4{
+            0.f, 4.f, -2.f, 4.f,
+            -6.f, 2.f, 10.f, 0.f,
+            5.f, 8.f, -5.f, 2.f,
+            0.f, -2.f, 1.f, 0.f
+        };
+        REQUIRE(Math::equal(Mat<real, 4, 4>::determinant(m4), 392.f));
     }
 
     SECTION("inverse of matrix test") {
         Mat<real, 4, 4> m1{
-            -3.f, -1.f, 2.f, -3.f,
-            -3.f, 1.f, 2.f, -2.f,
-            -2.f, 3.f, 0.f, 1.f,
-            1.f, -2.f, -3.f, 1.f
+            1.f, 0.f, 0.f, 0.f,
+            0.f, 1.f, 0.f, 0.f,
+            0.f, 0.f, 1.f, 0.f,
+            1.f, 2.f, 3.f, 1.f
         };
-        Mat<real, 4, 4> result{
-            -11.f / 7.f, 2.f, -1.f, 2.f / 7.f,
-            -15.f / 7.f, 3.f, -1.f, 4.f / 7.f,
-            2.f,        -3.f,  1.f,      -1.f,
-            23.f / 7.f, -5.f, 2.f, -8.f / 7.f
+        Mat<real, 4, 4> m1Inverse{
+            1.f, 0.f, 0.f, 0.f,
+            0.f, 1.f, 0.f, 0.f,
+            0.f, 0.f, 1.f, 0.f,
+            -1.f, -2.f, -3.f, 1.f
         };
 
-        REQUIRE(Mat<real, 4, 4>::inverse(m1) == result);
-        REQUIRE(m1.makeInverse() == result);
+        REQUIRE(Mat<real, 4, 4>::inverse(m1) == m1Inverse);
+        REQUIRE(m1 * m1Inverse == Mat<real, 4, 4>::identity());
+        REQUIRE(m1Inverse * m1 == Mat<real, 4, 4>::identity());
+        REQUIRE(m1.makeInverse() == m1Inverse);
+
+        Mat<real, 3, 3> m2{
+            1.f, 0.f, 5.f,
+            2.f, 1.f, 6.f,
+            3.f, 4.f, 0.f
+        };
+        Mat<real, 3, 3> m2Inverse{
+            -24.f, 20.f, -5.f,
+            18.f, -15.f, 4.f,
+            5.f, -4.f, 1.f
+        };
+
+        REQUIRE(Mat<real, 3, 3>::inverse(m2) == m2Inverse);
+        REQUIRE(m2 * m2Inverse == Mat<real, 3, 3>::identity());
+        REQUIRE(m2Inverse * m2 == Mat<real, 3, 3>::identity());
+        REQUIRE(m2.makeInverse() == m2Inverse);
     }
 
     SECTION("inverse of determinant of matrix test") {
@@ -339,14 +364,15 @@ TEST_CASE("Mat unit tests", "[Matrix]") {
         };
         Mat<real, 4, 4> inverseM1 = Mat<real, 4, 4>::inverse(m1);
         real determinantOfInverseM1 = Mat<real, 4, 4>::determinant(inverseM1);
-
-        REQUIRE(Math::equalUlps(Mat<real, 4, 4>::inverseDeterminant(m1), determinantOfInverseM1, 16));
+        REQUIRE(Math::equalUlps(Mat<real, 4, 4>::inverseDeterminant(m1), determinantOfInverseM1, 23));
     }
 
     SECTION("toSquareMat test") {
         Mat<real, 4, 4> m1;
         Mat<real, 3, 3> m2 = Mat<real, 4, 4>::toSquareMat<3, 3>(m1);
+        Mat<real, 2, 2> m3 = Mat<real, 4, 4>::toSquareMat<2, 2>(m1);
         REQUIRE(m2 == Mat<real, 3, 3>::identity());
+        REQUIRE(m3 == Mat<real, 2, 2>::identity());
     }
 
     SECTION("matrix trace") {
@@ -365,6 +391,7 @@ TEST_CASE("Mat unit tests", "[Matrix]") {
     }
 
     SECTION("matrix elementary row operations") {
+        // TODO
         // 1. Row-multiplying transformations
         Mat<real, 4, 4> em1 = Mat<real, 4, 4>::elementary1(2, 3.f);
 
