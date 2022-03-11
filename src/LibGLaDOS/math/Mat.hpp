@@ -1,9 +1,10 @@
 #ifndef GLADOS_MAT_H
 #define GLADOS_MAT_H
 
-#include <cstddef>
 #include "utils/Stl.h"
+#include "utils/Utility.h"
 #include "Vec.hpp"
+#include "UVec.hpp"
 #include "Math.h"
 
 namespace GLaDOS {
@@ -87,6 +88,34 @@ namespace GLaDOS {
         static Mat<T, R, C> elementary1(unsigned int rowIndex, T scalar); // row scalar multiplication
         static Mat<T, R, C> elementary2(unsigned int firstRowIndex, unsigned int secondRowIndex); // row swap
         static Mat<T, R, C> elementary3(unsigned int firstRowIndex, unsigned int secondRowIndex, T scalar); // row scalar multiplication and addition
+
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
+        static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> perspective(Rad fieldOfView, const T& aspectRatio, const T& znear, const T& zfar);
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
+        static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> orthogonal(const T& left, const T& right, const T& bottom, const T& top, const T& znear, const T& zfar);
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
+        static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> frustum(const T& left, const T& right, const T& bottom, const T& top, const T& znear, const T& zfar);
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
+        static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> lookAt(const Vec<T, 3>& eye, const Vec<T, 3>& forward, const UVec<T, 3>& up);
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
+        static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> translate(const Vec<T, 3>& trans);
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
+        static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> scale(const Vec<T, 3>& scale);
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
+        static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> rotate(const Vec<T, 3>& eulerAngle);
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
+        static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> rotate(const Quat& quat);
+
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
+        static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> normalizeComponents(const Mat<T, ROW, COL>& matrix);
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
+        static std::enable_if_t<is_real_v<T>, Vec<T, COL-1>> decomposeTranslation(const Mat<T, ROW, COL>& matrix);
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
+        static std::enable_if_t<is_real_v<T>, Vec<T, COL-1>> decomposeRotation(const Mat<T, ROW, COL>& matrix);
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
+        static std::enable_if_t<is_real_v<T>, Vec<T, COL-1>> decomposeScale(const Mat<T, ROW, COL>& matrix);
+        template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
+        static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> buildSRT(const Vec<T, COL-1>& p, const Quat& q, const Vec<T, COL-1>& s);
 
         union {
             T _m44[R][C];
@@ -547,6 +576,83 @@ namespace GLaDOS {
             elementMatrix._m44[secondRowIndex][c] += elementMatrix._m44[firstRowIndex][c] * scalar;
         }
         return elementMatrix;
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    template <std::size_t ROW, std::size_t COL, typename>
+    std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::perspective(Rad fieldOfView, const T& aspectRatio, const T& znear, const T& zfar) {
+        return Mat<T, ROW, COL>{};
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    template <std::size_t ROW, std::size_t COL, typename>
+    std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::orthogonal(const T& left, const T& right, const T& bottom, const T& top, const T& znear, const T& zfar) {
+        return Mat<T, ROW, COL>{};
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    template <std::size_t ROW, std::size_t COL, typename>
+    std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::frustum(const T& left, const T& right, const T& bottom, const T& top, const T& znear, const T& zfar) {
+        return Mat<T, ROW, COL>{};
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    template <std::size_t ROW, std::size_t COL, typename>
+    std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::lookAt(const Vec<T, 3>& eye, const Vec<T, 3>& forward, const UVec<T, 3>& up) {
+        return Mat<T, ROW, COL>{};
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    template <std::size_t ROW, std::size_t COL, typename>
+    std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::translate(const Vec<T, 3>& trans) {
+        return Mat<T, ROW, COL>{};
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    template <std::size_t ROW, std::size_t COL, typename>
+    std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::scale(const Vec<T, 3>& scale) {
+        return Mat<T, ROW, COL>{};
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    template <std::size_t ROW, std::size_t COL, typename>
+    std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::rotate(const Vec<T, 3>& eulerAngle) {
+        return Mat<T, ROW, COL>{};
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    template <std::size_t ROW, std::size_t COL, typename>
+    std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::rotate(const Quat& quat) {
+        return Mat<T, ROW, COL>{};
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    template <std::size_t ROW, std::size_t COL, typename>
+    std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::normalizeComponents(const Mat<T, ROW, COL>& matrix) {
+        return Mat<T, ROW, COL>{};
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    template <std::size_t ROW, std::size_t COL, typename>
+    std::enable_if_t<is_real_v<T>, Vec<T, COL-1>> Mat<T, R, C>::decomposeTranslation(const Mat<T, ROW, COL>& matrix) {
+        return Vec<T, COL-1>();
+    }
+    template <typename T, std::size_t R, std::size_t C>
+    template <std::size_t ROW, std::size_t COL, typename>
+    std::enable_if_t<is_real_v<T>, Vec<T, COL-1>> Mat<T, R, C>::decomposeRotation(const Mat<T, ROW, COL>& matrix) {
+        return Vec<T, COL-1>();
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    template <std::size_t ROW, std::size_t COL, typename>
+    std::enable_if_t<is_real_v<T>, Vec<T, COL-1>> Mat<T, R, C>::decomposeScale(const Mat<T, ROW, COL>& matrix) {
+        return Vec<T, COL-1>();
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    template <std::size_t ROW, std::size_t COL, typename>
+    std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::buildSRT(const Vec<T, COL-1>& p, const Quat& q, const Vec<T, COL-1>& s) {
+        return Mat<T, ROW, COL>{};
     }
 
     template <typename T, std::size_t R, std::size_t C>

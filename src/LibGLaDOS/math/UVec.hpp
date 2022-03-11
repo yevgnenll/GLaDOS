@@ -1,16 +1,14 @@
-#ifndef GLADOS_VEC_H
-#define GLADOS_VEC_H
+#ifndef GLADOS_UVEC_HPP
+#define GLADOS_UVEC_HPP
 
 #include <cstddef>
 
 namespace GLaDOS {
     template <typename T, std::size_t N>
-    class Vec {
+    class UVec {
       public:
 
-
-        T v[N];
     };
 }
 
-#endif  // GLADOS_VEC_H
+#endif  // GLADOS_UVEC_HPP
