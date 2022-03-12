@@ -187,6 +187,7 @@ TEST_CASE("Matrix unit tests", "[Matrix]") {
   SECTION("matrix perspective test") {
     Mat4<real> m1;
     auto m2 = Mat4<real>::perspective(20_rad, 0.2f, 0.1f, 100.f);
+    REQUIRE(m2 == Mat4<real>::identity());
   }
 
   SECTION("matrix get col & row") {

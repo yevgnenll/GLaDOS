@@ -401,4 +401,15 @@ TEST_CASE("Mat unit tests", "[Matrix]") {
         // 3. Row-addition transformations
         Mat<real, 4, 4> em3 = Mat<real, 4, 4>::elementary3(2, 3.f, 1);
     }
+
+    SECTION("matrix perspective test") {
+        Mat<real, 4, 4> m1 = Mat<real, 4, 4>::perspective(20_rad, 0.2f, 0.1f, 100.f);
+        Mat<real, 4, 4> result{
+            7.71175479f, 0.f, 0.f, 0.f,
+            0.f, 1.54235101f, 0.f, 0.f,
+            0.f, 0.f, -1.001001f, -1.f,
+            0.f, 0.f, -0.1001001f, 0.f
+        };
+        REQUIRE(m1 == result);
+    }
 }

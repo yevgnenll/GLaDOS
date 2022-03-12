@@ -3,6 +3,7 @@
 
 #include "utils/Stl.h"
 #include "utils/Utility.h"
+#include "platform/OSTypes.h"
 #include "Vec.hpp"
 #include "UVec.hpp"
 #include "Math.h"
@@ -96,7 +97,7 @@ namespace GLaDOS {
         template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
         static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> frustum(const T& left, const T& right, const T& bottom, const T& top, const T& znear, const T& zfar);
         template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
-        static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> lookAt(const Vec<T, 3>& eye, const Vec<T, 3>& forward, const UVec<T, 3>& up);
+        static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> lookAt(const Vec<T, COL-1>& eye, const Vec<T, COL-1>& forward, const UVec<T, COL-1>& up);
         template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
         static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> translate(const Vec<T, 3>& trans);
         template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
@@ -115,7 +116,7 @@ namespace GLaDOS {
         template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
         static std::enable_if_t<is_real_v<T>, Vec<T, COL-1>> decomposeScale(const Mat<T, ROW, COL>& matrix);
         template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
-        static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> buildSRT(const Vec<T, COL-1>& p, const Quat& q, const Vec<T, COL-1>& s);
+        static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> buildSRT(const Vec<T, COL-1>& translation, const Quat& rotation, const Vec<T, COL-1>& scale);
 
         union {
             T _m44[R][C];
@@ -581,78 +582,327 @@ namespace GLaDOS {
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
     std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::perspective(Rad fieldOfView, const T& aspectRatio, const T& znear, const T& zfar) {
-        return Mat<T, ROW, COL>{};
+        /*
+            http://metashapes.com/blog/opengl-metal-projection-matrix-problem/
+            Metal defines its Normalized Device Coordinate (NDC) system as a 2x2x1 cube with its center at (0, 0, 0.5).
+            Post multiplication by 0.5 to have the correct center.
+            | 1  0  0    0 |
+            | 0  1  0    0 |
+            | 0  0  0.5  0 |
+            | 0  0  0.5  1 |
+        */
+        Mat<T, ROW, COL> mat = Mat<T, ROW, COL>::zero();
+        auto tanHalfFovy = Math::tan(static_cast<T>(fieldOfView) / T(2.0));
+
+        mat._m16[0] = T(1.0) / (aspectRatio * tanHalfFovy);
+        mat._m16[5] = T(1.0) / tanHalfFovy;
+        mat._m16[10] = -(zfar + znear) / (zfar - znear);
+        mat._m16[11] = T(-1.0);
+        mat._m16[14] = -(T(2.0) * zfar * znear) / (zfar - znear);
+
+#ifdef PLATFORM_MACOS
+        Mat<T, ROW, COL> adjust;
+        adjust._m16[10] = T(0.5);
+        adjust._m16[14] = T(0.5);
+        return mat * adjust;
+#else
+        return mat;
+#endif
     }
 
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
     std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::orthogonal(const T& left, const T& right, const T& bottom, const T& top, const T& znear, const T& zfar) {
-        return Mat<T, ROW, COL>{};
+        /*  row-major matrix
+            | 2/(r-l)       0            0             0            |
+            | 0             2/(t-b)      0             0            |
+            | 0             0            -2/(f-n)      -(f+n)/(f-n) |
+            | -(r+l)/(r-l)  -(t+b)/t-b)  -(f+n)/(f-n)  1            |
+
+            http://metashapes.com/blog/opengl-metal-projection-matrix-problem/
+            Metal defines its Normalized Device Coordinate (NDC) system as a 2x2x1 cube with its center at (0, 0, 0.5).
+            Post multiplication by 0.5 to have the correct center.
+            | 1  0  0    0 |
+            | 0  1  0    0 |
+            | 0  0  0.5  0 |
+            | 0  0  0.5  1 |
+        */
+        if (left == right || top == bottom || znear == zfar) {
+            throw std::logic_error("Invalid orthogonal matrix.");
+        }
+
+        T rl = T(1.0) / (right - left);
+        T tb = T(1.0) / (top - bottom);
+        T fn = T(1.0) / (zfar - znear);
+
+        Mat<T, ROW, COL> mat;
+        mat._m16[0] = T(2.0) * rl;
+        mat._m16[5] = T(2.0) * tb;
+        mat._m16[10] = T(-2.0) * fn;
+        mat._m16[12] = -(right + left) * rl;
+        mat._m16[13] = -(top + bottom) * tb;
+        mat._m16[14] = -(zfar + znear) * fn;
+
+#ifdef PLATFORM_MACOS
+        Mat<T, ROW, COL> adjust;
+        adjust._m16[10] = T(0.5);
+        adjust._m16[14] = T(0.5);
+        return mat * adjust;
+#else
+        return mat;
+#endif
     }
 
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
     std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::frustum(const T& left, const T& right, const T& bottom, const T& top, const T& znear, const T& zfar) {
-        return Mat<T, ROW, COL>{};
+        /*
+            row-major matrix
+            | (2*n)/(r-l)       0            0             0        |
+            | 0             (2*n)/(t-b)      0             0        |
+            | (r+l)/(r-l)   (t+b)/(t-b)   -(f+n)/(f-n)     -1       |
+            | 0                 0        -(2*f*n)/(f-n)    0        |
+
+            http://metashapes.com/blog/opengl-metal-projection-matrix-problem/
+            Metal defines its Normalized Device Coordinate (NDC) system as a 2x2x1 cube with its center at (0, 0, 0.5).
+            Post multiplication by 0.5 to have the correct center.
+            | 1  0  0    0 |
+            | 0  1  0    0 |
+            | 0  0  0.5  0 |
+            | 0  0  0.5  1 |
+        */
+        if (left == right || top == bottom || znear == zfar) {
+            throw std::logic_error("Invalid frustum matrix.");
+        }
+
+        T rl = T(1.0) / (right - left);
+        T tb = T(1.0) / (top - bottom);
+        T fn = T(1.0) / (zfar - znear);
+
+        Mat<T, ROW, COL> mat;
+        mat._m16[0] = T(2) * znear * rl;
+        mat._m16[5] = T(2) * znear * tb;
+
+        mat._m16[8] = (right + left) * rl;
+        mat._m16[9] = (top + bottom) * tb;
+        mat._m16[10] = -(zfar + znear) * fn;
+        mat._m16[11] = T(-1);
+        mat._m16[14] = -(T(2) * zfar * znear) * fn;
+        mat._m16[15] = T(0);
+
+#ifdef PLATFORM_MACOS
+        Mat<T, ROW, COL> adjust;
+        adjust._m16[10] = T(0.5);
+        adjust._m16[14] = T(0.5);
+        return mat * adjust;
+#else
+        return mat;
+#endif
     }
 
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
-    std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::lookAt(const Vec<T, 3>& eye, const Vec<T, 3>& forward, const UVec<T, 3>& up) {
-        return Mat<T, ROW, COL>{};
+    std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::lookAt(const Vec<T, COL-1>& eye, const Vec<T, COL-1>& forward, const UVec<T, COL-1>& up) {
+        UVec<T, COL-1> zaxis = Vec<T, COL-1>::normalize(eye - forward);
+        UVec<T, COL-1> xaxis = Vec<T, COL-1>::normalize(Vec<T, COL-1>::cross(up, zaxis));
+        Vec<T, COL-1> yaxis = Vec<T, COL-1>::cross(zaxis, xaxis);
+
+        return Mat<T, ROW, COL>{xaxis->x, yaxis.x, zaxis->x, T(0.0),
+                                xaxis->y, yaxis.y, zaxis->y, T(0.0),
+                                xaxis->z, yaxis.z, zaxis->z, T(0.0),
+                                -Vec<T, COL-1>::dot(xaxis, eye), -Vec<T, COL-1>::dot(yaxis, eye), -Vec<T, COL-1>::dot(zaxis, eye), T(1.0)};
     }
 
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
     std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::translate(const Vec<T, 3>& trans) {
-        return Mat<T, ROW, COL>{};
+        /*
+            |1 0 0 0|
+            |0 1 0 0|
+            |0 0 1 0|
+            |x y z 1|
+        */
+        Mat<T, ROW, COL> mat;
+        mat._m16[12] = trans.x;
+        mat._m16[13] = trans.y;
+        mat._m16[14] = trans.z;
+        return mat;
     }
 
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
     std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::scale(const Vec<T, 3>& scale) {
-        return Mat<T, ROW, COL>{};
+        /*
+            |x 0 0 0|
+            |0 y 0 0|
+            |0 0 z 0|
+            |0 0 0 1|
+        */
+        Mat<T, ROW, COL> mat;
+        mat._m16[0] = scale.x;
+        mat._m16[5] = scale.y;
+        mat._m16[10] = scale.z;
+        return mat;
     }
 
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
     std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::rotate(const Vec<T, 3>& eulerAngle) {
-        return Mat<T, ROW, COL>{};
+        /*
+            Build Euler rotation matrix (possibly, gimbal lock), ZYX order
+
+            Rx = | 1  0    0   0 |
+                 | 0 cos -sin  0 |
+                 | 0 sin  cos  0 |
+                 | 0  0    0   1 |
+
+            Ry = |  cos  0  sin 0  |
+                 |   0	 1	 0   0 |
+                 | -sin  0  cos 0  |
+                 |   0	 0	 0   1 |
+
+            Rz = | cos -sin  0  0 |
+                 | sin  cos  0  0 |
+                 |  0    0   1  0 |
+                 |  0    0   0  1 |
+
+            R(zyx) = Rz * Ry * Rx
+
+                    Rz             Ry             Rx
+            |Cz -Sz  0  0| | Cy  0 Sy   0| |1  0   0  0|   | CzCy   -SzCx+CzSySx  SzSx+CzSyCx  0|
+            |Sz  Cz  0  0| |  0  1  0   0| |0 Cx -Sx  0|   | SzCy    CzCx+SzSySx -CzSx+SzSyCx  0|
+            | 0   0  1  0|*|-Sy  0 Cy   0|*|0 Sx  Cx  0| = | -Sy        CySx          CyCx     0|
+            | 0   0  0  1| |  0  0  0   1| |0  0   0  1|   |  0          0             0       1|
+        */
+
+        // Roll
+        T cz = Math::cos(Math::toRadians(Deg{eulerAngle.z}).get());
+        T sz = Math::sin(Math::toRadians(Deg{eulerAngle.z}).get());
+
+        // Yaw
+        T cy = Math::cos(Math::toRadians(Deg{eulerAngle.y}).get());
+        T sy = Math::sin(Math::toRadians(Deg{eulerAngle.y}).get());
+
+        // Pitch
+        T cx = Math::cos(Math::toRadians(Deg{eulerAngle.x}).get());
+        T sx = Math::sin(Math::toRadians(Deg{eulerAngle.x}).get());
+
+        Mat<T, ROW, COL> mat;
+        mat._m44[0][0] = cz * cy;
+        mat._m44[0][1] = -sz * cx + cz * sy * sx;
+        mat._m44[0][2] = sz * sx + cz * sy * cx;
+
+        mat._m44[1][0] = sz * cy;
+        mat._m44[1][1] = cz * cx + sz * sy * sx;
+        mat._m44[1][2] = -cz * sx + sz * sy * cx;
+
+        mat._m44[2][0] = -sy;
+        mat._m44[2][1] = cy * sx;
+        mat._m44[2][2] = cy * cx;
+
+        return mat;
     }
 
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
     std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::rotate(const Quat& quat) {
-        return Mat<T, ROW, COL>{};
+        /*
+            row-major vector (v)
+
+                      | 1-2y^2-2z^2		2xy-2wz		 2xz+2wy		0 |
+                      | 2xy+2wz			1-2x^2-2z^2	 2yz-2wx		0 |
+            (x,y,z,0) | 2xz-2wy			2yz+2wx		 1-2x^2-2y^2	0 |
+                      | 0				    0			 0		    1 |
+        */
+        Mat<T, ROW, COL> mat;
+
+        static T zero = T(0.0);
+        static T one = T(1.0);
+        static T two = T(2.0);
+
+        T xx = quat.x * quat.x;
+        T yy = quat.y * quat.y;
+        T zz = quat.z * quat.z;
+        T xz = quat.x * quat.z;
+        T xy = quat.x * quat.y;
+        T yz = quat.y * quat.z;
+        T wx = quat.w * quat.x;
+        T wy = quat.w * quat.y;
+        T wz = quat.w * quat.z;
+
+        mat._m44[0][0] = one - two * (yy + zz);
+        mat._m44[0][1] = two * (xy - wz);
+        mat._m44[0][2] = two * (xz + wy);
+
+        mat._m44[1][0] = two * (xy + wz);
+        mat._m44[1][1] = one - two * (xx + zz);
+        mat._m44[1][2] = two * (yz - wx);
+
+        mat._m44[2][0] = two * (xz - wy);
+        mat._m44[2][1] = two * (yz + wx);
+        mat._m44[2][2] = one - two * (xx + yy);
+
+        return mat;
     }
 
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
     std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::normalizeComponents(const Mat<T, ROW, COL>& matrix) {
-        return Mat<T, ROW, COL>{};
+        UVec<T, COL> first = Vec<T, COL>::normalize(Vec<T, COL>{matrix._m44[0][0], matrix._m44[0][1], matrix._m44[0][2], matrix._m44[0][3]});
+        UVec<T, COL> second = Vec<T, COL>::normalize(Vec<T, COL>{matrix._m44[1][0], matrix._m44[1][1], matrix._m44[1][2], matrix._m44[1][3]});
+        UVec<T, COL> third = Vec<T, COL>::normalize(Vec<T, COL>{matrix._m44[2][0], matrix._m44[2][1], matrix._m44[2][2], matrix._m44[2][3]});
+
+        return Mat<T, ROW, COL>{first->x, first->y, first->z, first->w,
+                                second->x, second->y, second->z, second->w,
+                                third->x, third->y, third->z, third->w,
+                                matrix._m44[3][0], matrix._m44[3][1], matrix._m44[3][2], matrix._m44[3][3]};
     }
 
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
     std::enable_if_t<is_real_v<T>, Vec<T, COL-1>> Mat<T, R, C>::decomposeTranslation(const Mat<T, ROW, COL>& matrix) {
-        return Vec<T, COL-1>();
+        return Vec<T, COL-1>{matrix._m44[3][0], matrix._m44[3][1], matrix._m44[3][2]};
     }
+
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
     std::enable_if_t<is_real_v<T>, Vec<T, COL-1>> Mat<T, R, C>::decomposeRotation(const Mat<T, ROW, COL>& matrix) {
-        return Vec<T, COL-1>();
+        Mat<T, ROW, COL> components = Mat<T, ROW, COL>::normalizeComponents(matrix);
+
+        // return to degree of vec
+        return Vec<T, COL-1>{Math::toDegrees(Rad{Math::atan2(components._m44[1][2], components._m44[2][2])}).get(),
+                             Math::toDegrees(Rad{-Math::sin(components._m44[0][2])}).get(),
+                             Math::toDegrees(Rad{Math::atan2(components._m44[0][1], components._m44[0][0])}).get()};
     }
 
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
     std::enable_if_t<is_real_v<T>, Vec<T, COL-1>> Mat<T, R, C>::decomposeScale(const Mat<T, ROW, COL>& matrix) {
-        return Vec<T, COL-1>();
+        T first = Vec<T, COL-1>(matrix._m44[0][0], matrix._m44[0][1], matrix._m44[0][2]).length();
+        T second = Vec<T, COL-1>(matrix._m44[1][0], matrix._m44[1][1], matrix._m44[1][2]).length();
+        T third = Vec<T, COL-1>(matrix._m44[2][0], matrix._m44[2][1], matrix._m44[2][2]).length();
+
+        return Vec<T, COL-1>{first, second, third};
     }
 
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
-    std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::buildSRT(const Vec<T, COL-1>& p, const Quat& q, const Vec<T, COL-1>& s) {
-        return Mat<T, ROW, COL>{};
+    std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::buildSRT(const Vec<T, COL-1>& translation, const Quat& rotation, const Vec<T, COL-1>& scale) {
+        /*
+            if using column vectors, column major matrix
+                        <-- multiply order
+            M := T * R * S * | v1 |
+                             | v2 |
+                             | v3 |
+                             |  0 |
+
+            if using row vectors, row major matrix
+            M := |v1, v2, v3, 0| * S * R * T
+                 multiply order -->
+
+            Because Mat<T, R, C> class uses row major matrix, SRT order is order of multiplication.
+        */
+        return Mat<T, ROW, COL>::scale(scale) * Mat<T, ROW, COL>::rotate(rotation) * Mat<T, ROW, COL>::translate(translation);
     }
 
     template <typename T, std::size_t R, std::size_t C>
