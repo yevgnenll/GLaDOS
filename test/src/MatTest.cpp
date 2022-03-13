@@ -412,4 +412,36 @@ TEST_CASE("Mat unit tests", "[Matrix]") {
         };
         REQUIRE(m1 == result);
     }
+
+    SECTION("matrix orthogonal test") {
+
+    }
+
+    SECTION("matrix frustum test") {
+
+    }
+
+    SECTION("matrix lookAt test") {
+
+    }
+
+    SECTION("matrix translation test") {
+
+    }
+
+    SECTION("matrix scale test") {
+
+    }
+
+    SECTION("matrix rotation test") {
+
+    }
+
+    SECTION("matrix decomposition test") {
+
+    }
+
+    SECTION("matrix build from SRT test") {
+
+    }
 }

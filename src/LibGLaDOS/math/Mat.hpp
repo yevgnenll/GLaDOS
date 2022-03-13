@@ -99,11 +99,11 @@ namespace GLaDOS {
         template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
         static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> lookAt(const Vec<T, COL-1>& eye, const Vec<T, COL-1>& forward, const UVec<T, COL-1>& up);
         template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
-        static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> translate(const Vec<T, 3>& trans);
+        static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> translate(const Vec<T, COL-1>& trans);
         template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
-        static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> scale(const Vec<T, 3>& scale);
+        static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> scale(const Vec<T, COL-1>& scale);
         template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
-        static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> rotate(const Vec<T, 3>& eulerAngle);
+        static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> rotate(const Vec<T, COL-1>& eulerAngle);
         template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
         static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> rotate(const Quat& quat);
 
@@ -715,7 +715,7 @@ namespace GLaDOS {
 
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
-    std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::translate(const Vec<T, 3>& trans) {
+    std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::translate(const Vec<T, COL-1>& trans) {
         /*
             |1 0 0 0|
             |0 1 0 0|
@@ -731,7 +731,7 @@ namespace GLaDOS {
 
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
-    std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::scale(const Vec<T, 3>& scale) {
+    std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::scale(const Vec<T, COL-1>& scale) {
         /*
             |x 0 0 0|
             |0 y 0 0|
@@ -747,7 +747,7 @@ namespace GLaDOS {
 
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
-    std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::rotate(const Vec<T, 3>& eulerAngle) {
+    std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::rotate(const Vec<T, COL-1>& eulerAngle) {
         /*
             Build Euler rotation matrix (possibly, gimbal lock), ZYX order
 
