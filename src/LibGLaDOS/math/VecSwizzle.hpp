@@ -4,6 +4,9 @@
 #include "Math.h"
 
 namespace GLaDOS {
+    template <typename T, std::size_t N>
+    class Vec;
+
     template <typename T, std::size_t I>
     struct ScalarSwizzle {
         T& operator=(const T& x) {
@@ -28,55 +31,55 @@ namespace GLaDOS {
         T v[1];
     };
 
-    template <typename VectorType, std::size_t A, std::size_t B>
+    template <typename T, std::size_t A, std::size_t B>
     struct Vec2Swizzle {
-        VectorType operator=(const VectorType& v) {
-            return VectorType(d[A] = v.v[0], d[B] = v.v[1]);
+        Vec<T, 2> operator=(const Vec<T, 2>& v) {
+            return Vec<T, 2>(d[A] = v.x, d[B] = v.y);
         }
-        operator VectorType() {
-            return VectorType(d[A], d[B]);
+        operator Vec<T, 2>() {
+            return Vec<T, 2>(d[A], d[B]);
         }
-        bool operator==(const VectorType& other) const {
-            return (Math::equal(d[A], other.v[0]) && Math::equal(d[B], other.v[1]));
+        bool operator==(const Vec<T, 2>& other) const {
+            return (Math::equal(d[A], T(other.x)) && Math::equal(d[B], T(other.y)));
         }
-        bool operator!=(const VectorType& other) const {
+        bool operator!=(const Vec<T, 2>& other) const {
             return !(*this == other);
         }
-        typename VectorType::valueType d[2];
+        T d[2];
     };
 
-    template <typename VectorType, std::size_t A, std::size_t B, std::size_t C>
+    template <typename T, std::size_t A, std::size_t B, std::size_t C>
     struct Vec3Swizzle {
-        VectorType operator=(const VectorType& v) {
-            return VectorType(d[A] = v.x, d[B] = v.y, d[C] = v.z);
+        Vec<T, 3> operator=(const Vec<T, 3>& v) {
+            return Vec<T, 3>(d[A] = v.x, d[B] = v.y, d[C] = v.z);
         }
-        operator VectorType() {
-            return V(d[A], d[B], d[C]);
+        operator Vec<T, 3>() {
+            return Vec<T, 3>(d[A], d[B], d[C]);
         }
-        bool operator==(const VectorType& other) const {
-            return (Math::equal(d[A], other.v[0]) && Math::equal(d[B], other.v[1]) && Math::equal(d[C], other.v[2]));
+        bool operator==(const Vec<T, 3>& other) const {
+            return (Math::equal(d[A], T(other.x)) && Math::equal(d[B], T(other.y)) && Math::equal(d[C], T(other.z)));
         }
-        bool operator!=(const VectorType& other) const {
+        bool operator!=(const Vec<T, 3>& other) const {
             return !(*this == other);
         }
-        typename VectorType::valueType d[3];
+        T d[3];
     };
 
-    template <typename VectorType, std::size_t A, std::size_t B, std::size_t C, std::size_t D>
+    template <typename T, std::size_t A, std::size_t B, std::size_t C, std::size_t D>
     struct Vec4Swizzle {
-        VectorType operator=(const VectorType& v) {
-            return VectorType(d[A] = v.x, d[B] = v.y, d[C] = v.z, d[D] = v.w);
+        Vec<T, 4> operator=(const Vec<T, 4>& v) {
+            return Vec<T, 4>(d[A] = v.x, d[B] = v.y, d[C] = v.z, d[D] = v.w);
         }
-        operator VectorType() {
-            return V(d[A], d[B], d[C], d[D]);
+        operator Vec<T, 4>() {
+            return Vec<T, 4>(d[A], d[B], d[C], d[D]);
         }
-        bool operator==(const VectorType& other) const {
-            return (Math::equal(d[A], other.v[0]) && Math::equal(d[B], other.v[1]) && Math::equal(d[C], other.v[2]) && Math::equal(d[D], other.v[3]));
+        bool operator==(const Vec<T, 4>& other) const {
+            return (Math::equal(d[A], T(other.x)) && Math::equal(d[B], T(other.y)) && Math::equal(d[C], T(other.z)) && Math::equal(d[D], T(other.w)));
         }
-        bool operator!=(const VectorType& other) const {
+        bool operator!=(const Vec<T, 4>& other) const {
             return !(*this == other);
         }
-        typename VectorType::valueType d[4];
+        T d[4];
     };
 }
 

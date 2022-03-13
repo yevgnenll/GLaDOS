@@ -155,7 +155,10 @@ TEST_CASE("Mat unit tests", "[Matrix]") {
         REQUIRE(m1(1,0) == 3.f);
         REQUIRE(m1(1,1) == 4.f);
 
-        // TODO: operator[] with Vec test
+        REQUIRE(m1[0][0] == 1.f);
+        REQUIRE(m1[0][1] == 2.f);
+        REQUIRE(m1[1][0] == 3.f);
+        REQUIRE(m1[1][1] == 4.f);
 
         REQUIRE(m1.at(0, 0) == 1.f);
         REQUIRE(m1.at(0, 1) == 2.f);
@@ -175,8 +178,8 @@ TEST_CASE("Mat unit tests", "[Matrix]") {
         };
         Vec<real, 4> column = m2.col(3);
         Vec<real, 4> row = m2.row(3);
-//        REQUIRE(column == Vec<real, 4>{-3.f, -2.f, 1.f, 1.f});
-//        REQUIRE(row == Vec<real, 4>{1.f, -2.f, -3.f, 1.f});
+        REQUIRE(column == Vec<real, 4>{-3.f, -2.f, 1.f, 1.f});
+        REQUIRE(row == Vec<real, 4>{1.f, -2.f, -3.f, 1.f});
     }
 
     SECTION("matrix copy test") {
@@ -238,7 +241,7 @@ TEST_CASE("Mat unit tests", "[Matrix]") {
                            4.f, 5.f, 6.f,
                            7.f, 8.f, 8.f};
         Vec<real, 3> diag = Mat<real, 3, 3>::diagonal(m1);
-//        REQUIRE(diag == Vec<real, 3>{1.f, 5.f, 8.f});
+        REQUIRE(diag == Vec<real, 3>{1.f, 5.f, 8.f});
     }
 
     SECTION("matrix minor test") {
