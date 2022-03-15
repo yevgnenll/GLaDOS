@@ -86,9 +86,9 @@ namespace GLaDOS {
         template<std::size_t ROW, std::size_t COL, typename = typename std::enable_if_t<ROW == COL && R == C>>
         static Mat<T, ROW, COL> toSquareMat(const Mat<T, R, C>& other);
         static T trace(const Mat<T, R, C>& other);
-        static Mat<T, R, C> elementary1(unsigned int rowIndex, T scalar); // row scalar multiplication
-        static Mat<T, R, C> elementary2(unsigned int firstRowIndex, unsigned int secondRowIndex); // row swap
-        static Mat<T, R, C> elementary3(unsigned int firstRowIndex, unsigned int secondRowIndex, T scalar); // row scalar multiplication and addition
+        static Mat<T, R, C> elementaryScaling(unsigned int rowIndex, T scalar); // row scalar multiplication
+        static Mat<T, R, C> elementaryInterchange(unsigned int firstRowIndex, unsigned int secondRowIndex); // row swap
+        static Mat<T, R, C> elementaryReplacement(unsigned int firstRowIndex, unsigned int secondRowIndex, T scalar); // row scalar multiplication and addition
 
         template<std::size_t ROW = R, std::size_t COL = C, typename = typename std::enable_if_t<ROW == 4 && COL == 4>>
         static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> perspective(Rad fieldOfView, const T& aspectRatio, const T& znear, const T& zfar);
@@ -547,7 +547,7 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t R, std::size_t C>
-    Mat<T, R, C> Mat<T, R, C>::elementary1(unsigned int rowIndex, T scalar) {
+    Mat<T, R, C> Mat<T, R, C>::elementaryScaling(unsigned int rowIndex, T scalar) {
         Mat<T, R, C> elementMatrix;
         if (Math::equal(scalar, T(0))) {
             return elementMatrix;
@@ -559,7 +559,7 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t R, std::size_t C>
-    Mat<T, R, C> Mat<T, R, C>::elementary2(unsigned int firstRowIndex, unsigned int secondRowIndex) {
+    Mat<T, R, C> Mat<T, R, C>::elementaryInterchange(unsigned int firstRowIndex, unsigned int secondRowIndex) {
         Mat<T, R, C> elementMatrix;
         for (unsigned int c = 0; c < C; c++) {
             std::swap(elementMatrix._m44[firstRowIndex][c], elementMatrix._m44[secondRowIndex][c]);
@@ -568,7 +568,7 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t R, std::size_t C>
-    Mat<T, R, C> Mat<T, R, C>::elementary3(unsigned int firstRowIndex, unsigned int secondRowIndex, T scalar) {
+    Mat<T, R, C> Mat<T, R, C>::elementaryReplacement(unsigned int firstRowIndex, unsigned int secondRowIndex, T scalar) {
         Mat<T, R, C> elementMatrix;
         if (Math::equal(scalar, T(0))) {
             return elementMatrix;

@@ -396,13 +396,13 @@ TEST_CASE("Mat unit tests", "[Matrix]") {
     SECTION("matrix elementary row operations") {
         // TODO
         // 1. Row-multiplying transformations
-        Mat<real, 4, 4> em1 = Mat<real, 4, 4>::elementary1(2, 3.f);
+        Mat<real, 4, 4> em1 = Mat<real, 4, 4>::elementaryScaling(2, 3.f);
 
         // 2. Row switching transformations
-        Mat<real, 4, 4> em2 = Mat<real, 4, 4>::elementary2(1, 2);
+        Mat<real, 4, 4> em2 = Mat<real, 4, 4>::elementaryInterchange(1, 2);
 
         // 3. Row-addition transformations
-        Mat<real, 4, 4> em3 = Mat<real, 4, 4>::elementary3(2, 3.f, 1);
+        Mat<real, 4, 4> em3 = Mat<real, 4, 4>::elementaryReplacement(2, 3.f, 1);
     }
 
     SECTION("matrix perspective test") {

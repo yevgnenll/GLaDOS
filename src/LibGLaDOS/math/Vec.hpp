@@ -177,6 +177,14 @@ namespace GLaDOS {
         bool operator!=(const Vec<T, 2>& other) const;
         T& operator[](unsigned int index);
         const T& operator[](unsigned int index) const;
+        Vec<T, 2> operator+(const Vec<T, 2>& other) const;
+        Vec<T, 2>& operator+=(const Vec<T, 2>& other);
+        Vec<T, 2> operator-(const Vec<T, 2>& other) const;
+        Vec<T, 2>& operator-=(const Vec<T, 2>& other);
+        Vec<T, 2> operator*(const T& scalar) const;
+        Vec<T, 2>& operator*=(const T& scalar);
+        Vec<T, 2> operator/(const T& scalar) const;
+        Vec<T, 2>& operator/=(const T& scalar);
 
         union {
             T v[2];
@@ -238,6 +246,58 @@ namespace GLaDOS {
     }
 
     template <typename T>
+    Vec<T, 2> Vec<T, 2>::operator+(const Vec<T, 2>& other) const {
+        // using op= (more effective c++ section 22)
+        return Vec<T, 2>(*this) += other;
+    }
+
+    template <typename T>
+    Vec<T, 2>& Vec<T, 2>::operator+=(const Vec<T, 2>& other) {
+        v[0] += other.x;
+        v[1] += other.y;
+        return *this;
+    }
+
+    template <typename T>
+    Vec<T, 2> Vec<T, 2>::operator-(const Vec<T, 2>& other) const {
+        // using op= (more effective c++ section 22)
+        return Vec<T, 2>(*this) -= other;
+    }
+
+    template <typename T>
+    Vec<T, 2>& Vec<T, 2>::operator-=(const Vec<T, 2>& other) {
+        v[0] -= other.x;
+        v[1] -= other.y;
+        return *this;
+    }
+
+    template <typename T>
+    Vec<T, 2> Vec<T, 2>::operator*(const T& scalar) const {
+        // using op= (more effective c++ section 22)
+        return Vec<T, 2>(*this) *= scalar;
+    }
+
+    template <typename T>
+    Vec<T, 2>& Vec<T, 2>::operator*=(const T& scalar) {
+        v[0] *= scalar;
+        v[1] *= scalar;
+        return *this;
+    }
+
+    template <typename T>
+    Vec<T, 2> Vec<T, 2>::operator/(const T& scalar) const {
+        // using op= (more effective c++ section 22)
+        return Vec<T, 2>(*this) /= scalar;
+    }
+
+    template <typename T>
+    Vec<T, 2>& Vec<T, 2>::operator/=(const T& scalar) {
+        v[0] /= scalar;
+        v[1] /= scalar;
+        return *this;
+    }
+
+    template <typename T>
     void Vec<T, 2>::swap(Vec<T, 2>& first, Vec<T, 2>& second) {
         using std::swap;
 
@@ -261,6 +321,14 @@ namespace GLaDOS {
         bool operator!=(const Vec<T, 3>& other) const;
         T& operator[](unsigned int index);
         const T& operator[](unsigned int index) const;
+        Vec<T, 3> operator+(const Vec<T, 3>& other) const;
+        Vec<T, 3>& operator+=(const Vec<T, 3>& other);
+        Vec<T, 3> operator-(const Vec<T, 3>& other) const;
+        Vec<T, 3>& operator-=(const Vec<T, 3>& other);
+        Vec<T, 3> operator*(const T& scalar) const;
+        Vec<T, 3>& operator*=(const T& scalar);
+        Vec<T, 3> operator/(const T& scalar) const;
+        Vec<T, 3>& operator/=(const T& scalar);
 
         union {
             T v[3];
@@ -361,6 +429,62 @@ namespace GLaDOS {
     }
 
     template <typename T>
+    Vec<T, 3> Vec<T, 3>::operator+(const Vec<T, 3>& other) const {
+        // using op= (more effective c++ section 22)
+        return Vec<T, 3>(*this) += other;
+    }
+
+    template <typename T>
+    Vec<T, 3>& Vec<T, 3>::operator+=(const Vec<T, 3>& other) {
+        v[0] += other.x;
+        v[1] += other.y;
+        v[2] += other.z;
+        return *this;
+    }
+
+    template <typename T>
+    Vec<T, 3> Vec<T, 3>::operator-(const Vec<T, 3>& other) const {
+        // using op= (more effective c++ section 22)
+        return Vec<T, 3>(*this) -= other;
+    }
+
+    template <typename T>
+    Vec<T, 3>& Vec<T, 3>::operator-=(const Vec<T, 3>& other) {
+        v[0] -= other.x;
+        v[1] -= other.y;
+        v[2] -= other.z;
+        return *this;
+    }
+
+    template <typename T>
+    Vec<T, 3> Vec<T, 3>::operator*(const T& scalar) const {
+        // using op= (more effective c++ section 22)
+        return Vec<T, 3>(*this) *= scalar;
+    }
+
+    template <typename T>
+    Vec<T, 3>& Vec<T, 3>::operator*=(const T& scalar) {
+        v[0] *= scalar;
+        v[1] *= scalar;
+        v[2] *= scalar;
+        return *this;
+    }
+
+    template <typename T>
+    Vec<T, 3> Vec<T, 3>::operator/(const T& scalar) const {
+        // using op= (more effective c++ section 22)
+        return Vec<T, 3>(*this) /= scalar;
+    }
+
+    template <typename T>
+    Vec<T, 3>& Vec<T, 3>::operator/=(const T& scalar) {
+        v[0] /= scalar;
+        v[1] /= scalar;
+        v[2] /= scalar;
+        return *this;
+    }
+
+    template <typename T>
     void Vec<T, 3>::swap(Vec<T, 3>& first, Vec<T, 3>& second) {
         using std::swap;
 
@@ -384,6 +508,14 @@ namespace GLaDOS {
         bool operator!=(const Vec<T, 4>& other) const;
         T& operator[](unsigned int index);
         const T& operator[](unsigned int index) const;
+        Vec<T, 4> operator+(const Vec<T, 4>& other) const;
+        Vec<T, 4>& operator+=(const Vec<T, 4>& other);
+        Vec<T, 4> operator-(const Vec<T, 4>& other) const;
+        Vec<T, 4>& operator-=(const Vec<T, 4>& other);
+        Vec<T, 4> operator*(const T& scalar) const;
+        Vec<T, 4>& operator*=(const T& scalar);
+        Vec<T, 4> operator/(const T& scalar) const;
+        Vec<T, 4>& operator/=(const T& scalar);
 
         union {
             T v[4];
@@ -444,6 +576,66 @@ namespace GLaDOS {
     template <typename T>
     const T& Vec<T, 4>::operator[](unsigned int index) const {
         return v[index];
+    }
+
+    template <typename T>
+    Vec<T, 4> Vec<T, 4>::operator+(const Vec<T, 4>& other) const {
+        // using op= (more effective c++ section 22)
+        return Vec<T, 4>(*this) += other;
+    }
+
+    template <typename T>
+    Vec<T, 4>& Vec<T, 4>::operator+=(const Vec<T, 4>& other) {
+        v[0] += other.x;
+        v[1] += other.y;
+        v[2] += other.z;
+        v[3] += other.w;
+        return *this;
+    }
+
+    template <typename T>
+    Vec<T, 4> Vec<T, 4>::operator-(const Vec<T, 4>& other) const {
+        // using op= (more effective c++ section 22)
+        return Vec<T, 4>(*this) -= other;
+    }
+
+    template <typename T>
+    Vec<T, 4>& Vec<T, 4>::operator-=(const Vec<T, 4>& other) {
+        v[0] -= other.x;
+        v[1] -= other.y;
+        v[2] -= other.z;
+        v[3] -= other.w;
+        return *this;
+    }
+
+    template <typename T>
+    Vec<T, 4> Vec<T, 4>::operator*(const T& scalar) const {
+        // using op= (more effective c++ section 22)
+        return Vec<T, 4>(*this) *= scalar;
+    }
+
+    template <typename T>
+    Vec<T, 4>& Vec<T, 4>::operator*=(const T& scalar) {
+        v[0] *= scalar;
+        v[1] *= scalar;
+        v[2] *= scalar;
+        v[3] *= scalar;
+        return *this;
+    }
+
+    template <typename T>
+    Vec<T, 4> Vec<T, 4>::operator/(const T& scalar) const {
+        // using op= (more effective c++ section 22)
+        return Vec<T, 4>(*this) /= scalar;
+    }
+
+    template <typename T>
+    Vec<T, 4>& Vec<T, 4>::operator/=(const T& scalar) {
+        v[0] /= scalar;
+        v[1] /= scalar;
+        v[2] /= scalar;
+        v[3] /= scalar;
+        return *this;
     }
 
     template <typename T>
