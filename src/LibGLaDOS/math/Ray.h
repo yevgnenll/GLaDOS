@@ -10,8 +10,8 @@ namespace GLaDOS {
         ~Ray() = default;
         Ray(const Vec3& origin, const Vec3& direction);
         Ray(const Ray& other) = default;
-        Ray(Ray&& other);
-        Ray& operator=(Ray other);
+//        Ray(Ray&& other) noexcept ;
+//        Ray& operator=(Ray other);
 
         Vec3 point(float distance);
         bool operator==(const Ray& other);
@@ -21,7 +21,7 @@ namespace GLaDOS {
         Vec3 getDirection() const;
 
       private:
-        void swap(Ray& first, Ray& second);
+//        void swap(Ray& first, Ray& second);
 
         Vec3 mOrigin;
         Vec3 mDirection{1, 0, 0};
