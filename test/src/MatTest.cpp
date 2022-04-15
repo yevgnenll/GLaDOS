@@ -393,16 +393,40 @@ TEST_CASE("Mat unit tests", "[Matrix]") {
         REQUIRE(Mat<int, 4, 4>::trace(m1) == 10);
     }
 
-    SECTION("matrix elementary row operations") {
-        // TODO
-        // 1. Row-multiplying transformations
+    SECTION("matrix determinant transpose is same") {
+        Mat<real, 3, 3> m1 = {
+            1.f, 2.f, 3.f,
+            4.f, 5.f, 6.f,
+            7.f, 8.f, 9.f
+        };
+        REQUIRE(Mat<real, 3, 3>::determinant(Mat<real, 3, 3>::transpose(m1)) == Mat<real, 3, 3>::determinant(m1));
+    }
+
+    SECTION("matrix elementary row operation determinant and matrix test") {
+        // 1. Row scaling transformations
         Mat<real, 4, 4> em1 = Mat<real, 4, 4>::elementaryScaling(2, 3.f);
-
-        // 2. Row switching transformations
+        // 2. Row interchange transformations
         Mat<real, 4, 4> em2 = Mat<real, 4, 4>::elementaryInterchange(1, 2);
-
-        // 3. Row-addition transformations
+        // 3. Row replacement transformations
         Mat<real, 4, 4> em3 = Mat<real, 4, 4>::elementaryReplacement(2, 3.f, 1);
+        Mat<real, 4, 4> E = em1 * em2 * em3;
+        Mat<real, 4, 4> A = {
+            1.f, 2.f, 3.f, 4.f,
+            5.f, 6.f, 7.f, 8.f,
+            9.f, 10.f, 11.f, 12.f,
+            13.f, 14.f, 15.f, 16.f
+        };
+        REQUIRE(Mat<real, 4, 4>::determinant(E * A) == (Mat<real, 4, 4>::determinant(E) * Mat<real, 4, 4>::determinant(A)));
+    }
+
+    SECTION("determinant of upper triangle matrix is same as multiplication of diagonal elements") {
+        Mat<int, 4, 4> m1{
+            1, 0, 0, 0,
+            0, 2, 0, 0,
+            0, 0, 3, 0,
+            0, 0, 0, 4
+        };
+        REQUIRE(Mat<int, 4, 4>::determinant(m1) == (1 * 2 * 3 * 4));
     }
 
     SECTION("matrix perspective test") {
