@@ -9,7 +9,7 @@ target_sources(${TEST_TARGET_NAME}
         ${TEST_SOURCE_FILES})
 target_link_libraries(${TEST_TARGET_NAME}
         PRIVATE
-        Catch2::Catch2
+        Catch2::Catch2WithMain
         ${PROJECT_NAME})
 target_include_directories(${TEST_TARGET_NAME} PRIVATE ${LIB_GLADOS_SOURCE_DIR})
 
