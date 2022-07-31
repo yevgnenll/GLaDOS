@@ -38,6 +38,8 @@ namespace GLaDOS {
 
         Vec<T, N>& makeNegate();
         static Vec<T, N> negate(const Vec<T, N>& v);
+        static T dot(const Vec<T, N>& a, const Vec<T, N>& b);
+        static Vec<T, N> cross(const Vec<T, N>& a, const Vec<T, N>& b);
 
         union {
             T v[N];
@@ -192,6 +194,20 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t N>
+    T Vec<T, N>::dot(const Vec<T, N>& a, const Vec<T, N>& b) {
+        T result{T(0)};
+        for (unsigned int i = 0; i < N; i++) {
+            result += a.v[i] * b.v[i];
+        }
+        return result;
+    }
+
+    template <typename T, std::size_t N>
+    Vec<T, N> Vec<T, N>::cross(const Vec<T, N>& a, const Vec<T, N>& b) {
+        static_assert(N == 3, "only three dimension cross product is defined");
+    }
+
+    template <typename T, std::size_t N>
     void Vec<T, N>::swap(Vec<T, N>& first, Vec<T, N>& second) {
         using std::swap;
 
@@ -228,6 +244,7 @@ namespace GLaDOS {
 
         Vec<T, 2>& makeNegate();
         static Vec<T, 2> negate(const Vec<T, 2>& v);
+        static T dot(const Vec<T, 2>& a, const Vec<T, 2>& b);
 
         union {
             T v[2];
@@ -369,6 +386,11 @@ namespace GLaDOS {
     }
 
     template <typename T>
+    T Vec<T, 2>::dot(const Vec<T, 2>& a, const Vec<T, 2>& b) {
+        return a.x * b.x + a.y * b.y;
+    }
+
+    template <typename T>
     void Vec<T, 2>::swap(Vec<T, 2>& first, Vec<T, 2>& second) {
         using std::swap;
 
@@ -405,6 +427,8 @@ namespace GLaDOS {
 
         Vec<T, 3>& makeNegate();
         static Vec<T, 3> negate(const Vec<T, 3>& v);
+        static T dot(const Vec<T, 3>& a, const Vec<T, 3>& b);
+        static Vec<T, 3> cross(const Vec<T, 3>& a, const Vec<T, 3>& b);
 
         union {
             T v[3];
@@ -589,6 +613,16 @@ namespace GLaDOS {
     }
 
     template <typename T>
+    T Vec<T, 3>::dot(const Vec<T, 3>& a, const Vec<T, 3>& b) {
+        return a.x * b.x + a.y * b.y + a.z * b.z;
+    }
+
+    template <typename T>
+    Vec<T, 3> Vec<T, 3>::cross(const Vec<T, 3>& a, const Vec<T, 3>& b) {
+        return Vec<T, 3>{a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x};
+    }
+
+    template <typename T>
     void Vec<T, 3>::swap(Vec<T, 3>& first, Vec<T, 3>& second) {
         using std::swap;
 
@@ -625,6 +659,7 @@ namespace GLaDOS {
 
         Vec<T, 4>& makeNegate();
         static Vec<T, 4> negate(const Vec<T, 4>& v);
+        static T dot(const Vec<T, 4>& a, const Vec<T, 4>& b);
 
         union {
             T v[4];
@@ -773,6 +808,11 @@ namespace GLaDOS {
     Vec<T, 4> Vec<T, 4>::negate(const Vec<T, 4>& v) {
         Vec<T, 4> result{v};
         return result.makeNegate();
+    }
+
+    template <typename T>
+    T Vec<T, 4>::dot(const Vec<T, 4>& a, const Vec<T, 4>& b) {
+        return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
     }
 
     template <typename T>

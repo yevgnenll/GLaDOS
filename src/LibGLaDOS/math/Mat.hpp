@@ -46,8 +46,8 @@ namespace GLaDOS {
         bool operator==(const Mat<T, R, C>& other) const;
         bool operator!=(const Mat<T, R, C>& other) const;
 
-        // Intentionally don't overload operator * function with vec4
-        // because it makes matrix seem like column major matrix (M * v).
+        template <std::size_t N, typename = typename std::enable_if_t<N == C>>
+        Vec<T, R> operator*(const Vec<T, N>& vector) const;
 
         Mat<T, R, C> operator*(const T& scalar) const;
         Mat<T, R, C>& operator*=(const T& scalar);
@@ -273,6 +273,16 @@ namespace GLaDOS {
     template <typename T, std::size_t R, std::size_t C>
     bool Mat<T, R, C>::operator!=(const Mat<T, R, C>& other) const {
         return !(*this == other);  // use equal operator to implement not equal
+    }
+
+    template <typename T, std::size_t R, std::size_t C>
+    template <std::size_t N, typename>
+    Vec<T, R> Mat<T, R, C>::operator*(const Vec<T, N>& vector) const {
+        Vec<T, R> result;
+        for (unsigned int row = 0; row < R; row++) {
+            result[row] = Vec<T, N>::dot(rows[row], vector);
+        }
+        return result;
     }
 
     template <typename T, std::size_t R, std::size_t C>

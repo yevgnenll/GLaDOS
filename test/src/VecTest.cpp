@@ -129,9 +129,27 @@ TEST_CASE("Vec unit tests", "[Vector]") {
     }
 
     SECTION("Vec3 cross product test") {
+        Vec<real, 3> v1{5.f, 6.f, 7.f};
+        Vec<real, 3> v2{8.f, 9.f, 10.f};
+        REQUIRE(Vec<real, 3>::cross(v1, v2) == Vec<real, 3>{-3, 6, -3});
     }
 
     SECTION("Vec dot product test") {
+        Vec<real, 2> v1{1.f, 2.f};
+        Vec<real, 2> v2{4.f, 5.f};
+        REQUIRE(Vec<real, 2>::dot(v1, v2) == 14.f);
+
+        Vec<real, 3> v3{1.f, 2.f, 3.f};
+        Vec<real, 3> v4{4.f, 5.f, 6.f};
+        REQUIRE(Vec<real, 3>::dot(v3, v4) == 32.f);
+
+        Vec<real, 4> v5{5.f, 6.f, 7.f, 8.f};
+        Vec<real, 4> v6{9.f, 10.f, 11.f, 12.f};
+        REQUIRE(Vec<real, 4>::dot(v5, v6) == 278.f);
+
+        Vec<real, 5> v7{5.f, 6.f, 7.f, 8.f, 13.f};
+        Vec<real, 5> v8{9.f, 10.f, 11.f, 12.f, 14.f};
+        REQUIRE(Vec<real, 5>::dot(v7, v8) == 460.f);
     }
 
     SECTION("Vec angle between two normalized vector test") {

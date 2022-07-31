@@ -235,16 +235,22 @@ TEST_CASE("Mat unit tests", "[Matrix]") {
                            4.f, 5.f};
         Vec<real, 2> v1{11, 11};
         REQUIRE((v1 * m1) == Vec<real, 2>{55, 77});
+        REQUIRE((m1 * v1) == Vec<real, 2>{33, 99});
 
         Mat<real, 3, 3> m2{1.f, 2.f, 3.f,
                            4.f, 5.f, 6.f,
                            7.f, 8.f, 8.f};
         Vec<real, 3> v2{1, 1, 1};
         REQUIRE((v2 * m2) == Vec<real, 3>{12, 15, 17});
+        REQUIRE((m2 * v2) == Vec<real, 3>{6, 15, 23});
 
-        Mat<real, 4, 4> m3;
+        Mat<real, 4, 4> m3{1.f, 2.f, 3.f, 4.f,
+                           5.f, 6.f, 7.f, 8.f,
+                           9.f, 10.f, 11.f, 12.f,
+                           13.f, 14.f, 15.f, 16.f};
         Vec<real, 4> v3{1,2,3,4};
-        REQUIRE((v3 * m3) == Vec<real, 4>{1,2,3,4});
+        REQUIRE((v3 * m3) == Vec<real, 4>{90, 100, 110, 120});
+        REQUIRE((m3 * v3) == Vec<real, 4>{30, 70, 110, 150});
 
         Mat<real, 9, 2> m4{1.f, 2.f,
                            3.f, 4.f,
@@ -257,6 +263,9 @@ TEST_CASE("Mat unit tests", "[Matrix]") {
                            17.f, 18.f};
         Vec<real, 9> v4{1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f};
         REQUIRE((v4 * m4) == Vec<real, 2>{525,570});
+
+        Vec<real, 2> v5{1.f, 2.f};
+        REQUIRE((m4 * v5) == Vec<real, 9>{5.f, 11.f, 17.f, 23.f, 29.f, 35.f, 41.f, 47.f, 53.f});
     }
 
     SECTION("matrix diagonalize test") {
