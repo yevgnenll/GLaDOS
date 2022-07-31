@@ -263,6 +263,14 @@ TEST_CASE("Vec unit tests", "[Vector]") {
         REQUIRE(Math::equal(v11.distanceSquare(v12), real(110)));
     }
 
+    SECTION("Vec normalize test") {
+        REQUIRE(*Vec<real, 2>::normalize(Vec<real, 2>{3, -4}) == Vec<real, 2>{3 / 5.f, -4 / 5.f});
+        REQUIRE(*Vec<real, 3>::normalize(Vec<real, 3>{3, -4, 2}) == Vec<real, 3>{3 / Math::sqrt(29), -4 / Math::sqrt(29), 2 / Math::sqrt(29)});
+        REQUIRE(*Vec<real, 4>::normalize(Vec<real, 4>{3, -4, 2, 1}) == Vec<real, 4>{3 / Math::sqrt(30), -4 / Math::sqrt(30), 2 / Math::sqrt(30), 1 / Math::sqrt(30)});
+        REQUIRE(*Vec<real, 5>::normalize(Vec<real, 5>{3.f, -4.f, 2.f, 1.f, -3.f})
+                == Vec<real, 5>{3.f / Math::sqrt(39), -4.f / Math::sqrt(39), 2.f / Math::sqrt(39), 1.f / Math::sqrt(39), -3.f / Math::sqrt(39)});
+    }
+
     SECTION("Vec angle between two normalized vector test") {
     }
 

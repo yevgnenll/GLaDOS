@@ -4,6 +4,7 @@
 #include "utils/Stl.h"
 #include "Math.h"
 #include "VecSwizzle.hpp"
+#include "UVec.hpp"
 
 namespace GLaDOS {
     template <typename T, std::size_t R, std::size_t C>
@@ -45,6 +46,7 @@ namespace GLaDOS {
         static Vec<T, N> negate(const Vec<T, N>& v);
         static T dot(const Vec<T, N>& a, const Vec<T, N>& b);
         static Vec<T, N> cross(const Vec<T, N>& a, const Vec<T, N>& b);
+        static UVec<T, N> normalize(const Vec<T, N>& v);
 
         union {
             T v[N];
@@ -233,6 +235,15 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t N>
+    UVec<T, N> Vec<T, N>::normalize(const Vec<T, N>& v) {
+        real len = v.length();
+        if (Math::zero(len) || Math::equal(len, real(1))) {
+            return UVec<T, N>{v};
+        }
+        return UVec<T, N>{v / len};
+    }
+
+    template <typename T, std::size_t N>
     void Vec<T, N>::swap(Vec<T, N>& first, Vec<T, N>& second) {
         using std::swap;
 
@@ -275,6 +286,7 @@ namespace GLaDOS {
         Vec<T, 2>& makeNegate();
         static Vec<T, 2> negate(const Vec<T, 2>& v);
         static T dot(const Vec<T, 2>& a, const Vec<T, 2>& b);
+        static UVec<T, 2> normalize(const Vec<T, 2>& v);
 
         union {
             T v[2];
@@ -442,6 +454,15 @@ namespace GLaDOS {
     }
 
     template <typename T>
+    UVec<T, 2> Vec<T, 2>::normalize(const Vec<T, 2>& v) {
+        real len = v.length();
+        if (Math::zero(len) || Math::equal(len, real(1))) {
+            return UVec<T, 2>{v};
+        }
+        return UVec<T, 2>{v / len};
+    }
+
+    template <typename T>
     void Vec<T, 2>::swap(Vec<T, 2>& first, Vec<T, 2>& second) {
         using std::swap;
 
@@ -498,6 +519,7 @@ namespace GLaDOS {
         static Vec<T, 3> negate(const Vec<T, 3>& v);
         static T dot(const Vec<T, 3>& a, const Vec<T, 3>& b);
         static Vec<T, 3> cross(const Vec<T, 3>& a, const Vec<T, 3>& b);
+        static UVec<T, 3> normalize(const Vec<T, 3>& v);
 
         union {
             T v[3];
@@ -713,6 +735,15 @@ namespace GLaDOS {
     }
 
     template <typename T>
+    UVec<T, 3> Vec<T, 3>::normalize(const Vec<T, 3>& v) {
+        real len = v.length();
+        if (Math::zero(len) || Math::equal(len, real(1))) {
+            return UVec<T, 3>{v};
+        }
+        return UVec<T, 3>{v / len};
+    }
+
+    template <typename T>
     void Vec<T, 3>::swap(Vec<T, 3>& first, Vec<T, 3>& second) {
         using std::swap;
 
@@ -772,6 +803,7 @@ namespace GLaDOS {
         Vec<T, 4>& makeNegate();
         static Vec<T, 4> negate(const Vec<T, 4>& v);
         static T dot(const Vec<T, 4>& a, const Vec<T, 4>& b);
+        static UVec<T, 4> normalize(const Vec<T, 4>& v);
 
         union {
             T v[4];
@@ -946,6 +978,15 @@ namespace GLaDOS {
     template <typename T>
     T Vec<T, 4>::dot(const Vec<T, 4>& a, const Vec<T, 4>& b) {
         return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
+    }
+
+    template <typename T>
+    UVec<T, 4> Vec<T, 4>::normalize(const Vec<T, 4>& v) {
+        real len = v.length();
+        if (Math::zero(len) || Math::equal(len, real(1))) {
+            return UVec<T, 4>{v};
+        }
+        return UVec<T, 4>{v / len};
     }
 
     template <typename T>
