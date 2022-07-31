@@ -1,15 +1,20 @@
 #ifndef GLADOS_VEC_H
 #define GLADOS_VEC_H
 
+#include "utils/Stl.h"
 #include "Math.h"
 #include "VecSwizzle.hpp"
 
 namespace GLaDOS {
+    template <typename T, std::size_t R, std::size_t C>
+    class Mat;
     template <typename T, std::size_t N>
     class Vec {
       public:
         Vec();
-        Vec(T scalar);
+        explicit Vec(T scalar);
+        template<typename... Ts, typename = std::enable_if_t<std::conjunction_v<std::is_same<T, Ts>...>>>
+        Vec(Ts&&... scalars);
         ~Vec() = default;
 
         Vec(Vec<T, N>&& other) noexcept;
@@ -28,8 +33,11 @@ namespace GLaDOS {
         Vec<T, N>& operator*=(const T& scalar);
         Vec<T, N> operator/(const T& scalar) const;
         Vec<T, N>& operator/=(const T& scalar);
+        template<std::size_t ROW, std::size_t COL, typename = typename std::enable_if_t<N == ROW>>
+        Vec<T, COL> operator*(const Mat<T, ROW, COL>& matrix) const;
 
         Vec<T, N>& makeNegate();
+        static Vec<T, N> negate(const Vec<T, N>& v);
 
         union {
             T v[N];
@@ -54,6 +62,16 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t N>
+    template<typename... Ts, typename>
+    Vec<T, N>::Vec(Ts&&... scalars) {
+        static_assert(sizeof...(scalars) == N, "Exceed vector dimension");
+        Array<T, sizeof...(Ts)> arr = { std::forward<T>(scalars)... };
+        for (unsigned int i = 0; i < N; i++) {
+            v[i] = arr[i];
+        }
+    }
+
+    template <typename T, std::size_t N>
     Vec<T, N>::Vec(Vec<T, N>&& other) noexcept {
         // copy and swap idiom (effective c++ section 11)
         Vec<T, N>::swap(*this, other);
@@ -69,7 +87,7 @@ namespace GLaDOS {
     template <typename T, std::size_t N>
     bool Vec<T, N>::operator==(const Vec<T, N>& other) const {
         for (unsigned int i = 0; i < N; i++) {
-            if (Math::equal(v[i], other.v[i])) {
+            if (!Math::equal(v[i], other.v[i])) {
                 return false;
             }
         }
@@ -146,11 +164,31 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t N>
+    template<std::size_t ROW, std::size_t COL, typename>
+    Vec<T, COL> Vec<T, N>::operator*(const Mat<T, ROW, COL>& matrix) const {
+        Vec<T, COL> result;
+        for (unsigned int col = 0; col < COL; col++) {
+            T temp = T(0);
+            for (unsigned int row = 0; row < ROW; row++) {
+                temp += v[row] * matrix._mRC[row][col];
+            }
+            result[col] = temp;
+        }
+        return result;
+    }
+
+    template <typename T, std::size_t N>
     Vec<T, N>& Vec<T, N>::makeNegate() {
         for (unsigned int i = 0; i < N; i++) {
             v[i] = -v[i];
         }
         return *this;
+    }
+
+    template <typename T, std::size_t N>
+    Vec<T, N> Vec<T, N>::negate(const Vec<T, N>& v) {
+        Vec<T, N> result{v};
+        return result.makeNegate();
     }
 
     template <typename T, std::size_t N>
@@ -185,6 +223,11 @@ namespace GLaDOS {
         Vec<T, 2>& operator*=(const T& scalar);
         Vec<T, 2> operator/(const T& scalar) const;
         Vec<T, 2>& operator/=(const T& scalar);
+        template<std::size_t ROW, std::size_t COL, typename = typename std::enable_if_t<2 == ROW>>
+        Vec<T, COL> operator*(const Mat<T, ROW, COL>& matrix) const;
+
+        Vec<T, 2>& makeNegate();
+        static Vec<T, 2> negate(const Vec<T, 2>& v);
 
         union {
             T v[2];
@@ -298,6 +341,34 @@ namespace GLaDOS {
     }
 
     template <typename T>
+    template<std::size_t ROW, std::size_t COL, typename>
+    Vec<T, COL> Vec<T, 2>::operator*(const Mat<T, ROW, COL>& matrix) const {
+        Vec<T, COL> result;
+        for (unsigned int col = 0; col < COL; col++) {
+            T temp = T(0);
+            for (unsigned int row = 0; row < 2; row++) {
+                temp += v[row] * matrix._mRC[row][col];
+            }
+            result[col] = temp;
+        }
+        return result;
+    }
+
+    template <typename T>
+    Vec<T, 2>& Vec<T, 2>::makeNegate() {
+        for (unsigned int i = 0; i < 2; i++) {
+            v[i] = -v[i];
+        }
+        return *this;
+    }
+
+    template <typename T>
+    Vec<T, 2> Vec<T, 2>::negate(const Vec<T, 2>& v) {
+        Vec<T, 2> result{v};
+        return result.makeNegate();
+    }
+
+    template <typename T>
     void Vec<T, 2>::swap(Vec<T, 2>& first, Vec<T, 2>& second) {
         using std::swap;
 
@@ -329,6 +400,11 @@ namespace GLaDOS {
         Vec<T, 3>& operator*=(const T& scalar);
         Vec<T, 3> operator/(const T& scalar) const;
         Vec<T, 3>& operator/=(const T& scalar);
+        template<std::size_t ROW, std::size_t COL, typename = typename std::enable_if_t<3 == ROW>>
+        Vec<T, COL> operator*(const Mat<T, ROW, COL>& matrix) const;
+
+        Vec<T, 3>& makeNegate();
+        static Vec<T, 3> negate(const Vec<T, 3>& v);
 
         union {
             T v[3];
@@ -485,6 +561,34 @@ namespace GLaDOS {
     }
 
     template <typename T>
+    template<std::size_t ROW, std::size_t COL, typename>
+    Vec<T, COL> Vec<T, 3>::operator*(const Mat<T, ROW, COL>& matrix) const {
+        Vec<T, COL> result;
+        for (unsigned int col = 0; col < COL; col++) {
+            T temp = T(0);
+            for (unsigned int row = 0; row < 3; row++) {
+                temp += v[row] * matrix._mRC[row][col];
+            }
+            result[col] = temp;
+        }
+        return result;
+    }
+
+    template <typename T>
+    Vec<T, 3>& Vec<T, 3>::makeNegate() {
+        for (unsigned int i = 0; i < 3; i++) {
+            v[i] = -v[i];
+        }
+        return *this;
+    }
+
+    template <typename T>
+    Vec<T, 3> Vec<T, 3>::negate(const Vec<T, 3>& v) {
+        Vec<T, 3> result{v};
+        return result.makeNegate();
+    }
+
+    template <typename T>
     void Vec<T, 3>::swap(Vec<T, 3>& first, Vec<T, 3>& second) {
         using std::swap;
 
@@ -516,6 +620,11 @@ namespace GLaDOS {
         Vec<T, 4>& operator*=(const T& scalar);
         Vec<T, 4> operator/(const T& scalar) const;
         Vec<T, 4>& operator/=(const T& scalar);
+        template<std::size_t ROW, std::size_t COL, typename = typename std::enable_if_t<4 == ROW>>
+        Vec<T, COL> operator*(const Mat<T, ROW, COL>& matrix) const;
+
+        Vec<T, 4>& makeNegate();
+        static Vec<T, 4> negate(const Vec<T, 4>& v);
 
         union {
             T v[4];
@@ -636,6 +745,34 @@ namespace GLaDOS {
         v[2] /= scalar;
         v[3] /= scalar;
         return *this;
+    }
+
+    template <typename T>
+    template<std::size_t ROW, std::size_t COL, typename>
+    Vec<T, COL> Vec<T, 4>::operator*(const Mat<T, ROW, COL>& matrix) const {
+        Vec<T, COL> result;
+        for (unsigned int col = 0; col < COL; col++) {
+            T temp = T(0);
+            for (unsigned int row = 0; row < 4; row++) {
+                temp += v[row] * matrix._mRC[row][col];
+            }
+            result[col] = temp;
+        }
+        return result;
+    }
+
+    template <typename T>
+    Vec<T, 4>& Vec<T, 4>::makeNegate() {
+        for (unsigned int i = 0; i < 4; i++) {
+            v[i] = -v[i];
+        }
+        return *this;
+    }
+
+    template <typename T>
+    Vec<T, 4> Vec<T, 4>::negate(const Vec<T, 4>& v) {
+        Vec<T, 4> result{v};
+        return result.makeNegate();
     }
 
     template <typename T>

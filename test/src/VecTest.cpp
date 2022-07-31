@@ -103,7 +103,29 @@ TEST_CASE("Vec unit tests", "[Vector]") {
         REQUIRE((v5 - v6) == Vec<real, 4>{-1.f, 1.f, 0.f, 1.f});
         REQUIRE(v5 * 3.f == Vec<real, 4>{3.f, 6.f, 3.f, 6.f});
 
-        Vec<real, 10> v7;
+        Vec<real, 10> v7{1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f, 10.f};
+        Vec<real, 10> v8{10.f, 9.f, 8.f, 7.f, 6.f, 5.f, 4.f, 3.f, 2.f, 1.f};
+        REQUIRE((v7 + v8) == Vec<real, 10>{11.f});
+        REQUIRE((v7 - v8) == Vec<real, 10>{-9.f, -7.f, -5.f, -3.f, -1.f, 1.f, 3.f, 5.f, 7.f, 9.f});
+        REQUIRE(v7 * 3.f == Vec<real, 10>{3.f, 6.f, 9.f, 12.f, 15.f, 18.f, 21.f, 24.f, 27.f, 30.f});
+    }
+
+    SECTION("Vec negate test") {
+        Vec<real, 2> v1{1.f, 2.f};
+        REQUIRE(Vec<real, 2>{-1.f, -2.f} == Vec<real, 2>::negate(v1));
+        REQUIRE(Vec<real, 2>{-1.f, -2.f} == v1.makeNegate());
+
+        Vec<real, 3> v2{1.f, 2.f, 3.f};
+        REQUIRE(Vec<real, 3>{-1.f, -2.f, -3.f} == Vec<real, 3>::negate(v2));
+        REQUIRE(Vec<real, 3>{-1.f, -2.f, -3.f} == v2.makeNegate());
+
+        Vec<real, 4> v3{1.f, 2.f, 3.f, 4.f};
+        REQUIRE(Vec<real, 4>{-1.f, -2.f, -3.f, -4.f} == Vec<real, 4>::negate(v3));
+        REQUIRE(Vec<real, 4>{-1.f, -2.f, -3.f, -4.f} == v3.makeNegate());
+
+        Vec<real, 5> v4{1.f, 2.f, 3.f, 4.f, 5.f};
+        REQUIRE(Vec<real, 5>{-1.f, -2.f, -3.f, -4.f, -5.f} == Vec<real, 5>::negate(v4));
+        REQUIRE(Vec<real, 5>{-1.f, -2.f, -3.f, -4.f, -5.f} == v4.makeNegate());
     }
 
     SECTION("Vec3 cross product test") {

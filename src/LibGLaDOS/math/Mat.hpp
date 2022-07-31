@@ -119,8 +119,8 @@ namespace GLaDOS {
         static std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> buildSRT(const Vec<T, COL-1>& translation, const Quat& rotation, const Vec<T, COL-1>& scale);
 
         union {
-            T _m44[R][C];
-            T _m16[R*C];
+            T _mRC[R][C];
+            T _mRxC[R*C];
             Vec<T, C> rows[R];
         };
 
@@ -134,7 +134,7 @@ namespace GLaDOS {
         struct Determinant<2, 2> {
             static T determinant(const Mat<T, 2, 2>& other) {
                 // ad - bc
-                return other._m44[0][0] * other._m44[1][1] - other._m44[0][1] * other._m44[1][0];
+                return other._mRC[0][0] * other._mRC[1][1] - other._mRC[0][1] * other._mRC[1][0];
             }
         };
 
@@ -146,9 +146,9 @@ namespace GLaDOS {
         for (unsigned int r = 0; r < R; r++) {
             for (unsigned int c = 0; c < C; c++) {
                 if constexpr (R == C) {
-                    _m44[r][c] = Math::equal(r, c) ? T(1.0) : T(0.0);
+                    _mRC[r][c] = Math::equal(r, c) ? T(1.0) : T(0.0);
                 } else {
-                    _m44[r][c] = T(0.0);
+                    _mRC[r][c] = T(0.0);
                 }
             }
         }
@@ -161,7 +161,7 @@ namespace GLaDOS {
         Array<T, sizeof...(Ts)> arr = { std::forward<T>(scalars)... };
         for (unsigned int r = 0; r < R; r++) {
             for (unsigned int c = 0; c < C; c++) {
-                _m44[r][c] = arr[r * C + c];
+                _mRC[r][c] = arr[r * C + c];
             }
         }
     }
@@ -170,7 +170,7 @@ namespace GLaDOS {
     Mat<T, R, C>::Mat(const Mat<T, R, C>& other) {
         for (unsigned int r = 0; r < R; r++) {
             for (unsigned int c = 0; c < C; c++) {
-                _m44[r][c] = other._m44[r][c];
+                _mRC[r][c] = other._mRC[r][c];
             }
         }
     }
@@ -191,7 +191,7 @@ namespace GLaDOS {
     void Mat<T, R, C>::makeIdentity() {
         for (unsigned int r = 0; r < ROW; r++) {
             for (unsigned int c = 0; c < COL; c++) {
-                _m44[r][c] = Math::equal(r, c) ? T(1.0) : T(0.0);
+                _mRC[r][c] = Math::equal(r, c) ? T(1.0) : T(0.0);
             }
         }
     }
@@ -210,7 +210,7 @@ namespace GLaDOS {
 
     template <typename T, std::size_t R, std::size_t C>
     T* Mat<T, R, C>::pointer() {
-        return _m16;
+        return _mRxC;
     }
 
     template <typename T, std::size_t R, std::size_t C>
@@ -222,7 +222,7 @@ namespace GLaDOS {
     Mat<T, R, C>& Mat<T, R, C>::operator+=(const Mat<T, R, C>& other) {
         for (unsigned int r = 0; r < R; r++) {
             for (unsigned int c = 0; c < C; c++) {
-                _m44[r][c] += other._m44[r][c];
+                _mRC[r][c] += other._mRC[r][c];
             }
         }
         return *this;
@@ -237,7 +237,7 @@ namespace GLaDOS {
     Mat<T, R, C>& Mat<T, R, C>::operator-=(const Mat<T, R, C>& other) {
         for (unsigned int r = 0; r < R; r++) {
             for (unsigned int c = 0; c < C; c++) {
-                _m44[r][c] -= other._m44[r][c];
+                _mRC[r][c] -= other._mRC[r][c];
             }
         }
         return *this;
@@ -249,9 +249,9 @@ namespace GLaDOS {
         Mat<T, R, C2> result;
         for (unsigned int r = 0; r < R; r++) {
             for (unsigned int c = 0; c < C2; c++) {
-                result._m44[r][c] = T(0);
+                result._mRC[r][c] = T(0);
                 for (unsigned int k = 0; k < C; k++) {
-                    result._m44[r][c] += _m44[r][k] * other._m44[k][c];
+                    result._mRC[r][c] += _mRC[r][k] * other._mRC[k][c];
                 }
             }
         }
@@ -262,7 +262,7 @@ namespace GLaDOS {
     bool Mat<T, R, C>::operator==(const Mat<T, R, C>& other) const {
         for (unsigned int r = 0; r < R; r++) {
             for (unsigned int c = 0; c < C; c++) {
-                if (!Math::equal(_m44[r][c], other._m44[r][c])) {
+                if (!Math::equal(_mRC[r][c], other._mRC[r][c])) {
                     return false;
                 }
             }
@@ -282,7 +282,7 @@ namespace GLaDOS {
 
     template <typename T, std::size_t R, std::size_t C>
     Mat<T, R, C>& Mat<T, R, C>::operator*=(const T& scalar) {
-        for (auto& element : _m16) {
+        for (auto& element : _mRxC) {
             element *= scalar;
         }
         return *this;
@@ -295,7 +295,7 @@ namespace GLaDOS {
 
     template <typename T, std::size_t R, std::size_t C>
     Mat<T, R, C>& Mat<T, R, C>::operator/=(const T& scalar) {
-        for (auto& element : _m16) {
+        for (auto& element : _mRxC) {
             element /= scalar;
         }
         return *this;
@@ -303,7 +303,7 @@ namespace GLaDOS {
 
     template <typename T, std::size_t R, std::size_t C>
     T Mat<T, R, C>::operator()(unsigned int row, unsigned int col) const {
-        return _m44[row][col];
+        return _mRC[row][col];
     }
 
     template <typename T, std::size_t R, std::size_t C>
@@ -314,7 +314,7 @@ namespace GLaDOS {
     template <typename T, std::size_t R, std::size_t C>
     T Mat<T, R, C>::at(int row, int col) const {
         if (row >= 0 && row <= R && col >= 0 && col <= C) {
-            return _m44[row][col];
+            return _mRC[row][col];
         }
 
         throw std::out_of_range("index out of range!");
@@ -323,7 +323,7 @@ namespace GLaDOS {
     template <typename T, std::size_t R, std::size_t C>
     T Mat<T, R, C>::at(int index) const {
         if (index >= 0 && index <= (R * C)) {
-            return _m16[index];
+            return _mRxC[index];
         }
 
         throw std::out_of_range("index out of range!");
@@ -334,7 +334,7 @@ namespace GLaDOS {
         if (index < C) {
             Vec<T, R> vec;
             for (unsigned int r = 0; r < R; r++) {
-                vec.v[r] = _m44[r][index];
+                vec.v[r] = _mRC[r][index];
             }
             return vec;
         }
@@ -356,7 +356,7 @@ namespace GLaDOS {
         Mat<T, R, C> result;
         for (unsigned int r = 0; r < R; r++) {
             for (unsigned int c = 0; c < C; c++) {
-                result._m44[r][c] = scalar;
+                result._mRC[r][c] = scalar;
             }
         }
         return result;
@@ -376,7 +376,7 @@ namespace GLaDOS {
         Mat<T, R, C> result;
         for (unsigned int r = 0; r < R; r++) {
             for (unsigned int c = 0; c < C; c++) {
-                result._m44[r][c] = scalars[r * C + c];
+                result._mRC[r][c] = scalars[r * C + c];
             }
         }
         return result;
@@ -398,7 +398,7 @@ namespace GLaDOS {
         Mat<T, ROW, COL> mat;
         for (unsigned int r = 0; r < ROW; r++) {
             for (unsigned int c = 0; c < COL; c++) {
-                mat._m44[r][c] = Math::equal(r, c) ? T(1.0) : T(0.0);
+                mat._mRC[r][c] = Math::equal(r, c) ? T(1.0) : T(0.0);
             }
         }
         return mat;
@@ -409,7 +409,7 @@ namespace GLaDOS {
         Mat<T, R, C> mat;
         for (unsigned int r = 0; r < R; r++) {
             for (unsigned int c = 0; c < C; c++) {
-                mat._m44[r][c] = T(0.0);
+                mat._mRC[r][c] = T(0.0);
             }
         }
         return mat;
@@ -420,7 +420,7 @@ namespace GLaDOS {
         const std::size_t dimension = Math::min(R, C);
         Vec<T, dimension> result;
         for (unsigned int c = 0; c < dimension; c++) {
-            result.v[c] = other._m44[c][c];
+            result.v[c] = other._mRC[c][c];
         }
         return result;
     }
@@ -431,7 +431,7 @@ namespace GLaDOS {
         for (unsigned int n = 0; n < R * C; n++) {
             int i = n / R;
             int j = n % R;
-            temp[n] = other._m16[C * j + i];
+            temp[n] = other._mRxC[C * j + i];
         }
         return Mat<T, C, R>::from(temp);
     }
@@ -447,7 +447,7 @@ namespace GLaDOS {
             if (r != row) {
                 for (unsigned int c = 0; c < COL; c++) {
                     if (c != col) {
-                        minorMatrix._m44[minorRow][minorCol] = other._m44[r][c];
+                        minorMatrix._mRC[minorRow][minorCol] = other._mRC[r][c];
                         minorCol++;
                     }
                 }
@@ -481,7 +481,7 @@ namespace GLaDOS {
         // Sum(col=0->n)[A(0,col)*Cofactor(0,col)]
         T result = T(0);
         for (unsigned int c = 0; c < COL; c++) {
-            result += other._m44[0][c] * Mat<T, ROW, COL>::cofactor(other, 0, c);
+            result += other._mRC[0][c] * Mat<T, ROW, COL>::cofactor(other, 0, c);
         }
         return result;
     }
@@ -492,7 +492,7 @@ namespace GLaDOS {
         Mat<T, ROW, COL> cofactorMatrix;
         for (unsigned int r = 0 ; r < R; r++) {
             for (unsigned int c = 0 ; c < C; c++) {
-                cofactorMatrix._m44[r][c] = Mat<T, ROW, COL>::cofactor(other, r, c);
+                cofactorMatrix._mRC[r][c] = Mat<T, ROW, COL>::cofactor(other, r, c);
             }
         }
         return Mat<T, ROW, COL>::transpose(cofactorMatrix);
@@ -530,7 +530,7 @@ namespace GLaDOS {
 
         for (unsigned int r = 0; r < minRow; r++) {
             for (unsigned int c = 0; c < minCol; c++) {
-                result._m44[r][c] = other._m44[r][c];
+                result._mRC[r][c] = other._mRC[r][c];
             }
         }
         return result;
@@ -539,9 +539,9 @@ namespace GLaDOS {
     template <typename T, std::size_t R, std::size_t C>
     T Mat<T, R, C>::trace(const Mat<T, R, C>& other) {
         const std::size_t dimension = Math::min(R, C);
-        T result;
+        T result{T(0)};
         for (unsigned int c = 0; c < dimension; c++) {
-            result += other._m44[c][c];
+            result += other._mRC[c][c];
         }
         return result;
     }
@@ -553,7 +553,7 @@ namespace GLaDOS {
             return elementMatrix;
         }
         for (unsigned int c = 0; c < C; c++) {
-            elementMatrix._m44[rowIndex][c] *= scalar;
+            elementMatrix._mRC[rowIndex][c] *= scalar;
         }
         return elementMatrix;
     }
@@ -562,7 +562,7 @@ namespace GLaDOS {
     Mat<T, R, C> Mat<T, R, C>::elementaryInterchange(unsigned int firstRowIndex, unsigned int secondRowIndex) {
         Mat<T, R, C> elementMatrix;
         for (unsigned int c = 0; c < C; c++) {
-            std::swap(elementMatrix._m44[firstRowIndex][c], elementMatrix._m44[secondRowIndex][c]);
+            std::swap(elementMatrix._mRC[firstRowIndex][c], elementMatrix._mRC[secondRowIndex][c]);
         }
         return elementMatrix;
     }
@@ -574,7 +574,7 @@ namespace GLaDOS {
             return elementMatrix;
         }
         for (unsigned int c = 0; c < C; c++) {
-            elementMatrix._m44[secondRowIndex][c] += elementMatrix._m44[firstRowIndex][c] * scalar;
+            elementMatrix._mRC[secondRowIndex][c] += elementMatrix._mRC[firstRowIndex][c] * scalar;
         }
         return elementMatrix;
     }
@@ -594,16 +594,16 @@ namespace GLaDOS {
         Mat<T, ROW, COL> mat = Mat<T, ROW, COL>::zero();
         auto tanHalfFovy = Math::tan(static_cast<T>(fieldOfView) / T(2.0));
 
-        mat._m16[0] = T(1.0) / (aspectRatio * tanHalfFovy);
-        mat._m16[5] = T(1.0) / tanHalfFovy;
-        mat._m16[10] = -(zfar + znear) / (zfar - znear);
-        mat._m16[11] = T(-1.0);
-        mat._m16[14] = -(T(2.0) * zfar * znear) / (zfar - znear);
+        mat._mRxC[0] = T(1.0) / (aspectRatio * tanHalfFovy);
+        mat._mRxC[5] = T(1.0) / tanHalfFovy;
+        mat._mRxC[10] = -(zfar + znear) / (zfar - znear);
+        mat._mRxC[11] = T(-1.0);
+        mat._mRxC[14] = -(T(2.0) * zfar * znear) / (zfar - znear);
 
 #ifdef PLATFORM_MACOS
         Mat<T, ROW, COL> adjust;
-        adjust._m16[10] = T(0.5);
-        adjust._m16[14] = T(0.5);
+        adjust._mRxC[10] = T(0.5);
+        adjust._mRxC[14] = T(0.5);
         return mat * adjust;
 #else
         return mat;
@@ -636,17 +636,17 @@ namespace GLaDOS {
         T fn = T(1.0) / (zfar - znear);
 
         Mat<T, ROW, COL> mat;
-        mat._m16[0] = T(2.0) * rl;
-        mat._m16[5] = T(2.0) * tb;
-        mat._m16[10] = T(-2.0) * fn;
-        mat._m16[12] = -(right + left) * rl;
-        mat._m16[13] = -(top + bottom) * tb;
-        mat._m16[14] = -(zfar + znear) * fn;
+        mat._mRxC[0] = T(2.0) * rl;
+        mat._mRxC[5] = T(2.0) * tb;
+        mat._mRxC[10] = T(-2.0) * fn;
+        mat._mRxC[12] = -(right + left) * rl;
+        mat._mRxC[13] = -(top + bottom) * tb;
+        mat._mRxC[14] = -(zfar + znear) * fn;
 
 #ifdef PLATFORM_MACOS
         Mat<T, ROW, COL> adjust;
-        adjust._m16[10] = T(0.5);
-        adjust._m16[14] = T(0.5);
+        adjust._mRxC[10] = T(0.5);
+        adjust._mRxC[14] = T(0.5);
         return mat * adjust;
 #else
         return mat;
@@ -680,20 +680,20 @@ namespace GLaDOS {
         T fn = T(1.0) / (zfar - znear);
 
         Mat<T, ROW, COL> mat;
-        mat._m16[0] = T(2) * znear * rl;
-        mat._m16[5] = T(2) * znear * tb;
+        mat._mRxC[0] = T(2) * znear * rl;
+        mat._mRxC[5] = T(2) * znear * tb;
 
-        mat._m16[8] = (right + left) * rl;
-        mat._m16[9] = (top + bottom) * tb;
-        mat._m16[10] = -(zfar + znear) * fn;
-        mat._m16[11] = T(-1);
-        mat._m16[14] = -(T(2) * zfar * znear) * fn;
-        mat._m16[15] = T(0);
+        mat._mRxC[8] = (right + left) * rl;
+        mat._mRxC[9] = (top + bottom) * tb;
+        mat._mRxC[10] = -(zfar + znear) * fn;
+        mat._mRxC[11] = T(-1);
+        mat._mRxC[14] = -(T(2) * zfar * znear) * fn;
+        mat._mRxC[15] = T(0);
 
 #ifdef PLATFORM_MACOS
         Mat<T, ROW, COL> adjust;
-        adjust._m16[10] = T(0.5);
-        adjust._m16[14] = T(0.5);
+        adjust._mRxC[10] = T(0.5);
+        adjust._mRxC[14] = T(0.5);
         return mat * adjust;
 #else
         return mat;
@@ -723,9 +723,9 @@ namespace GLaDOS {
             |x y z 1|
         */
         Mat<T, ROW, COL> mat;
-        mat._m16[12] = trans.x;
-        mat._m16[13] = trans.y;
-        mat._m16[14] = trans.z;
+        mat._mRxC[12] = trans.x;
+        mat._mRxC[13] = trans.y;
+        mat._mRxC[14] = trans.z;
         return mat;
     }
 
@@ -739,9 +739,9 @@ namespace GLaDOS {
             |0 0 0 1|
         */
         Mat<T, ROW, COL> mat;
-        mat._m16[0] = scale.x;
-        mat._m16[5] = scale.y;
-        mat._m16[10] = scale.z;
+        mat._mRxC[0] = scale.x;
+        mat._mRxC[5] = scale.y;
+        mat._mRxC[10] = scale.z;
         return mat;
     }
 
@@ -788,17 +788,17 @@ namespace GLaDOS {
         T sx = Math::sin(Math::toRadians(Deg{eulerAngle.x}).get());
 
         Mat<T, ROW, COL> mat;
-        mat._m44[0][0] = cz * cy;
-        mat._m44[0][1] = -sz * cx + cz * sy * sx;
-        mat._m44[0][2] = sz * sx + cz * sy * cx;
+        mat._mRC[0][0] = cz * cy;
+        mat._mRC[0][1] = -sz * cx + cz * sy * sx;
+        mat._mRC[0][2] = sz * sx + cz * sy * cx;
 
-        mat._m44[1][0] = sz * cy;
-        mat._m44[1][1] = cz * cx + sz * sy * sx;
-        mat._m44[1][2] = -cz * sx + sz * sy * cx;
+        mat._mRC[1][0] = sz * cy;
+        mat._mRC[1][1] = cz * cx + sz * sy * sx;
+        mat._mRC[1][2] = -cz * sx + sz * sy * cx;
 
-        mat._m44[2][0] = -sy;
-        mat._m44[2][1] = cy * sx;
-        mat._m44[2][2] = cy * cx;
+        mat._mRC[2][0] = -sy;
+        mat._mRC[2][1] = cy * sx;
+        mat._mRC[2][2] = cy * cx;
 
         return mat;
     }
@@ -830,17 +830,17 @@ namespace GLaDOS {
         T wy = quat.w * quat.y;
         T wz = quat.w * quat.z;
 
-        mat._m44[0][0] = one - two * (yy + zz);
-        mat._m44[0][1] = two * (xy - wz);
-        mat._m44[0][2] = two * (xz + wy);
+        mat._mRC[0][0] = one - two * (yy + zz);
+        mat._mRC[0][1] = two * (xy - wz);
+        mat._mRC[0][2] = two * (xz + wy);
 
-        mat._m44[1][0] = two * (xy + wz);
-        mat._m44[1][1] = one - two * (xx + zz);
-        mat._m44[1][2] = two * (yz - wx);
+        mat._mRC[1][0] = two * (xy + wz);
+        mat._mRC[1][1] = one - two * (xx + zz);
+        mat._mRC[1][2] = two * (yz - wx);
 
-        mat._m44[2][0] = two * (xz - wy);
-        mat._m44[2][1] = two * (yz + wx);
-        mat._m44[2][2] = one - two * (xx + yy);
+        mat._mRC[2][0] = two * (xz - wy);
+        mat._mRC[2][1] = two * (yz + wx);
+        mat._mRC[2][2] = one - two * (xx + yy);
 
         return mat;
     }
@@ -848,20 +848,20 @@ namespace GLaDOS {
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
     std::enable_if_t<is_real_v<T>, Mat<T, ROW, COL>> Mat<T, R, C>::normalizeComponents(const Mat<T, ROW, COL>& matrix) {
-        UVec<T, COL> first = Vec<T, COL>::normalize(Vec<T, COL>{matrix._m44[0][0], matrix._m44[0][1], matrix._m44[0][2], matrix._m44[0][3]});
-        UVec<T, COL> second = Vec<T, COL>::normalize(Vec<T, COL>{matrix._m44[1][0], matrix._m44[1][1], matrix._m44[1][2], matrix._m44[1][3]});
-        UVec<T, COL> third = Vec<T, COL>::normalize(Vec<T, COL>{matrix._m44[2][0], matrix._m44[2][1], matrix._m44[2][2], matrix._m44[2][3]});
+        UVec<T, COL> first = Vec<T, COL>::normalize(Vec<T, COL>{matrix._mRC[0][0], matrix._mRC[0][1], matrix._mRC[0][2], matrix._mRC[0][3]});
+        UVec<T, COL> second = Vec<T, COL>::normalize(Vec<T, COL>{matrix._mRC[1][0], matrix._mRC[1][1], matrix._mRC[1][2], matrix._mRC[1][3]});
+        UVec<T, COL> third = Vec<T, COL>::normalize(Vec<T, COL>{matrix._mRC[2][0], matrix._mRC[2][1], matrix._mRC[2][2], matrix._mRC[2][3]});
 
         return Mat<T, ROW, COL>{first->x, first->y, first->z, first->w,
                                 second->x, second->y, second->z, second->w,
                                 third->x, third->y, third->z, third->w,
-                                matrix._m44[3][0], matrix._m44[3][1], matrix._m44[3][2], matrix._m44[3][3]};
+                                matrix._mRC[3][0], matrix._mRC[3][1], matrix._mRC[3][2], matrix._mRC[3][3]};
     }
 
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
     std::enable_if_t<is_real_v<T>, Vec<T, COL-1>> Mat<T, R, C>::decomposeTranslation(const Mat<T, ROW, COL>& matrix) {
-        return Vec<T, COL-1>{matrix._m44[3][0], matrix._m44[3][1], matrix._m44[3][2]};
+        return Vec<T, COL-1>{matrix._mRC[3][0], matrix._mRC[3][1], matrix._mRC[3][2]};
     }
 
     template <typename T, std::size_t R, std::size_t C>
@@ -870,17 +870,17 @@ namespace GLaDOS {
         Mat<T, ROW, COL> components = Mat<T, ROW, COL>::normalizeComponents(matrix);
 
         // return to degree of vec
-        return Vec<T, COL-1>{Math::toDegrees(Rad{Math::atan2(components._m44[1][2], components._m44[2][2])}).get(),
-                             Math::toDegrees(Rad{-Math::sin(components._m44[0][2])}).get(),
-                             Math::toDegrees(Rad{Math::atan2(components._m44[0][1], components._m44[0][0])}).get()};
+        return Vec<T, COL-1>{Math::toDegrees(Rad{Math::atan2(components._mRC[1][2], components._mRC[2][2])}).get(),
+                             Math::toDegrees(Rad{-Math::sin(components._mRC[0][2])}).get(),
+                             Math::toDegrees(Rad{Math::atan2(components._mRC[0][1], components._mRC[0][0])}).get()};
     }
 
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
     std::enable_if_t<is_real_v<T>, Vec<T, COL-1>> Mat<T, R, C>::decomposeScale(const Mat<T, ROW, COL>& matrix) {
-        T first = Vec<T, COL-1>(matrix._m44[0][0], matrix._m44[0][1], matrix._m44[0][2]).length();
-        T second = Vec<T, COL-1>(matrix._m44[1][0], matrix._m44[1][1], matrix._m44[1][2]).length();
-        T third = Vec<T, COL-1>(matrix._m44[2][0], matrix._m44[2][1], matrix._m44[2][2]).length();
+        T first = Vec<T, COL-1>(matrix._mRC[0][0], matrix._mRC[0][1], matrix._mRC[0][2]).length();
+        T second = Vec<T, COL-1>(matrix._mRC[1][0], matrix._mRC[1][1], matrix._mRC[1][2]).length();
+        T third = Vec<T, COL-1>(matrix._mRC[2][0], matrix._mRC[2][1], matrix._mRC[2][2]).length();
 
         return Vec<T, COL-1>{first, second, third};
     }
@@ -911,7 +911,7 @@ namespace GLaDOS {
 
         for (unsigned int r = 0; r < R; r++) {
             for (unsigned int c = 0; c < C; c++) {
-                swap(first._m44[r][c], second._m44[r][c]);
+                swap(first._mRC[r][c], second._mRC[r][c]);
             }
         }
     }

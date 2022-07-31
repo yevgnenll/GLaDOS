@@ -245,13 +245,13 @@ namespace GLaDOS {
         // As like as two peas of Delta T, it is exactly the same as T.
         // Moreover, the copy function is used here, not the Cast function, because for T of quaternion type
         // The Cast function will normalize, and here is the tangent, so normalization is not required
-        memcpy(&slope1, mKeyFrames[currentKeyFrameIndex].outTangent, size);
+        std::memcpy(&slope1, mKeyFrames[currentKeyFrameIndex].outTangent, size);
         slope1 = slope1 * keyFrameDelta;
 
         T point2 = cast(mKeyFrames[nextKeyFrameIndex].value);
         T slope2;
         // Note: the In tangent of the right key frame is taken here, and the Out tangent is not used
-        memcpy(&slope2, mKeyFrames[nextKeyFrameIndex].inTangent, size);
+        std::memcpy(&slope2, mKeyFrames[nextKeyFrameIndex].inTangent, size);
         slope2 = slope2 * keyFrameDelta;
 
         return hermite(sampleTime, point1, slope1, point2, slope2);

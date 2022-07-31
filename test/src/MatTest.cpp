@@ -106,8 +106,8 @@ TEST_CASE("Mat unit tests", "[Matrix]") {
         Mat<real, 1, 2> m9{1.f, 1.f};
         Mat<real, 2, 2> result4 = m7 * m8 * m9;
         REQUIRE(result4.dimension() == 4);
-        REQUIRE(Math::equal(result4._m16[0], 11.f));
-        REQUIRE(Math::equal(result4._m16[2], 9.f));
+        REQUIRE(Math::equal(result4._mRxC[0], 11.f));
+        REQUIRE(Math::equal(result4._mRxC[2], 9.f));
     }
 
     SECTION("matrix addition, subtraction test") {
@@ -226,14 +226,37 @@ TEST_CASE("Mat unit tests", "[Matrix]") {
         Mat<real, 999, 999> m1;
         Mat<real, 999, 999> m2;
         REQUIRE(m1 == m2);
-        m1._m16[997] = 1.f;
+        m1._mRxC[997] = 1.f;
         REQUIRE(m1 != m2);
     }
 
     SECTION("multiply with Vec") {
-//        Mat<real, 4, 4> m1;
-//        Vec<real, 4> v1{1,2,3,4};
-//        REQUIRE((v1 * m1) == Vec<real, 4>{1,2,3,4});
+        Mat<real, 2, 2> m1{1.f, 2.f,
+                           4.f, 5.f};
+        Vec<real, 2> v1{11, 11};
+        REQUIRE((v1 * m1) == Vec<real, 2>{55, 77});
+
+        Mat<real, 3, 3> m2{1.f, 2.f, 3.f,
+                           4.f, 5.f, 6.f,
+                           7.f, 8.f, 8.f};
+        Vec<real, 3> v2{1, 1, 1};
+        REQUIRE((v2 * m2) == Vec<real, 3>{12, 15, 17});
+
+        Mat<real, 4, 4> m3;
+        Vec<real, 4> v3{1,2,3,4};
+        REQUIRE((v3 * m3) == Vec<real, 4>{1,2,3,4});
+
+        Mat<real, 9, 2> m4{1.f, 2.f,
+                           3.f, 4.f,
+                           5.f, 6.f,
+                           7.f, 8.f,
+                           9.f, 10.f,
+                           11.f, 12.f,
+                           13.f, 14.f,
+                           15.f, 16.f,
+                           17.f, 18.f};
+        Vec<real, 9> v4{1.f, 2.f, 3.f, 4.f, 5.f, 6.f, 7.f, 8.f, 9.f};
+        REQUIRE((v4 * m4) == Vec<real, 2>{525,570});
     }
 
     SECTION("matrix diagonalize test") {
