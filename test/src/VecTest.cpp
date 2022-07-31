@@ -225,6 +225,44 @@ TEST_CASE("Vec unit tests", "[Vector]") {
         REQUIRE(Vec<real, 4>{0, 0, 0, 0} == Vec<real, 4>::zero);
     }
 
+    SECTION("Vec length and distance test") {
+        Vec<real, 2> v1{1.f, 2.f};
+        REQUIRE(Math::equal(v1.length(), Math::sqrt(5)));
+        REQUIRE(Math::equal(v1.squaredLength(), real(5)));
+
+        Vec<real, 3> v2{1.f, 2.f, 3.f};
+        REQUIRE(Math::equal(v2.length(), Math::sqrt(14)));
+        REQUIRE(Math::equal(v2.squaredLength(), real(14)));
+
+        Vec<real, 4> v3{1.f, 2.f, 3.f, 4.f};
+        REQUIRE(Math::equal(v3.length(), Math::sqrt(30)));
+        REQUIRE(Math::equal(v3.squaredLength(), real(30)));
+
+        Vec<real, 5> v4{1.f, 2.f, 3.f, 4.f, 5.f};
+        REQUIRE(Math::equal(v4.length(), Math::sqrt(55)));
+        REQUIRE(Math::equal(v4.squaredLength(), real(55)));
+
+        Vec<real, 2> v5{7, 4};
+        Vec<real, 2> v6{17, 6};
+        REQUIRE(Math::equal(v5.distance(v6), Math::sqrt(104)));
+        REQUIRE(Math::equal(v5.distanceSquare(v6), real(104)));
+
+        Vec<real, 3> v7{7, 4, 3};
+        Vec<real, 3> v8{17, 6, 2};
+        REQUIRE(Math::equal(v7.distance(v8), Math::sqrt(105)));
+        REQUIRE(Math::equal(v7.distanceSquare(v8), real(105)));
+
+        Vec<real, 4> v9{7, 4, 3, 2};
+        Vec<real, 4> v10{17, 6, 2, 1};
+        REQUIRE(Math::equal(v9.distance(v10), Math::sqrt(106)));
+        REQUIRE(Math::equal(v9.distanceSquare(v10), real(106)));
+
+        Vec<real, 5> v11{7.f, 4.f, 3.f, 2.f, 99.f};
+        Vec<real, 5> v12{17.f, 6.f, 2.f, 1.f, 97.f};
+        REQUIRE(Math::equal(v11.distance(v12), Math::sqrt(110)));
+        REQUIRE(Math::equal(v11.distanceSquare(v12), real(110)));
+    }
+
     SECTION("Vec angle between two normalized vector test") {
     }
 

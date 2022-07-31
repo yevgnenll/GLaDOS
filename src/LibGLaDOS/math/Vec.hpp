@@ -36,6 +36,11 @@ namespace GLaDOS {
         template<std::size_t ROW, std::size_t COL, typename = typename std::enable_if_t<N == ROW>>
         Vec<T, COL> operator*(const Mat<T, ROW, COL>& matrix) const;
 
+        real length() const;
+        real squaredLength() const;
+        real distance(const Vec<T, N>& other) const;
+        real distanceSquare(const Vec<T, N>& other) const;
+
         Vec<T, N>& makeNegate();
         static Vec<T, N> negate(const Vec<T, N>& v);
         static T dot(const Vec<T, N>& a, const Vec<T, N>& b);
@@ -180,6 +185,26 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t N>
+    real Vec<T, N>::length() const {
+        return Math::sqrt(squaredLength());
+    }
+
+    template <typename T, std::size_t N>
+    real Vec<T, N>::squaredLength() const {
+        return static_cast<real>(Vec<T, N>::dot(*this, *this));
+    }
+
+    template <typename T, std::size_t N>
+    real Vec<T, N>::distance(const Vec<T, N>& other) const {
+        return (*this - other).length();
+    }
+
+    template <typename T, std::size_t N>
+    real Vec<T, N>::distanceSquare(const Vec<T, N>& other) const {
+        return (*this - other).squaredLength();
+    }
+
+    template <typename T, std::size_t N>
     Vec<T, N>& Vec<T, N>::makeNegate() {
         for (unsigned int i = 0; i < N; i++) {
             v[i] = -v[i];
@@ -241,6 +266,11 @@ namespace GLaDOS {
         Vec<T, 2>& operator/=(const T& scalar);
         template<std::size_t ROW, std::size_t COL, typename = typename std::enable_if_t<2 == ROW>>
         Vec<T, COL> operator*(const Mat<T, ROW, COL>& matrix) const;
+
+        real length() const;
+        real squaredLength() const;
+        real distance(const Vec<T, 2>& other) const;
+        real distanceSquare(const Vec<T, 2>& other) const;
 
         Vec<T, 2>& makeNegate();
         static Vec<T, 2> negate(const Vec<T, 2>& v);
@@ -373,6 +403,26 @@ namespace GLaDOS {
     }
 
     template <typename T>
+    real Vec<T, 2>::length() const {
+        return Math::sqrt(squaredLength());
+    }
+
+    template <typename T>
+    real Vec<T, 2>::squaredLength() const {
+        return static_cast<real>(Vec<T, 2>::dot(*this, *this));
+    }
+
+    template <typename T>
+    real Vec<T, 2>::distance(const Vec<T, 2>& other) const {
+        return (*this - other).length();
+    }
+
+    template <typename T>
+    real Vec<T, 2>::distanceSquare(const Vec<T, 2>& other) const {
+        return (*this - other).squaredLength();
+    }
+
+    template <typename T>
     Vec<T, 2>& Vec<T, 2>::makeNegate() {
         for (unsigned int i = 0; i < 2; i++) {
             v[i] = -v[i];
@@ -438,6 +488,11 @@ namespace GLaDOS {
         Vec<T, 3>& operator/=(const T& scalar);
         template<std::size_t ROW, std::size_t COL, typename = typename std::enable_if_t<3 == ROW>>
         Vec<T, COL> operator*(const Mat<T, ROW, COL>& matrix) const;
+
+        real length() const;
+        real squaredLength() const;
+        real distance(const Vec<T, 3>& other) const;
+        real distanceSquare(const Vec<T, 3>& other) const;
 
         Vec<T, 3>& makeNegate();
         static Vec<T, 3> negate(const Vec<T, 3>& v);
@@ -614,6 +669,26 @@ namespace GLaDOS {
     }
 
     template <typename T>
+    real Vec<T, 3>::length() const {
+        return Math::sqrt(squaredLength());
+    }
+
+    template <typename T>
+    real Vec<T, 3>::squaredLength() const {
+        return static_cast<real>(Vec<T, 3>::dot(*this, *this));
+    }
+
+    template <typename T>
+    real Vec<T, 3>::distance(const Vec<T, 3>& other) const {
+        return (*this - other).length();
+    }
+
+    template <typename T>
+    real Vec<T, 3>::distanceSquare(const Vec<T, 3>& other) const {
+        return (*this - other).squaredLength();
+    }
+
+    template <typename T>
     Vec<T, 3>& Vec<T, 3>::makeNegate() {
         for (unsigned int i = 0; i < 3; i++) {
             v[i] = -v[i];
@@ -688,6 +763,11 @@ namespace GLaDOS {
         Vec<T, 4>& operator/=(const T& scalar);
         template<std::size_t ROW, std::size_t COL, typename = typename std::enable_if_t<4 == ROW>>
         Vec<T, COL> operator*(const Mat<T, ROW, COL>& matrix) const;
+
+        real length() const;
+        real squaredLength() const;
+        real distance(const Vec<T, 4>& other) const;
+        real distanceSquare(const Vec<T, 4>& other) const;
 
         Vec<T, 4>& makeNegate();
         static Vec<T, 4> negate(const Vec<T, 4>& v);
@@ -827,6 +907,26 @@ namespace GLaDOS {
             result[col] = temp;
         }
         return result;
+    }
+
+    template <typename T>
+    real Vec<T, 4>::length() const {
+        return Math::sqrt(squaredLength());
+    }
+
+    template <typename T>
+    real Vec<T, 4>::squaredLength() const {
+        return static_cast<real>(Vec<T, 4>::dot(*this, *this));
+    }
+
+    template <typename T>
+    real Vec<T, 4>::distance(const Vec<T, 4>& other) const {
+        return (*this - other).length();
+    }
+
+    template <typename T>
+    real Vec<T, 4>::distanceSquare(const Vec<T, 4>& other) const {
+        return (*this - other).squaredLength();
     }
 
     template <typename T>
