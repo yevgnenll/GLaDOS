@@ -152,6 +152,79 @@ TEST_CASE("Vec unit tests", "[Vector]") {
         REQUIRE(Vec<real, 5>::dot(v7, v8) == 460.f);
     }
 
+    SECTION("Vec swizzle test") {
+        Vec<real, 2> v1{1.f, 2.f};
+        REQUIRE(v1.xy == Vec<real, 2>{1.f, 2.f});
+        REQUIRE(v1.yx == Vec<real, 2>{2.f, 1.f});
+        REQUIRE(v1.xx == Vec<real, 2>{1.f, 1.f});
+        REQUIRE(v1.yy == Vec<real, 2>{2.f, 2.f});
+
+        Vec<real, 3> v2{1.f, 2.f, 3.f};
+        REQUIRE(v2.xx == Vec<real, 2>{1.f, 1.f});
+        REQUIRE(v2.xy == Vec<real, 2>{1.f, 2.f});
+        REQUIRE(v2.xz == Vec<real, 2>{1.f, 3.f});
+        REQUIRE(v2.yx == Vec<real, 2>{2.f, 1.f});
+        REQUIRE(v2.yy == Vec<real, 2>{2.f, 2.f});
+        REQUIRE(v2.yz == Vec<real, 2>{2.f, 3.f});
+        REQUIRE(v2.zx == Vec<real, 2>{3.f, 1.f});
+        REQUIRE(v2.zy == Vec<real, 2>{3.f, 2.f});
+        REQUIRE(v2.zz == Vec<real, 2>{3.f, 3.f});
+        REQUIRE(v2.xxx == Vec<real, 3>{1.f, 1.f, 1.f});
+        REQUIRE(v2.xxy == Vec<real, 3>{1.f, 1.f, 2.f});
+        REQUIRE(v2.xxz == Vec<real, 3>{1.f, 1.f, 3.f});
+        REQUIRE(v2.xyx == Vec<real, 3>{1.f, 2.f, 1.f});
+        REQUIRE(v2.xyy == Vec<real, 3>{1.f, 2.f, 2.f});
+        REQUIRE(v2.xyz == Vec<real, 3>{1.f, 2.f, 3.f});
+        REQUIRE(v2.xzx == Vec<real, 3>{1.f, 3.f, 1.f});
+        REQUIRE(v2.xzy == Vec<real, 3>{1.f, 3.f, 2.f});
+        REQUIRE(v2.xzz == Vec<real, 3>{1.f, 3.f, 3.f});
+        REQUIRE(v2.yxx == Vec<real, 3>{2.f, 1.f, 1.f});
+        REQUIRE(v2.yxy == Vec<real, 3>{2.f, 1.f, 2.f});
+        REQUIRE(v2.yxz == Vec<real, 3>{2.f, 1.f, 3.f});
+        REQUIRE(v2.yyx == Vec<real, 3>{2.f, 2.f, 1.f});
+        REQUIRE(v2.yyy == Vec<real, 3>{2.f, 2.f, 2.f});
+        REQUIRE(v2.yyz == Vec<real, 3>{2.f, 2.f, 3.f});
+        REQUIRE(v2.yzx == Vec<real, 3>{2.f, 3.f, 1.f});
+        REQUIRE(v2.yzy == Vec<real, 3>{2.f, 3.f, 2.f});
+        REQUIRE(v2.yzz == Vec<real, 3>{2.f, 3.f, 3.f});
+        REQUIRE(v2.zxx == Vec<real, 3>{3.f, 1.f, 1.f});
+        REQUIRE(v2.zxy == Vec<real, 3>{3.f, 1.f, 2.f});
+        REQUIRE(v2.zxz == Vec<real, 3>{3.f, 1.f, 3.f});
+        REQUIRE(v2.zyx == Vec<real, 3>{3.f, 2.f, 1.f});
+        REQUIRE(v2.zyy == Vec<real, 3>{3.f, 2.f, 2.f});
+        REQUIRE(v2.zyz == Vec<real, 3>{3.f, 2.f, 3.f});
+        REQUIRE(v2.zzx == Vec<real, 3>{3.f, 3.f, 1.f});
+        REQUIRE(v2.zzy == Vec<real, 3>{3.f, 3.f, 2.f});
+        REQUIRE(v2.zzz == Vec<real, 3>{3.f, 3.f, 3.f});
+    }
+
+    SECTION("Vec constant specialization test") {
+        REQUIRE(Vec<real, 2>{0, 1} == Vec<real, 2>::up);
+        REQUIRE(Vec<real, 2>{0, -1} == Vec<real, 2>::down);
+        REQUIRE(Vec<real, 2>{-1, 0} == Vec<real, 2>::left);
+        REQUIRE(Vec<real, 2>{1, 0} == Vec<real, 2>::right);
+        REQUIRE(Vec<real, 2>{1, 1} == Vec<real, 2>::one);
+        REQUIRE(Vec<real, 2>{0, 0} == Vec<real, 2>::zero);
+
+        REQUIRE(Vec<real, 3>{0, 1, 0} == Vec<real, 3>::up);
+        REQUIRE(Vec<real, 3>{0, -1, 0} == Vec<real, 3>::down);
+        REQUIRE(Vec<real, 3>{-1, 0, 0} == Vec<real, 3>::left);
+        REQUIRE(Vec<real, 3>{1, 0, 0} == Vec<real, 3>::right);
+        REQUIRE(Vec<real, 3>{0, 0, -1} == Vec<real, 3>::forward);
+        REQUIRE(Vec<real, 3>{0, 0, 1} == Vec<real, 3>::backward);
+        REQUIRE(Vec<real, 3>{1, 1, 1} == Vec<real, 3>::one);
+        REQUIRE(Vec<real, 3>{0, 0, 0} == Vec<real, 3>::zero);
+
+        REQUIRE(Vec<real, 4>{0, 1, 0, 0} == Vec<real, 4>::up);
+        REQUIRE(Vec<real, 4>{0, -1, 0, 0} == Vec<real, 4>::down);
+        REQUIRE(Vec<real, 4>{-1, 0, 0, 0} == Vec<real, 4>::left);
+        REQUIRE(Vec<real, 4>{1, 0, 0, 0} == Vec<real, 4>::right);
+        REQUIRE(Vec<real, 4>{0, 0, -1, 0} == Vec<real, 4>::forward);
+        REQUIRE(Vec<real, 4>{0, 0, 1, 0} == Vec<real, 4>::backward);
+        REQUIRE(Vec<real, 4>{1, 1, 1, 1} == Vec<real, 4>::one);
+        REQUIRE(Vec<real, 4>{0, 0, 0, 0} == Vec<real, 4>::zero);
+    }
+
     SECTION("Vec angle between two normalized vector test") {
     }
 

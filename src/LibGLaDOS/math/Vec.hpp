@@ -255,6 +255,7 @@ namespace GLaDOS {
             Vec2Swizzle<T, 1, 0> yx;
             Vec2Swizzle<T, 1, 1> yy;
         };
+        static const Vec<T, 2> up, down, left, right, one, zero;
 
       private:
         static void swap(Vec<T, 2>& first, Vec<T, 2>& second);
@@ -400,6 +401,19 @@ namespace GLaDOS {
     }
 
     template <typename T>
+    const Vec<T, 2> Vec<T, 2>::up = Vec<T, 2>{T(0), T(1)};
+    template <typename T>
+    const Vec<T, 2> Vec<T, 2>::down = Vec<T, 2>{T(0), T(-1)};
+    template <typename T>
+    const Vec<T, 2> Vec<T, 2>::left = Vec<T, 2>{T(-1), T(0)};
+    template <typename T>
+    const Vec<T, 2> Vec<T, 2>::right = Vec<T, 2>{T(1), T(0)};
+    template <typename T>
+    const Vec<T, 2> Vec<T, 2>::one = Vec<T, 2>{T(1), T(1)};
+    template <typename T>
+    const Vec<T, 2> Vec<T, 2>::zero = Vec<T, 2>{T(0), T(0)};
+
+    template <typename T>
     class Vec<T, 3> {
       public:
         Vec();
@@ -476,6 +490,7 @@ namespace GLaDOS {
             Vec3Swizzle<T, 2, 2, 1> zzy;
             Vec3Swizzle<T, 2, 2, 2> zzz;
         };
+        static const Vec<T, 3> up, down, left, right, forward, backward, one, zero;
 
       private:
         static void swap(Vec<T, 3>& first, Vec<T, 3>& second);
@@ -632,6 +647,23 @@ namespace GLaDOS {
     }
 
     template <typename T>
+    const Vec<T, 3> Vec<T, 3>::up = Vec<T, 3>{T(0), T(1), T(0)};
+    template <typename T>
+    const Vec<T, 3> Vec<T, 3>::down = Vec<T, 3>{T(0), T(-1), T(0)};
+    template <typename T>
+    const Vec<T, 3> Vec<T, 3>::left = Vec<T, 3>{T(-1), T(0), T(0)};
+    template <typename T>
+    const Vec<T, 3> Vec<T, 3>::right = Vec<T, 3>{T(1), T(0), T(0)};
+    template <typename T>
+    const Vec<T, 3> Vec<T, 3>::forward = Vec<T, 3>{T(0), T(0), T(-1)};
+    template <typename T>
+    const Vec<T, 3> Vec<T, 3>::backward = Vec<T, 3>{T(0), T(0), T(1)};
+    template <typename T>
+    const Vec<T, 3> Vec<T, 3>::one = Vec<T, 3>{T(1), T(1), T(1)};
+    template <typename T>
+    const Vec<T, 3> Vec<T, 3>::zero = Vec<T, 3>{T(0), T(0), T(0)};
+
+    template <typename T>
     class Vec<T, 4> {
       public:
         Vec();
@@ -668,6 +700,7 @@ namespace GLaDOS {
             ScalarSwizzle<T, 2> z, b, p;
             ScalarSwizzle<T, 3> w, a, q;
         };
+        static const Vec<T, 4> up, down, left, right, forward, backward, one, zero;
 
       private:
         static void swap(Vec<T, 4>& first, Vec<T, 4>& second);
@@ -823,6 +856,23 @@ namespace GLaDOS {
             swap(first.v[i], second.v[i]);
         }
     }
+
+    template <typename T>
+    const Vec<T, 4> Vec<T, 4>::up = Vec<T, 4>{T(0), T(1), T(0), T(0)};
+    template <typename T>
+    const Vec<T, 4> Vec<T, 4>::down = Vec<T, 4>{T(0), T(-1), T(0), T(0)};
+    template <typename T>
+    const Vec<T, 4> Vec<T, 4>::left = Vec<T, 4>{T(-1), T(0), T(0), T(0)};
+    template <typename T>
+    const Vec<T, 4> Vec<T, 4>::right = Vec<T, 4>{T(1), T(0), T(0), T(0)};
+    template <typename T>
+    const Vec<T, 4> Vec<T, 4>::forward = Vec<T, 4>{T(0), T(0), T(-1), T(0)};
+    template <typename T>
+    const Vec<T, 4> Vec<T, 4>::backward = Vec<T, 4>{T(0), T(0), T(1), T(0)};
+    template <typename T>
+    const Vec<T, 4> Vec<T, 4>::one = Vec<T, 4>{T(1), T(1), T(1), T(1)};
+    template <typename T>
+    const Vec<T, 4> Vec<T, 4>::zero = Vec<T, 4>{T(0), T(0), T(0), T(0)};
 
     template <typename T>
     using Vector2 = Vec<T, 2>;
