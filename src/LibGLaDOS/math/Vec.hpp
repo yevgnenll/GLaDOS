@@ -7,6 +7,9 @@
 #include "UVec.hpp"
 
 namespace GLaDOS {
+    /*
+     * GLaDOS's Vec<T, N> class represents Row major N dimensional vector.
+     */
     template <typename T, std::size_t R, std::size_t C>
     class Mat;
     template <typename T, std::size_t N>
@@ -47,10 +50,21 @@ namespace GLaDOS {
         static T dot(const Vec<T, N>& a, const Vec<T, N>& b);
         static Vec<T, N> cross(const Vec<T, N>& a, const Vec<T, N>& b);
         static UVec<T, N> normalize(const Vec<T, N>& v);
+        static Vec<T, N> project(const Vec<T, N>& v, const UVec<T, N>& onNormal);
+        static Vec<T, N> reject(const Vec<T, N>& v, const UVec<T, N>& onNormal);
+        static Deg angleBetween(const UVec<T, N>& from, const UVec<T, N>& to);
+        static Deg angleBetween(const Vec<T, N>& from, const Vec<T, N>& to);
+        static Vec<T, N> perpendicular(const Vec<T, N>& v);
+        static Vec<T, N> inverse(const Vec<T, N>& v);
+        static Vec<T, N> lerp(const Vec<T, N>& a, const Vec<T, N>& b, T t);
+        static Vec<T, N> slerp(const Vec<T, N>& a, const Vec<T, N>& b, T t); // spherical linear interpolation
+        static UVec<T, N> nlerp(const Vec<T, N>& a, const Vec<T, N>& b, T t); // normalize linear interpolation (nlerp approximates slerp)
+        static Vec<T, N> smoothDamp(const Vec<T, N>& current, const Vec<T, N>& target, Vec<T, N>& currentVelocity, T smoothTime, T maxSpeed);
 
         union {
             T v[N];
         };
+        static const Vec<T, N> one, zero;
 
       private:
         static void swap(Vec<T, N>& first, Vec<T, N>& second);
@@ -244,6 +258,35 @@ namespace GLaDOS {
     }
 
     template <typename T, std::size_t N>
+    Vec<T, N> Vec<T, N>::project(const Vec<T, N>& v, const UVec<T, N>& onNormal) {
+        // orthogonal projection
+        real lenSquared = (*onNormal).squaredLength();
+        if (lenSquared < Math::realEpsilon) {
+            return Vec<T, N>::zero;
+        }
+        return *onNormal * Vec<T, N>::dot(v, onNormal) / lenSquared;
+    }
+
+    template <typename T, std::size_t N>
+    Vec<T, N> Vec<T, N>::reject(const Vec<T, N>& v, const UVec<T, N>& onNormal) {
+        // find perpendicular vector to orthogonal projection with v
+        return v - Vec<T, N>::project(v, onNormal);
+    }
+
+    template <typename T, std::size_t N>
+    Deg Vec<T, N>::angleBetween(const UVec<T, N>& from, const UVec<T, N>& to) {
+        real dot = static_cast<real>(Math::clamp(Vec<T, N>::dot(from, to), T(-1), T(1)));
+        return Math::toDegrees(Rad{Math::acos(dot)});
+    }
+
+    template <typename T, std::size_t N>
+    Deg Vec<T, N>::angleBetween(const Vec<T, N>& from, const Vec<T, N>& to) {
+        real lengthInv = 1 / (from.length() * to.length());
+        real dot = static_cast<real>(Math::clamp(Vec<T, N>::dot(from, to), T(-1), T(1)));
+        return Math::toDegrees(Rad{Math::acos(dot * lengthInv)});
+    }
+
+    template <typename T, std::size_t N>
     void Vec<T, N>::swap(Vec<T, N>& first, Vec<T, N>& second) {
         using std::swap;
 
@@ -251,6 +294,11 @@ namespace GLaDOS {
             swap(first.v[i], second.v[i]);
         }
     }
+
+    template <typename T, std::size_t N>
+    const Vec<T, N> Vec<T, N>::one = Vec<T, N>{T(1)};
+    template <typename T, std::size_t N>
+    const Vec<T, N> Vec<T, N>::zero = Vec<T, N>{T(0)};
 
     template <typename T>
     class Vec<T, 2> {
@@ -287,6 +335,10 @@ namespace GLaDOS {
         static Vec<T, 2> negate(const Vec<T, 2>& v);
         static T dot(const Vec<T, 2>& a, const Vec<T, 2>& b);
         static UVec<T, 2> normalize(const Vec<T, 2>& v);
+        static Vec<T, 2> project(const Vec<T, 2>& v, const UVec<T, 2>& onNormal);
+        static Vec<T, 2> reject(const Vec<T, 2>& v, const UVec<T, 2>& onNormal);
+        static Deg angleBetween(const UVec<T, 2>& from, const UVec<T, 2>& to);
+        static Deg angleBetween(const Vec<T, 2>& from, const Vec<T, 2>& to);
 
         union {
             T v[2];
@@ -463,6 +515,35 @@ namespace GLaDOS {
     }
 
     template <typename T>
+    Vec<T, 2> Vec<T, 2>::project(const Vec<T, 2>& v, const UVec<T, 2>& onNormal) {
+        // orthogonal projection
+        real lenSquared = (*onNormal).squaredLength();
+        if (lenSquared < Math::realEpsilon) {
+            return Vec<T, 2>::zero;
+        }
+        return *onNormal * Vec<T, 2>::dot(v, onNormal) / lenSquared;
+    }
+
+    template <typename T>
+    Vec<T, 2> Vec<T, 2>::reject(const Vec<T, 2>& v, const UVec<T, 2>& onNormal) {
+        // find perpendicular vector to orthogonal projection with v
+        return v - Vec<T, 2>::project(v, onNormal);
+    }
+
+    template <typename T>
+    Deg Vec<T, 2>::angleBetween(const UVec<T, 2>& from, const UVec<T, 2>& to) {
+        real dot = static_cast<real>(Math::clamp(Vec<T, 2>::dot(from, to), T(-1), T(1)));
+        return Math::toDegrees(Rad{Math::acos(dot)});
+    }
+
+    template <typename T>
+    Deg Vec<T, 2>::angleBetween(const Vec<T, 2>& from, const Vec<T, 2>& to) {
+        real lengthInv = 1 / (from.length() * to.length());
+        real dot = static_cast<real>(Math::clamp(Vec<T, 2>::dot(from, to), T(-1), T(1)));
+        return Math::toDegrees(Rad{Math::acos(dot * lengthInv)});
+    }
+
+    template <typename T>
     void Vec<T, 2>::swap(Vec<T, 2>& first, Vec<T, 2>& second) {
         using std::swap;
 
@@ -520,6 +601,10 @@ namespace GLaDOS {
         static T dot(const Vec<T, 3>& a, const Vec<T, 3>& b);
         static Vec<T, 3> cross(const Vec<T, 3>& a, const Vec<T, 3>& b);
         static UVec<T, 3> normalize(const Vec<T, 3>& v);
+        static Vec<T, 3> project(const Vec<T, 3>& v, const UVec<T, 3>& onNormal);
+        static Vec<T, 3> reject(const Vec<T, 3>& v, const UVec<T, 3>& onNormal);
+        static Deg angleBetween(const UVec<T, 3>& from, const UVec<T, 3>& to);
+        static Deg angleBetween(const Vec<T, 3>& from, const Vec<T, 3>& to);
 
         union {
             T v[3];
@@ -744,6 +829,35 @@ namespace GLaDOS {
     }
 
     template <typename T>
+    Vec<T, 3> Vec<T, 3>::project(const Vec<T, 3>& v, const UVec<T, 3>& onNormal) {
+        // orthogonal projection
+        real lenSquared = (*onNormal).squaredLength();
+        if (lenSquared < Math::realEpsilon) {
+            return Vec<T, 3>::zero;
+        }
+        return *onNormal * Vec<T, 3>::dot(v, onNormal) / lenSquared;
+    }
+
+    template <typename T>
+    Vec<T, 3> Vec<T, 3>::reject(const Vec<T, 3>& v, const UVec<T, 3>& onNormal) {
+        // find perpendicular vector to orthogonal projection with v
+        return v - Vec<T, 3>::project(v, onNormal);
+    }
+
+    template <typename T>
+    Deg Vec<T, 3>::angleBetween(const UVec<T, 3>& from, const UVec<T, 3>& to) {
+        real dot = static_cast<real>(Math::clamp(Vec<T, 3>::dot(from, to), T(-1), T(1)));
+        return Math::toDegrees(Rad{Math::acos(dot)});
+    }
+
+    template <typename T>
+    Deg Vec<T, 3>::angleBetween(const Vec<T, 3>& from, const Vec<T, 3>& to) {
+        real lengthInv = 1 / (from.length() * to.length());
+        real dot = static_cast<real>(Math::clamp(Vec<T, 3>::dot(from, to), T(-1), T(1)));
+        return Math::toDegrees(Rad{Math::acos(dot * lengthInv)});
+    }
+
+    template <typename T>
     void Vec<T, 3>::swap(Vec<T, 3>& first, Vec<T, 3>& second) {
         using std::swap;
 
@@ -804,6 +918,10 @@ namespace GLaDOS {
         static Vec<T, 4> negate(const Vec<T, 4>& v);
         static T dot(const Vec<T, 4>& a, const Vec<T, 4>& b);
         static UVec<T, 4> normalize(const Vec<T, 4>& v);
+        static Vec<T, 4> project(const Vec<T, 4>& v, const UVec<T, 4>& onNormal);
+        static Vec<T, 4> reject(const Vec<T, 4>& v, const UVec<T, 4>& onNormal);
+        static Deg angleBetween(const UVec<T, 4>& from, const UVec<T, 4>& to);
+        static Deg angleBetween(const Vec<T, 4>& from, const Vec<T, 4>& to);
 
         union {
             T v[4];
@@ -987,6 +1105,35 @@ namespace GLaDOS {
             return UVec<T, 4>{v};
         }
         return UVec<T, 4>{v / len};
+    }
+
+    template <typename T>
+    Vec<T, 4> Vec<T, 4>::project(const Vec<T, 4>& v, const UVec<T, 4>& onNormal) {
+        // orthogonal projection
+        real lenSquared = (*onNormal).squaredLength();
+        if (lenSquared < Math::realEpsilon) {
+            return Vec<T, 4>::zero;
+        }
+        return *onNormal * Vec<T, 4>::dot(v, onNormal) / lenSquared;
+    }
+
+    template <typename T>
+    Vec<T, 4> Vec<T, 4>::reject(const Vec<T, 4>& v, const UVec<T, 4>& onNormal) {
+        // find perpendicular vector to orthogonal projection with v
+        return v - Vec<T, 4>::project(v, onNormal);
+    }
+
+    template <typename T>
+    Deg Vec<T, 4>::angleBetween(const UVec<T, 4>& from, const UVec<T, 4>& to) {
+        real dot = static_cast<real>(Math::clamp(Vec<T, 4>::dot(from, to), T(-1), T(1)));
+        return Math::toDegrees(Rad{Math::acos(dot)});
+    }
+
+    template <typename T>
+    Deg Vec<T, 4>::angleBetween(const Vec<T, 4>& from, const Vec<T, 4>& to) {
+        real lengthInv = 1 / (from.length() * to.length());
+        real dot = static_cast<real>(Math::clamp(Vec<T, 4>::dot(from, to), T(-1), T(1)));
+        return Math::toDegrees(Rad{Math::acos(dot * lengthInv)});
     }
 
     template <typename T>

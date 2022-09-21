@@ -223,6 +223,9 @@ TEST_CASE("Vec unit tests", "[Vector]") {
         REQUIRE(Vec<real, 4>{0, 0, 1, 0} == Vec<real, 4>::backward);
         REQUIRE(Vec<real, 4>{1, 1, 1, 1} == Vec<real, 4>::one);
         REQUIRE(Vec<real, 4>{0, 0, 0, 0} == Vec<real, 4>::zero);
+
+        REQUIRE(Vec<real, 6>{1.f, 1.f, 1.f, 1.f, 1.f, 1.f} == Vec<real, 6>::one);
+        REQUIRE(Vec<real, 6>{0.f, 0.f, 0.f, 0.f, 0.f, 0.f} == Vec<real, 6>::zero);
     }
 
     SECTION("Vec length and distance test") {
@@ -267,28 +270,47 @@ TEST_CASE("Vec unit tests", "[Vector]") {
         REQUIRE(*Vec<real, 2>::normalize(Vec<real, 2>{3, -4}) == Vec<real, 2>{3 / 5.f, -4 / 5.f});
         REQUIRE(*Vec<real, 3>::normalize(Vec<real, 3>{3, -4, 2}) == Vec<real, 3>{3 / Math::sqrt(29), -4 / Math::sqrt(29), 2 / Math::sqrt(29)});
         REQUIRE(*Vec<real, 4>::normalize(Vec<real, 4>{3, -4, 2, 1}) == Vec<real, 4>{3 / Math::sqrt(30), -4 / Math::sqrt(30), 2 / Math::sqrt(30), 1 / Math::sqrt(30)});
-        REQUIRE(*Vec<real, 5>::normalize(Vec<real, 5>{3.f, -4.f, 2.f, 1.f, -3.f})
-                == Vec<real, 5>{3.f / Math::sqrt(39), -4.f / Math::sqrt(39), 2.f / Math::sqrt(39), 1.f / Math::sqrt(39), -3.f / Math::sqrt(39)});
+        REQUIRE(*Vec<real, 5>::normalize(Vec<real, 5>{3.f, -4.f, 2.f, 1.f, -3.f}) == Vec<real, 5>{3.f / Math::sqrt(39), -4.f / Math::sqrt(39), 2.f / Math::sqrt(39), 1.f / Math::sqrt(39), -3.f / Math::sqrt(39)});
     }
 
-    SECTION("Vec angle between two normalized vector test") {
+    SECTION("Vec projection & rejection test") {
+        Vec<real, 2> v1{1, 0};
+        Vec<real, 2> v2{-1, 4};
+        REQUIRE(Vec<real, 2>::project(v2, Vec<real, 2>::normalize(v1)) == Vec<real, 2>{-1.f, 0.f});
+        REQUIRE(Vec<real, 2>::reject(v2, Vec<real, 2>::normalize(v1)) == Vec<real, 2>{-1.f, 0.f});
+
+        Vec<real, 3> v3{1, 0, 3};
+        Vec<real, 3> v4{-1, 4, 2};
+        REQUIRE(Vec<real, 3>::project(v4, Vec<real, 3>::normalize(v3)) == Vec<real, 3>{0.5f, 0.f, 1.5f});
+        REQUIRE(Vec<real, 3>::reject(v4, Vec<real, 3>::normalize(v3)) == Vec<real, 3>{0.5f, 0.f, 1.5f});
+
+        Vec<real, 4> v5{3, 4, -3, 1};
+        Vec<real, 4> v6{2, 0, 6, 2};
+        REQUIRE(Vec<real, 4>::project(v6, Vec<real, 4>::normalize(v5)) == Vec<real, 4>{-6.f / 7.f, -8.f / 7.f, 6.f / 7.f, -2.f / 7.f});
+        REQUIRE(Vec<real, 4>::reject(v6, Vec<real, 4>::normalize(v5)) == Vec<real, 4>{-6.f / 7.f, -8.f / 7.f, 6.f / 7.f, -2.f / 7.f});
+
+        Vec<real, 5> v7{3.f, 4.f, -3.f, 1.f, 2.f};
+        Vec<real, 5> v8{2.f, 0.f, 6.f, 2.f, 3.f};
+        REQUIRE(Vec<real, 5>::project(v8, Vec<real, 5>::normalize(v7)) == Vec<real, 5>{-6.f / 7.f, -8.f / 7.f, 6.f / 7.f, -2.f / 7.f, -2.f / 7.f});
+        REQUIRE(Vec<real, 5>::reject(v8, Vec<real, 5>::normalize(v7)) == Vec<real, 5>{-6.f / 7.f, -8.f / 7.f, 6.f / 7.f, -2.f / 7.f, -2.f / 7.f});
     }
 
-    SECTION("Vec3 angle between two vector test") {
+    SECTION("Vec angle between two vector test") {
+
     }
 
-    SECTION("Vec2 angle between two normalized vector test") {
+    SECTION("Vec perpendicular test") {
+
     }
 
-    SECTION("Vec2 angle between two vector test") {
+    SECTION("Vec inverse test") {
+
     }
 
-    SECTION("Vec2 slerp test") {
+    SECTION("Vec lerp test") {
     }
 
-    SECTION("Vec2 slerp2 test") {
-    }
+    SECTION("Vec smoothdamp test") {
 
-    SECTION("Vec2 slerp3 test") {
     }
 }
