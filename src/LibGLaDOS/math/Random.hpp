@@ -16,25 +16,13 @@ namespace GLaDOS {
         static real nextReal(real from, real to);
         static int nextInt(int to);
         static int nextInt(int from, int to);
-        template <typename T>
-        static T next(T from, T to);
-
         static bool below(real percent);
         static bool above(real percent);
+
+      private:
+        static real internalNextReal(real from, real to);
+        static int internalNextInt(int from, int to);
     };
-
-    template <typename T>
-    T Random::next(T from, T to) {
-        if (from >= to) {
-            return from;
-        }
-
-        std::uniform_int_distribution<T> range(from, to);
-        std::random_device randomDevice;
-        std::mt19937 engine{randomDevice()};
-
-        return range(engine);
-    }
 }  // namespace GLaDOS
 
 #endif  // GLADOS_RANDOM_HPP
