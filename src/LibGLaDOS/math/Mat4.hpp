@@ -806,7 +806,6 @@ namespace GLaDOS {
         */
         Mat4<real> result;
 
-        static real zero = real(0.0);
         static real one = real(1.0);
         static real two = real(2.0);
 

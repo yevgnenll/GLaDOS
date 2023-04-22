@@ -33,7 +33,7 @@ namespace GLaDOS {
     }
 
     template <typename T>
-    void STLAllocator<T>::deallocate(pointer ptr, size_type count) {
+    void STLAllocator<T>::deallocate(pointer ptr, [[maybe_unused]] size_type count) {
         FREE(ptr);
     }
 

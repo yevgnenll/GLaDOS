@@ -427,9 +427,9 @@ namespace GLaDOS {
 
     template <typename T, std::size_t R, std::size_t C>
     Vec<T, C> Mat<T, R, C>::diagonal(const Mat<T, R, C>& other) {
-        const std::size_t dimension = Math::min(R, C);
-        Vec<T, dimension> result;
-        for (unsigned int c = 0; c < dimension; c++) {
+        const std::size_t dim = Math::min(R, C);
+        Vec<T, dim> result;
+        for (unsigned int c = 0; c < dim; c++) {
             result.v[c] = other._mRC[c][c];
         }
         return result;
@@ -511,24 +511,24 @@ namespace GLaDOS {
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
     Mat<T, ROW, COL> Mat<T, R, C>::inverse(const Mat<T, ROW, COL>& other) {
-        T determinant = Mat<T, ROW, COL>::determinant(other);
-        if (Math::equal(determinant, T(0))) {
+        T deter = Mat<T, ROW, COL>::determinant(other);
+        if (Math::equal(deter, T(0))) {
             throw std::logic_error("Matrix is singular.");
         }
-        determinant = T(1) / determinant;
+        deter = T(1) / deter;
 
-        return Mat<T, ROW, COL>::adjugate(other) * determinant;
+        return Mat<T, ROW, COL>::adjugate(other) * deter;
     }
 
     template <typename T, std::size_t R, std::size_t C>
     template <std::size_t ROW, std::size_t COL, typename>
     T Mat<T, R, C>::inverseDeterminant(const Mat<T, ROW, COL>& other) {
         // det(A-1) = 1 / det(A)
-        T determinant = Mat<T, ROW, COL>::determinant(other);
-        if (Math::equal(determinant, T(0))) {
+        T deter = Mat<T, ROW, COL>::determinant(other);
+        if (Math::equal(deter, T(0))) {
             throw std::logic_error("Determinant is zero.");
         }
-        return T(1) / determinant;
+        return T(1) / deter;
     }
 
     template <typename T, std::size_t R, std::size_t C>
@@ -548,9 +548,9 @@ namespace GLaDOS {
 
     template <typename T, std::size_t R, std::size_t C>
     T Mat<T, R, C>::trace(const Mat<T, R, C>& other) {
-        const std::size_t dimension = Math::min(R, C);
+        const std::size_t dim = Math::min(R, C);
         T result{T(0)};
-        for (unsigned int c = 0; c < dimension; c++) {
+        for (unsigned int c = 0; c < dim; c++) {
             result += other._mRC[c][c];
         }
         return result;
@@ -826,7 +826,6 @@ namespace GLaDOS {
         */
         Mat<T, ROW, COL> mat;
 
-        static T zero = T(0.0);
         static T one = T(1.0);
         static T two = T(2.0);
 

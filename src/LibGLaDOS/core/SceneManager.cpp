@@ -50,7 +50,7 @@ namespace GLaDOS {
         return false;
     }
 
-    bool SceneManager::loadScene(uint32_t buildIndex) {
+    bool SceneManager::loadScene([[maybe_unused]] uint32_t buildIndex) {
         // TODO
         return false;
     }

@@ -9,7 +9,7 @@ namespace GLaDOS {
         return mGameObject;
     }
 
-    MessageResult Component::handleMessage(Message& msg) {
+    MessageResult Component::handleMessage([[maybe_unused]] Message& msg) {
         return MessageResult::Ignored;
     }
 }  // namespace GLaDOS

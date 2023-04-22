@@ -189,12 +189,12 @@ namespace GLaDOS {
     }
 
     template <typename T>
-    std::enable_if_t<!std::is_floating_point_v<T>, bool> Math::equalUlps(const T& a, const T& b, int ulpsTolerance) {
+    std::enable_if_t<!std::is_floating_point_v<T>, bool> Math::equalUlps(const T& a, const T& b, [[maybe_unused]] int ulpsTolerance) {
         return a == b;
     }
 
     template <typename T>
-    std::enable_if_t<std::is_floating_point_v<T>, bool> Math::equalUlps(const T& a, const T& b, int ulpsTolerance) {
+    std::enable_if_t<std::is_floating_point_v<T>, bool> Math::equalUlps(const T& a, const T& b, [[maybe_unused]] int ulpsTolerance) {
         static T tolerance = std::numeric_limits<T>::epsilon();
         return compareTo(Real<T>(a), Real<T>(b), ulpsTolerance, tolerance) == 0;
     }
