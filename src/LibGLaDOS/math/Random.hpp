@@ -20,9 +20,37 @@ namespace GLaDOS {
         static bool above(real percent);
 
       private:
-        static real internalNextReal(real from, real to);
-        static int internalNextInt(int from, int to);
+        template <typename T>
+        static std::enable_if_t<std::is_floating_point_v<T>, T> next(T from, T to);
+        template <typename T>
+        static std::enable_if_t<!std::is_floating_point_v<T>, T> next(T from, T to);
     };
+
+    template <typename T>
+    std::enable_if_t<std::is_floating_point_v<T>, T> Random::next(T from, T to) {
+        if (from >= to) {
+            return from;
+        }
+
+        std::uniform_real_distribution<T> range(from, to);
+        std::random_device randomDevice;
+        std::mt19937 engine{randomDevice()};
+
+        return range(engine);
+    }
+
+    template <typename T>
+    std::enable_if_t<!std::is_floating_point_v<T>, T> Random::next(T from, T to) {
+        if (from >= to) {
+            return from;
+        }
+
+        std::uniform_int_distribution<T> range(from, to);
+        std::random_device randomDevice;
+        std::mt19937 engine{randomDevice()};
+
+        return range(engine);
+    }
 }  // namespace GLaDOS
 
 #endif  // GLADOS_RANDOM_HPP
