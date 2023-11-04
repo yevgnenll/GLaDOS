@@ -7,7 +7,7 @@
 
 namespace GLaDOS {
     template <typename T>
-    class STLAllocator : public std::allocator<T> {
+    class STLAllocator {
       public:
         using value_type = T;
         using pointer = T*;
@@ -17,14 +17,22 @@ namespace GLaDOS {
         using const_reference = const T&;
 
         STLAllocator() = default;
+        template<class U>
+        constexpr STLAllocator(const STLAllocator<U>&) noexcept {}
         ~STLAllocator() = default;
 
         pointer allocate(size_type count);
-        void deallocate(pointer ptr, size_type count);
+        void deallocate(pointer ptr, size_type count) noexcept;
         size_type max_size() const;
         void construct(pointer p, const_reference val);
         void destroy(pointer ptr);
     };
+
+    template<class T, class U>
+    inline bool operator==(const STLAllocator<T>&, const STLAllocator<U>&) { return true; }
+
+    template<class T, class U>
+    inline bool operator!=(const STLAllocator<T>&, const STLAllocator<U>&) { return false; }
 
     template <typename T>
     typename STLAllocator<T>::pointer STLAllocator<T>::allocate(size_type count) {
@@ -33,7 +41,7 @@ namespace GLaDOS {
     }
 
     template <typename T>
-    void STLAllocator<T>::deallocate(pointer ptr, [[maybe_unused]] size_type count) {
+    void STLAllocator<T>::deallocate(pointer ptr, [[maybe_unused]] size_type count) noexcept {
         FREE(ptr);
     }
 
